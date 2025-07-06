@@ -12,7 +12,7 @@ import { BrandAnalysisSection } from "@/components/dashboard/BrandAnalysisSectio
 import { CompetitorSection } from "@/components/dashboard/CompetitorSection";
 import { TrendsSection } from "@/components/dashboard/TrendsSection";
 import { RecommendationsSection } from "@/components/dashboard/RecommendationsSection";
-import { Search, TrendingUp, Brain, Target, Lightbulb } from "lucide-react";
+import { Search, TrendingUp, Brain, Target, Lightbulb, Filter, Globe } from "lucide-react";
 
 const Index = () => {
   const [websiteUrl, setWebsiteUrl] = useState("");
@@ -29,33 +29,41 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-gray-800 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <Brain className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900">GSEO Analytics</h1>
+              <h1 className="text-xl font-bold text-white">GSEO Analytics</h1>
             </div>
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              Deep Tracked Brands: 1/3
-            </Badge>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 text-sm text-gray-400">
+                <span>Last 30 days</span>
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                  <Filter className="w-4 h-4" />
+                </Button>
+              </div>
+              <Badge variant="secondary" className="bg-green-900/50 text-green-400 border-green-800">
+                Deep Tracked Brands: 1/3
+              </Badge>
+            </div>
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-6 py-8">
         {/* URL Input Section */}
-        <Card className="mb-8 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+        <Card className="mb-8 border-gray-800 bg-gray-900/50 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Search className="w-5 h-5 text-blue-600" />
+            <CardTitle className="flex items-center space-x-2 text-white">
+              <Search className="w-5 h-5 text-blue-400" />
               <span>Analyze Brand Website</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-400">
               Enter your brand's primary website URL for comprehensive AI visibility analysis
             </CardDescription>
           </CardHeader>
@@ -65,23 +73,23 @@ const Index = () => {
                 placeholder="https://your-brand-website.com"
                 value={websiteUrl}
                 onChange={(e) => setWebsiteUrl(e.target.value)}
-                className="flex-1"
+                className="flex-1 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
               />
               <Button 
                 onClick={handleAnalysis}
                 disabled={isAnalyzing || !websiteUrl}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 {isAnalyzing ? "Analyzing..." : "Analyze Website"}
               </Button>
             </div>
             {isAnalyzing && (
               <div className="mt-4">
-                <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
                   <span>Crawling website and analyzing AI readiness...</span>
                   <span>45%</span>
                 </div>
-                <Progress value={45} className="h-2" />
+                <Progress value={45} className="h-2 bg-gray-800" />
               </div>
             )}
           </CardContent>
@@ -90,24 +98,24 @@ const Index = () => {
         {/* Dashboard Tabs */}
         {hasAnalysis && (
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur-sm shadow-sm">
-              <TabsTrigger value="overview" className="flex items-center space-x-2">
+            <TabsList className="grid w-full grid-cols-5 bg-gray-800/50 backdrop-blur-sm shadow-sm border border-gray-700">
+              <TabsTrigger value="overview" className="flex items-center space-x-2 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
                 <TrendingUp className="w-4 h-4" />
                 <span className="hidden sm:inline">Overview</span>
               </TabsTrigger>
-              <TabsTrigger value="brand" className="flex items-center space-x-2">
+              <TabsTrigger value="brand" className="flex items-center space-x-2 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
                 <Brain className="w-4 h-4" />
                 <span className="hidden sm:inline">My Brand</span>
               </TabsTrigger>
-              <TabsTrigger value="competitors" className="flex items-center space-x-2">
+              <TabsTrigger value="competitors" className="flex items-center space-x-2 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
                 <Target className="w-4 h-4" />
                 <span className="hidden sm:inline">Competitors</span>
               </TabsTrigger>
-              <TabsTrigger value="trends" className="flex items-center space-x-2">
-                <TrendingUp className="w-4 h-4" />
+              <TabsTrigger value="trends" className="flex items-center space-x-2 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
+                <Globe className="w-4 h-4" />
                 <span className="hidden sm:inline">AI Trends</span>
               </TabsTrigger>
-              <TabsTrigger value="recommendations" className="flex items-center space-x-2">
+              <TabsTrigger value="recommendations" className="flex items-center space-x-2 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
                 <Lightbulb className="w-4 h-4" />
                 <span className="hidden sm:inline">Actions</span>
               </TabsTrigger>
