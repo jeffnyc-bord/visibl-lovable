@@ -12,136 +12,256 @@ import { BrandAnalysisSection } from "@/components/dashboard/BrandAnalysisSectio
 import { CompetitorSection } from "@/components/dashboard/CompetitorSection";
 import { TrendsSection } from "@/components/dashboard/TrendsSection";
 import { RecommendationsSection } from "@/components/dashboard/RecommendationsSection";
-import { Search, TrendingUp, Brain, Target, Lightbulb, Filter, Globe } from "lucide-react";
+import { 
+  Search, 
+  TrendingUp, 
+  Brain, 
+  Target, 
+  Lightbulb, 
+  Filter, 
+  Globe,
+  BarChart3,
+  Users,
+  FileText,
+  Settings,
+  HelpCircle,
+  Menu,
+  ChevronDown
+} from "lucide-react";
 
 const Index = () => {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [hasAnalysis, setHasAnalysis] = useState(true); // Set to true to show mock data
+  const [hasAnalysis, setHasAnalysis] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const handleAnalysis = () => {
     setIsAnalyzing(true);
-    // Simulate analysis process
     setTimeout(() => {
       setIsAnalyzing(false);
       setHasAnalysis(true);
     }, 3000);
   };
 
-  return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Brain className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-xl font-bold text-white">GSEO Analytics</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-400">
-                <span>Last 30 days</span>
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
-                  <Filter className="w-4 h-4" />
-                </Button>
-              </div>
-              <Badge variant="secondary" className="bg-green-900/50 text-green-400 border-green-800">
-                Deep Tracked Brands: 1/3
-              </Badge>
-            </div>
-          </div>
-        </div>
-      </header>
+  const sidebarItems = [
+    { label: "Dashboard", icon: BarChart3, active: true },
+    { label: "Rankings", icon: TrendingUp, active: false },
+    { label: "Sources", icon: Globe, active: false },
+    { label: "Prompts", icon: FileText, active: false },
+    { label: "Mentions", icon: Users, active: false },
+    { label: "Competitors", icon: Target, active: false },
+  ];
 
-      <div className="container mx-auto px-6 py-8">
-        {/* URL Input Section */}
-        <Card className="mb-8 border-gray-800 bg-gray-900/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-white">
-              <Search className="w-5 h-5 text-blue-400" />
-              <span>Analyze Brand Website</span>
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Enter your brand's primary website URL for comprehensive AI visibility analysis
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex space-x-4">
-              <Input
-                placeholder="https://your-brand-website.com"
-                value={websiteUrl}
-                onChange={(e) => setWebsiteUrl(e.target.value)}
-                className="flex-1 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
-              />
-              <Button 
-                onClick={handleAnalysis}
-                disabled={isAnalyzing || !websiteUrl}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                {isAnalyzing ? "Analyzing..." : "Analyze Website"}
-              </Button>
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
+        {/* Logo/Brand */}
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">G</span>
             </div>
-            {isAnalyzing && (
-              <div className="mt-4">
-                <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
-                  <span>Crawling website and analyzing AI readiness...</span>
-                  <span>45%</span>
+            {!sidebarCollapsed && (
+              <div>
+                <h1 className="font-semibold text-gray-900">GSEO Analytics</h1>
+                <div className="flex items-center space-x-1 text-xs text-gray-500">
+                  <span>Tesla</span>
+                  <ChevronDown className="w-3 h-3" />
                 </div>
-                <Progress value={45} className="h-2 bg-gray-800" />
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Dashboard Tabs */}
-        {hasAnalysis && (
-          <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 bg-gray-800/50 backdrop-blur-sm shadow-sm border border-gray-700">
-              <TabsTrigger value="overview" className="flex items-center space-x-2 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
-                <TrendingUp className="w-4 h-4" />
-                <span className="hidden sm:inline">Overview</span>
-              </TabsTrigger>
-              <TabsTrigger value="brand" className="flex items-center space-x-2 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
-                <Brain className="w-4 h-4" />
-                <span className="hidden sm:inline">My Brand</span>
-              </TabsTrigger>
-              <TabsTrigger value="competitors" className="flex items-center space-x-2 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
-                <Target className="w-4 h-4" />
-                <span className="hidden sm:inline">Competitors</span>
-              </TabsTrigger>
-              <TabsTrigger value="trends" className="flex items-center space-x-2 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
-                <Globe className="w-4 h-4" />
-                <span className="hidden sm:inline">AI Trends</span>
-              </TabsTrigger>
-              <TabsTrigger value="recommendations" className="flex items-center space-x-2 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
-                <Lightbulb className="w-4 h-4" />
-                <span className="hidden sm:inline">Actions</span>
-              </TabsTrigger>
-            </TabsList>
+        {/* Navigation */}
+        <nav className="flex-1 p-4">
+          <div className="space-y-1">
+            <div className={`${sidebarCollapsed ? 'hidden' : 'block'} text-xs font-medium text-gray-500 uppercase tracking-wider mb-3`}>
+              General
+            </div>
+            {sidebarItems.map((item, index) => (
+              <div key={index} className={`flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+                item.active 
+                  ? 'bg-gray-100 text-gray-900' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`}>
+                <item.icon className="w-5 h-5" />
+                {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
+              </div>
+            ))}
+          </div>
 
-            <TabsContent value="overview">
-              <OverviewSection />
-            </TabsContent>
+          <div className="mt-8">
+            <div className={`${sidebarCollapsed ? 'hidden' : 'block'} text-xs font-medium text-gray-500 uppercase tracking-wider mb-3`}>
+              Settings
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                <Users className="w-5 h-5" />
+                {!sidebarCollapsed && <span className="font-medium">Team</span>}
+              </div>
+              <div className="flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                <Settings className="w-5 h-5" />
+                {!sidebarCollapsed && <span className="font-medium">Workspace</span>}
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
 
-            <TabsContent value="brand">
-              <BrandAnalysisSection />
-            </TabsContent>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Top Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className="p-2"
+              >
+                <Menu className="w-4 h-4" />
+              </Button>
+              <h2 className="text-xl font-semibold text-gray-900">Dashboard</h2>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                <span>00:25:15</span>
+                <span>3 pending prompts</span>
+              </div>
+              <Button variant="ghost" size="sm">
+                <HelpCircle className="w-4 h-4" />
+                <span className="ml-2">Help</span>
+              </Button>
+            </div>
+          </div>
+        </header>
 
-            <TabsContent value="competitors">
-              <CompetitorSection />
-            </TabsContent>
+        {/* Content Area */}
+        <main className="flex-1 p-6 overflow-auto">
+          {/* URL Input Section */}
+          <Card className="mb-6 shadow-sm border-gray-200">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center space-x-2 text-gray-900">
+                <Search className="w-5 h-5 text-blue-500" />
+                <span>Analyze Brand Website</span>
+              </CardTitle>
+              <CardDescription className="text-gray-600">
+                Enter your brand's primary website URL for comprehensive AI visibility analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex space-x-3">
+                <Input
+                  placeholder="https://your-brand-website.com"
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                  className="flex-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+                <Button 
+                  onClick={handleAnalysis}
+                  disabled={isAnalyzing || !websiteUrl}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+                >
+                  {isAnalyzing ? "Analyzing..." : "Analyze Website"}
+                </Button>
+              </div>
+              {isAnalyzing && (
+                <div className="mt-4">
+                  <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                    <span>Crawling website and analyzing AI readiness...</span>
+                    <span>45%</span>
+                  </div>
+                  <Progress value={45} className="h-2" />
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-            <TabsContent value="trends">
-              <TrendsSection />
-            </TabsContent>
+          {/* Filter Bar */}
+          {hasAnalysis && (
+            <div className="mb-6 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-red-500 rounded flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">T</span>
+                  </div>
+                  <span className="font-medium text-gray-900">Tesla</span>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                </div>
+                
+                <Separator orientation="vertical" className="h-6" />
+                
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <span>Last 7 days</span>
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+                
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <span>All Tags</span>
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+                
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <span>All Models</span>
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+          )}
 
-            <TabsContent value="recommendations">
-              <RecommendationsSection />
-            </TabsContent>
-          </Tabs>
-        )}
+          {/* Dashboard Content */}
+          {hasAnalysis && (
+            <Tabs defaultValue="overview" className="space-y-6">
+              <TabsList className="bg-white border border-gray-200 p-1 shadow-sm">
+                <TabsTrigger value="overview" className="flex items-center space-x-2 data-[state=active]:bg-gray-100">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Overview</span>
+                </TabsTrigger>
+                <TabsTrigger value="brand" className="flex items-center space-x-2 data-[state=active]:bg-gray-100">
+                  <Brain className="w-4 h-4" />
+                  <span>My Brand</span>
+                </TabsTrigger>
+                <TabsTrigger value="competitors" className="flex items-center space-x-2 data-[state=active]:bg-gray-100">
+                  <Target className="w-4 h-4" />
+                  <span>Competitors</span>
+                </TabsTrigger>
+                <TabsTrigger value="trends" className="flex items-center space-x-2 data-[state=active]:bg-gray-100">
+                  <Globe className="w-4 h-4" />
+                  <span>AI Trends</span>
+                </TabsTrigger>
+                <TabsTrigger value="recommendations" className="flex items-center space-x-2 data-[state=active]:bg-gray-100">
+                  <Lightbulb className="w-4 h-4" />
+                  <span>Actions</span>
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="overview">
+                <OverviewSection />
+              </TabsContent>
+
+              <TabsContent value="brand">
+                <BrandAnalysisSection />
+              </TabsContent>
+
+              <TabsContent value="competitors">
+                <CompetitorSection />
+              </TabsContent>
+
+              <TabsContent value="trends">
+                <TrendsSection />
+              </TabsContent>
+
+              <TabsContent value="recommendations">
+                <RecommendationsSection />
+              </TabsContent>
+            </Tabs>
+          )}
+        </main>
       </div>
     </div>
   );
