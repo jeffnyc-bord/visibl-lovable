@@ -36,6 +36,8 @@ const Index = () => {
   const [hasAnalysis, setHasAnalysis] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeView, setActiveView] = useState("dashboard");
+  // Simulating role-based logic - in real app this would come from auth/context
+  const [userRole] = useState<"business_user" | "agency_admin">("business_user");
 
   const handleAnalysis = () => {
     setIsAnalyzing(true);
@@ -45,14 +47,33 @@ const Index = () => {
     }, 3000);
   };
 
-  const sidebarItems = [
-    { label: "Dashboard", icon: BarChart3, active: activeView === "dashboard", view: "dashboard" },
-    { label: "Brand Management", icon: Building, active: activeView === "brands", view: "brands" },
-    { label: "Agency Admin", icon: Users, active: activeView === "agency", view: "agency" },
-    { label: "Rankings", icon: TrendingUp, active: false, view: "rankings" },
-    { label: "Sources", icon: Globe, active: false, view: "sources" },
-    { label: "Prompts", icon: FileText, active: false, view: "prompts" },
-  ];
+  // Role-based navigation items
+  const getNavigationItems = () => {
+    const baseItems = [
+      { label: "Dashboard", icon: BarChart3, active: activeView === "dashboard", view: "dashboard" },
+    ];
+
+    if (userRole === "business_user") {
+      return [
+        ...baseItems,
+        { label: "My Brand Analytics", icon: Building, active: activeView === "brands", view: "brands" },
+        { label: "Rankings", icon: TrendingUp, active: false, view: "rankings" },
+        { label: "Sources", icon: Globe, active: false, view: "sources" },
+        { label: "Prompts", icon: FileText, active: false, view: "prompts" },
+      ];
+    } else {
+      return [
+        ...baseItems,
+        { label: "Brand Management", icon: Building, active: activeView === "brands", view: "brands" },
+        { label: "Agency Admin", icon: Users, active: activeView === "agency", view: "agency" },
+        { label: "Rankings", icon: TrendingUp, active: false, view: "rankings" },
+        { label: "Sources", icon: Globe, active: false, view: "sources" },
+        { label: "Prompts", icon: FileText, active: false, view: "prompts" },
+      ];
+    }
+  };
+
+  const sidebarItems = getNavigationItems();
 
   return (
     <div className="min-h-screen bg-gray-50 flex text-sm">
@@ -132,7 +153,7 @@ const Index = () => {
               </Button>
               <h2 className="text-lg font-semibold text-gray-900">
                 {activeView === "dashboard" ? "Dashboard" : 
-                 activeView === "brands" ? "Brand Management" :
+                 activeView === "brands" ? (userRole === "business_user" ? "My Brand Analytics" : "Brand Management") :
                  activeView === "agency" ? "Agency Admin" : "Dashboard"}
               </h2>
             </div>
