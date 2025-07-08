@@ -12,6 +12,7 @@ import { BrandAnalysisSection } from "@/components/dashboard/BrandAnalysisSectio
 import { CompetitorSection } from "@/components/dashboard/CompetitorSection";
 import { TrendsSection } from "@/components/dashboard/TrendsSection";
 import { RecommendationsSection } from "@/components/dashboard/RecommendationsSection";
+import { TechnicalCrawlabilitySection } from "@/components/dashboard/TechnicalCrawlabilitySection";
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
 import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
 import { 
@@ -28,7 +29,8 @@ import {
   HelpCircle,
   Menu,
   ChevronDown,
-  Building
+  Building,
+  Code
 } from "lucide-react";
 
 const Index = () => {
@@ -272,6 +274,10 @@ const Index = () => {
                       <Globe className="w-3 h-3" />
                       <span>AI Trends</span>
                     </TabsTrigger>
+                    <TabsTrigger value="technical" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Code className="w-3 h-3" />
+                      <span>Technical AI Crawlability</span>
+                    </TabsTrigger>
                     <TabsTrigger value="recommendations" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Lightbulb className="w-3 h-3" />
                       <span>Actions</span>
@@ -292,6 +298,10 @@ const Index = () => {
 
                   <TabsContent value="trends">
                     <TrendsSection />
+                  </TabsContent>
+
+                  <TabsContent value="technical">
+                    <TechnicalCrawlabilitySection />
                   </TabsContent>
 
                   <TabsContent value="recommendations">
