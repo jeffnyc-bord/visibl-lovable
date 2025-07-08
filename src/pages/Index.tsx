@@ -15,6 +15,7 @@ import { RecommendationsSection } from "@/components/dashboard/RecommendationsSe
 import { TechnicalCrawlabilitySection } from "@/components/dashboard/TechnicalCrawlabilitySection";
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
 import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
+import { Settings as SettingsPage } from "@/pages/Settings";
 import { 
   Search, 
   TrendingUp, 
@@ -121,9 +122,16 @@ const Index = () => {
               Settings
             </div>
             <div className="space-y-1">
-              <div className="flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-gray-900 text-sm">
-                <Users className="w-4 h-4" />
-                {!sidebarCollapsed && <span className="font-medium">Team</span>}
+              <div 
+                className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors text-sm ${
+                  activeView === "settings" 
+                    ? 'bg-gray-100 text-gray-900' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+                onClick={() => setActiveView("settings")}
+              >
+                <Settings className="w-4 h-4" />
+                {!sidebarCollapsed && <span className="font-medium">Settings</span>}
               </div>
             </div>
           </div>
@@ -147,7 +155,8 @@ const Index = () => {
               <h2 className="text-lg font-semibold text-gray-900">
                 {activeView === "dashboard" ? "Dashboard" : 
                  activeView === "brands" ? (userRole === "business_user" ? "My Brand Analytics" : "Brand Management") :
-                 activeView === "agency" ? "Agency Admin" : "Dashboard"}
+                 activeView === "agency" ? "Agency Admin" :
+                 activeView === "settings" ? "Settings" : "Dashboard"}
               </h2>
             </div>
             
@@ -314,6 +323,7 @@ const Index = () => {
 
           {activeView === "brands" && <BrandManagementSection />}
           {activeView === "agency" && <AgencyAdminSection />}
+          {activeView === "settings" && <SettingsPage userRole={userRole} />}
         </main>
       </div>
     </div>
