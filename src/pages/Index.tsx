@@ -5,20 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { OverviewSection } from "@/components/dashboard/OverviewSection";
 import { BrandAnalysisSection } from "@/components/dashboard/BrandAnalysisSection";
 import { CompetitorSection } from "@/components/dashboard/CompetitorSection";
 import { TrendsSection } from "@/components/dashboard/TrendsSection";
 import { RecommendationsSection } from "@/components/dashboard/RecommendationsSection";
+import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
+import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
 import { 
   Search, 
   TrendingUp, 
   Brain, 
   Target, 
   Lightbulb, 
-  Filter, 
   Globe,
   BarChart3,
   Users,
@@ -26,7 +26,8 @@ import {
   Settings,
   HelpCircle,
   Menu,
-  ChevronDown
+  ChevronDown,
+  Building
 } from "lucide-react";
 
 const Index = () => {
@@ -34,6 +35,7 @@ const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [hasAnalysis, setHasAnalysis] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [activeView, setActiveView] = useState("dashboard");
 
   const handleAnalysis = () => {
     setIsAnalyzing(true);
@@ -44,12 +46,12 @@ const Index = () => {
   };
 
   const sidebarItems = [
-    { label: "Dashboard", icon: BarChart3, active: true },
-    { label: "Rankings", icon: TrendingUp, active: false },
-    { label: "Sources", icon: Globe, active: false },
-    { label: "Prompts", icon: FileText, active: false },
-    { label: "Mentions", icon: Users, active: false },
-    { label: "Competitors", icon: Target, active: false },
+    { label: "Dashboard", icon: BarChart3, active: activeView === "dashboard", view: "dashboard" },
+    { label: "Brand Management", icon: Building, active: activeView === "brands", view: "brands" },
+    { label: "Agency Admin", icon: Users, active: activeView === "agency", view: "agency" },
+    { label: "Rankings", icon: TrendingUp, active: false, view: "rankings" },
+    { label: "Sources", icon: Globe, active: false, view: "sources" },
+    { label: "Prompts", icon: FileText, active: false, view: "prompts" },
   ];
 
   return (
@@ -81,11 +83,15 @@ const Index = () => {
               General
             </div>
             {sidebarItems.map((item, index) => (
-              <div key={index} className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors text-sm ${
-                item.active 
-                  ? 'bg-gray-100 text-gray-900' 
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}>
+              <div 
+                key={index} 
+                className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors text-sm ${
+                  item.active 
+                    ? 'bg-gray-100 text-gray-900' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+                onClick={() => setActiveView(item.view)}
+              >
                 <item.icon className="w-4 h-4" />
                 {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
               </div>
@@ -124,7 +130,11 @@ const Index = () => {
               >
                 <Menu className="w-4 h-4" />
               </Button>
-              <h2 className="text-lg font-semibold text-gray-900">Dashboard</h2>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {activeView === "dashboard" ? "Dashboard" : 
+                 activeView === "brands" ? "Brand Management" :
+                 activeView === "agency" ? "Agency Admin" : "Dashboard"}
+              </h2>
             </div>
             
             <div className="flex items-center space-x-3">
@@ -143,124 +153,131 @@ const Index = () => {
 
         {/* Content Area */}
         <main className="flex-1 p-4 overflow-auto">
-          {/* URL Input Section */}
-          <Card className="mb-4 shadow-sm border-gray-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2 text-gray-900 text-base">
-                <Search className="w-4 h-4 text-blue-500" />
-                <span>Analyze Brand Website</span>
-              </CardTitle>
-              <CardDescription className="text-gray-600 text-sm">
-                Enter your brand's primary website URL for comprehensive AI visibility analysis
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex space-x-2">
-                <Input
-                  placeholder="https://your-brand-website.com"
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                  className="flex-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm h-9"
-                />
-                <Button 
-                  onClick={handleAnalysis}
-                  disabled={isAnalyzing || !websiteUrl}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 text-sm h-9"
-                >
-                  {isAnalyzing ? "Analyzing..." : "Analyze Website"}
-                </Button>
-              </div>
-              {isAnalyzing && (
-                <div className="mt-3">
-                  <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                    <span>Crawling website and analyzing AI readiness...</span>
-                    <span>45%</span>
+          {activeView === "dashboard" && (
+            <>
+              {/* URL Input Section */}
+              <Card className="mb-4 shadow-sm border-gray-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center space-x-2 text-gray-900 text-base">
+                    <Search className="w-4 h-4 text-blue-500" />
+                    <span>Analyze Brand Website</span>
+                  </CardTitle>
+                  <CardDescription className="text-gray-600 text-sm">
+                    Enter your brand's primary website URL for comprehensive AI visibility analysis
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex space-x-2">
+                    <Input
+                      placeholder="https://your-brand-website.com"
+                      value={websiteUrl}
+                      onChange={(e) => setWebsiteUrl(e.target.value)}
+                      className="flex-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm h-9"
+                    />
+                    <Button 
+                      onClick={handleAnalysis}
+                      disabled={isAnalyzing || !websiteUrl}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 text-sm h-9"
+                    >
+                      {isAnalyzing ? "Analyzing..." : "Analyze Website"}
+                    </Button>
                   </div>
-                  <Progress value={45} className="h-1.5" />
+                  {isAnalyzing && (
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                        <span>Crawling website and analyzing AI readiness...</span>
+                        <span>45%</span>
+                      </div>
+                      <Progress value={45} className="h-1.5" />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Filter Bar */}
+              {hasAnalysis && (
+                <div className="mb-4 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-5 h-5 bg-red-500 rounded flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">T</span>
+                      </div>
+                      <span className="font-medium text-gray-900 text-sm">Tesla</span>
+                      <ChevronDown className="w-3 h-3 text-gray-400" />
+                    </div>
+                    
+                    <Separator orientation="vertical" className="h-4" />
+                    
+                    <div className="flex items-center space-x-1 text-xs text-gray-600">
+                      <span>Last 7 days</span>
+                      <ChevronDown className="w-3 h-3" />
+                    </div>
+                    
+                    <div className="flex items-center space-x-1 text-xs text-gray-600">
+                      <span>All Tags</span>
+                      <ChevronDown className="w-3 h-3" />
+                    </div>
+                    
+                    <div className="flex items-center space-x-1 text-xs text-gray-600">
+                      <span>All Models</span>
+                      <ChevronDown className="w-3 h-3" />
+                    </div>
+                  </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
 
-          {/* Filter Bar */}
-          {hasAnalysis && (
-            <div className="mb-4 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 bg-red-500 rounded flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">T</span>
-                  </div>
-                  <span className="font-medium text-gray-900 text-sm">Tesla</span>
-                  <ChevronDown className="w-3 h-3 text-gray-400" />
-                </div>
-                
-                <Separator orientation="vertical" className="h-4" />
-                
-                <div className="flex items-center space-x-1 text-xs text-gray-600">
-                  <span>Last 7 days</span>
-                  <ChevronDown className="w-3 h-3" />
-                </div>
-                
-                <div className="flex items-center space-x-1 text-xs text-gray-600">
-                  <span>All Tags</span>
-                  <ChevronDown className="w-3 h-3" />
-                </div>
-                
-                <div className="flex items-center space-x-1 text-xs text-gray-600">
-                  <span>All Models</span>
-                  <ChevronDown className="w-3 h-3" />
-                </div>
-              </div>
-            </div>
+              {/* Dashboard Content */}
+              {hasAnalysis && (
+                <Tabs defaultValue="overview" className="space-y-4">
+                  <TabsList className="bg-white border border-gray-200 p-0.5 shadow-sm">
+                    <TabsTrigger value="overview" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <TrendingUp className="w-3 h-3" />
+                      <span>Overview</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="brand" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Brain className="w-3 h-3" />
+                      <span>My Brand</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Target className="w-3 h-3" />
+                      <span>Competitors</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="trends" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Globe className="w-3 h-3" />
+                      <span>AI Trends</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="recommendations" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Lightbulb className="w-3 h-3" />
+                      <span>Actions</span>
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="overview">
+                    <OverviewSection />
+                  </TabsContent>
+
+                  <TabsContent value="brand">
+                    <BrandAnalysisSection />
+                  </TabsContent>
+
+                  <TabsContent value="competitors">
+                    <CompetitorSection />
+                  </TabsContent>
+
+                  <TabsContent value="trends">
+                    <TrendsSection />
+                  </TabsContent>
+
+                  <TabsContent value="recommendations">
+                    <RecommendationsSection />
+                  </TabsContent>
+                </Tabs>
+              )}
+            </>
           )}
 
-          {/* Dashboard Content */}
-          {hasAnalysis && (
-            <Tabs defaultValue="overview" className="space-y-4">
-              <TabsList className="bg-white border border-gray-200 p-0.5 shadow-sm">
-                <TabsTrigger value="overview" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                  <TrendingUp className="w-3 h-3" />
-                  <span>Overview</span>
-                </TabsTrigger>
-                <TabsTrigger value="brand" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                  <Brain className="w-3 h-3" />
-                  <span>My Brand</span>
-                </TabsTrigger>
-                <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                  <Target className="w-3 h-3" />
-                  <span>Competitors</span>
-                </TabsTrigger>
-                <TabsTrigger value="trends" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                  <Globe className="w-3 h-3" />
-                  <span>AI Trends</span>
-                </TabsTrigger>
-                <TabsTrigger value="recommendations" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                  <Lightbulb className="w-3 h-3" />
-                  <span>Actions</span>
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="overview">
-                <OverviewSection />
-              </TabsContent>
-
-              <TabsContent value="brand">
-                <BrandAnalysisSection />
-              </TabsContent>
-
-              <TabsContent value="competitors">
-                <CompetitorSection />
-              </TabsContent>
-
-              <TabsContent value="trends">
-                <TrendsSection />
-              </TabsContent>
-
-              <TabsContent value="recommendations">
-                <RecommendationsSection />
-              </TabsContent>
-            </Tabs>
-          )}
+          {activeView === "brands" && <BrandManagementSection />}
+          {activeView === "agency" && <AgencyAdminSection />}
         </main>
       </div>
     </div>
