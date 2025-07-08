@@ -2,7 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, TrendingUp, MessageSquare, Link, Calendar, Star } from "lucide-react";
+import { Eye, TrendingUp, MessageSquare, Link, Calendar, Star, BarChart3 } from "lucide-react";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
 
 export const ExternalAIVisibilitySection = () => {
   // Mock data for AI mentions and sources
@@ -53,6 +54,16 @@ export const ExternalAIVisibilitySection = () => {
     { source: "TechCrunch", mentions: 167, authority: "medium", freshness: "current" },
     { source: "Wikipedia", mentions: 134, authority: "medium", freshness: "outdated" },
     { source: "Tesla Forums", mentions: 98, authority: "low", freshness: "current" },
+  ];
+
+  // Data for overall AI visibility trend
+  const visibilityTrendData = [
+    { month: "Jul", mentions: 890 },
+    { month: "Aug", mentions: 1020 },
+    { month: "Sep", mentions: 1156 },
+    { month: "Oct", mentions: 1089 },
+    { month: "Nov", mentions: 1203 },
+    { month: "Dec", mentions: 1247 },
   ];
 
   const getSentimentColor = (sentiment: string) => {
@@ -138,6 +149,36 @@ export const ExternalAIVisibilitySection = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Overall AI Visibility Trend */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <BarChart3 className="w-5 h-5 text-indigo-500" />
+            <span>Overall AI Visibility Trend</span>
+          </CardTitle>
+          <CardDescription>
+            Your brand's mention volume across the AI ecosystem over time.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={visibilityTrendData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Line 
+                type="monotone" 
+                dataKey="mentions" 
+                stroke="hsl(var(--primary))" 
+                strokeWidth={2}
+                dot={{ fill: 'hsl(var(--primary))' }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
       {/* Platform-wise Mentions */}
       <Card>

@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Zap, Clock, Target, Bot, Play, History, Copy } from "lucide-react";
+import { Search, Zap, Clock, Target, Bot, Play, History, Copy, BarChart3 } from "lucide-react";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 
 export const QueriesAndPromptsSection = () => {
   const [customPrompt, setCustomPrompt] = useState("");
@@ -48,6 +49,16 @@ export const QueriesAndPromptsSection = () => {
   ];
 
   const aiPlatforms = ["ChatGPT", "Claude", "Gemini", "Perplexity"];
+
+  // Mock data for AI platform mentions from generated queries
+  const platformMentionsData = [
+    { platform: "ChatGPT", mentions: 456, percentage: 38 },
+    { platform: "Claude", mentions: 324, percentage: 27 },
+    { platform: "Gemini", mentions: 287, percentage: 24 },
+    { platform: "Perplexity", mentions: 133, percentage: 11 },
+  ];
+
+  const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(220, 14%, 69%)', 'hsl(220, 14%, 83%)'];
 
   const handlePromptBlast = () => {
     if (!customPrompt.trim() || selectedPlatforms.length === 0) return;
@@ -106,6 +117,56 @@ export const QueriesAndPromptsSection = () => {
                     </Button>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* AI Platform Mentions Distribution */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="w-5 h-5 text-purple-500" />
+                <span>AI Platform Mention Distribution</span>
+              </CardTitle>
+              <CardDescription>
+                Brand mentions across AI platforms from your generated queries and prompt blasts.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Mentions by Platform</h4>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={platformMentionsData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="platform" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="mentions" fill="hsl(var(--primary))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Distribution Percentage</h4>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <PieChart>
+                      <Pie
+                        data={platformMentionsData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="hsl(var(--primary))"
+                        dataKey="percentage"
+                        label={(entry) => `${entry.platform}: ${entry.percentage}%`}
+                      >
+                        {platformMentionsData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </CardContent>
           </Card>
