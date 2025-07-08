@@ -277,11 +277,11 @@ const Index = () => {
                     </TabsTrigger>
                     <TabsTrigger value="brand" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Brain className="w-3 h-3" />
-                      <span>Content & Product AI Readiness</span>
+                      <span>Brand & Product</span>
                     </TabsTrigger>
                     <TabsTrigger value="technical" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Code className="w-3 h-3" />
-                      <span>Technical AI Crawlability</span>
+                      <span>Technical Health</span>
                     </TabsTrigger>
                     <TabsTrigger value="queries" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Zap className="w-3 h-3" />
@@ -289,11 +289,11 @@ const Index = () => {
                     </TabsTrigger>
                     <TabsTrigger value="visibility" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Eye className="w-3 h-3" />
-                      <span>External AI Visibility</span>
+                      <span>AI Visibility</span>
                     </TabsTrigger>
                     <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Target className="w-3 h-3" />
-                      <span>Competitor Insights</span>
+                      <span>Competitors</span>
                     </TabsTrigger>
                     <TabsTrigger value="trends" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Globe className="w-3 h-3" />
@@ -301,7 +301,7 @@ const Index = () => {
                     </TabsTrigger>
                     <TabsTrigger value="recommendations" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Lightbulb className="w-3 h-3" />
-                      <span>Recommendations & Actions</span>
+                      <span>Recommendations</span>
                     </TabsTrigger>
                   </TabsList>
 
