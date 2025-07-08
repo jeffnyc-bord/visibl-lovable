@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
@@ -37,7 +38,7 @@ const Index = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeView, setActiveView] = useState("dashboard");
   // Simulating role-based logic - in real app this would come from auth/context
-  const [userRole] = useState<"business_user" | "agency_admin">("business_user");
+  const [userRole, setUserRole] = useState<"business_user" | "agency_admin">("business_user");
 
   const handleAnalysis = () => {
     setIsAnalyzing(true);
@@ -159,6 +160,20 @@ const Index = () => {
             </div>
             
             <div className="flex items-center space-x-3">
+              {/* Demo Role Switcher */}
+              <div className="flex items-center space-x-2">
+                <span className="text-xs text-gray-600">Demo Role:</span>
+                <Select value={userRole} onValueChange={(value: "business_user" | "agency_admin") => setUserRole(value)}>
+                  <SelectTrigger className="w-32 h-7 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="business_user">Business User</SelectItem>
+                    <SelectItem value="agency_admin">Agency Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
               <div className="flex items-center space-x-2 text-xs text-gray-500">
                 <div className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse"></div>
                 <span>00:25:15</span>
