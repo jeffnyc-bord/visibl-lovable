@@ -13,6 +13,8 @@ import { CompetitorSection } from "@/components/dashboard/CompetitorSection";
 import { TrendsSection } from "@/components/dashboard/TrendsSection";
 import { RecommendationsSection } from "@/components/dashboard/RecommendationsSection";
 import { TechnicalCrawlabilitySection } from "@/components/dashboard/TechnicalCrawlabilitySection";
+import { QueriesAndPromptsSection } from "@/components/dashboard/QueriesAndPromptsSection";
+import { ExternalAIVisibilitySection } from "@/components/dashboard/ExternalAIVisibilitySection";
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
 import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
 import { Settings as SettingsPage } from "@/pages/Settings";
@@ -31,7 +33,9 @@ import {
   Menu,
   ChevronDown,
   Building,
-  Code
+  Code,
+  Zap,
+  Eye
 } from "lucide-react";
 
 const Index = () => {
@@ -273,23 +277,31 @@ const Index = () => {
                     </TabsTrigger>
                     <TabsTrigger value="brand" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Brain className="w-3 h-3" />
-                      <span>My Brand</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Target className="w-3 h-3" />
-                      <span>Competitors</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="trends" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Globe className="w-3 h-3" />
-                      <span>AI Trends</span>
+                      <span>Content & Product AI Readiness</span>
                     </TabsTrigger>
                     <TabsTrigger value="technical" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Code className="w-3 h-3" />
                       <span>Technical AI Crawlability</span>
                     </TabsTrigger>
+                    <TabsTrigger value="queries" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Zap className="w-3 h-3" />
+                      <span>Queries & Prompts</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="visibility" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Eye className="w-3 h-3" />
+                      <span>External AI Visibility</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Target className="w-3 h-3" />
+                      <span>Competitor Insights</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="trends" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Globe className="w-3 h-3" />
+                      <span>AI Trends</span>
+                    </TabsTrigger>
                     <TabsTrigger value="recommendations" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Lightbulb className="w-3 h-3" />
-                      <span>Actions</span>
+                      <span>Recommendations & Actions</span>
                     </TabsTrigger>
                   </TabsList>
 
@@ -301,16 +313,24 @@ const Index = () => {
                     <BrandAnalysisSection />
                   </TabsContent>
 
+                  <TabsContent value="technical">
+                    <TechnicalCrawlabilitySection />
+                  </TabsContent>
+
+                  <TabsContent value="queries">
+                    <QueriesAndPromptsSection />
+                  </TabsContent>
+
+                  <TabsContent value="visibility">
+                    <ExternalAIVisibilitySection />
+                  </TabsContent>
+
                   <TabsContent value="competitors">
                     <CompetitorSection />
                   </TabsContent>
 
                   <TabsContent value="trends">
                     <TrendsSection />
-                  </TabsContent>
-
-                  <TabsContent value="technical">
-                    <TechnicalCrawlabilitySection />
                   </TabsContent>
 
                   <TabsContent value="recommendations">
