@@ -9,9 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { OverviewSection } from "@/components/dashboard/OverviewSection";
 import { BrandAnalysisSection } from "@/components/dashboard/BrandAnalysisSection";
-import { CompetitorSection } from "@/components/dashboard/CompetitorSection";
-import { TrendsSection } from "@/components/dashboard/TrendsSection";
-import { RecommendationsSection } from "@/components/dashboard/RecommendationsSection";
+import { TechnicalCrawlabilitySection } from "@/components/dashboard/TechnicalCrawlabilitySection";
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
 import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
 import { 
@@ -262,19 +260,11 @@ const Index = () => {
                     </TabsTrigger>
                     <TabsTrigger value="brand" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Brain className="w-3 h-3" />
-                      <span>My Brand</span>
+                      <span>Brand & Products</span>
                     </TabsTrigger>
-                    <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Target className="w-3 h-3" />
-                      <span>Competitors</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="trends" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Globe className="w-3 h-3" />
-                      <span>AI Trends</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="recommendations" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Lightbulb className="w-3 h-3" />
-                      <span>Actions</span>
+                    <TabsTrigger value="technical" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Settings className="w-3 h-3" />
+                      <span>Technical AI Crawlability</span>
                     </TabsTrigger>
                   </TabsList>
 
@@ -286,16 +276,8 @@ const Index = () => {
                     <BrandAnalysisSection />
                   </TabsContent>
 
-                  <TabsContent value="competitors">
-                    <CompetitorSection />
-                  </TabsContent>
-
-                  <TabsContent value="trends">
-                    <TrendsSection />
-                  </TabsContent>
-
-                  <TabsContent value="recommendations">
-                    <RecommendationsSection />
+                  <TabsContent value="technical">
+                    <TechnicalCrawlabilitySection />
                   </TabsContent>
                 </Tabs>
               )}
