@@ -58,18 +58,12 @@ const Index = () => {
       return [
         ...baseItems,
         { label: "My Brand Analytics", icon: Building, active: activeView === "brands", view: "brands" },
-        { label: "Rankings", icon: TrendingUp, active: false, view: "rankings" },
-        { label: "Sources", icon: Globe, active: false, view: "sources" },
-        { label: "Prompts", icon: FileText, active: false, view: "prompts" },
       ];
     } else {
       return [
         ...baseItems,
         { label: "Brand Management", icon: Building, active: activeView === "brands", view: "brands" },
         { label: "Agency Admin", icon: Users, active: activeView === "agency", view: "agency" },
-        { label: "Rankings", icon: TrendingUp, active: false, view: "rankings" },
-        { label: "Sources", icon: Globe, active: false, view: "sources" },
-        { label: "Prompts", icon: FileText, active: false, view: "prompts" },
       ];
     }
   };
@@ -128,10 +122,6 @@ const Index = () => {
               <div className="flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-gray-900 text-sm">
                 <Users className="w-4 h-4" />
                 {!sidebarCollapsed && <span className="font-medium">Team</span>}
-              </div>
-              <div className="flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-gray-900 text-sm">
-                <Settings className="w-4 h-4" />
-                {!sidebarCollapsed && <span className="font-medium">Workspace</span>}
               </div>
             </div>
           </div>
