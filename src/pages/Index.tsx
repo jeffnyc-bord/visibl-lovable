@@ -90,7 +90,10 @@ const Index = () => {
               className="w-6 h-6"
             />
             {!sidebarCollapsed && (
-              <h1 className="font-semibold text-gray-900 text-sm font-mono tracking-wide">visibl</h1>
+              <div>
+                <h1 className="font-semibold text-gray-900 text-sm font-mono tracking-wide">visibl</h1>
+                <div className="text-xs text-gray-500">AI Brand Visibility</div>
+              </div>
             )}
           </div>
         </div>
