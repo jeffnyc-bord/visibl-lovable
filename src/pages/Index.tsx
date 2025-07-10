@@ -84,14 +84,14 @@ const Index = () => {
         {/* Logo/Brand */}
         <div className="p-3 border-b border-gray-200">
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-red-500 rounded flex items-center justify-center">
-              <span className="text-white font-bold text-xs">G</span>
+            <div className="w-6 h-6 bg-black rounded flex items-center justify-center">
+              <span className="text-white font-bold text-xs">U</span>
             </div>
             {!sidebarCollapsed && (
               <div>
                 <h1 className="font-semibold text-gray-900 text-sm">GSEO Analytics</h1>
                 <div className="flex items-center space-x-1 text-xs text-gray-500">
-                  <span>Tesla</span>
+                  <span>Uber</span>
                   <ChevronDown className="w-3 h-3" />
                 </div>
               </div>
@@ -202,10 +202,10 @@ const Index = () => {
                 <div className="mb-4 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2">
-                      <div className="w-5 h-5 bg-red-500 rounded flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">T</span>
+                      <div className="w-5 h-5 bg-black rounded flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">U</span>
                       </div>
-                      <span className="font-medium text-gray-900 text-sm">Tesla</span>
+                      <span className="font-medium text-gray-900 text-sm">Uber</span>
                       <ChevronDown className="w-3 h-3 text-gray-400" />
                     </div>
                     

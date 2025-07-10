@@ -8,30 +8,30 @@ import { CheckCircle, AlertCircle, XCircle, ExternalLink, TrendingUp, TrendingDo
 export const BrandAnalysisSection = () => {
   const products = [
     {
-      name: "Model 3",
-      description: "Electric sedan with advanced autopilot capabilities and premium interior",
+      name: "Uber Ride",
+      description: "On-demand ridesharing service connecting riders with drivers",
       aiReadiness: 85,
-      url: "/products/model-3",
+      url: "/products/uber-ride",
       issues: ["Missing FAQ section", "Limited structured data"],
       strengths: ["Clear value proposition", "Detailed feature list"],
       trend: "up",
       change: "+2%"
     },
     {
-      name: "Model Y",
-      description: "Compact SUV with versatile cargo space and all-wheel drive",
+      name: "Uber Eats",
+      description: "Food delivery platform connecting users with local restaurants",
       aiReadiness: 72,
-      url: "/products/model-y",
+      url: "/products/uber-eats",
       issues: ["Vague product description", "No pricing information"],
       strengths: ["Good use cases", "Customer testimonials"],
       trend: "down",
       change: "-1%"
     },
     {
-      name: "Model S",
-      description: "Luxury electric vehicle with long range and high performance",
+      name: "Uber for Business",
+      description: "Enterprise transportation and meal solutions for businesses",
       aiReadiness: 91,
-      url: "/products/model-s",
+      url: "/products/uber-business",
       issues: ["Missing technical specifications"],
       strengths: ["Comprehensive documentation", "Clear ROI examples"],
       trend: "up",
