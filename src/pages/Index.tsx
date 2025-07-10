@@ -84,17 +84,13 @@ const Index = () => {
         {/* Logo/Brand */}
         <div className="p-3 border-b border-gray-200">
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-black rounded flex items-center justify-center">
-              <span className="text-white font-bold text-xs">U</span>
-            </div>
+            <img 
+              src="/lovable-uploads/8b019b65-cf22-4d96-bc74-711b20ff6457.png" 
+              alt="visibl logo" 
+              className="w-6 h-6"
+            />
             {!sidebarCollapsed && (
-              <div>
-                <h1 className="font-semibold text-gray-900 text-sm">GSEO Analytics</h1>
-                <div className="flex items-center space-x-1 text-xs text-gray-500">
-                  <span>Uber</span>
-                  <ChevronDown className="w-3 h-3" />
-                </div>
-              </div>
+              <h1 className="font-semibold text-gray-900 text-sm font-mono tracking-wide">visibl</h1>
             )}
           </div>
         </div>
