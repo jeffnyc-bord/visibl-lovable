@@ -196,44 +196,6 @@ const Index = () => {
         <main className="flex-1 p-4 overflow-auto">
           {activeView === "dashboard" && (
             <>
-              {/* URL Input Section */}
-              <Card className="mb-4 shadow-sm border-gray-200">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center space-x-2 text-gray-900 text-base">
-                    <Search className="w-4 h-4 text-blue-500" />
-                    <span>Analyze Brand Website</span>
-                  </CardTitle>
-                  <CardDescription className="text-gray-600 text-sm">
-                    Enter your brand's primary website URL for comprehensive AI visibility analysis
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex space-x-2">
-                    <Input
-                      placeholder="https://your-brand-website.com"
-                      value={websiteUrl}
-                      onChange={(e) => setWebsiteUrl(e.target.value)}
-                      className="flex-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm h-9"
-                    />
-                    <Button 
-                      onClick={handleAnalysis}
-                      disabled={isAnalyzing || !websiteUrl}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 text-sm h-9"
-                    >
-                      {isAnalyzing ? "Analyzing..." : "Analyze Website"}
-                    </Button>
-                  </div>
-                  {isAnalyzing && (
-                    <div className="mt-3">
-                      <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                        <span>Crawling website and analyzing AI readiness...</span>
-                        <span>45%</span>
-                      </div>
-                      <Progress value={45} className="h-1.5" />
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
 
               {/* Filter Bar */}
               {hasAnalysis && (
