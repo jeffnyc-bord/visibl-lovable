@@ -81,7 +81,7 @@ export const QueriesAndPromptsSection = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Zap className="w-5 h-5 text-purple-500" />
-              <span>Custom Prompt Testing</span>
+              <span>Custom Prompt Blast</span>
             </CardTitle>
             <CardDescription>
               Test custom prompts across multiple AI platforms to understand how your brand is represented.

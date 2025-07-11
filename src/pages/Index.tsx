@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -246,7 +247,8 @@ const Index = () => {
                     </TabsTrigger>
                     <TabsTrigger value="queries" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Zap className="w-3 h-3" />
-                      <span>Queries & Prompts</span>
+                      <span>Prompt Blast Lab</span>
+                      <Badge variant="secondary" className="ml-1.5 text-xs bg-orange-100 text-orange-700 border-orange-200">new</Badge>
                     </TabsTrigger>
                     <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Target className="w-3 h-3" />
