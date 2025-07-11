@@ -153,7 +153,7 @@ export const RecommendationsSection = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Lightbulb className="w-5 h-5 text-blue-600" />
-            <span>GSEO Action Plan</span>
+            <span>AI Search Optimization Plan</span>
           </CardTitle>
           <CardDescription>
             Prioritized recommendations to improve your AI visibility and search optimization

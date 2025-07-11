@@ -2,8 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, TrendingUp, MessageSquare, Link, Calendar, Star, BarChart3 } from "lucide-react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from "recharts";
+import { Eye, TrendingUp, MessageSquare, Link, Calendar, Star, BarChart3, Target } from "lucide-react";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 
 export const ExternalAIVisibilitySection = () => {
   // Mock data for AI mentions and sources
@@ -65,6 +65,24 @@ export const ExternalAIVisibilitySection = () => {
     { month: "Nov", mentions: 1203 },
     { month: "Dec", mentions: 1247 },
   ];
+
+  // Core Brand Queries data
+  const coreQueries = [
+    { query: "Best electric vehicle for families", relevanceScore: 92, brand: "Tesla", mentions: 145 },
+    { query: "Tesla Model 3 vs competitors", relevanceScore: 88, brand: "Tesla", mentions: 203 },
+    { query: "Electric car charging infrastructure", relevanceScore: 75, brand: "Tesla", mentions: 67 },
+    { query: "Sustainable transportation options", relevanceScore: 82, brand: "Tesla", mentions: 89 },
+  ];
+
+  // AI Platform Mention Distribution data
+  const platformMentionsData = [
+    { platform: "ChatGPT", mentions: 456, percentage: 38 },
+    { platform: "Claude", mentions: 324, percentage: 27 },
+    { platform: "Gemini", mentions: 287, percentage: 24 },
+    { platform: "Perplexity", mentions: 133, percentage: 11 },
+  ];
+
+  const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(220, 14%, 69%)', 'hsl(220, 14%, 83%)'];
 
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
@@ -230,37 +248,100 @@ export const ExternalAIVisibilitySection = () => {
         </CardContent>
       </Card>
 
-      {/* Recent Mentions */}
+      {/* Core Brand Queries */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Calendar className="w-5 h-5 text-green-500" />
-            <span>Recent AI Mentions</span>
+            <Target className="w-5 h-5 text-blue-500" />
+            <span>Core Brand Queries</span>
           </CardTitle>
           <CardDescription>
-            Latest mentions of your brand across AI platforms with context and sentiment.
+            System-generated queries that are most relevant to your brand, based on AI understanding and market analysis.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {recentMentions.map((mention, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center space-x-3">
-                    <Badge variant="outline">{mention.platform}</Badge>
-                    <Badge variant="secondary" className={getSentimentColor(mention.sentiment)}>
-                      {mention.sentiment}
-                    </Badge>
-                    <span className="text-sm text-gray-500">{mention.timestamp}</span>
+            {coreQueries.map((query, index) => (
+              <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">{query.query}</p>
+                  <div className="flex items-center space-x-4 mt-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-600">Relevance:</span>
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                        {query.relevanceScore}%
+                      </Badge>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-600">AI Mentions:</span>
+                      <span className="font-medium">{query.mentions}</span>
+                    </div>
                   </div>
                 </div>
-                <p className="text-sm font-medium text-gray-700 mb-1">Query: "{mention.query}"</p>
-                <p className="text-sm text-gray-900 mb-2">Context: {mention.context}</p>
-                <div className="bg-gray-50 rounded p-3">
-                  <p className="text-sm text-gray-700">{mention.mention}</p>
+                <div className="flex items-center space-x-2">
+                  <Progress value={query.relevanceScore} className="w-20 h-2" />
                 </div>
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* AI Platform Mention Distribution */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <BarChart3 className="w-5 h-5 text-purple-500" />
+            <span>AI Platform Mention Distribution</span>
+          </CardTitle>
+          <CardDescription>
+            Brand mentions across AI platforms from your generated queries and prompt blasts.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Mentions by Platform</h4>
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={platformMentionsData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percentage }) => `${name} ${percentage}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="mentions"
+                  >
+                    {platformMentionsData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Platform Breakdown</h4>
+              <div className="space-y-3">
+                {platformMentionsData.map((platform, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                      ></div>
+                      <span className="text-sm font-medium">{platform.platform}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium">{platform.mentions}</span>
+                      <span className="text-xs text-gray-500">({platform.percentage}%)</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
