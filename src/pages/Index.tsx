@@ -244,10 +244,6 @@ const Index = () => {
                       <Brain className="w-3 h-3" />
                       <span>Brand & Product Visibility</span>
                     </TabsTrigger>
-                    <TabsTrigger value="technical" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Code className="w-3 h-3" />
-                      <span>Technical Health</span>
-                    </TabsTrigger>
                     <TabsTrigger value="queries" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Zap className="w-3 h-3" />
                       <span>Queries & Prompts</span>
@@ -259,6 +255,10 @@ const Index = () => {
                     <TabsTrigger value="trends" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Globe className="w-3 h-3" />
                       <span>AI Trends</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="technical" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Code className="w-3 h-3" />
+                      <span>Technical Health</span>
                     </TabsTrigger>
                     <TabsTrigger value="recommendations" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Lightbulb className="w-3 h-3" />
@@ -278,10 +278,6 @@ const Index = () => {
                     <BrandAnalysisSection />
                   </TabsContent>
 
-                  <TabsContent value="technical">
-                    <TechnicalCrawlabilitySection />
-                  </TabsContent>
-
                   <TabsContent value="queries">
                     <QueriesAndPromptsSection />
                   </TabsContent>
@@ -292,6 +288,10 @@ const Index = () => {
 
                   <TabsContent value="trends">
                     <TrendsSection />
+                  </TabsContent>
+
+                  <TabsContent value="technical">
+                    <TechnicalCrawlabilitySection />
                   </TabsContent>
 
                   <TabsContent value="recommendations">
