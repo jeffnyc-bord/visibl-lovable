@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowLeft,
   TrendingUp,
@@ -35,9 +36,11 @@ import {
 export const ProductDetail = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [activeSection, setActiveSection] = useState("overview");
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
 
   // Mock product data - in real app this would come from API
   const mockProduct = {
@@ -116,13 +119,41 @@ export const ProductDetail = () => {
 
   const handleReanalyze = () => {
     setIsReanalyzing(true);
+    setAnalysisProgress(0);
+    
+    // Simulate progress updates
+    const progressInterval = setInterval(() => {
+      setAnalysisProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 200);
+    
     setTimeout(() => {
-      setIsReanalyzing(false);
-    }, 3000);
+      clearInterval(progressInterval);
+      setAnalysisProgress(100);
+      setTimeout(() => {
+        setIsReanalyzing(false);
+        setAnalysisProgress(0);
+        toast({
+          title: "Analysis Complete",
+          description: "Product re-analysis has been completed successfully.",
+        });
+      }, 1000);
+    }, 4000);
   };
 
   const handleTogglePin = () => {
     setIsPinned(!isPinned);
+    toast({
+      title: isPinned ? "Removed from Watchlist" : "Added to Watchlist",
+      description: isPinned ? 
+        "Product removed from priority monitoring." : 
+        "Product added to priority monitoring watchlist.",
+    });
   };
 
   const getPriorityColor = (priority: string) => {
@@ -151,6 +182,42 @@ export const ProductDetail = () => {
   };
 
   return (
+    <>
+      {/* Loading Overlay */}
+      {isReanalyzing && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Re-analyzing Product
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Running AI analysis and updating readiness metrics...
+                </p>
+              </div>
+              <div className="space-y-3">
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${Math.min(analysisProgress, 100)}%` }}
+                  />
+                </div>
+                <p className="text-sm text-gray-500">
+                  {analysisProgress < 30 ? "Scanning product pages..." :
+                   analysisProgress < 60 ? "Analyzing AI mentions..." :
+                   analysisProgress < 90 ? "Updating metrics..." :
+                   "Finalizing results..."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
@@ -520,7 +587,8 @@ export const ProductDetail = () => {
             </Card>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
