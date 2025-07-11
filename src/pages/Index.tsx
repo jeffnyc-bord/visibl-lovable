@@ -193,13 +193,13 @@ const Index = () => {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 p-4 overflow-auto">
+        <main className="flex-1 p-3 overflow-auto">
           {activeView === "dashboard" && (
             <>
 
               {/* Filter Bar */}
               {hasAnalysis && (
-                <div className="mb-4 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                <div className="mb-3 bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm">
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2">
                       <div className="w-5 h-5 bg-black rounded flex items-center justify-center">
@@ -231,7 +231,7 @@ const Index = () => {
 
               {/* Dashboard Content */}
               {hasAnalysis && (
-                <Tabs defaultValue="overview" className="space-y-4">
+                <Tabs defaultValue="overview" className="space-y-3">
                   <TabsList className="bg-white border border-gray-200 p-0.5 shadow-sm">
                     <TabsTrigger value="overview" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <TrendingUp className="w-3 h-3" />

@@ -25,15 +25,15 @@ export const OverviewSection = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Top Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="shadow-sm border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">AI Visibility Score</CardTitle>
             <Brain className="h-4 w-4 text-blue-500" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2">
             <div className="text-2xl font-bold text-gray-900">72/100</div>
             <p className="text-xs text-green-600 flex items-center mt-1">
               <TrendingUp className="h-3 w-3 mr-1" />
@@ -44,11 +44,11 @@ export const OverviewSection = () => {
         </Card>
 
         <Card className="shadow-sm border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">Product Discoverability</CardTitle>
             <Search className="h-4 w-4 text-green-500" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2">
             <div className="text-2xl font-bold text-gray-900">68%</div>
             <p className="text-xs text-green-600 flex items-center mt-1">
               <TrendingUp className="h-3 w-3 mr-1" />
@@ -59,11 +59,11 @@ export const OverviewSection = () => {
         </Card>
 
         <Card className="shadow-sm border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">Industry AI Ranking</CardTitle>
             <Target className="h-4 w-4 text-purple-500" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2">
             <div className="text-2xl font-bold text-gray-900">#2</div>
             <p className="text-xs text-red-600 flex items-center mt-1">
               <TrendingDown className="h-3 w-3 mr-1" />
@@ -74,11 +74,11 @@ export const OverviewSection = () => {
         </Card>
 
         <Card className="shadow-sm border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">AI Citation Rate</CardTitle>
             <TrendingUp className="h-4 w-4 text-orange-500" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2">
             <div className="text-2xl font-bold text-gray-900">33%</div>
             <p className="text-xs text-red-600 flex items-center mt-1">
               <TrendingDown className="h-3 w-3 mr-1" />
@@ -90,7 +90,7 @@ export const OverviewSection = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Visibility Chart */}
         <Card className="shadow-sm border-gray-200">
           <CardHeader>
