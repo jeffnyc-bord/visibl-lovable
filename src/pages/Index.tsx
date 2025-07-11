@@ -236,9 +236,13 @@ const Index = () => {
                       <TrendingUp className="w-3 h-3" />
                       <span>Overview</span>
                     </TabsTrigger>
+                    <TabsTrigger value="visibility" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
+                      <Eye className="w-3 h-3" />
+                      <span>AI Visibility</span>
+                    </TabsTrigger>
                     <TabsTrigger value="brand" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Brain className="w-3 h-3" />
-                      <span>Brand & Product</span>
+                      <span>Brand & Product Visibility</span>
                     </TabsTrigger>
                     <TabsTrigger value="technical" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Code className="w-3 h-3" />
@@ -247,10 +251,6 @@ const Index = () => {
                     <TabsTrigger value="queries" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Zap className="w-3 h-3" />
                       <span>Queries & Prompts</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="visibility" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Eye className="w-3 h-3" />
-                      <span>AI Visibility</span>
                     </TabsTrigger>
                     <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <Target className="w-3 h-3" />
@@ -270,6 +270,10 @@ const Index = () => {
                     <OverviewSection />
                   </TabsContent>
 
+                  <TabsContent value="visibility">
+                    <ExternalAIVisibilitySection />
+                  </TabsContent>
+
                   <TabsContent value="brand">
                     <BrandAnalysisSection />
                   </TabsContent>
@@ -280,10 +284,6 @@ const Index = () => {
 
                   <TabsContent value="queries">
                     <QueriesAndPromptsSection />
-                  </TabsContent>
-
-                  <TabsContent value="visibility">
-                    <ExternalAIVisibilitySection />
                   </TabsContent>
 
                   <TabsContent value="competitors">
