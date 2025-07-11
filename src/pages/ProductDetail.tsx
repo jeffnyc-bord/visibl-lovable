@@ -27,7 +27,9 @@ import {
   Activity,
   Globe,
   Award,
-  ChevronRight
+  ChevronRight,
+  Pin,
+  PinOff
 } from "lucide-react";
 
 export const ProductDetail = () => {
@@ -35,6 +37,7 @@ export const ProductDetail = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("overview");
   const [isReanalyzing, setIsReanalyzing] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
 
   // Mock product data - in real app this would come from API
   const mockProduct = {
@@ -118,6 +121,10 @@ export const ProductDetail = () => {
     }, 3000);
   };
 
+  const handleTogglePin = () => {
+    setIsPinned(!isPinned);
+  };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'High': return 'bg-red-50 text-red-700 border-red-200';
@@ -170,14 +177,24 @@ export const ProductDetail = () => {
                 </div>
               </div>
             </div>
-            <Button 
-              onClick={handleReanalyze}
-              disabled={isReanalyzing}
-              className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isReanalyzing ? 'animate-spin' : ''}`} />
-              {isReanalyzing ? 'Re-analyzing...' : 'Re-analyze Product'}
-            </Button>
+            <div className="flex items-center space-x-3">
+              <Button 
+                onClick={handleTogglePin}
+                variant={isPinned ? "default" : "outline"}
+                className={isPinned ? "bg-amber-500 hover:bg-amber-600 text-white" : "border-amber-500 text-amber-600 hover:bg-amber-50"}
+              >
+                {isPinned ? <Pin className="w-4 h-4 mr-2" /> : <PinOff className="w-4 h-4 mr-2" />}
+                {isPinned ? 'Pinned' : 'Pin to Watchlist'}
+              </Button>
+              <Button 
+                onClick={handleReanalyze}
+                disabled={isReanalyzing}
+                className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${isReanalyzing ? 'animate-spin' : ''}`} />
+                {isReanalyzing ? 'Re-analyzing...' : 'Re-analyze Product'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
