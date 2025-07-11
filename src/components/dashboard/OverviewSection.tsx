@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ExportDialog } from "@/components/ui/export-dialog";
 import { TrendingUp, TrendingDown, Brain, Search, Target, Download } from "lucide-react";
 
 export const OverviewSection = () => {
@@ -150,10 +151,17 @@ export const OverviewSection = () => {
                 <CardTitle className="text-gray-900">Industry ranking</CardTitle>
                 <CardDescription className="text-gray-600">Brands with the highest visibility</CardDescription>
               </div>
-              <Button variant="ghost" size="sm" className="text-sm">
-                <Download className="w-4 h-4 mr-2" />
-                Download
-              </Button>
+              <ExportDialog
+                trigger={
+                  <Button variant="ghost" size="sm" className="text-sm">
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
+                  </Button>
+                }
+                title="Export Industry Ranking"
+                description="Export the industry ranking data in your preferred format."
+                exportType="data"
+              />
             </div>
           </CardHeader>
           <CardContent>
@@ -212,10 +220,17 @@ export const OverviewSection = () => {
               <CardTitle className="text-gray-900">Recent Tesla Mentions</CardTitle>
               <CardDescription className="text-gray-600">Chats that mentioned Tesla</CardDescription>
             </div>
-            <Button variant="ghost" size="sm" className="text-sm">
-              <Download className="w-4 h-4 mr-2" />
-              Download
-            </Button>
+            <ExportDialog
+              trigger={
+                <Button variant="ghost" size="sm" className="text-sm">
+                  <Download className="w-4 h-4 mr-2" />
+                  Download
+                </Button>
+              }
+              title="Export Recent Mentions"
+              description="Export recent mentions data in your preferred format."
+              exportType="data"
+            />
           </div>
         </CardHeader>
         <CardContent>

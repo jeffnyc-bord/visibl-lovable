@@ -7,12 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Zap, Clock, Target, Bot, Play, History, Copy, BarChart3 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Search, Zap, Clock, Target, Bot, Play, History, Copy, BarChart3, CheckCircle } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 
 export const QueriesAndPromptsSection = () => {
+  const { toast } = useToast();
   const [customPrompt, setCustomPrompt] = useState("");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [isBlasting, setIsBlasting] = useState(false);
+  const [blastProgress, setBlastProgress] = useState(0);
 
   // Mock data for generated queries
   const coreQueries = [
@@ -63,16 +67,73 @@ export const QueriesAndPromptsSection = () => {
   const handlePromptBlast = () => {
     if (!customPrompt.trim() || selectedPlatforms.length === 0) return;
     
-    // In a real implementation, this would trigger API calls to selected platforms
-    console.log("Blasting prompt to platforms:", selectedPlatforms);
-    console.log("Prompt:", customPrompt);
+    setIsBlasting(true);
+    setBlastProgress(0);
     
-    // Reset form
-    setCustomPrompt("");
-    setSelectedPlatforms([]);
+    // Simulate progress updates
+    const progressInterval = setInterval(() => {
+      setBlastProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 400);
+    
+    setTimeout(() => {
+      clearInterval(progressInterval);
+      setBlastProgress(100);
+      setTimeout(() => {
+        setIsBlasting(false);
+        setBlastProgress(0);
+        setCustomPrompt("");
+        setSelectedPlatforms([]);
+        toast({
+          title: "Prompt Blast Complete",
+          description: `Successfully tested prompt across ${selectedPlatforms.length} AI platforms.`,
+        });
+      }, 1000);
+    }, 5000);
   };
 
   return (
+    <>
+      {/* Loading Overlay */}
+      {isBlasting && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
+                <Zap className="w-8 h-8 text-purple-600 animate-pulse" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Blasting Prompt...
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Testing your prompt across {selectedPlatforms.length} AI platforms...
+                </p>
+              </div>
+              <div className="space-y-3">
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${Math.min(blastProgress, 100)}%` }}
+                  />
+                </div>
+                <p className="text-sm text-gray-500">
+                  {blastProgress < 25 ? "Preparing queries..." :
+                   blastProgress < 50 ? "Sending to AI platforms..." :
+                   blastProgress < 75 ? "Collecting responses..." :
+                   "Analyzing results..."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     <div className="space-y-6">
       {/* Main Content */}
       <div className="space-y-6">
@@ -128,11 +189,11 @@ export const QueriesAndPromptsSection = () => {
 
             <Button 
               onClick={handlePromptBlast}
-              disabled={!customPrompt.trim() || selectedPlatforms.length === 0}
+              disabled={!customPrompt.trim() || selectedPlatforms.length === 0 || isBlasting}
               className="w-full"
             >
               <Play className="w-4 h-4 mr-2" />
-              Blast Prompt to Selected Platforms
+              {isBlasting ? "Blasting..." : "Blast Prompt to Selected Platforms"}
             </Button>
           </CardContent>
         </Card>
@@ -178,7 +239,8 @@ export const QueriesAndPromptsSection = () => {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
-    </div>
+    </>
   );
 };

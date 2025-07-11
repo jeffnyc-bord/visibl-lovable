@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Plus, 
   Globe, 
@@ -20,6 +21,13 @@ import {
 } from "lucide-react";
 
 export const BrandManagementSection = () => {
+  const { toast } = useToast();
+  const [isAddingBrand, setIsAddingBrand] = useState(false);
+  const [addBrandProgress, setAddBrandProgress] = useState(0);
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [brandType, setBrandType] = useState("");
+  const [reportFrequency, setReportFrequency] = useState("");
+  
   const [brands, setBrands] = useState([
     {
       id: 1,
@@ -74,7 +82,78 @@ export const BrandManagementSection = () => {
   const deepTrackedCount = brands.filter(b => b.type === "deep").length;
   const competitorCount = brands.filter(b => b.type === "competitor").length;
 
+  const handleAddBrand = () => {
+    if (!websiteUrl.trim() || !brandType || !reportFrequency) return;
+    
+    setIsAddingBrand(true);
+    setAddBrandProgress(0);
+    
+    // Simulate progress updates
+    const progressInterval = setInterval(() => {
+      setAddBrandProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prev + Math.random() * 12;
+      });
+    }, 500);
+    
+    setTimeout(() => {
+      clearInterval(progressInterval);
+      setAddBrandProgress(100);
+      setTimeout(() => {
+        setIsAddingBrand(false);
+        setAddBrandProgress(0);
+        setWebsiteUrl("");
+        setBrandType("");
+        setReportFrequency("");
+        toast({
+          title: "Brand Added Successfully",
+          description: "Your brand has been added and analysis is starting.",
+        });
+      }, 1000);
+    }, 6000);
+  };
+
   return (
+    <>
+      {/* Loading Overlay */}
+      {isAddingBrand && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                <Globe className="w-8 h-8 text-blue-600 animate-pulse" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Adding Brand...
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Setting up tracking and analyzing your brand...
+                </p>
+              </div>
+              <div className="space-y-3">
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${Math.min(addBrandProgress, 100)}%` }}
+                  />
+                </div>
+                <p className="text-sm text-gray-500">
+                  {addBrandProgress < 20 ? "Validating website..." :
+                   addBrandProgress < 40 ? "Discovering pages..." :
+                   addBrandProgress < 60 ? "Setting up tracking..." :
+                   addBrandProgress < 80 ? "Configuring reports..." :
+                   "Finalizing setup..."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     <div className="space-y-6">
       {/* Brand Limits Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -131,38 +210,47 @@ export const BrandManagementSection = () => {
             Track your own brands deeply or monitor competitors for insights
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <Input placeholder="Enter website URL" className="h-9" />
-            
-            <Select>
-              <SelectTrigger className="h-9">
-                <SelectValue placeholder="Brand Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="deep">Deep Tracked (Own Brand)</SelectItem>
-                <SelectItem value="competitor">Competitor/Curiosity</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Select>
-              <SelectTrigger className="h-9">
-                <SelectValue placeholder="Report Frequency" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="daily">Daily</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="biweekly">Bi-weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm h-9">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Brand
-            </Button>
-          </div>
-        </CardContent>
+         <CardContent>
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+             <Input 
+               placeholder="Enter website URL" 
+               className="h-9" 
+               value={websiteUrl}
+               onChange={(e) => setWebsiteUrl(e.target.value)}
+             />
+             
+             <Select value={brandType} onValueChange={setBrandType}>
+               <SelectTrigger className="h-9">
+                 <SelectValue placeholder="Brand Type" />
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="deep">Deep Tracked (Own Brand)</SelectItem>
+                 <SelectItem value="competitor">Competitor/Curiosity</SelectItem>
+               </SelectContent>
+             </Select>
+             
+             <Select value={reportFrequency} onValueChange={setReportFrequency}>
+               <SelectTrigger className="h-9">
+                 <SelectValue placeholder="Report Frequency" />
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="daily">Daily</SelectItem>
+                 <SelectItem value="weekly">Weekly</SelectItem>
+                 <SelectItem value="biweekly">Bi-weekly</SelectItem>
+                 <SelectItem value="monthly">Monthly</SelectItem>
+               </SelectContent>
+             </Select>
+             
+             <Button 
+               className="bg-blue-600 hover:bg-blue-700 text-white text-sm h-9"
+               onClick={handleAddBrand}
+               disabled={!websiteUrl.trim() || !brandType || !reportFrequency || isAddingBrand}
+             >
+               <Plus className="w-4 h-4 mr-2" />
+               {isAddingBrand ? "Adding..." : "Add Brand"}
+             </Button>
+           </div>
+         </CardContent>
       </Card>
 
       {/* Tracked Brands List */}
@@ -243,8 +331,9 @@ export const BrandManagementSection = () => {
               Upgrade Plan
             </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+         </CardContent>
+       </Card>
+     </div>
+   </>
   );
 };

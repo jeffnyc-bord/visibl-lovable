@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ExportDialog } from "@/components/ui/export-dialog";
 import { TrendingUp, TrendingDown, ExternalLink, Target } from "lucide-react";
 
 export const CompetitorSection = () => {
@@ -104,9 +105,16 @@ export const CompetitorSection = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Detailed Competitor Analysis</h3>
-          <Button variant="outline" size="sm">
-            Export Report
-          </Button>
+          <ExportDialog
+            trigger={
+              <Button variant="outline" size="sm">
+                Export Report
+              </Button>
+            }
+            title="Export Competitor Analysis"
+            description="Export detailed competitor analysis report in your preferred format."
+            exportType="report"
+          />
         </div>
         
         {competitors.map((competitor, index) => (

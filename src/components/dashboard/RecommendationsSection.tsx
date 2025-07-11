@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
+import { ExportDialog } from "@/components/ui/export-dialog";
 import { Lightbulb, CheckCircle, Clock, AlertTriangle, TrendingUp } from "lucide-react";
 import { useState } from "react";
 
@@ -193,9 +194,16 @@ export const RecommendationsSection = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Detailed Action Items</h3>
-          <Button variant="outline" size="sm">
-            Export Action Plan
-          </Button>
+          <ExportDialog
+            trigger={
+              <Button variant="outline" size="sm">
+                Export Action Plan
+              </Button>
+            }
+            title="Export Action Plan"
+            description="Export your personalized action plan with detailed recommendations."
+            exportType="report"
+          />
         </div>
 
         {recommendations.map((rec) => (
