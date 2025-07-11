@@ -20,6 +20,47 @@ import {
 export const TechnicalCrawlabilitySection = () => {
   return (
     <div className="space-y-6">
+      {/* Technical AI Crawlability */}
+      <Card className="shadow-sm border-gray-200">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-gray-900 text-base">Technical AI Crawlability</CardTitle>
+          <CardDescription className="text-gray-600 text-sm">
+            Technical factors affecting how AI models can access and understand your content
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+                <span className="text-xs text-gray-700">Structured Data Coverage</span>
+                <Badge className="bg-green-100 text-green-700 border-green-300 text-xs px-2 py-0.5">Good</Badge>
+              </div>
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+                <span className="text-xs text-gray-700">Page Load Speed</span>
+                <Badge className="bg-green-100 text-green-700 border-green-300 text-xs px-2 py-0.5">Excellent</Badge>
+              </div>
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+                <span className="text-xs text-gray-700">Mobile Friendliness</span>
+                <Badge className="bg-green-100 text-green-700 border-green-300 text-xs px-2 py-0.5">Perfect</Badge>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+                <span className="text-xs text-gray-700">Content Clarity Score</span>
+                <Badge className="bg-yellow-100 text-yellow-700 border-yellow-300 text-xs px-2 py-0.5">Needs Work</Badge>
+              </div>
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+                <span className="text-xs text-gray-700">FAQ Coverage</span>
+                <Badge className="bg-red-100 text-red-700 border-red-300 text-xs px-2 py-0.5">Poor</Badge>
+              </div>
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+                <span className="text-xs text-gray-700">Internal Linking</span>
+                <Badge className="bg-green-100 text-green-700 border-green-300 text-xs px-2 py-0.5">Good</Badge>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       {/* Overall Health Score */}
       <Card>
         <CardHeader>
