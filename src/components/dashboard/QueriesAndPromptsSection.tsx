@@ -52,14 +52,18 @@ export const QueriesAndPromptsSection = () => {
     },
   ];
 
-  const aiPlatforms = ["ChatGPT", "Claude", "Gemini", "Perplexity"];
+  const aiPlatforms = ["ChatGPT", "Claude", "Gemini", "Perplexity", "Grok", "Copilot", "Google AI Mode", "Google Overviews"];
 
   // Mock data for AI platform mentions from generated queries
   const platformMentionsData = [
-    { platform: "ChatGPT", mentions: 456, percentage: 38 },
-    { platform: "Claude", mentions: 324, percentage: 27 },
-    { platform: "Gemini", mentions: 287, percentage: 24 },
-    { platform: "Perplexity", mentions: 133, percentage: 11 },
+    { platform: "ChatGPT", mentions: 456, percentage: 28 },
+    { platform: "Claude", mentions: 324, percentage: 20 },
+    { platform: "Gemini", mentions: 287, percentage: 18 },
+    { platform: "Perplexity", mentions: 180, percentage: 11 },
+    { platform: "Grok", mentions: 145, percentage: 9 },
+    { platform: "Copilot", mentions: 123, percentage: 8 },
+    { platform: "Google AI Mode", mentions: 98, percentage: 6 },
+    { platform: "Google Overviews", mentions: 87, percentage: 5 },
   ];
 
   const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(220, 14%, 69%)', 'hsl(220, 14%, 83%)'];

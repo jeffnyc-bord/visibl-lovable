@@ -8,9 +8,9 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 export const ExternalAIVisibilitySection = () => {
   // Mock data for AI mentions and sources
   const visibilityMetrics = {
-    totalMentions: 1247,
+    totalMentions: 1700,
     averageRating: 4.2,
-    platformCoverage: 8,
+    platformCoverage: 12,
     trending: "+15%"
   };
 
@@ -19,6 +19,10 @@ export const ExternalAIVisibilitySection = () => {
     { platform: "Claude", mentions: 324, sentiment: "positive", coverage: 78, trend: "+8%" },
     { platform: "Gemini", mentions: 287, sentiment: "neutral", coverage: 72, trend: "+18%" },
     { platform: "Perplexity", mentions: 180, sentiment: "positive", coverage: 65, trend: "+22%" },
+    { platform: "Grok", mentions: 145, sentiment: "positive", coverage: 58, trend: "+15%" },
+    { platform: "Copilot", mentions: 123, sentiment: "neutral", coverage: 52, trend: "+9%" },
+    { platform: "Google AI Mode", mentions: 98, sentiment: "positive", coverage: 45, trend: "+25%" },
+    { platform: "Google Overviews", mentions: 87, sentiment: "neutral", coverage: 42, trend: "+18%" },
   ];
 
   const recentMentions = [
@@ -76,13 +80,26 @@ export const ExternalAIVisibilitySection = () => {
 
   // AI Platform Mention Distribution data
   const platformMentionsData = [
-    { platform: "ChatGPT", mentions: 456, percentage: 38 },
-    { platform: "Claude", mentions: 324, percentage: 27 },
-    { platform: "Gemini", mentions: 287, percentage: 24 },
-    { platform: "Perplexity", mentions: 133, percentage: 11 },
+    { platform: "ChatGPT", mentions: 456, percentage: 28 },
+    { platform: "Claude", mentions: 324, percentage: 20 },
+    { platform: "Gemini", mentions: 287, percentage: 18 },
+    { platform: "Perplexity", mentions: 180, percentage: 11 },
+    { platform: "Grok", mentions: 145, percentage: 9 },
+    { platform: "Copilot", mentions: 123, percentage: 8 },
+    { platform: "Google AI Mode", mentions: 98, percentage: 6 },
+    { platform: "Google Overviews", mentions: 87, percentage: 5 },
   ];
 
-  const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(220, 14%, 69%)', 'hsl(220, 14%, 83%)'];
+  const COLORS = [
+    'hsl(var(--primary))', 
+    'hsl(var(--secondary))', 
+    'hsl(220, 14%, 69%)', 
+    'hsl(220, 14%, 83%)',
+    'hsl(280, 70%, 65%)',
+    'hsl(200, 80%, 60%)',
+    'hsl(120, 60%, 55%)',
+    'hsl(35, 75%, 60%)'
+  ];
 
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
