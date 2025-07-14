@@ -167,9 +167,25 @@ export const QueriesAndPromptsSection = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select AI Platforms
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Select AI Platforms
+                </label>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (selectedPlatforms.length === aiPlatforms.length) {
+                      setSelectedPlatforms([]);
+                    } else {
+                      setSelectedPlatforms([...aiPlatforms]);
+                    }
+                  }}
+                  className="text-xs"
+                >
+                  {selectedPlatforms.length === aiPlatforms.length ? "Deselect All" : "Select All"}
+                </Button>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {aiPlatforms.map((platform) => (
                   <label key={platform} className="flex items-center space-x-2 cursor-pointer">
