@@ -6,6 +6,9 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { AddProductDialog } from "@/components/ui/add-product-dialog";
+import { toast } from "@/hooks/use-toast";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -20,7 +23,10 @@ import {
   Star,
   ExternalLink,
   Zap,
-  Pin
+  Pin,
+  Plus,
+  Loader2,
+  RotateCcw
 } from "lucide-react";
 
 export const BrandAnalysisSection = () => {
@@ -29,6 +35,8 @@ export const BrandAnalysisSection = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortBy, setSortBy] = useState("score-desc");
   const [pinnedFilter, setPinnedFilter] = useState("all");
+  const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+  const [isReanalyzing, setIsReanalyzing] = useState(false);
 
   // Mock data for products
   const mockProducts = [
@@ -42,6 +50,55 @@ export const BrandAnalysisSection = () => {
 
   const topProducts = mockProducts.filter(p => p.score >= 90).slice(0, 5);
   const bottomProducts = mockProducts.filter(p => p.score < 70).slice(0, 5);
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedProducts(mockProducts.map(p => p.id));
+    } else {
+      setSelectedProducts([]);
+    }
+  };
+
+  const handleSelectProduct = (productId: number, checked: boolean) => {
+    if (checked) {
+      setSelectedProducts(prev => [...prev, productId]);
+    } else {
+      setSelectedProducts(prev => prev.filter(id => id !== productId));
+    }
+  };
+
+  const handleBatchReanalyze = async () => {
+    if (selectedProducts.length === 0) return;
+    
+    setIsReanalyzing(true);
+    
+    try {
+      // Simulate batch re-analysis
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      toast({
+        title: "Re-analysis Complete",
+        description: `Successfully re-analyzed ${selectedProducts.length} product${selectedProducts.length > 1 ? 's' : ''}. AI readiness scores have been updated.`,
+      });
+      
+      setSelectedProducts([]);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to re-analyze selected products. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsReanalyzing(false);
+    }
+  };
+
+  const handleProductAdded = (product: any) => {
+    toast({
+      title: "Analysis Started",
+      description: `${product.name} has been added and is being analyzed. You'll be notified when complete.`,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -220,6 +277,35 @@ export const BrandAnalysisSection = () => {
               />
             </div>
             <div className="flex gap-2">
+              <AddProductDialog 
+                onProductAdded={handleProductAdded}
+                trigger={
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <Plus className="w-4 h-4" />
+                    <span>Add Product/Service</span>
+                  </Button>
+                }
+              />
+              {selectedProducts.length > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={handleBatchReanalyze}
+                  disabled={isReanalyzing}
+                  className="flex items-center space-x-2"
+                >
+                  {isReanalyzing ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <RotateCcw className="w-4 h-4" />
+                  )}
+                  <span>
+                    {isReanalyzing 
+                      ? "Re-analyzing..." 
+                      : `Re-analyze Selected (${selectedProducts.length})`
+                    }
+                  </span>
+                </Button>
+              )}
               <Select value={scoreFilter} onValueChange={setScoreFilter}>
                 <SelectTrigger className="w-40">
                   <SelectValue />
@@ -270,10 +356,18 @@ export const BrandAnalysisSection = () => {
           <div className="border rounded-lg overflow-hidden">
             <div className="bg-gray-50 border-b">
               <div className="grid grid-cols-12 gap-4 p-3 text-sm font-medium text-gray-700">
+                <div className="col-span-1 flex items-center">
+                  <Checkbox
+                    checked={selectedProducts.length === mockProducts.length}
+                    onCheckedChange={handleSelectAll}
+                    className="mr-2"
+                  />
+                  Select
+                </div>
                 <div className="col-span-3">Product / SKU</div>
                 <div className="col-span-2">AI Readiness</div>
                 <div className="col-span-1">Trend</div>
-                <div className="col-span-2">Key Gaps</div>
+                <div className="col-span-1">Key Gaps</div>
                 <div className="col-span-1">AI Mentions</div>
                 <div className="col-span-1">Avg Rank</div>
                 <div className="col-span-1">Updated</div>
@@ -283,6 +377,12 @@ export const BrandAnalysisSection = () => {
             <div className="divide-y">
               {mockProducts.map((product) => (
                 <div key={product.id} className="grid grid-cols-12 gap-4 p-3 text-sm hover:bg-gray-50">
+                  <div className="col-span-1 flex items-center">
+                    <Checkbox
+                      checked={selectedProducts.includes(product.id)}
+                      onCheckedChange={(checked) => handleSelectProduct(product.id, checked as boolean)}
+                    />
+                  </div>
                    <div className="col-span-3">
                      <div className="flex items-center space-x-2">
                        <div 
@@ -325,9 +425,9 @@ export const BrandAnalysisSection = () => {
                       </div>
                     )}
                   </div>
-                  <div className="col-span-2">
-                    <span className="text-xs text-gray-600">{product.gaps}</span>
-                  </div>
+                   <div className="col-span-1">
+                     <span className="text-xs text-gray-600">{product.gaps}</span>
+                   </div>
                   <div className="col-span-1 font-medium">{product.mentions}</div>
                   <div className="col-span-1 font-medium">#{product.rank}</div>
                   <div className="col-span-1 text-xs text-gray-500">{product.lastUpdated}</div>
