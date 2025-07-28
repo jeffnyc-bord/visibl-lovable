@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Zap, Clock, Target, Bot, Play, History, Copy, BarChart3, CheckCircle } from "lucide-react";
+import { Search, Zap, Clock, Target, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 
 export const QueriesAndPromptsSection = () => {
@@ -17,6 +17,12 @@ export const QueriesAndPromptsSection = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [isBlasting, setIsBlasting] = useState(false);
   const [blastProgress, setBlastProgress] = useState(0);
+  
+  // Prompts tab state
+  const [expandedPrompt, setExpandedPrompt] = useState<number | null>(null);
+  const [platformFilter, setPlatformFilter] = useState<string>("all");
+  const [mentionFilter, setMentionFilter] = useState<string>("all");
+  const [queryTypeFilter, setQueryTypeFilter] = useState<string>("all");
 
   // Mock data for generated queries
   const coreQueries = [
@@ -51,6 +57,87 @@ export const QueriesAndPromptsSection = () => {
       status: "completed"
     },
   ];
+
+  // Mock data for detailed prompts table
+  const detailedPrompts = [
+    {
+      id: 1,
+      prompt: "What are the best running shoes for marathon training?",
+      fullPrompt: "What are the best running shoes for marathon training? I'm looking for shoes that provide excellent cushioning, durability, and support for long-distance running.",
+      platform: "ChatGPT",
+      mentioned: true,
+      result: "Ranked #3",
+      queryType: "Ranking",
+      timestamp: "2024-01-20 09:15",
+      fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Tesla Running Shoes - Innovative design with smart features 4. Brooks Ghost - Reliable cushioning..."
+    },
+    {
+      id: 2,
+      prompt: "Best electric vehicle charging solutions for homes",
+      fullPrompt: "What are the best electric vehicle charging solutions for homes? Looking for reliable, fast charging options.",
+      platform: "Claude",
+      mentioned: true,
+      result: "Positive Mention",
+      queryType: "Discovery",
+      timestamp: "2024-01-20 08:30",
+      fullResponse: "Tesla Wall Connector offers one of the most efficient home charging solutions, providing up to 44 miles of range per hour..."
+    },
+    {
+      id: 3,
+      prompt: "How does sustainable transportation impact the environment?",
+      fullPrompt: "How does sustainable transportation impact the environment? Please explain the benefits of electric vehicles.",
+      platform: "Gemini",
+      mentioned: false,
+      result: "Not Mentioned",
+      queryType: "Factual",
+      timestamp: "2024-01-20 07:45",
+      fullResponse: "Sustainable transportation significantly reduces carbon emissions through various means including public transit, cycling, and electric vehicles from manufacturers like Nissan and BMW..."
+    },
+    {
+      id: 4,
+      prompt: "Compare electric car manufacturers by innovation",
+      fullPrompt: "Compare electric car manufacturers by innovation and technological advancement in 2024.",
+      platform: "Copilot",
+      mentioned: true,
+      result: "Ranked #1",
+      queryType: "Ranking",
+      timestamp: "2024-01-19 16:20",
+      fullResponse: "Tesla leads the electric vehicle industry in innovation with their Autopilot technology, Supercharger network, and over-the-air updates..."
+    },
+    {
+      id: 5,
+      prompt: "Energy efficient transportation options",
+      fullPrompt: "What are the most energy efficient transportation options available today?",
+      platform: "Perplexity",
+      mentioned: true,
+      result: "Brand Known",
+      queryType: "Discovery",
+      timestamp: "2024-01-19 14:10",
+      fullResponse: "The most energy efficient transportation includes Tesla Model 3, public transit systems, and hybrid vehicles..."
+    },
+    {
+      id: 6,
+      prompt: "Smart car features comparison",
+      fullPrompt: "Compare smart car features across different manufacturers in the luxury segment.",
+      platform: "Grok",
+      mentioned: false,
+      result: "Not Mentioned",
+      queryType: "Templated",
+      timestamp: "2024-01-19 11:30",
+      fullResponse: "Luxury smart car features vary significantly across BMW, Mercedes-Benz, and Audi, offering different approaches to connectivity..."
+    }
+  ];
+
+  // Filter prompts based on selected filters
+  const filteredPrompts = detailedPrompts.filter(prompt => {
+    const platformMatch = platformFilter === "all" || prompt.platform === platformFilter;
+    const mentionMatch = mentionFilter === "all" || 
+      (mentionFilter === "mentioned" && prompt.mentioned) ||
+      (mentionFilter === "not-mentioned" && !prompt.mentioned);
+    const queryTypeMatch = queryTypeFilter === "all" || prompt.queryType === queryTypeFilter;
+    
+    return platformMatch && mentionMatch && queryTypeMatch;
+  });
 
   const aiPlatforms = ["ChatGPT", "Claude", "Gemini", "Perplexity", "Grok", "Copilot", "Google AI Mode", "Google Overviews"];
 
@@ -138,9 +225,13 @@ export const QueriesAndPromptsSection = () => {
         </div>
       )}
 
-    <div className="space-y-6">
-      {/* Main Content */}
-      <div className="space-y-6">
+    <Tabs defaultValue="blast" className="space-y-6">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="blast">Prompt Blast</TabsTrigger>
+        <TabsTrigger value="prompts">Prompts</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="blast" className="space-y-6">
         {/* Prompt Blast Interface */}
         <Card>
           <CardHeader>
@@ -259,8 +350,179 @@ export const QueriesAndPromptsSection = () => {
             </div>
           </CardContent>
         </Card>
-        </div>
-      </div>
+      </TabsContent>
+
+      <TabsContent value="prompts" className="space-y-6">
+        {/* Prompts Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Target className="w-5 h-5 text-blue-500" />
+              <span>Prompts Analysis</span>
+            </CardTitle>
+            <CardDescription>
+              Detailed view of queries used to assess your brand's AI visibility across platforms.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Filters */}
+            <div className="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <Filter className="w-4 h-4 text-gray-500" />
+                <span className="text-sm font-medium text-gray-700">Filters:</span>
+              </div>
+              
+              <Select value={platformFilter} onValueChange={setPlatformFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="AI Platform" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Platforms</SelectItem>
+                  {aiPlatforms.map(platform => (
+                    <SelectItem key={platform} value={platform}>{platform}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={mentionFilter} onValueChange={setMentionFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Mention Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Results</SelectItem>
+                  <SelectItem value="mentioned">Only Mentioned</SelectItem>
+                  <SelectItem value="not-mentioned">Only Not Mentioned</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={queryTypeFilter} onValueChange={setQueryTypeFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Query Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="Ranking">Ranking</SelectItem>
+                  <SelectItem value="Discovery">Discovery</SelectItem>
+                  <SelectItem value="Factual">Factual</SelectItem>
+                  <SelectItem value="Templated">Templated</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {(platformFilter !== "all" || mentionFilter !== "all" || queryTypeFilter !== "all") && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setPlatformFilter("all");
+                    setMentionFilter("all");
+                    setQueryTypeFilter("all");
+                  }}
+                  className="text-xs"
+                >
+                  <X className="w-3 h-3 mr-1" />
+                  Clear Filters
+                </Button>
+              )}
+            </div>
+
+            {/* Results Count */}
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                Showing {filteredPrompts.length} of {detailedPrompts.length} prompts
+              </p>
+            </div>
+
+            {/* Prompts Table */}
+            <div className="border rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-2/5">Prompt</TableHead>
+                    <TableHead className="w-1/6 text-center">Mentioned</TableHead>
+                    <TableHead className="w-1/6 text-center">Result</TableHead>
+                    <TableHead className="w-1/6 text-center">Platform</TableHead>
+                    <TableHead className="w-1/6 text-center">Type</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredPrompts.map((prompt) => (
+                    <>
+                      <TableRow key={prompt.id} className="cursor-pointer hover:bg-gray-50">
+                        <TableCell>
+                          <div 
+                            className="flex items-center space-x-2"
+                            onClick={() => setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id)}
+                          >
+                            {expandedPrompt === prompt.id ? (
+                              <ChevronUp className="w-4 h-4 text-gray-400" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-gray-400" />
+                            )}
+                            <div>
+                              <p className="text-sm font-medium text-blue-600 hover:text-blue-800">
+                                {prompt.prompt.length > 60 ? `${prompt.prompt.substring(0, 60)}...` : prompt.prompt}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">{prompt.timestamp}</p>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center">
+                            {prompt.mentioned ? (
+                              <Check className="w-5 h-5 text-green-600" />
+                            ) : (
+                              <X className="w-5 h-5 text-red-600" />
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge 
+                            variant={prompt.mentioned ? "default" : "secondary"}
+                            className={prompt.mentioned ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
+                          >
+                            {prompt.result}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="outline">
+                            {prompt.platform}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <span className="text-sm text-gray-600">
+                            {prompt.queryType}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                      {expandedPrompt === prompt.id && (
+                        <TableRow>
+                          <TableCell colSpan={5} className="bg-gray-50 p-6">
+                            <div className="space-y-4">
+                              <div>
+                                <h4 className="font-medium text-gray-900 mb-2">Full Prompt:</h4>
+                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
+                                  {prompt.fullPrompt}
+                                </p>
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-gray-900 mb-2">AI Response:</h4>
+                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
+                                  {prompt.fullResponse}
+                                </p>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
     </>
   );
 };
