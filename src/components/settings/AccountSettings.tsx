@@ -77,51 +77,6 @@ export const AccountSettings = () => {
         </CardContent>
       </Card>
 
-      {/* Password Change */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Lock className="w-5 h-5" />
-            <span>Change Password</span>
-          </CardTitle>
-          <CardDescription>
-            Update your password to keep your account secure
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current Password</Label>
-            <Input
-              id="currentPassword"
-              type="password"
-              value={profileData.currentPassword}
-              onChange={(e) => setProfileData(prev => ({...prev, currentPassword: e.target.value}))}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
-              <Input
-                id="newPassword"
-                type="password"
-                value={profileData.newPassword}
-                onChange={(e) => setProfileData(prev => ({...prev, newPassword: e.target.value}))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={profileData.confirmPassword}
-                onChange={(e) => setProfileData(prev => ({...prev, confirmPassword: e.target.value}))}
-              />
-            </div>
-          </div>
-          <Button onClick={handlePasswordChange}>Change Password</Button>
-        </CardContent>
-      </Card>
-
       {/* Dashboard Customization */}
       <Card>
         <CardHeader>
@@ -166,6 +121,51 @@ export const AccountSettings = () => {
               </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Password Change */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Lock className="w-5 h-5" />
+            <span>Change Password</span>
+          </CardTitle>
+          <CardDescription>
+            Update your password to keep your account secure
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="currentPassword">Current Password</Label>
+            <Input
+              id="currentPassword"
+              type="password"
+              value={profileData.currentPassword}
+              onChange={(e) => setProfileData(prev => ({...prev, currentPassword: e.target.value}))}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                value={profileData.newPassword}
+                onChange={(e) => setProfileData(prev => ({...prev, newPassword: e.target.value}))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={profileData.confirmPassword}
+                onChange={(e) => setProfileData(prev => ({...prev, confirmPassword: e.target.value}))}
+              />
+            </div>
+          </div>
+          <Button onClick={handlePasswordChange}>Change Password</Button>
         </CardContent>
       </Card>
 
