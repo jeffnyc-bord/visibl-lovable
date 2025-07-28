@@ -180,8 +180,39 @@ const Index = () => {
   const [trackedBrands] = useState<BrandData[]>(mockTrackedBrands);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("nike");
   
+  // Section visibility state
+  const [visibleSections, setVisibleSections] = useState<string[]>([
+    "overview", "brand", "queries", "competitors", "trends", "technical", "recommendations"
+  ]);
+  
   // Get current selected brand data
   const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];
+
+  // Available dashboard sections
+  const allSections = [
+    { key: "overview", label: "AI Visibility Overview", icon: "/lovable-uploads/bbadd30d-d143-4dae-b889-4797029e56f6.png" },
+    { key: "brand", label: "Brand & Product Visibility", icon: "/lovable-uploads/153e42f9-e2e0-44d2-b4a0-07a8fbd42599.png" },
+    { key: "queries", label: "Prompt Blast Lab", icon: "/lovable-uploads/a89301fe-f6cc-44ec-80c8-e563e07e8f0c.png" },
+    { key: "competitors", label: "Competitors", icon: "/lovable-uploads/6a43d419-c4e3-47a9-bd9d-d88e81f33fee.png" },
+    { key: "trends", label: "AI Trends", icon: Globe },
+    { key: "technical", label: "Technical Health", icon: Code },
+    { key: "recommendations", label: "Recommendations", icon: Lightbulb }
+  ];
+
+  const toggleSectionVisibility = (sectionKey: string) => {
+    setVisibleSections(prev => {
+      const newSections = prev.includes(sectionKey) 
+        ? prev.filter(key => key !== sectionKey)
+        : [...prev, sectionKey];
+      
+      // If current active view is being hidden, switch to first visible section
+      if (!newSections.includes(activeView) && activeView !== "dashboard") {
+        setActiveView("dashboard");
+      }
+      
+      return newSections;
+    });
+  };
 
   const handleAnalysis = () => {
     setIsAnalyzing(true);
@@ -313,6 +344,42 @@ const Index = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Section Visibility Toggle */}
+              <div className="flex items-center space-x-2">
+                <span className="text-xs text-gray-600">Visible Sections:</span>
+                <Select>
+                  <SelectTrigger className="w-36 h-7 text-xs">
+                    <SelectValue placeholder={`${visibleSections.length} of ${allSections.length} visible`} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border shadow-lg z-50">
+                    <div className="p-2 max-h-64 overflow-y-auto">
+                      {allSections.map((section) => (
+                        <div 
+                          key={section.key}
+                          className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                          onClick={() => toggleSectionVisibility(section.key)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={visibleSections.includes(section.key)}
+                            onChange={() => {}} // Handled by parent onClick
+                            className="w-4 h-4 text-blue-600"
+                          />
+                          <div className="flex items-center space-x-2">
+                            {typeof section.icon === 'string' ? (
+                              <img src={section.icon} alt={section.label} className="w-4 h-4" />
+                            ) : (
+                              <section.icon className="w-4 h-4" />
+                            )}
+                            <span className="text-sm">{section.label}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </SelectContent>
+                </Select>
+              </div>
               
               <div className="flex items-center space-x-2 text-xs text-gray-500">
                 <div className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse"></div>
@@ -381,63 +448,65 @@ const Index = () => {
               {hasAnalysis && (
                 <Tabs defaultValue="overview" className="space-y-3">
                   <TabsList className="bg-white border border-gray-200 p-0.5 shadow-sm">
-                    <TabsTrigger value="overview" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <img src="/lovable-uploads/bbadd30d-d143-4dae-b889-4797029e56f6.png" alt="AI Visibility Overview" className="w-4 h-4" />
-                      <span>AI Visibility Overview</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="brand" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <img src="/lovable-uploads/153e42f9-e2e0-44d2-b4a0-07a8fbd42599.png" alt="Brand & Product Visibility" className="w-4 h-4" />
-                      <span>Brand & Product Visibility</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="queries" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <img src="/lovable-uploads/a89301fe-f6cc-44ec-80c8-e563e07e8f0c.png" alt="Prompt Blast Lab" className="w-4 h-4" />
-                      <span>Prompt Blast Lab</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <img src="/lovable-uploads/6a43d419-c4e3-47a9-bd9d-d88e81f33fee.png" alt="Competitors" className="w-4 h-4" />
-                      <span>Competitors</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="trends" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Globe className="w-3 h-3" />
-                      <span>AI Trends</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="technical" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Code className="w-3 h-3" />
-                      <span>Technical Health</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="recommendations" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Lightbulb className="w-3 h-3" />
-                      <span>Recommendations</span>
-                    </TabsTrigger>
+                    {allSections
+                      .filter(section => visibleSections.includes(section.key))
+                      .map((section) => (
+                        <TabsTrigger 
+                          key={section.key}
+                          value={section.key} 
+                          className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5"
+                        >
+                          {typeof section.icon === 'string' ? (
+                            <img src={section.icon} alt={section.label} className="w-4 h-4" />
+                          ) : (
+                            <section.icon className="w-3 h-3" />
+                          )}
+                          <span>{section.label}</span>
+                        </TabsTrigger>
+                      ))}
                   </TabsList>
 
-                  <TabsContent value="overview">
-                    <OverviewSection brandData={selectedBrand} />
-                  </TabsContent>
+                  {visibleSections.includes("overview") && (
+                    <TabsContent value="overview">
+                      <OverviewSection brandData={selectedBrand} />
+                    </TabsContent>
+                  )}
 
-                  <TabsContent value="brand">
-                    <BrandAnalysisSection brandData={selectedBrand} />
-                  </TabsContent>
+                  {visibleSections.includes("brand") && (
+                    <TabsContent value="brand">
+                      <BrandAnalysisSection brandData={selectedBrand} />
+                    </TabsContent>
+                  )}
 
-                  <TabsContent value="queries">
-                    <QueriesAndPromptsSection brandData={selectedBrand} />
-                  </TabsContent>
+                  {visibleSections.includes("queries") && (
+                    <TabsContent value="queries">
+                      <QueriesAndPromptsSection brandData={selectedBrand} />
+                    </TabsContent>
+                  )}
 
-                  <TabsContent value="competitors">
-                    <CompetitorSection brandData={selectedBrand} />
-                  </TabsContent>
+                  {visibleSections.includes("competitors") && (
+                    <TabsContent value="competitors">
+                      <CompetitorSection brandData={selectedBrand} />
+                    </TabsContent>
+                  )}
 
-                  <TabsContent value="trends">
-                    <TrendsSection />
-                  </TabsContent>
+                  {visibleSections.includes("trends") && (
+                    <TabsContent value="trends">
+                      <TrendsSection />
+                    </TabsContent>
+                  )}
 
-                  <TabsContent value="technical">
-                    <TechnicalCrawlabilitySection />
-                  </TabsContent>
+                  {visibleSections.includes("technical") && (
+                    <TabsContent value="technical">
+                      <TechnicalCrawlabilitySection />
+                    </TabsContent>
+                  )}
 
-                  <TabsContent value="recommendations">
-                    <RecommendationsSection />
-                  </TabsContent>
+                  {visibleSections.includes("recommendations") && (
+                    <TabsContent value="recommendations">
+                      <RecommendationsSection />
+                    </TabsContent>
+                  )}
                 </Tabs>
               )}
             </>
