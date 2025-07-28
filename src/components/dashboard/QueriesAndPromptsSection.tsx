@@ -470,14 +470,9 @@ export const QueriesAndPromptsSection = () => {
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-primary hover:text-primary/80 transition-colors mb-1 line-clamp-2">
+                              <p className="text-sm font-medium text-primary hover:text-primary/80 transition-colors truncate">
                                 {prompt.prompt}
                               </p>
-                              <div className="flex items-center space-x-2">
-                                <span className="text-xs text-muted-foreground bg-muted/20 px-2 py-1 rounded-md">
-                                  {prompt.timestamp}
-                                </span>
-                              </div>
                             </div>
                           </div>
                         </TableCell>
@@ -487,13 +482,13 @@ export const QueriesAndPromptsSection = () => {
                               <img 
                                 src="/lovable-uploads/63ee4e55-b86e-4dc9-9082-d1772bb4cee7.png" 
                                 alt="Mentioned" 
-                                className="w-6 h-6" 
+                                className="w-4 h-4" 
                               />
                             ) : (
                               <img 
                                 src="/lovable-uploads/889ef665-0a16-4731-ade4-f47010077738.png" 
                                 alt="Not Mentioned" 
-                                className="w-6 h-6" 
+                                className="w-4 h-4" 
                               />
                             )}
                           </div>
@@ -538,6 +533,12 @@ export const QueriesAndPromptsSection = () => {
                                 <h4 className="font-medium text-gray-900 mb-2">Full Prompt:</h4>
                                 <p className="text-sm text-gray-700 bg-white p-3 rounded border">
                                   {prompt.fullPrompt}
+                                </p>
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-gray-900 mb-2">Timestamp:</h4>
+                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
+                                  {prompt.timestamp}
                                 </p>
                               </div>
                               <div>
