@@ -38,7 +38,7 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                 <h3 className="font-semibold">{currentPlan} Plan</h3>
                 <Badge variant="secondary">Active</Badge>
               </div>
-              <p className="text-sm text-gray-600 mt-1">{monthlyPrice}/month • Billed monthly</p>
+              <p className="text-sm text-gray-600 mt-1">{userRole === "agency_admin" ? `${monthlyPrice}/month • ` : ""}Billed monthly</p>
               <div className="mt-2 text-sm text-gray-500">
                 <p>• {userRole === "agency_admin" ? "Unlimited" : "1"} deep-tracked brand{userRole === "agency_admin" ? "s" : ""}</p>
                 <p>• {userRole === "agency_admin" ? "Unlimited" : "5"} competitor slots</p>

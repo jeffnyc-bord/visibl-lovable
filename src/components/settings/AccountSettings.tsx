@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Lock } from "lucide-react";
+import { User, Mail, Lock, Image, Upload } from "lucide-react";
 
 export const AccountSettings = () => {
   const [profileData, setProfileData] = useState({
@@ -16,6 +16,8 @@ export const AccountSettings = () => {
     confirmPassword: ""
   });
 
+  const [dashboardImage, setDashboardImage] = useState<string | null>(null);
+
 
   const handleProfileUpdate = () => {
     // Implementation for profile update
@@ -25,6 +27,17 @@ export const AccountSettings = () => {
   const handlePasswordChange = () => {
     // Implementation for password change
     console.log("Password change requested");
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setDashboardImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -106,6 +119,53 @@ export const AccountSettings = () => {
             </div>
           </div>
           <Button onClick={handlePasswordChange}>Change Password</Button>
+        </CardContent>
+      </Card>
+
+      {/* Dashboard Customization */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Image className="w-5 h-5" />
+            <span>Dashboard Customization</span>
+          </CardTitle>
+          <CardDescription>
+            Customize your overview dashboard appearance
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            <Label htmlFor="dashboardImage">Overview Dashboard Image</Label>
+            <div className="flex items-center space-x-4">
+              {dashboardImage ? (
+                <div className="w-32 h-20 rounded-lg overflow-hidden bg-gray-100 border">
+                  <img src={dashboardImage} alt="Dashboard preview" className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-32 h-20 rounded-lg bg-gray-100 border flex items-center justify-center">
+                  <Image className="w-6 h-6 text-gray-400" />
+                </div>
+              )}
+              <div className="flex-1">
+                <input
+                  id="dashboardImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <Button
+                  variant="outline"
+                  onClick={() => document.getElementById('dashboardImage')?.click()}
+                  className="flex items-center space-x-2"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>Upload Image</span>
+                </Button>
+                <p className="text-xs text-gray-500 mt-1">Recommended: 1200x400px, max 5MB</p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
