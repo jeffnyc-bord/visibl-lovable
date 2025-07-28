@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Lock, Bell } from "lucide-react";
+import { User, Mail, Lock } from "lucide-react";
 
 export const AccountSettings = () => {
   const [profileData, setProfileData] = useState({
@@ -16,12 +16,6 @@ export const AccountSettings = () => {
     confirmPassword: ""
   });
 
-  const [notifications, setNotifications] = useState({
-    reportCompletion: true,
-    systemUpdates: false,
-    weeklyDigest: true,
-    marketingEmails: false
-  });
 
   const handleProfileUpdate = () => {
     // Implementation for profile update
@@ -115,69 +109,6 @@ export const AccountSettings = () => {
         </CardContent>
       </Card>
 
-      {/* Notification Preferences */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Bell className="w-5 h-5" />
-            <span>Notification Preferences</span>
-          </CardTitle>
-          <CardDescription>
-            Choose which notifications you'd like to receive
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="reportCompletion">Report Completion</Label>
-                <p className="text-sm text-gray-500">Get notified when your reports are ready</p>
-              </div>
-              <Switch
-                id="reportCompletion"
-                checked={notifications.reportCompletion}
-                onCheckedChange={(checked) => setNotifications(prev => ({...prev, reportCompletion: checked}))}
-              />
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="systemUpdates">System Updates</Label>
-                <p className="text-sm text-gray-500">Receive notifications about platform updates</p>
-              </div>
-              <Switch
-                id="systemUpdates"
-                checked={notifications.systemUpdates}
-                onCheckedChange={(checked) => setNotifications(prev => ({...prev, systemUpdates: checked}))}
-              />
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="weeklyDigest">Weekly Digest</Label>
-                <p className="text-sm text-gray-500">Get a weekly summary of your brand performance</p>
-              </div>
-              <Switch
-                id="weeklyDigest"
-                checked={notifications.weeklyDigest}
-                onCheckedChange={(checked) => setNotifications(prev => ({...prev, weeklyDigest: checked}))}
-              />
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="marketingEmails">Marketing Emails</Label>
-                <p className="text-sm text-gray-500">Receive product updates and marketing communications</p>
-              </div>
-              <Switch
-                id="marketingEmails"
-                checked={notifications.marketingEmails}
-                onCheckedChange={(checked) => setNotifications(prev => ({...prev, marketingEmails: checked}))}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
