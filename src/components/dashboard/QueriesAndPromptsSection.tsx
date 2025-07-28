@@ -327,7 +327,7 @@ export const QueriesAndPromptsSection = () => {
           <CardHeader className="bg-gray-50/50">
             <CardTitle className="flex items-center space-x-2">
               <div className="p-2 bg-white rounded-lg shadow-sm">
-                <Zap className="w-5 h-5 text-purple-600" />
+                <img src="/lovable-uploads/31ceee67-302b-4950-8dcf-30088590bd21.png" alt="AI Testing Workspace" className="w-5 h-5" />
               </div>
               <span>AI Testing Workspace</span>
             </CardTitle>
