@@ -28,39 +28,54 @@ export const BrandManagementSection = () => {
   const [brandType, setBrandType] = useState("");
   const [reportFrequency, setReportFrequency] = useState("");
   
-  const [brands, setBrands] = useState([
-    {
-      id: 1,
-      name: "Tesla Motors",
-      url: "tesla.com",
-      type: "deep",
-      status: "Active",
-      visibilityScore: 91,
-      reportFrequency: "Daily",
-      lastReport: "2 hours ago",
-      tier: "Primary Brand"
-    },
+  // User's primary brand
+  const myBrand = {
+    id: 1,
+    name: "Nike",
+    url: "nike.com",
+    type: "primary",
+    status: "Active",
+    visibilityScore: 94,
+    trend: "+3.2%",
+    reportFrequency: "Daily",
+    lastReport: "2 hours ago",
+    totalMentions: "2.4K",
+    platformCoverage: 12
+  };
+
+  const [competitors, setCompetitors] = useState([
     {
       id: 2,
-      name: "Ford Motor Company",
-      url: "ford.com",
-      type: "competitor",
+      name: "Adidas",
+      url: "adidas.com",
       status: "Active",
-      visibilityScore: 78,
+      visibilityScore: 87,
+      trend: "+1.8%",
       reportFrequency: "Weekly",
       lastReport: "3 days ago",
-      tier: "Competitor"
+      totalMentions: "1.9K"
     },
     {
       id: 3,
-      name: "General Motors",
-      url: "gm.com",
-      type: "competitor",
+      name: "Under Armour",
+      url: "underarmour.com",
       status: "Active",
       visibilityScore: 72,
-      reportFrequency: "Bi-weekly",
+      trend: "-0.5%",
+      reportFrequency: "Weekly",
       lastReport: "1 week ago",
-      tier: "Competitor"
+      totalMentions: "1.2K"
+    },
+    {
+      id: 4,
+      name: "Puma",
+      url: "puma.com",
+      status: "Active",
+      visibilityScore: 68,
+      trend: "+2.1%",
+      reportFrequency: "Bi-weekly",
+      lastReport: "5 days ago",
+      totalMentions: "890"
     }
   ]);
 
@@ -79,11 +94,10 @@ export const BrandManagementSection = () => {
     }
   };
 
-  const deepTrackedCount = brands.filter(b => b.type === "deep").length;
-  const competitorCount = brands.filter(b => b.type === "competitor").length;
+  const competitorCount = competitors.length;
 
   const handleAddBrand = () => {
-    if (!websiteUrl.trim() || !brandType || !reportFrequency) return;
+    if (!websiteUrl.trim() || !reportFrequency) return;
     
     setIsAddingBrand(true);
     setAddBrandProgress(0);
@@ -106,11 +120,10 @@ export const BrandManagementSection = () => {
         setIsAddingBrand(false);
         setAddBrandProgress(0);
         setWebsiteUrl("");
-        setBrandType("");
         setReportFrequency("");
         toast({
-          title: "Brand Added Successfully",
-          description: "Your brand has been added and analysis is starting.",
+          title: "Competitor Added Successfully",
+          description: "Your competitor has been added to your watchlist.",
         });
       }, 1000);
     }, 6000);
@@ -126,14 +139,14 @@ export const BrandManagementSection = () => {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
                 <Globe className="w-8 h-8 text-blue-600 animate-pulse" />
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Adding Brand...
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Setting up tracking and analyzing your brand...
-                </p>
-              </div>
+               <div>
+                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                   Adding Competitor...
+                 </h3>
+                 <p className="text-gray-600 text-sm">
+                   Setting up competitor tracking and analysis...
+                 </p>
+               </div>
               <div className="space-y-3">
                 <div className="w-full bg-gray-200 rounded-full h-3">
                   <div 
@@ -155,79 +168,79 @@ export const BrandManagementSection = () => {
       )}
 
     <div className="space-y-6">
-      {/* Brand Limits Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="shadow-sm border-gray-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Building className="w-4 h-4 text-blue-600" />
-                <div>
-                  <p className="text-lg font-bold text-gray-900">{deepTrackedCount}/3</p>
-                  <p className="text-xs text-gray-600">Deep Tracked Brands</p>
-                </div>
-              </div>
-              <Progress value={(deepTrackedCount / 3) * 100} className="w-16 h-2" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-sm border-gray-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Target className="w-4 h-4 text-purple-600" />
-                <div>
-                  <p className="text-lg font-bold text-gray-900">{competitorCount}/10</p>
-                  <p className="text-xs text-gray-600">Competitor Brands</p>
-                </div>
-              </div>
-              <Progress value={(competitorCount / 10) * 100} className="w-16 h-2" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-sm border-gray-200">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4 text-green-600" />
-              <div>
-                <p className="text-lg font-bold text-gray-900">
-                  {Math.round(brands.reduce((sum, brand) => sum + brand.visibilityScore, 0) / brands.length)}%
-                </p>
-                <p className="text-xs text-gray-600">Avg Visibility Score</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Add New Brand */}
-      <Card className="shadow-sm border-gray-200">
+      {/* My Brand Hero Section */}
+      <Card className="shadow-lg border-2 border-primary/20 bg-gradient-to-r from-primary/5 via-background to-primary/5">
         <CardHeader className="pb-4">
-          <CardTitle className="text-base text-gray-900">Add New Brand</CardTitle>
-          <CardDescription className="text-sm text-gray-600">
-            Track your own brands deeply or monitor competitors for insights
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-xl text-primary flex items-center gap-2">
+                <Building className="w-5 h-5" />
+                My Brand
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Your brand's AI visibility performance
+              </CardDescription>
+            </div>
+            <Button className="bg-primary hover:bg-primary/90">
+              <Eye className="w-4 h-4 mr-2" />
+              View Full Dashboard
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="text-center p-4 rounded-lg bg-background/50">
+              <div className="flex items-center justify-center mb-2">
+                <TrendingUp className="w-5 h-5 text-green-600 mr-2" />
+                <span className="text-2xl font-bold text-foreground">{myBrand.visibilityScore}%</span>
+                <span className="text-sm text-green-600 ml-1">{myBrand.trend}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">AI Visibility Score</p>
+            </div>
+            
+            <div className="text-center p-4 rounded-lg bg-background/50">
+              <div className="flex items-center justify-center mb-2">
+                <Target className="w-5 h-5 text-blue-600 mr-2" />
+                <span className="text-2xl font-bold text-foreground">{myBrand.totalMentions}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">Total Mentions</p>
+            </div>
+            
+            <div className="text-center p-4 rounded-lg bg-background/50">
+              <div className="flex items-center justify-center mb-2">
+                <Globe className="w-5 h-5 text-purple-600 mr-2" />
+                <span className="text-2xl font-bold text-foreground">{myBrand.platformCoverage}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">Platform Coverage</p>
+            </div>
+            
+            <div className="text-center p-4 rounded-lg bg-background/50">
+              <div className="flex items-center justify-center mb-2">
+                <Calendar className="w-5 h-5 text-orange-600 mr-2" />
+                <span className="text-sm font-medium text-foreground">{myBrand.lastReport}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">Last Updated</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Add Competitor */}
+      <Card className="shadow-sm border-border">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-base text-foreground">Add Competitor</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Add a competitor to your watchlist to monitor their AI visibility
           </CardDescription>
         </CardHeader>
          <CardContent>
            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
              <Input 
-               placeholder="Enter website URL" 
+               placeholder="Enter competitor website URL" 
                className="h-9" 
                value={websiteUrl}
                onChange={(e) => setWebsiteUrl(e.target.value)}
              />
-             
-             <Select value={brandType} onValueChange={setBrandType}>
-               <SelectTrigger className="h-9">
-                 <SelectValue placeholder="Brand Type" />
-               </SelectTrigger>
-               <SelectContent>
-                 <SelectItem value="deep">Deep Tracked (Own Brand)</SelectItem>
-                 <SelectItem value="competitor">Competitor/Curiosity</SelectItem>
-               </SelectContent>
-             </Select>
              
              <Select value={reportFrequency} onValueChange={setReportFrequency}>
                <SelectTrigger className="h-9">
@@ -241,62 +254,67 @@ export const BrandManagementSection = () => {
                </SelectContent>
              </Select>
              
-             <Button 
-               className="bg-blue-600 hover:bg-blue-700 text-white text-sm h-9"
-               onClick={handleAddBrand}
-               disabled={!websiteUrl.trim() || !brandType || !reportFrequency || isAddingBrand}
-             >
-               <Plus className="w-4 h-4 mr-2" />
-               {isAddingBrand ? "Adding..." : "Add Brand"}
-             </Button>
+             <div className="md:col-span-2">
+               <Button 
+                 className="w-full h-9"
+                 onClick={handleAddBrand}
+                 disabled={!websiteUrl.trim() || !reportFrequency || isAddingBrand}
+               >
+                 <Plus className="w-4 h-4 mr-2" />
+                 {isAddingBrand ? "Adding..." : "Add to Watchlist"}
+               </Button>
+             </div>
            </div>
          </CardContent>
       </Card>
 
-      {/* Tracked Brands List */}
-      <Card className="shadow-sm border-gray-200">
+      {/* Competitor Watchlist */}
+      <Card className="shadow-sm border-border">
         <CardHeader className="pb-4">
-          <CardTitle className="text-base text-gray-900">Tracked Brands</CardTitle>
-          <CardDescription className="text-sm text-gray-600">
-            Manage all your tracked brands and their analysis settings
+          <CardTitle className="text-base text-foreground">Competitor Watchlist</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Monitor your competitors' AI visibility performance ({competitorCount}/10 slots used)
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {brands.map((brand) => (
-              <div key={brand.id} className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+            {competitors.map((competitor) => (
+              <div key={competitor.id} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors">
                 <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center border">
-                    <Globe className="w-5 h-5 text-gray-600" />
+                  <div className="w-10 h-10 bg-gradient-to-br from-secondary/20 to-secondary/40 rounded-lg flex items-center justify-center border">
+                    <Target className="w-5 h-5 text-secondary-foreground" />
                   </div>
                   
                   <div>
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-gray-900 text-sm">{brand.name}</h3>
-                      <ExternalLink className="w-3 h-3 text-gray-400" />
+                      <h3 className="font-medium text-foreground text-sm">{competitor.name}</h3>
+                      <ExternalLink className="w-3 h-3 text-muted-foreground" />
                     </div>
-                    <p className="text-xs text-gray-600">{brand.url}</p>
+                    <p className="text-xs text-muted-foreground">{competitor.url}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center space-x-6">
-                  <div className="flex items-center space-x-2">
-                    <Badge className={`text-xs px-2 py-0.5 ${getTypeColor(brand.type)}`}>
-                      {brand.type === "deep" ? "Deep Tracked" : "Competitor"}
-                    </Badge>
-                    <Badge className={`text-xs px-2 py-0.5 ${getStatusColor(brand.status)}`}>
-                      {brand.status}
-                    </Badge>
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-foreground">{competitor.visibilityScore}%</p>
+                    <p className="text-xs text-muted-foreground">AI Visibility</p>
                   </div>
                   
-                  <div className="text-right text-xs">
-                    <p className="text-gray-900 font-medium">AI Visibility: {brand.visibilityScore}%</p>
-                    <p className="text-gray-600">Reports: {brand.reportFrequency}</p>
+                  <div className="text-center">
+                    <div className="flex items-center justify-center">
+                      <span className="text-lg font-bold text-foreground">{competitor.totalMentions}</span>
+                      <span className={`text-xs ml-1 ${competitor.trend.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                        {competitor.trend}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Mentions</p>
                   </div>
                   
-                  <div className="text-right text-xs">
-                    <p className="text-gray-600">Last report</p>
-                    <p className="text-gray-900">{brand.lastReport}</p>
+                  <div className="text-center">
+                    <Badge variant="secondary" className="text-xs">
+                      {competitor.status}
+                    </Badge>
+                    <p className="text-xs text-muted-foreground mt-1">{competitor.reportFrequency}</p>
                   </div>
                   
                   <div className="flex items-center space-x-1">
@@ -316,23 +334,6 @@ export const BrandManagementSection = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Subscription Tier Info */}
-      <Card className="shadow-sm border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium text-gray-900 text-sm mb-1">Professional Plan</h3>
-              <p className="text-xs text-gray-600">
-                You're using {deepTrackedCount}/3 deep tracked brands and {competitorCount}/10 competitor slots
-              </p>
-            </div>
-            <Button variant="outline" className="text-sm h-8">
-              Upgrade Plan
-            </Button>
-          </div>
-         </CardContent>
-       </Card>
      </div>
    </>
   );
