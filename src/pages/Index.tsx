@@ -248,7 +248,7 @@ const Index = () => {
                       <span>Prompt Blast Lab</span>
                     </TabsTrigger>
                     <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <img src="/lovable-uploads/1cf17ddb-b3b7-461d-a124-9c38bcc38fde.png" alt="Competitors" className="w-4 h-4" />
+                      <img src="/lovable-uploads/6a43d419-c4e3-47a9-bd9d-d88e81f33fee.png" alt="Competitors" className="w-4 h-4" />
                       <span>Competitors</span>
                     </TabsTrigger>
                     <TabsTrigger value="trends" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
