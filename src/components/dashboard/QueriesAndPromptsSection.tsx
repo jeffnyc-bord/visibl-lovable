@@ -324,7 +324,7 @@ export const QueriesAndPromptsSection = () => {
       <TabsContent value="blast" className="space-y-6">
         {/* Modern Prompt Blast Workspace */}
         <Card className="border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
+          <CardHeader className="bg-gray-50/50">
             <CardTitle className="flex items-center space-x-2">
               <div className="p-2 bg-white rounded-lg shadow-sm">
                 <Zap className="w-5 h-5 text-purple-600" />
