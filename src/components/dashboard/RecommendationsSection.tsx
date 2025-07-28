@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { ExportDialog } from "@/components/ui/export-dialog";
-import { Lightbulb, CheckCircle, Clock, AlertTriangle, TrendingUp } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Lightbulb, CheckCircle, Clock, AlertTriangle, TrendingUp, Star, Timer, Users, Target, Filter, BarChart3, Gauge } from "lucide-react";
 import { useState } from "react";
 
 export const RecommendationsSection = () => {
   const [completedActions, setCompletedActions] = useState<number[]>([]);
+  const [sortBy, setSortBy] = useState("impact");
+  const [filterBy, setFilterBy] = useState("all");
 
   const handleActionComplete = (actionId: number) => {
     setCompletedActions(prev => 
@@ -126,11 +129,32 @@ export const RecommendationsSection = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority.toLowerCase()) {
-      case "high": return "bg-red-100 text-red-800";
-      case "medium": return "bg-yellow-100 text-yellow-800";
-      case "low": return "bg-green-100 text-green-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "high": return "bg-destructive/10 text-destructive border-destructive/20";
+      case "medium": return "bg-warning/10 text-warning border-warning/20";
+      case "low": return "bg-success/10 text-success border-success/20";
+      default: return "bg-muted text-muted-foreground";
     }
+  };
+
+  const getEffortIcon = (effort: string) => {
+    switch (effort.toLowerCase()) {
+      case "low": return <div className="flex space-x-0.5"><div className="w-2 h-2 bg-success rounded-full"></div><div className="w-2 h-2 bg-muted rounded-full"></div><div className="w-2 h-2 bg-muted rounded-full"></div></div>;
+      case "medium": return <div className="flex space-x-0.5"><div className="w-2 h-2 bg-warning rounded-full"></div><div className="w-2 h-2 bg-warning rounded-full"></div><div className="w-2 h-2 bg-muted rounded-full"></div></div>;
+      case "high": return <div className="flex space-x-0.5"><div className="w-2 h-2 bg-destructive rounded-full"></div><div className="w-2 h-2 bg-destructive rounded-full"></div><div className="w-2 h-2 bg-destructive rounded-full"></div></div>;
+      default: return <div className="flex space-x-0.5"><div className="w-2 h-2 bg-muted rounded-full"></div><div className="w-2 h-2 bg-muted rounded-full"></div><div className="w-2 h-2 bg-muted rounded-full"></div></div>;
+    }
+  };
+
+  const getImpactStars = (impact: string) => {
+    const impactLevel = impact.toLowerCase();
+    const starCount = impactLevel === "very high" ? 5 : impactLevel === "high" ? 4 : impactLevel === "medium" ? 3 : impactLevel === "low" ? 2 : 1;
+    return (
+      <div className="flex space-x-0.5">
+        {[...Array(5)].map((_, i) => (
+          <Star key={i} className={`w-3 h-3 ${i < starCount ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
+        ))}
+      </div>
+    );
   };
 
   const getCategoryIcon = (category: string) => {
@@ -142,18 +166,55 @@ export const RecommendationsSection = () => {
     }
   };
 
+  const getSortedAndFilteredRecommendations = () => {
+    let filtered = recommendations.slice();
+    
+    // Apply filters
+    if (filterBy !== "all") {
+      if (filterBy === "completed") {
+        filtered = filtered.filter(rec => completedActions.includes(rec.id));
+      } else if (filterBy === "pending") {
+        filtered = filtered.filter(rec => !completedActions.includes(rec.id));
+      } else {
+        filtered = filtered.filter(rec => rec.category.toLowerCase() === filterBy.toLowerCase());
+      }
+    }
+    
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "impact":
+          const impactOrder = { "very high": 5, "high": 4, "medium": 3, "low": 2, "very low": 1 };
+          return (impactOrder[b.impact.toLowerCase()] || 0) - (impactOrder[a.impact.toLowerCase()] || 0);
+        case "effort":
+          const effortOrder = { "low": 1, "medium": 2, "high": 3 };
+          return (effortOrder[a.effort.toLowerCase()] || 0) - (effortOrder[b.effort.toLowerCase()] || 0);
+        case "category":
+          return a.category.localeCompare(b.category);
+        case "ai-visibility":
+          return b.aiVisibilityIncrease - a.aiVisibilityIncrease;
+        default:
+          return 0;
+      }
+    });
+    
+    return filtered;
+  };
+
   const totalImpact = recommendations.reduce((sum, rec) => sum + rec.aiVisibilityIncrease, 0);
   const completedImpact = recommendations
     .filter(rec => completedActions.includes(rec.id))
     .reduce((sum, rec) => sum + rec.aiVisibilityIncrease, 0);
+  
+  const filteredRecommendations = getSortedAndFilteredRecommendations();
 
   return (
     <div className="space-y-6">
       {/* Action Plan Overview */}
-      <Card className="border-0 shadow-lg bg-gradient-to-r from-blue-50 to-indigo-50">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-primary/5 via-background to-secondary/5">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Lightbulb className="w-5 h-5 text-blue-600" />
+          <CardTitle className="flex items-center space-x-2 text-foreground">
+            <BarChart3 className="w-6 h-6 text-primary" />
             <span>AI Search Optimization Plan</span>
           </CardTitle>
           <CardDescription>
@@ -162,79 +223,128 @@ export const RecommendationsSection = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">{recommendations.length}</div>
-              <div className="text-sm text-gray-600">Total Actions</div>
+            <div className="text-center p-4 rounded-lg bg-card border">
+              <Target className="w-8 h-8 text-primary mx-auto mb-2" />
+              <div className="text-3xl font-bold text-foreground mb-1">{recommendations.length}</div>
+              <div className="text-sm text-muted-foreground">Total Actions</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">{completedActions.length}</div>
-              <div className="text-sm text-gray-600">Completed</div>
+            <div className="text-center p-4 rounded-lg bg-card border">
+              <CheckCircle className="w-8 h-8 text-success mx-auto mb-2" />
+              <div className="text-3xl font-bold text-success mb-1">{completedActions.length}</div>
+              <div className="text-sm text-muted-foreground">Completed</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600 mb-2">+{totalImpact}%</div>
-              <div className="text-sm text-gray-600">Potential AI Visibility</div>
+            <div className="text-center p-4 rounded-lg bg-card border">
+              <Gauge className="w-8 h-8 text-primary mx-auto mb-2" />
+              <div className="text-3xl font-bold text-primary mb-1">+{totalImpact}%</div>
+              <div className="text-sm text-muted-foreground">Potential AI Visibility</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-orange-600 mb-2">+{completedImpact}%</div>
-              <div className="text-sm text-gray-600">Progress Made</div>
+            <div className="text-center p-4 rounded-lg bg-card border">
+              <TrendingUp className="w-8 h-8 text-warning mx-auto mb-2" />
+              <div className="text-3xl font-bold text-warning mb-1">+{completedImpact}%</div>
+              <div className="text-sm text-muted-foreground">Progress Made</div>
             </div>
           </div>
           
-          <div className="mt-6">
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span>Overall Progress</span>
-              <span>{Math.round((completedActions.length / recommendations.length) * 100)}%</span>
+          <div className="mt-8 p-4 rounded-lg bg-muted/50">
+            <div className="flex items-center justify-between text-sm mb-3">
+              <span className="font-medium text-foreground">Overall Progress</span>
+              <span className="font-bold text-primary">{Math.round((completedActions.length / recommendations.length) * 100)}%</span>
             </div>
-            <Progress value={(completedActions.length / recommendations.length) * 100} className="h-3" />
+            <Progress value={(completedActions.length / recommendations.length) * 100} className="h-4" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Controls and Filters */}
+      <Card className="border-0 shadow-sm">
+        <CardContent className="pt-6">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <div className="flex items-center space-x-2">
+                <Filter className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium">Sort by:</span>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="impact">Highest Impact</SelectItem>
+                    <SelectItem value="effort">Lowest Effort</SelectItem>
+                    <SelectItem value="ai-visibility">AI Visibility Gain</SelectItem>
+                    <SelectItem value="category">Category</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium">Filter:</span>
+                <Select value={filterBy} onValueChange={setFilterBy}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Items</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="content">Content</SelectItem>
+                    <SelectItem value="technical">Technical</SelectItem>
+                    <SelectItem value="authority">Authority</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <ExportDialog
+              trigger={
+                <Button variant="outline" size="sm">
+                  Export Action Plan
+                </Button>
+              }
+              title="Export Action Plan"
+              description="Export your personalized action plan with detailed recommendations."
+              exportType="report"
+            />
           </div>
         </CardContent>
       </Card>
 
       {/* Detailed Recommendations */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Detailed Action Items</h3>
-          <ExportDialog
-            trigger={
-              <Button variant="outline" size="sm">
-                Export Action Plan
-              </Button>
-            }
-            title="Export Action Plan"
-            description="Export your personalized action plan with detailed recommendations."
-            exportType="report"
-          />
-        </div>
+        <h3 className="text-lg font-semibold text-foreground">Action Items ({filteredRecommendations.length})</h3>
 
-        {recommendations.map((rec) => (
-          <Card key={rec.id} className={`border-0 shadow-lg transition-all ${
-            completedActions.includes(rec.id) ? 'bg-green-50 border-green-200' : 'hover:shadow-xl'
+        {filteredRecommendations.map((rec) => (
+          <Card key={rec.id} className={`transition-all duration-200 hover:shadow-lg ${
+            completedActions.includes(rec.id) 
+              ? 'bg-success/5 border-success/20 shadow-sm' 
+              : 'bg-card border hover:shadow-xl hover:border-primary/20'
           }`}>
-            <CardHeader>
+            <CardHeader className="pb-4">
               <div className="flex items-start space-x-4">
                 <Checkbox
                   checked={completedActions.includes(rec.id)}
                   onCheckedChange={() => handleActionComplete(rec.id)}
-                  className="mt-1"
+                  className="mt-1 data-[state=checked]:bg-success data-[state=checked]:border-success"
                 />
                 <div className="flex-1">
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <CardTitle className={`flex items-center space-x-2 ${
-                        completedActions.includes(rec.id) ? 'line-through text-gray-500' : ''
+                      <CardTitle className={`flex items-center space-x-3 text-lg ${
+                        completedActions.includes(rec.id) ? 'line-through text-muted-foreground' : 'text-foreground'
                       }`}>
-                        {getCategoryIcon(rec.category)}
+                        <div className="p-2 rounded-lg bg-primary/10">
+                          {getCategoryIcon(rec.category)}
+                        </div>
                         <span>{rec.title}</span>
                       </CardTitle>
-                      <CardDescription className="mt-1">
+                      <CardDescription className="mt-2 text-base leading-relaxed">
                         {rec.description}
                       </CardDescription>
                     </div>
-                    <div className="flex items-center space-x-2 ml-4">
-                      <Badge className={getPriorityColor(rec.priority)}>
-                        {rec.priority}
+                    <div className="flex flex-col gap-2">
+                      <Badge className={`${getPriorityColor(rec.priority)} border`}>
+                        {rec.priority} Priority
                       </Badge>
-                      <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                      <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-semibold">
                         +{rec.aiVisibilityIncrease}% AI Visibility
                       </Badge>
                     </div>
@@ -242,39 +352,74 @@ export const RecommendationsSection = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="ml-10">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Effort Level</div>
-                  <Badge variant="secondary">{rec.effort}</Badge>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Expected Impact</div>
-                  <Badge variant="secondary">{rec.impact}</Badge>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Timeline</div>
-                  <div className="text-sm font-medium flex items-center">
-                    <Clock className="w-3 h-3 mr-1" />
-                    {rec.timeline}
+            
+            <CardContent className="ml-10 space-y-6">
+              {/* Metrics Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
+                  <Users className="w-5 h-5 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-medium text-foreground mb-1">Effort Level</div>
+                    <div className="flex items-center space-x-2">
+                      {getEffortIcon(rec.effort)}
+                      <span className="text-sm font-medium text-muted-foreground">{rec.effort}</span>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Category</div>
-                  <Badge variant="outline">{rec.category}</Badge>
+                
+                <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
+                  <Star className="w-5 h-5 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-medium text-foreground mb-1">Expected Impact</div>
+                    <div className="flex items-center space-x-2">
+                      {getImpactStars(rec.impact)}
+                      <span className="text-sm font-medium text-muted-foreground">{rec.impact}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
+                  <Timer className="w-5 h-5 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-medium text-foreground mb-1">Timeline</div>
+                    <div className="text-sm font-medium text-muted-foreground">
+                      {rec.timeline}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Action Details</h4>
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {/* Action Details */}
+              <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
+                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center">
+                  <CheckCircle className="w-4 h-4 mr-2 text-primary" />
+                  Implementation Details
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {rec.details.map((detail, i) => (
-                    <li key={i} className="text-sm text-gray-600 flex items-start">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2 mt-2"></div>
-                      {detail}
-                    </li>
+                    <div key={i} className="flex items-start space-x-3 text-sm">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                      <span className="text-muted-foreground leading-relaxed">{detail}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-2">
+                <Badge variant="outline" className="bg-background">
+                  {rec.category}
+                </Badge>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" className="text-xs">
+                    View Details
+                  </Button>
+                  {!completedActions.includes(rec.id) && (
+                    <Button size="sm" className="text-xs">
+                      Mark Complete
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
