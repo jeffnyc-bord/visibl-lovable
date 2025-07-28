@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Zap, Clock, Target, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check } from "lucide-react";
+import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 
 export const QueriesAndPromptsSection = () => {
@@ -357,7 +357,7 @@ export const QueriesAndPromptsSection = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Target className="w-5 h-5 text-blue-500" />
+              <img src="/lovable-uploads/d065101f-8248-41db-a466-8cd39c5a5533.png" alt="Terminal" className="w-5 h-5" />
               <span>Prompts Analysis</span>
             </CardTitle>
             <CardDescription>
@@ -483,17 +483,19 @@ export const QueriesAndPromptsSection = () => {
                         </TableCell>
                         <TableCell className="text-center py-4">
                           <div className="flex items-center justify-center">
-                            <div className={`rounded-full p-2 transition-colors ${
-                              prompt.mentioned 
-                                ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400' 
-                                : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                            }`}>
-                              {prompt.mentioned ? (
-                                <CheckCircle className="w-4 h-4" />
-                              ) : (
-                                <X className="w-4 h-4" />
-                              )}
-                            </div>
+                            {prompt.mentioned ? (
+                              <img 
+                                src="/lovable-uploads/63ee4e55-b86e-4dc9-9082-d1772bb4cee7.png" 
+                                alt="Mentioned" 
+                                className="w-6 h-6" 
+                              />
+                            ) : (
+                              <img 
+                                src="/lovable-uploads/889ef665-0a16-4731-ade4-f47010077738.png" 
+                                alt="Not Mentioned" 
+                                className="w-6 h-6" 
+                              />
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="text-center py-4">
