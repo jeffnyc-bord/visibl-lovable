@@ -202,8 +202,8 @@ const Index = () => {
                 <div className="mb-3 bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm">
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2">
-                       <img src="/lovable-uploads/eb27b2e0-a722-4723-8b57-eee040e312fb.png" alt="Uber" className="w-5 h-5" />
-                      <span className="font-medium text-gray-900 text-sm">Uber</span>
+                       <img src="/lovable-uploads/eb27b2e0-a722-4723-8b57-eee040e312fb.png" alt="Nike" className="w-5 h-5" />
+                      <span className="font-medium text-gray-900 text-sm">Nike</span>
                       <ChevronDown className="w-3 h-3 text-gray-400" />
                     </div>
                     

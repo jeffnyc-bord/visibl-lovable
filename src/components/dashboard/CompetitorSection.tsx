@@ -13,7 +13,7 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart as Recharts
 import { useState } from "react";
 
 export const CompetitorSection = () => {
-  const [selectedCompetitors, setSelectedCompetitors] = useState<string[]>(["DataViz Pro", "Analytics Master", "ChartBuilder"]);
+  const [selectedCompetitors, setSelectedCompetitors] = useState<string[]>(["Adidas", "Under Armour", "New Balance"]);
   const [dateRange, setDateRange] = useState("30");
   const [viewMode, setViewMode] = useState<"table" | "charts">("table");
   const [customColumns, setCustomColumns] = useState<string[]>(["aiVisibility", "aiMentions", "sentiment", "topProducts"]);
@@ -21,49 +21,49 @@ export const CompetitorSection = () => {
 
   const competitors = [
     {
-      name: "DataViz Pro",
-      domain: "datavizpro.com",
+      name: "Adidas",
+      domain: "adidas.com",
       aiVisibility: 89,
       marketShare: 24,
       trend: "up",
       trendValue: 12,
-      keyProducts: ["Advanced Charts", "Real-time Dashboards", "API Integration"],
+      keyProducts: ["Boost Technology", "Ultraboost", "Stan Smith", "Predator"],
       aiMentions: 342,
       sentiment: 8.4,
       ranking: 1
     },
     {
-      name: "Analytics Master",
-      domain: "analyticsmaster.io",
+      name: "Under Armour",
+      domain: "underarmour.com",
       aiVisibility: 76,
       marketShare: 18,
       trend: "down",
       trendValue: -5,
-      keyProducts: ["ML Analytics", "Predictive Models", "Custom Reports"],
+      keyProducts: ["HOVR Technology", "Curry Basketball", "HeatGear", "ColdGear"],
       aiMentions: 298,
       sentiment: 7.9,
       ranking: 2
     },
     {
-      name: "InsightFlow",
-      domain: "insightflow.net",
+      name: "New Balance",
+      domain: "newbalance.com",
       aiVisibility: 72,
       marketShare: 12,
       trend: "up",
       trendValue: 15,
-      keyProducts: ["Data Pipelines", "Auto Insights", "Mobile Analytics"],
+      keyProducts: ["Fresh Foam", "990 Series", "FuelCell", "Made in USA"],
       aiMentions: 189,
       sentiment: 8.1,
       ranking: 3
     },
     {
-      name: "ChartBuilder",
-      domain: "chartbuilder.com",
+      name: "Puma",
+      domain: "puma.com",
       aiVisibility: 68,
       marketShare: 15,
       trend: "up",
       trendValue: 8,
-      keyProducts: ["Drag & Drop Builder", "Templates", "Collaboration Tools"],
+      keyProducts: ["Nitro Technology", "Suede Classic", "RS-X", "King Football"],
       aiMentions: 234,
       sentiment: 7.6,
       ranking: 4
@@ -73,49 +73,49 @@ export const CompetitorSection = () => {
   // Top prompts data for battleground section
   const topPrompts = [
     {
-      prompt: "What are the best data visualization tools for small businesses?",
+      prompt: "What are the best running shoes for marathon training?",
       yourResult: "Not Mentioned",
-      winningBrand: "DataViz Pro",
+      winningBrand: "Adidas",
       winnerPosition: "#1",
       impact: "high",
       category: "Product Recommendation"
     },
     {
-      prompt: "How to create interactive dashboards with real-time data?",
+      prompt: "Which athletic brand has the most sustainable manufacturing practices?",
       yourResult: "Mentioned #4",
-      winningBrand: "DataViz Pro", 
+      winningBrand: "Adidas", 
       winnerPosition: "#1",
       impact: "high",
-      category: "Tutorial/How-to"
+      category: "Brand Values"
     },
     {
-      prompt: "Which analytics platform has the best machine learning capabilities?",
+      prompt: "Best basketball shoes for performance and comfort?",
       yourResult: "Not Mentioned",
-      winningBrand: "Analytics Master",
+      winningBrand: "Under Armour",
       winnerPosition: "#1", 
       impact: "medium",
-      category: "Feature Comparison"
+      category: "Product Recommendation"
     },
     {
-      prompt: "Best drag and drop chart builders for non-technical users?",
+      prompt: "Most comfortable athletic wear for workout sessions?",
       yourResult: "Mentioned #3",
-      winningBrand: "ChartBuilder",
+      winningBrand: "Under Armour",
       winnerPosition: "#1",
       impact: "medium",
       category: "Product Recommendation"
     },
     {
-      prompt: "How to set up automated data pipelines for analytics?",
+      prompt: "Which brand offers the best technology in athletic footwear?",
       yourResult: "Not Mentioned",
-      winningBrand: "InsightFlow",
+      winningBrand: "Adidas",
       winnerPosition: "#1",
       impact: "high",
-      category: "Tutorial/How-to"
+      category: "Technology/Innovation"
     }
   ];
 
   const yourBrand = {
-    name: "Your Brand",
+    name: "Nike",
     aiVisibility: 65,
     marketShare: 10,
     aiMentions: 156,
@@ -148,7 +148,7 @@ export const CompetitorSection = () => {
   // Multi-metric comparison data
   const comparisonData = [
     { 
-      brand: "Your Brand", 
+      brand: "Nike", 
       aiVisibility: yourBrand.aiVisibility,
       mentions: yourBrand.aiMentions,
       sentiment: yourBrand.sentiment * 10
@@ -165,7 +165,7 @@ export const CompetitorSection = () => {
 
   // Chart data for AI Visibility comparison
   const visibilityData = [
-    { name: "Your Brand", value: yourBrand.aiVisibility },
+    { name: "Nike", value: yourBrand.aiVisibility },
     ...competitors
       .filter(c => selectedCompetitors.includes(c.name))
       .map(c => ({ name: c.name, value: c.aiVisibility }))
@@ -173,10 +173,10 @@ export const CompetitorSection = () => {
 
   // Chart data for mentions over time (mock data)
   const mentionsTimeData = [
-    { date: "Week 1", "Your Brand": 35, "DataViz Pro": 85, "Analytics Master": 72, "ChartBuilder": 58 },
-    { date: "Week 2", "Your Brand": 42, "DataViz Pro": 88, "Analytics Master": 70, "ChartBuilder": 61 },
-    { date: "Week 3", "Your Brand": 38, "DataViz Pro": 92, "Analytics Master": 68, "ChartBuilder": 59 },
-    { date: "Week 4", "Your Brand": 41, "DataViz Pro": 95, "Analytics Master": 74, "ChartBuilder": 56 }
+    { date: "Week 1", "Nike": 35, "Adidas": 85, "Under Armour": 72, "New Balance": 47, "Puma": 58 },
+    { date: "Week 2", "Nike": 42, "Adidas": 88, "Under Armour": 70, "New Balance": 52, "Puma": 61 },
+    { date: "Week 3", "Nike": 38, "Adidas": 92, "Under Armour": 68, "New Balance": 49, "Puma": 59 },
+    { date: "Week 4", "Nike": 41, "Adidas": 95, "Under Armour": 74, "New Balance": 51, "Puma": 56 }
   ];
 
   const handleCompetitorToggle = (competitorName: string) => {
@@ -206,10 +206,10 @@ export const CompetitorSection = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <img src="/lovable-uploads/9ed4aa18-f1e1-454e-9a51-5342807e8e7a.png" alt="Competitive Landscape" className="w-5 h-5" />
-            <span>Competitive AI Landscape</span>
+            <span>Nike's Competitive AI Landscape</span>
           </CardTitle>
           <CardDescription>
-            Understand where you stand and identify opportunities to outperform competitors
+            Understand where Nike stands and identify opportunities to outperform athletic competitors
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -226,7 +226,7 @@ export const CompetitorSection = () => {
                     <div 
                       key={brand.name} 
                       className={`flex items-center justify-between p-2 rounded ${
-                        brand.name === 'Your Brand' 
+                        brand.name === 'Nike' 
                           ? 'bg-blue-200 border-2 border-blue-400' 
                           : 'bg-white/50'
                       }`}
@@ -234,8 +234,8 @@ export const CompetitorSection = () => {
                       <div className="flex items-center space-x-2">
                         {index === 0 && <Crown className="w-4 h-4 text-yellow-500" />}
                         <span className="text-sm font-medium">#{index + 1}</span>
-                        <span className={`text-sm ${brand.name === 'Your Brand' ? 'font-bold' : ''}`}>
-                          {brand.name === 'Your Brand' ? 'You' : brand.name}
+                        <span className={`text-sm ${brand.name === 'Nike' ? 'font-bold' : ''}`}>
+                          {brand.name}
                         </span>
                       </div>
                       <span className="text-sm font-bold">{brand.aiVisibility}%</span>
@@ -275,9 +275,9 @@ export const CompetitorSection = () => {
               <div className="p-4 bg-muted/30 rounded-lg">
                 <h4 className="text-sm font-semibold mb-3">Competitive Narrative</h4>
                 <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>• <strong>{insights.strongestCompetitor?.name}</strong> leads with {insights.strongestCompetitor?.aiVisibility}% visibility and high mention volume</p>
-                  <p>• You maintain {insights.sentimentAdvantage > 0 ? 'stronger' : 'competitive'} sentiment quality despite lower visibility</p>
-                  <p>• <strong>Opportunity:</strong> Focus on increasing mention frequency while maintaining sentiment quality</p>
+                  <p>• <strong>{insights.strongestCompetitor?.name}</strong> leads with {insights.strongestCompetitor?.aiVisibility}% visibility and high mention volume in athletic wear</p>
+                  <p>• Nike maintains {insights.sentimentAdvantage > 0 ? 'stronger' : 'competitive'} sentiment quality despite lower visibility</p>
+                  <p>• <strong>Opportunity:</strong> Focus on athletic performance content to increase mention frequency while maintaining brand sentiment</p>
                 </div>
               </div>
             </div>
@@ -293,7 +293,7 @@ export const CompetitorSection = () => {
             <span>Multi-Metric Performance Analysis</span>
           </CardTitle>
           <CardDescription>
-            Visualize how your performance compares across key metrics
+            Visualize how Nike's performance compares across key metrics in the athletic industry
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -352,7 +352,7 @@ export const CompetitorSection = () => {
             <span>Top Prompt Battleground</span>
           </CardTitle>
           <CardDescription>
-            See which brands win on the most important AI prompts in your industry
+            See which athletic brands win on the most important AI prompts in sportswear industry
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -381,7 +381,7 @@ export const CompetitorSection = () => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Target className="w-4 h-4 text-blue-500" />
-                    <span className="text-sm text-muted-foreground">Your Result:</span>
+                    <span className="text-sm text-muted-foreground">Nike's Result:</span>
                     <span className={`font-semibold ${
                       prompt.yourResult === "Not Mentioned" ? "text-red-600" : "text-orange-600"
                     }`}>
@@ -393,8 +393,8 @@ export const CompetitorSection = () => {
                 {prompt.yourResult === "Not Mentioned" && (
                   <div className="mt-3 p-3 bg-red-50 rounded-lg border-l-4 border-red-400">
                     <p className="text-sm text-red-700">
-                      <strong>Opportunity:</strong> This high-impact prompt represents a key visibility gap. 
-                      Consider creating content that addresses this query.
+                      <strong>Opportunity:</strong> This high-impact athletic prompt represents a key visibility gap. 
+                      Consider creating Nike content that addresses this sportswear query.
                     </p>
                   </div>
                 )}
@@ -528,7 +528,7 @@ export const CompetitorSection = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-32">Metric</TableHead>
-                    <TableHead className="text-center">Your Brand</TableHead>
+                    <TableHead className="text-center">Nike</TableHead>
                     {competitors
                       .filter(c => selectedCompetitors.includes(c.name))
                       .map(competitor => (
@@ -637,21 +637,25 @@ export const CompetitorSection = () => {
                 <h4 className="text-lg font-semibold mb-4">AI Mentions Trend (Last 30 Days)</h4>
                 <ChartContainer
                   config={{
-                    "Your Brand": {
-                      label: "Your Brand",
+                    "Nike": {
+                      label: "Nike",
                       color: "hsl(var(--chart-1))",
                     },
-                    "DataViz Pro": {
-                      label: "DataViz Pro",
+                    "Adidas": {
+                      label: "Adidas",
                       color: "hsl(var(--chart-2))",
                     },
-                    "Analytics Master": {
-                      label: "Analytics Master", 
+                    "Under Armour": {
+                      label: "Under Armour", 
                       color: "hsl(var(--chart-3))",
                     },
-                    "ChartBuilder": {
-                      label: "ChartBuilder",
+                    "New Balance": {
+                      label: "New Balance",
                       color: "hsl(var(--chart-4))",
+                    },
+                    "Puma": {
+                      label: "Puma",
+                      color: "hsl(var(--chart-5))",
                     },
                   }}
                   className="h-64"
@@ -663,31 +667,39 @@ export const CompetitorSection = () => {
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Line 
                         type="monotone" 
-                        dataKey="Your Brand" 
+                        dataKey="Nike" 
                         stroke="hsl(var(--chart-1))" 
                         strokeWidth={3}
                       />
-                      {selectedCompetitors.includes("DataViz Pro") && (
+                      {selectedCompetitors.includes("Adidas") && (
                         <Line 
                           type="monotone" 
-                          dataKey="DataViz Pro" 
+                          dataKey="Adidas" 
                           stroke="hsl(var(--chart-2))" 
                           strokeWidth={2}
                         />
                       )}
-                      {selectedCompetitors.includes("Analytics Master") && (
+                      {selectedCompetitors.includes("Under Armour") && (
                         <Line 
                           type="monotone" 
-                          dataKey="Analytics Master" 
+                          dataKey="Under Armour" 
                           stroke="hsl(var(--chart-3))" 
                           strokeWidth={2}
                         />
                       )}
-                      {selectedCompetitors.includes("ChartBuilder") && (
+                      {selectedCompetitors.includes("New Balance") && (
                         <Line 
                           type="monotone" 
-                          dataKey="ChartBuilder" 
+                          dataKey="New Balance" 
                           stroke="hsl(var(--chart-4))" 
+                          strokeWidth={2}
+                        />
+                      )}
+                      {selectedCompetitors.includes("Puma") && (
+                        <Line 
+                          type="monotone" 
+                          dataKey="Puma" 
+                          stroke="hsl(var(--chart-5))" 
                           strokeWidth={2}
                         />
                       )}
@@ -757,7 +769,7 @@ export const CompetitorSection = () => {
         <CardHeader>
           <CardTitle>Competitive Opportunities</CardTitle>
           <CardDescription>
-            Areas where you can gain advantage over competitors in AI visibility
+            Areas where Nike can gain advantage over athletic competitors in AI visibility
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -767,15 +779,15 @@ export const CompetitorSection = () => {
               <ul className="space-y-2">
                 <li className="text-sm text-gray-600 flex items-center">
                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></div>
-                  FAQ sections missing from 75% of competitors
+                  Athletic performance content gaps among 75% of competitors
                 </li>
                 <li className="text-sm text-gray-600 flex items-center">
                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></div>
-                  Limited structured data implementation
+                  Limited sustainability messaging implementation
                 </li>
                 <li className="text-sm text-gray-600 flex items-center">
                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></div>
-                  Weak content on emerging AI trends
+                  Weak content on emerging athletic technologies
                 </li>
               </ul>
             </div>
@@ -784,15 +796,15 @@ export const CompetitorSection = () => {
               <ul className="space-y-2">
                 <li className="text-sm text-gray-600 flex items-center">
                   <div className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></div>
-                  DataViz Pro gaining AI mention share rapidly
+                  Adidas gaining AI mention share rapidly in athletic sector
                 </li>
                 <li className="text-sm text-gray-600 flex items-center">
                   <div className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></div>
-                  InsightFlow improving sentiment scores
+                  Under Armour improving sentiment scores with tech focus
                 </li>
                 <li className="text-sm text-gray-600 flex items-center">
                   <div className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></div>
-                  Industry moving toward real-time analytics
+                  Industry moving toward sustainable athletic wear
                 </li>
               </ul>
             </div>
