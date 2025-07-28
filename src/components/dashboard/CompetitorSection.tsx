@@ -72,7 +72,7 @@ export const CompetitorSection = () => {
       <Card className="border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Target className="w-5 h-5 text-blue-600" />
+            <img src="/lovable-uploads/9ed4aa18-f1e1-454e-9a51-5342807e8e7a.png" alt="Competitive Landscape" className="w-5 h-5" />
             <span>Competitive AI Landscape</span>
           </CardTitle>
           <CardDescription>

@@ -251,7 +251,7 @@ const Index = () => {
                       <Badge variant="secondary" className="ml-1.5 text-xs bg-orange-100 text-orange-700 border-orange-200">new</Badge>
                     </TabsTrigger>
                     <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <img src="/lovable-uploads/1cf17ddb-b3b7-461d-a124-9c38bcc38fde.png" alt="Competitors" className="w-3 h-3" />
+                      <img src="/lovable-uploads/1cf17ddb-b3b7-461d-a124-9c38bcc38fde.png" alt="Competitors" className="w-4 h-4" />
                       <span>Competitors</span>
                     </TabsTrigger>
                     <TabsTrigger value="trends" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
