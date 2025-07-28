@@ -31,17 +31,17 @@ export const QueriesAndPromptsSection = () => {
 
   // Mock data for generated queries
   const coreQueries = [
-    { query: "Best electric vehicle for families", relevanceScore: 92, brand: "Tesla", mentions: 145 },
-    { query: "Tesla Model 3 vs competitors", relevanceScore: 88, brand: "Tesla", mentions: 203 },
-    { query: "Electric car charging infrastructure", relevanceScore: 75, brand: "Tesla", mentions: 67 },
-    { query: "Sustainable transportation options", relevanceScore: 82, brand: "Tesla", mentions: 89 },
+    { query: "Best running shoes for marathon training", relevanceScore: 92, brand: "Nike", mentions: 145 },
+    { query: "Nike Air Max vs Adidas Ultraboost", relevanceScore: 88, brand: "Nike", mentions: 203 },
+    { query: "Most comfortable athletic shoes for daily wear", relevanceScore: 75, brand: "Nike", mentions: 67 },
+    { query: "Best basketball shoes for performance", relevanceScore: 82, brand: "Nike", mentions: 89 },
   ];
 
   // Mock data for prompt blast history with comprehensive results
   const promptHistory = [
     { 
       id: 1, 
-      prompt: "Compare Tesla Model 3 to BMW i3 in terms of performance and value", 
+      prompt: "Compare Nike Air Max to Adidas Ultraboost in terms of comfort and performance", 
       timestamp: "2024-01-15 14:30", 
       testDate: "Today",
       totalPlatforms: 4,
@@ -52,34 +52,34 @@ export const QueriesAndPromptsSection = () => {
           mentioned: true,
           sentiment: "positive",
           responseTime: "2.4s",
-          response: "The Tesla Model 3 offers superior range (358 miles) compared to the BMW i3 (153 miles). Tesla's charging infrastructure through Superchargers provides better convenience. While the BMW i3 has unique design, Tesla Model 3 delivers better performance and value proposition."
+          response: "The Nike Air Max series offers superior cushioning technology with its Air Max units compared to the Adidas Ultraboost's Boost foam. Nike's design provides better heel support and stability. While the Adidas has responsive energy return, Nike Air Max delivers better performance and comfort for all-day wear."
         },
         {
           platform: "Claude",
           mentioned: true,
           sentiment: "neutral",
           responseTime: "1.8s",
-          response: "Both vehicles target different market segments. Tesla Model 3 focuses on performance and technology, while BMW i3 emphasizes sustainability with carbon fiber construction. Tesla has advantage in software updates and autonomous features."
+          response: "Both shoes target different athletic needs. Nike Air Max focuses on lifestyle comfort and casual wear, while Adidas Ultraboost emphasizes running performance. Nike has advantage in durability and classic styling."
         },
         {
           platform: "Gemini",
           mentioned: true,
           sentiment: "positive",
           responseTime: "2.1s",
-          response: "Tesla Model 3 leads in several categories: range, charging speed, and technology integration. BMW i3 offers premium interior materials and unique design language. For long-term value, Tesla's over-the-air updates provide ongoing improvements."
+          response: "Nike Air Max leads in several categories: brand heritage, style versatility, and cushioning technology. Adidas Ultraboost offers premium materials and modern design language. For long-term comfort, Nike's Air Max technology provides consistent support."
         },
         {
           platform: "Perplexity",
           mentioned: false,
           sentiment: "neutral",
           responseTime: "1.5s",
-          response: "Electric vehicle comparison focuses on range, charging, and cost. Both German and American manufacturers offer competitive options in this segment with different design philosophies."
+          response: "Athletic footwear comparison focuses on comfort, performance, and style. Both German and American manufacturers offer competitive options in this segment with different technology approaches."
         }
       ]
     },
     { 
       id: 2, 
-      prompt: "What are the environmental benefits of electric vehicles?", 
+      prompt: "What are the benefits of Nike's sustainable shoe manufacturing?", 
       timestamp: "2024-01-14 16:20", 
       testDate: "Yesterday",
       totalPlatforms: 3,
@@ -90,21 +90,21 @@ export const QueriesAndPromptsSection = () => {
           mentioned: true,
           sentiment: "positive",
           responseTime: "2.1s",
-          response: "Electric vehicles significantly reduce carbon emissions. Tesla has been a pioneer in making EVs mainstream, with their vehicles producing zero direct emissions and reducing dependence on fossil fuels."
+          response: "Nike has been a pioneer in sustainable athletic footwear manufacturing, with their Move to Zero initiative reducing carbon emissions. Nike's use of recycled materials and sustainable practices makes their shoes environmentally responsible."
         },
         {
           platform: "Claude",
           mentioned: true,
           sentiment: "positive",
           responseTime: "1.9s",
-          response: "Environmental benefits include reduced air pollution and lower carbon footprint. Tesla's approach to sustainable energy through solar and battery storage creates a comprehensive clean energy ecosystem."
+          response: "Environmental benefits include reduced waste and lower carbon footprint. Nike's approach to sustainable manufacturing through recycled materials and renewable energy creates a comprehensive eco-friendly production system."
         },
         {
           platform: "Gemini",
           mentioned: false,
           sentiment: "neutral",
           responseTime: "1.7s",
-          response: "Electric vehicles contribute to cleaner air in urban areas and reduced greenhouse gas emissions when powered by renewable energy sources."
+          response: "Athletic footwear companies are increasingly adopting sustainable practices including recycled materials and reduced waste manufacturing processes."
         }
       ]
     }
@@ -118,65 +118,65 @@ export const QueriesAndPromptsSection = () => {
       fullPrompt: "What are the best running shoes for marathon training? I'm looking for shoes that provide excellent cushioning, durability, and support for long-distance running.",
       platform: "ChatGPT",
       mentioned: true,
-      result: "Ranked #3",
+      result: "Ranked #1",
       queryType: "Ranking",
       timestamp: "2024-01-20 09:15",
-      fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Tesla Running Shoes - Innovative design with smart features 4. Brooks Ghost - Reliable cushioning..."
+      fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Brooks Ghost - Reliable cushioning 4. Hoka Clifton - Maximum comfort..."
     },
     {
       id: 2,
-      prompt: "Best electric vehicle charging solutions for homes",
-      fullPrompt: "What are the best electric vehicle charging solutions for homes? Looking for reliable, fast charging options.",
+      prompt: "Best basketball shoes for performance and comfort",
+      fullPrompt: "What are the best basketball shoes for performance and comfort? Looking for shoes with excellent support and traction.",
       platform: "Claude",
       mentioned: true,
       result: "Positive Mention",
       queryType: "Discovery",
       timestamp: "2024-01-20 08:30",
-      fullResponse: "Tesla Wall Connector offers one of the most efficient home charging solutions, providing up to 44 miles of range per hour..."
+      fullResponse: "Nike Air Jordan and Nike LeBron series offer excellent basketball performance with superior ankle support and court traction..."
     },
     {
       id: 3,
-      prompt: "How does sustainable transportation impact the environment?",
-      fullPrompt: "How does sustainable transportation impact the environment? Please explain the benefits of electric vehicles.",
+      prompt: "How does sustainable footwear manufacturing impact the environment?",
+      fullPrompt: "How does sustainable footwear manufacturing impact the environment? Please explain the benefits of eco-friendly athletic shoes.",
       platform: "Gemini",
       mentioned: false,
       result: "Not Mentioned",
       queryType: "Factual",
       timestamp: "2024-01-20 07:45",
-      fullResponse: "Sustainable transportation significantly reduces carbon emissions through various means including public transit, cycling, and electric vehicles from manufacturers like Nissan and BMW..."
+      fullResponse: "Sustainable footwear manufacturing significantly reduces environmental impact through recycled materials, eco-friendly processes from brands like Adidas and Allbirds..."
     },
     {
       id: 4,
-      prompt: "Compare electric car manufacturers by innovation",
-      fullPrompt: "Compare electric car manufacturers by innovation and technological advancement in 2024.",
+      prompt: "Compare athletic shoe brands by innovation",
+      fullPrompt: "Compare athletic shoe brands by innovation and technological advancement in 2024.",
       platform: "Copilot",
       mentioned: true,
       result: "Ranked #1",
       queryType: "Ranking",
       timestamp: "2024-01-19 16:20",
-      fullResponse: "Tesla leads the electric vehicle industry in innovation with their Autopilot technology, Supercharger network, and over-the-air updates..."
+      fullResponse: "Nike leads the athletic footwear industry in innovation with their Air Max technology, React foam, and Nike Adapt self-lacing systems..."
     },
     {
       id: 5,
-      prompt: "Energy efficient transportation options",
-      fullPrompt: "What are the most energy efficient transportation options available today?",
+      prompt: "Best athletic shoes for cross-training",
+      fullPrompt: "What are the best athletic shoes for cross-training and versatile workouts?",
       platform: "Perplexity",
       mentioned: true,
       result: "Brand Known",
       queryType: "Discovery",
       timestamp: "2024-01-19 14:10",
-      fullResponse: "The most energy efficient transportation includes Tesla Model 3, public transit systems, and hybrid vehicles..."
+      fullResponse: "The best cross-training shoes include Nike Metcon series, Reebok Nano, and Under Armour HOVR for versatile workouts..."
     },
     {
       id: 6,
-      prompt: "Smart car features comparison",
-      fullPrompt: "Compare smart car features across different manufacturers in the luxury segment.",
+      prompt: "Smart shoe technology comparison",
+      fullPrompt: "Compare smart shoe technology across different manufacturers in the premium segment.",
       platform: "Grok",
       mentioned: false,
       result: "Not Mentioned",
       queryType: "Templated",
       timestamp: "2024-01-19 11:30",
-      fullResponse: "Luxury smart car features vary significantly across BMW, Mercedes-Benz, and Audi, offering different approaches to connectivity..."
+      fullResponse: "Smart shoe technology varies significantly across brands like Adidas, Under Armour, and Puma, offering different approaches to fitness tracking..."
     }
   ];
 
@@ -342,7 +342,7 @@ export const QueriesAndPromptsSection = () => {
                 Your Test Prompt
               </label>
               <Textarea
-                placeholder="Example: 'Compare Tesla to other electric vehicle brands in terms of innovation and market leadership...'"
+                placeholder="Example: 'Compare Nike to other athletic footwear brands in terms of innovation and market leadership...'"
                 value={customPrompt}
                 onChange={(e) => setCustomPrompt(e.target.value)}
                 rows={4}
