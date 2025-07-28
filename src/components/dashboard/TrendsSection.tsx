@@ -92,7 +92,7 @@ export const TrendsSection = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <TrendingUp className="w-5 h-5 text-blue-600" />
-            <span>AI Market Trends</span>
+            <span>AI Market Trends for Athletic Industry</span>
           </CardTitle>
           <CardDescription>
             Current and emerging trends in your industry as discussed by AI models
@@ -151,7 +151,7 @@ export const TrendsSection = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Brain className="w-5 h-5 text-purple-600" />
-            <span>AI Answer Gaps</span>
+            <span>Nike's AI Answer Gaps</span>
           </CardTitle>
           <CardDescription>
             Questions AI users ask where your brand could provide better answers

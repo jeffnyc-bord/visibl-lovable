@@ -184,7 +184,7 @@ export const OverviewSection = () => {
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
               <TrendingUp className="w-4 h-4 text-green-500" />
-              <span className="text-sm font-medium text-gray-600">Industry AI Ranking</span>
+              <span className="text-sm font-medium text-gray-600">Nike's Industry AI Ranking</span>
             </div>
             <div className="mt-2">
               <span className="text-2xl font-bold text-green-600">#1</span>
@@ -247,7 +247,7 @@ export const OverviewSection = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <TrendingUp className="w-5 h-5 text-green-500" />
-              <span>Industry AI Ranking</span>
+              <span>Nike's Industry AI Ranking</span>
             </CardTitle>
             <CardDescription>
               Top performing brands in your industry for AI visibility
@@ -432,7 +432,7 @@ export const OverviewSection = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <img src="/lovable-uploads/0fe89acd-e0a5-4388-8a50-3f25de035732.png" alt="Core Brand Queries" className="w-5 h-5" />
-            <span>Core Brand Queries</span>
+            <span>Nike Brand Queries</span>
           </CardTitle>
           <CardDescription>
             System-generated queries that are most relevant to your brand, based on AI understanding and market analysis.
@@ -471,7 +471,7 @@ export const OverviewSection = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Link className="w-5 h-5 text-orange-500" />
-            <span>Source Quality & Authority</span>
+            <span>Nike's Source Quality & Authority</span>
           </CardTitle>
           <CardDescription>
             Analysis of the sources AI platforms reference when mentioning your brand.
