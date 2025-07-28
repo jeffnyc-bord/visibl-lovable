@@ -61,7 +61,7 @@ export const OverviewSection = () => {
         <Card className="shadow-sm border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">Industry AI Ranking</CardTitle>
-            <Target className="h-4 w-4 text-purple-500" />
+            <img src="/lovable-uploads/6d96032a-5e62-4e84-b278-3c492029f934.png" alt="Industry AI Ranking" className="h-4 w-4" />
           </CardHeader>
           <CardContent className="pt-2">
             <div className="text-2xl font-bold text-gray-900">#2</div>
