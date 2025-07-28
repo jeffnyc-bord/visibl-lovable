@@ -40,10 +40,11 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
               </div>
               <p className="text-sm text-gray-600 mt-1">{monthlyPrice}/month • Billed monthly</p>
               <div className="mt-2 text-sm text-gray-500">
-                <p>• {userRole === "agency_admin" ? "Unlimited" : "5"} deep-tracked brands</p>
-                <p>• {userRole === "agency_admin" ? "Unlimited" : "10"} competitor slots</p>
+                <p>• {userRole === "agency_admin" ? "Unlimited" : "1"} deep-tracked brand{userRole === "agency_admin" ? "s" : ""}</p>
+                <p>• {userRole === "agency_admin" ? "Unlimited" : "5"} competitor slots</p>
                 <p>• {userRole === "agency_admin" ? "White-label reports" : "Standard reports"}</p>
                 {userRole === "agency_admin" && <p>• Multi-client management</p>}
+                {userRole !== "agency_admin" && <p className="text-xs mt-1 text-gray-400">This plan allows for a single deep-tracked brand and a limited number of competitors.</p>}
               </div>
             </div>
             <div className="text-right">
@@ -54,11 +55,11 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
           <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
             <div>
               <p className="text-sm font-medium text-gray-700">Brands Used</p>
-              <p className="text-2xl font-semibold">3 / {userRole === "agency_admin" ? "∞" : "5"}</p>
+              <p className="text-2xl font-semibold">{userRole === "agency_admin" ? "3" : "1"} / {userRole === "agency_admin" ? "∞" : "1"}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-700">Competitor Slots</p>
-              <p className="text-2xl font-semibold">7 / {userRole === "agency_admin" ? "∞" : "10"}</p>
+              <p className="text-2xl font-semibold">{userRole === "agency_admin" ? "7" : "2"} / {userRole === "agency_admin" ? "∞" : "5"}</p>
             </div>
           </div>
         </CardContent>
