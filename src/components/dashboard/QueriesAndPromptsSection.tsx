@@ -501,7 +501,7 @@ export const QueriesAndPromptsSection = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <History className="w-5 h-5 text-orange-500" />
-              <span>Nike's Test History</span>
+              <span>Test History</span>
             </CardTitle>
             <CardDescription>
               Previous prompt tests with detailed platform-by-platform results.

@@ -329,7 +329,7 @@ export const ExternalAIVisibilitySection = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Target className="w-5 h-5 text-blue-500" />
-            <span>Nike Brand Queries</span>
+            <span>Core Brand Queries</span>
           </CardTitle>
           <CardDescription>
             System-generated queries that are most relevant to your brand, based on AI understanding and market analysis.
@@ -369,7 +369,7 @@ export const ExternalAIVisibilitySection = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Link className="w-5 h-5 text-orange-500" />
-            <span>Nike's Source Quality & Authority</span>
+            <span>Source Quality & Authority</span>
           </CardTitle>
           <CardDescription>
             Analysis of the sources AI platforms reference when mentioning your brand.

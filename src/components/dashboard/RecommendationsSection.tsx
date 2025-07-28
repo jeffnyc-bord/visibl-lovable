@@ -215,10 +215,10 @@ export const RecommendationsSection = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-foreground">
             <BarChart3 className="w-6 h-6 text-primary" />
-            <span>Nike's AI Search Optimization Plan</span>
+            <span>AI Search Optimization Plan</span>
           </CardTitle>
           <CardDescription>
-            Prioritized recommendations to improve Nike's AI visibility and search optimization
+            Prioritized recommendations to improve your AI visibility and search optimization
           </CardDescription>
         </CardHeader>
         <CardContent>
