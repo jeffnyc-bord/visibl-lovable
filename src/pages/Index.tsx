@@ -236,7 +236,7 @@ const Index = () => {
                       <span>Overview</span>
                     </TabsTrigger>
                     <TabsTrigger value="visibility" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <Eye className="w-3 h-3" />
+                      <img src="/lovable-uploads/bbadd30d-d143-4dae-b889-4797029e56f6.png" alt="AI Visibility" className="w-3 h-3" />
                       <span>AI Visibility</span>
                     </TabsTrigger>
                     <TabsTrigger value="brand" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
