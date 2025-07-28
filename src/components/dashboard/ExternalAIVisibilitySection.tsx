@@ -126,7 +126,7 @@ export const ExternalAIVisibilitySection = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Eye className="w-4 h-4 text-blue-500" />
+              <img src="/lovable-uploads/2dfd4e75-59fe-4604-9bc8-e9465d077056.png" alt="Total Mentions" className="w-4 h-4" />
               <span className="text-sm font-medium text-gray-600">Total Mentions</span>
             </div>
             <div className="mt-2">
@@ -219,7 +219,7 @@ export const ExternalAIVisibilitySection = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <BarChart3 className="w-5 h-5 text-purple-500" />
+            <img src="/lovable-uploads/79e7d0e6-2ccc-40a4-a2c4-fa6f2406e0c6.png" alt="AI Platform Mention Distribution" className="w-5 h-5" />
             <span>AI Platform Mention Distribution</span>
           </CardTitle>
           <CardDescription>

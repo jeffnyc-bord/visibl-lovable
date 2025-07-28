@@ -246,7 +246,7 @@ const Index = () => {
                       <span>Brand & Product Visibility</span>
                     </TabsTrigger>
                     <TabsTrigger value="queries" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <img src="/lovable-uploads/392adc6b-cee0-4b19-96e4-594f05df0ecc.png" alt="Prompt Blast Lab" className="w-4 h-4" />
+                      <img src="/lovable-uploads/a89301fe-f6cc-44ec-80c8-e563e07e8f0c.png" alt="Prompt Blast Lab" className="w-4 h-4" />
                       <span>Prompt Blast Lab</span>
                     </TabsTrigger>
                     <TabsTrigger value="competitors" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
