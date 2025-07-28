@@ -231,12 +231,11 @@ const Index = () => {
     if (userRole === "business_user") {
       return [
         ...baseItems,
-        { label: "My Brand Analytics", icon: Building, active: activeView === "brands", view: "brands" },
+        { label: "Brand Management", icon: Building, active: activeView === "brands", view: "brands" },
       ];
     } else {
       return [
         ...baseItems,
-        { label: "Brand Management", icon: Building, active: activeView === "brands", view: "brands" },
         { label: "Agency Admin", icon: Users, active: activeView === "agency", view: "agency" },
       ];
     }
