@@ -1,0 +1,377 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import { Download, FileText, CheckCircle, CalendarIcon, Upload, Building2, Sparkles } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+interface ReportExportDialogProps {
+  trigger: React.ReactNode;
+  brandName?: string;
+  reportType?: "full" | "ai-mentions" | "visibility";
+}
+
+interface ReportSection {
+  id: string;
+  label: string;
+  description: string;
+  enabled: boolean;
+}
+
+export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = "full" }: ReportExportDialogProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
+  const [step, setStep] = useState(1);
+  const { toast } = useToast();
+
+  // Report customization state
+  const [dateRange, setDateRange] = useState({
+    from: new Date(2024, 0, 1),
+    to: new Date()
+  });
+  const [reportTitle, setReportTitle] = useState(`${brandName} AI Visibility Report`);
+  const [executiveSummary, setExecutiveSummary] = useState("");
+  const [clientLogo, setClientLogo] = useState<File | null>(null);
+  const [agencyLogo, setAgencyLogo] = useState<File | null>(null);
+  const [agencyName, setAgencyName] = useState("");
+
+  const [reportSections, setReportSections] = useState<ReportSection[]>([
+    { id: "executive-summary", label: "Executive Summary", description: "AI-generated overview of key findings", enabled: true },
+    { id: "ai-visibility-score", label: "AI Visibility Score", description: "Overall performance metrics and trends", enabled: true },
+    { id: "ai-mentions", label: "AI Mentions Analysis", description: "Platform-by-platform mention breakdown", enabled: reportType === "full" || reportType === "ai-mentions" },
+    { id: "product-performance", label: "Product Performance", description: "Top and bottom performing products", enabled: reportType === "full" || reportType === "visibility" },
+    { id: "competitor-analysis", label: "Competitor Analysis", description: "Brand positioning vs competitors", enabled: reportType === "full" },
+    { id: "recommendations", label: "Strategic Recommendations", description: "Actionable optimization opportunities", enabled: true },
+    { id: "technical-analysis", label: "Technical Crawlability", description: "SEO and technical performance insights", enabled: reportType === "full" },
+    { id: "trends", label: "Trend Analysis", description: "Market trends and emerging opportunities", enabled: reportType === "full" }
+  ]);
+
+  const handleSectionToggle = (sectionId: string, enabled: boolean) => {
+    setReportSections(prev => 
+      prev.map(section => 
+        section.id === sectionId ? { ...section, enabled } : section
+      )
+    );
+  };
+
+  const handleFileUpload = (file: File, type: 'client' | 'agency') => {
+    if (type === 'client') {
+      setClientLogo(file);
+    } else {
+      setAgencyLogo(file);
+    }
+  };
+
+  const handleExport = () => {
+    const enabledSections = reportSections.filter(section => section.enabled);
+    if (enabledSections.length === 0) {
+      toast({
+        title: "No sections selected",
+        description: "Please select at least one section to include in your report.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsExporting(true);
+    setExportProgress(0);
+    
+    // Simulate export progress
+    const progressInterval = setInterval(() => {
+      setExportProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 400);
+    
+    setTimeout(() => {
+      clearInterval(progressInterval);
+      setExportProgress(100);
+      setTimeout(() => {
+        setIsExporting(false);
+        setExportProgress(0);
+        setIsOpen(false);
+        setStep(1);
+        toast({
+          title: "Report Export Complete",
+          description: `Your ${reportType === 'full' ? 'comprehensive' : 'focused'} ${brandName} report has been downloaded successfully.`,
+        });
+      }, 1500);
+    }, 6000);
+  };
+
+  const resetForm = () => {
+    setStep(1);
+    setReportTitle(`${brandName} AI Visibility Report`);
+    setExecutiveSummary("");
+    setClientLogo(null);
+    setAgencyLogo(null);
+    setAgencyName("");
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      setIsOpen(open);
+      if (!open) resetForm();
+    }}>
+      <DialogTrigger asChild>
+        {trigger}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        {!isExporting ? (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <FileText className="w-5 h-5 text-primary" />
+                <span>Export {reportType === 'full' ? 'Comprehensive' : 'Focused'} Report</span>
+              </DialogTitle>
+              <DialogDescription>
+                Generate a professional, branded report for {brandName} with customizable sections and white-label options.
+              </DialogDescription>
+            </DialogHeader>
+
+            {step === 1 && (
+              <div className="space-y-6 py-4">
+                {/* Date Range Selection */}
+                <div className="space-y-3">
+                  <Label className="text-base font-medium">Report Period</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm text-muted-foreground">From Date</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full justify-start text-left font-normal">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dateRange.from ? format(dateRange.from, "PPP") : "Pick a date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateRange.from}
+                            onSelect={(date) => date && setDateRange(prev => ({ ...prev, from: date }))}
+                            initialFocus
+                            className="pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm text-muted-foreground">To Date</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full justify-start text-left font-normal">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dateRange.to ? format(dateRange.to, "PPP") : "Pick a date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateRange.to}
+                            onSelect={(date) => date && setDateRange(prev => ({ ...prev, to: date }))}
+                            initialFocus
+                            className="pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Report Sections */}
+                <div className="space-y-3">
+                  <Label className="text-base font-medium">Report Sections</Label>
+                  <div className="space-y-3 max-h-64 overflow-y-auto border rounded-lg p-4">
+                    {reportSections.map((section) => (
+                      <div key={section.id} className="flex items-start space-x-3">
+                        <Checkbox
+                          id={section.id}
+                          checked={section.enabled}
+                          onCheckedChange={(checked) => handleSectionToggle(section.id, checked as boolean)}
+                        />
+                        <div className="grid gap-1.5 leading-none">
+                          <label
+                            htmlFor={section.id}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                            {section.label}
+                          </label>
+                          <p className="text-xs text-muted-foreground">
+                            {section.description}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setIsOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => setStep(2)}>
+                    Next: Branding
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-6 py-4">
+                {/* Report Title */}
+                <div className="space-y-2">
+                  <Label className="text-base font-medium">Report Title</Label>
+                  <Input
+                    value={reportTitle}
+                    onChange={(e) => setReportTitle(e.target.value)}
+                    placeholder="Enter custom report title"
+                  />
+                </div>
+
+                {/* Executive Summary */}
+                <div className="space-y-2">
+                  <Label className="text-base font-medium">Custom Executive Summary (Optional)</Label>
+                  <Textarea
+                    value={executiveSummary}
+                    onChange={(e) => setExecutiveSummary(e.target.value)}
+                    placeholder="Add a custom introduction or leave blank for AI-generated summary"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Agency Branding */}
+                <div className="space-y-4 p-4 border rounded-lg bg-muted/20">
+                  <div className="flex items-center space-x-2">
+                    <Building2 className="w-4 h-4 text-primary" />
+                    <Label className="text-base font-medium">White-Label Options</Label>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-sm font-medium">Agency Name</Label>
+                      <Input
+                        value={agencyName}
+                        onChange={(e) => setAgencyName(e.target.value)}
+                        placeholder="Your agency name (for report branding)"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium">Client Logo</Label>
+                        <div className="mt-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'client')}
+                            className="hidden"
+                            id="client-logo"
+                          />
+                          <label htmlFor="client-logo" className="cursor-pointer">
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+                              <Upload className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
+                              <p className="text-xs text-muted-foreground">
+                                {clientLogo ? clientLogo.name : "Upload client logo"}
+                              </p>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-sm font-medium">Agency Logo</Label>
+                        <div className="mt-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'agency')}
+                            className="hidden"
+                            id="agency-logo"
+                          />
+                          <label htmlFor="agency-logo" className="cursor-pointer">
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+                              <Upload className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
+                              <p className="text-xs text-muted-foreground">
+                                {agencyLogo ? agencyLogo.name : "Upload agency logo"}
+                              </p>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-between">
+                  <Button variant="outline" onClick={() => setStep(1)}>
+                    Back
+                  </Button>
+                  <div className="space-x-2">
+                    <Button variant="outline" onClick={() => setIsOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleExport} className="bg-gradient-to-r from-primary to-primary/80">
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Generate Report
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="space-y-6 py-8">
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full flex items-center justify-center mx-auto">
+                {exportProgress === 100 ? (
+                  <CheckCircle className="w-10 h-10 text-green-600" />
+                ) : (
+                  <FileText className="w-10 h-10 text-primary animate-pulse" />
+                )}
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  {exportProgress === 100 ? "Report Ready!" : "Generating Report..."}
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  {exportProgress === 100 ? 
+                    "Your professional report has been generated and will download shortly." :
+                    exportProgress < 20 ? "Collecting data from all platforms..." :
+                    exportProgress < 40 ? "Analyzing AI visibility metrics..." :
+                    exportProgress < 60 ? "Generating insights and recommendations..." :
+                    exportProgress < 80 ? "Applying branding and formatting..." :
+                    "Finalizing PDF report..."
+                  }
+                </p>
+              </div>
+              <div className="space-y-2 max-w-sm mx-auto">
+                <div className="w-full bg-muted rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-primary to-primary/80 h-3 rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${Math.min(exportProgress, 100)}%` }}
+                  />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {Math.round(exportProgress)}% complete
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};

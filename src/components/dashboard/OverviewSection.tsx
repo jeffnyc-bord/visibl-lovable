@@ -4,7 +4,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExportDialog } from "@/components/ui/export-dialog";
-import { TrendingUp, TrendingDown, Brain, Search, Target, Download } from "lucide-react";
+import { ReportExportDialog } from "@/components/ui/report-export-dialog";
+import { TrendingUp, TrendingDown, Brain, Search, Target, Download, FileText } from "lucide-react";
 
 export const OverviewSection = () => {
   const visibilityData = [
@@ -25,7 +26,25 @@ export const OverviewSection = () => {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Export Report Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Executive Dashboard</h2>
+          <p className="text-muted-foreground">Comprehensive AI visibility overview for Tesla</p>
+        </div>
+        <ReportExportDialog
+          trigger={
+            <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg">
+              <FileText className="w-4 h-4 mr-2" />
+              Export Report
+            </Button>
+          }
+          brandName="Tesla"
+          reportType="full"
+        />
+      </div>
+
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="shadow-sm border-gray-200">
