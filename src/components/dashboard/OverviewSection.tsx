@@ -133,7 +133,7 @@ export const OverviewSection = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">AI Visibility Overview</h2>
-          <p className="text-muted-foreground">Comprehensive AI visibility metrics and platform insights for Tesla</p>
+          <p className="text-muted-foreground">Comprehensive AI visibility metrics and platform insights for Nike</p>
         </div>
         <ReportExportDialog
           trigger={
