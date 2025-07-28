@@ -83,14 +83,14 @@ export const OverviewSection = () => {
   ];
 
   const COLORS = [
-    'hsl(var(--primary))', 
-    'hsl(var(--secondary))', 
-    'hsl(220, 14%, 69%)', 
-    'hsl(220, 14%, 83%)',
-    'hsl(280, 70%, 65%)',
-    'hsl(200, 80%, 60%)',
-    'hsl(120, 60%, 55%)',
-    'hsl(35, 75%, 60%)'
+    '#3B82F6', // Blue
+    '#10B981', // Green  
+    '#F59E0B', // Orange
+    '#EF4444', // Red
+    '#8B5CF6', // Purple
+    '#06B6D4', // Cyan
+    '#84CC16', // Lime
+    '#F97316'  // Orange-red
   ];
 
   const getSentimentColor = (sentiment: string) => {
@@ -125,7 +125,7 @@ export const OverviewSection = () => {
         }
       ];
 
-  const pieChartColors = showAllPlatforms ? COLORS : [...COLORS.slice(0, 4), '#9CA3AF'];
+  const pieChartColors = showAllPlatforms ? COLORS : [...COLORS.slice(0, 4), '#6B7280'];
 
   return (
     <div className="space-y-6">
