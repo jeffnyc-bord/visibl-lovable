@@ -236,7 +236,7 @@ export const QueriesAndPromptsSection = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Zap className="w-5 h-5 text-purple-500" />
+              <img src="/lovable-uploads/16e9942d-2eaa-4c17-92d4-5ba4165ec013.png" alt="Custom Prompt Blast" className="w-5 h-5" />
               <span>Custom Prompt Blast</span>
             </CardTitle>
             <CardDescription>
