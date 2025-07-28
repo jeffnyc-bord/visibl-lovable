@@ -113,6 +113,20 @@ export const OverviewSection = () => {
 
   const displayedPlatforms = showAllPlatforms ? platformMentions : platformMentions.slice(0, 4);
 
+  // Create pie chart data - show top 4 platforms + "Others" when collapsed
+  const pieChartData = showAllPlatforms 
+    ? platformMentionsData 
+    : [
+        ...platformMentionsData.slice(0, 4),
+        {
+          platform: "Others",
+          mentions: platformMentionsData.slice(4).reduce((sum, p) => sum + p.mentions, 0),
+          percentage: platformMentionsData.slice(4).reduce((sum, p) => sum + p.percentage, 0)
+        }
+      ];
+
+  const pieChartColors = showAllPlatforms ? COLORS : [...COLORS.slice(0, 4), '#9CA3AF'];
+
   return (
     <div className="space-y-6">
       {/* Export Report Header */}
@@ -286,11 +300,21 @@ export const OverviewSection = () => {
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Mentions by Platform</h4>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-medium text-gray-700">Mentions by Platform</h4>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAllPlatforms(!showAllPlatforms)}
+                  className="text-xs h-6"
+                >
+                  {showAllPlatforms ? "Show Less" : "Show All"}
+                </Button>
+              </div>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
-                    data={platformMentionsData}
+                    data={pieChartData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -299,8 +323,8 @@ export const OverviewSection = () => {
                     fill="#8884d8"
                     dataKey="mentions"
                   >
-                    {platformMentionsData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    {pieChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={pieChartColors[index % pieChartColors.length]} />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -310,12 +334,12 @@ export const OverviewSection = () => {
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-3">Platform Breakdown</h4>
               <div className="space-y-3">
-                {platformMentionsData.map((platform, index) => (
+                {pieChartData.map((platform, index) => (
                   <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div 
                         className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                        style={{ backgroundColor: pieChartColors[index % pieChartColors.length] }}
                       ></div>
                       <span className="text-sm font-medium">{platform.platform}</span>
                     </div>
