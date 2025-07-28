@@ -18,7 +18,13 @@ import {
   Eye,
   Edit,
   Trash2,
-  UserPlus
+  UserPlus,
+  FileText,
+  ArrowUp,
+  ArrowDown,
+  ExternalLink,
+  Upload,
+  Palette
 } from "lucide-react";
 
 export const AgencyAdminSection = () => {
@@ -31,8 +37,10 @@ export const AgencyAdminSection = () => {
       tier: "Professional",
       deepTrackedBrands: 2,
       competitorBrands: 8,
-      lastReport: "2 hours ago",
-      avgVisibilityScore: 78
+      lastScan: "2 hours ago",
+      avgVisibilityScore: 78,
+      visibilityTrend: { value: 5, direction: "up" },
+      url: "techstartup.com"
     },
     {
       id: 2,
@@ -42,8 +50,10 @@ export const AgencyAdminSection = () => {
       tier: "Enterprise",
       deepTrackedBrands: 5,
       competitorBrands: 15,
-      lastReport: "1 hour ago",
-      avgVisibilityScore: 82
+      lastScan: "1 hour ago",
+      avgVisibilityScore: 82,
+      visibilityTrend: { value: 3, direction: "up" },
+      url: "marketingco.com"
     },
     {
       id: 3,
@@ -53,10 +63,46 @@ export const AgencyAdminSection = () => {
       tier: "Basic",
       deepTrackedBrands: 1,
       competitorBrands: 5,
-      lastReport: "6 hours ago",
-      avgVisibilityScore: 65
+      lastScan: "6 hours ago",
+      avgVisibilityScore: 65,
+      visibilityTrend: { value: 2, direction: "down" },
+      url: "restaurants.com"
+    },
+    {
+      id: 4,
+      name: "E-commerce Store",
+      email: "team@ecomstore.com",
+      status: "Active",
+      tier: "Professional",
+      deepTrackedBrands: 3,
+      competitorBrands: 12,
+      lastScan: "30 minutes ago",
+      avgVisibilityScore: 91,
+      visibilityTrend: { value: 7, direction: "up" },
+      url: "ecomstore.com"
     }
   ]);
+
+  const handleViewDashboard = (clientId: number) => {
+    console.log(`Navigating to dashboard for client ${clientId}`);
+    // In a real app, this would navigate to the client's dashboard
+  };
+
+  const handleGenerateReport = (clientId: number, clientName: string) => {
+    console.log(`Generating report for ${clientName}`);
+    // In a real app, this would trigger report generation
+  };
+
+  const handleEditClient = (clientId: number) => {
+    console.log(`Editing client ${clientId}`);
+    // In a real app, this would open edit modal
+  };
+
+  const handleDeleteClient = (clientId: number) => {
+    if (confirm("Are you sure you want to delete this client? This action cannot be undone.")) {
+      setClients(clients.filter(client => client.id !== clientId));
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -82,11 +128,13 @@ export const AgencyAdminSection = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="shadow-sm border-gray-200">
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Users className="w-4 h-4 text-blue-600" />
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{clients.length}</p>
-                <p className="text-xs text-gray-600">Active Clients</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Users className="w-4 h-4 text-blue-600" />
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{clients.filter(c => c.status === "Active").length}</p>
+                  <p className="text-xs text-gray-600">Active Clients</p>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -94,13 +142,15 @@ export const AgencyAdminSection = () => {
         
         <Card className="shadow-sm border-gray-200">
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Building className="w-4 h-4 text-green-600" />
-              <div>
-                <p className="text-2xl font-bold text-gray-900">
-                  {clients.reduce((sum, client) => sum + client.deepTrackedBrands, 0)}
-                </p>
-                <p className="text-xs text-gray-600">Deep Tracked Brands</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Building className="w-4 h-4 text-green-600" />
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {clients.reduce((sum, client) => sum + client.deepTrackedBrands, 0)}
+                  </p>
+                  <p className="text-xs text-gray-600">Brands Under Management</p>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -108,13 +158,21 @@ export const AgencyAdminSection = () => {
         
         <Card className="shadow-sm border-gray-200">
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4 text-purple-600" />
-              <div>
-                <p className="text-2xl font-bold text-gray-900">
-                  {Math.round(clients.reduce((sum, client) => sum + client.avgVisibilityScore, 0) / clients.length)}%
-                </p>
-                <p className="text-xs text-gray-600">Avg Visibility Score</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-purple-600" />
+                <div>
+                  <div className="flex items-center space-x-1">
+                    <p className="text-2xl font-bold text-gray-900">
+                      {Math.round(clients.reduce((sum, client) => sum + client.avgVisibilityScore, 0) / clients.length)}%
+                    </p>
+                    <div className="flex items-center text-green-600">
+                      <ArrowUp className="w-3 h-3" />
+                      <span className="text-xs font-medium">+2%</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-600">Avg Visibility Score</p>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -122,12 +180,18 @@ export const AgencyAdminSection = () => {
         
         <Card className="shadow-sm border-gray-200">
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-4 h-4 text-orange-600" />
-              <div>
-                <p className="text-2xl font-bold text-gray-900">24</p>
-                <p className="text-xs text-gray-600">Reports This Week</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-orange-600" />
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">24</p>
+                  <p className="text-xs text-gray-600">Reports This Week</p>
+                </div>
               </div>
+              <Button variant="ghost" size="sm" className="text-xs text-blue-600 hover:text-blue-800">
+                <ExternalLink className="w-3 h-3 mr-1" />
+                View All
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -157,52 +221,115 @@ export const AgencyAdminSection = () => {
             <CardContent>
               <div className="space-y-3">
                 {clients.map((client) => (
-                  <div key={client.id} className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                  <div 
+                    key={client.id} 
+                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-blue-300 transition-all cursor-pointer group"
+                    onClick={() => handleViewDashboard(client.id)}
+                  >
                     <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
                         <span className="text-white font-semibold text-sm">
                           {client.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                         </span>
                       </div>
                       
                       <div>
-                        <h3 className="font-medium text-gray-900 text-sm">{client.name}</h3>
-                        <div className="flex items-center space-x-2 text-xs text-gray-600">
-                          <Mail className="w-3 h-3" />
-                          <span>{client.email}</span>
+                        <h3 className="font-medium text-gray-900 text-base group-hover:text-blue-600 transition-colors">{client.name}</h3>
+                        <div className="flex items-center space-x-3 text-xs text-gray-600 mt-1">
+                          <div className="flex items-center space-x-1">
+                            <Mail className="w-3 h-3" />
+                            <span>{client.email}</span>
+                          </div>
+                          <span>•</span>
+                          <span className="text-blue-600 font-medium">{client.url}</span>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-6">
-                      <div className="text-right">
+                    <div className="flex items-center space-x-8">
+                      <div className="text-center">
                         <div className="flex items-center space-x-2 mb-1">
-                          <Badge className={`text-xs px-2 py-0.5 ${getStatusColor(client.status)}`}>
+                          <Badge className={`text-xs px-2 py-1 font-medium ${getStatusColor(client.status)}`}>
                             {client.status}
                           </Badge>
-                          <Badge className={`text-xs px-2 py-0.5 ${getTierColor(client.tier)}`}>
+                          <Badge className={`text-xs px-2 py-1 font-medium ${getTierColor(client.tier)}`}>
                             {client.tier}
                           </Badge>
                         </div>
-                        <p className="text-xs text-gray-600">Last report: {client.lastReport}</p>
+                        <p className="text-xs text-gray-600">Last AI Scan: {client.lastScan}</p>
                       </div>
                       
-                      <div className="text-right text-xs">
-                        <p className="text-gray-900 font-medium">
+                      <div className="text-center">
+                        <div className="flex items-center justify-center space-x-2 mb-1">
+                          <span className="text-lg font-bold text-gray-900">{client.avgVisibilityScore}%</span>
+                          <div className={`flex items-center ${
+                            client.visibilityTrend.direction === 'up' ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {client.visibilityTrend.direction === 'up' ? 
+                              <ArrowUp className="w-3 h-3" /> : 
+                              <ArrowDown className="w-3 h-3" />
+                            }
+                            <span className="text-xs font-medium">{client.visibilityTrend.value}%</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-600">Visibility Score</p>
+                      </div>
+                      
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-gray-900 mb-1">
                           {client.deepTrackedBrands} Deep / {client.competitorBrands} Comp
                         </p>
-                        <p className="text-gray-600">Visibility: {client.avgVisibilityScore}%</p>
+                        <p className="text-xs text-gray-600">Brand Limits</p>
                       </div>
                       
-                      <div className="flex items-center space-x-1">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewDashboard(client.id);
+                          }}
+                          title="View Dashboard"
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleGenerateReport(client.id, client.name);
+                          }}
+                          title="Generate Report"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditClient(client.id);
+                          }}
+                          title="Edit Client"
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="w-4 h-4" />
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClient(client.id);
+                          }}
+                          title="Delete Client"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -214,68 +341,239 @@ export const AgencyAdminSection = () => {
         </TabsContent>
 
         <TabsContent value="settings">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            {/* Agency Profile & Subscription */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="shadow-sm border-gray-200">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base text-gray-900">Agency Profile</CardTitle>
+                  <CardDescription className="text-sm text-gray-600">
+                    Basic information about your agency
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Agency Name</label>
+                    <Input placeholder="Your Agency Name" className="h-9" />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Contact Email</label>
+                    <Input placeholder="contact@youragency.com" className="h-9" />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Website</label>
+                    <Input placeholder="www.youragency.com" className="h-9" />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="shadow-sm border-gray-200">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base text-gray-900">Subscription & Billing</CardTitle>
+                  <CardDescription className="text-sm text-gray-600">
+                    Manage your agency's master subscription
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-blue-900">Enterprise Plan</span>
+                      <Badge className="bg-blue-600 text-white">Active</Badge>
+                    </div>
+                    <p className="text-sm text-blue-700">50 Deep-Tracked Brands • 200 Competitors</p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Used: 11/50 Deep Brands</span>
+                      <span className="text-gray-600">78/200 Competitors</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: '22%' }}></div>
+                    </div>
+                  </div>
+                  
+                  <Button variant="outline" className="w-full">
+                    Manage Billing
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Team Management */}
             <Card className="shadow-sm border-gray-200">
               <CardHeader className="pb-4">
-                <CardTitle className="text-base text-gray-900">Default Client Settings</CardTitle>
+                <CardTitle className="text-base text-gray-900">Team Management</CardTitle>
                 <CardDescription className="text-sm text-gray-600">
-                  Configure default settings for new client accounts
+                  Invite and manage agency team members
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Default Subscription Tier</label>
-                  <Select defaultValue="basic">
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="basic">Basic (1 Deep, 5 Competitors)</SelectItem>
-                      <SelectItem value="professional">Professional (3 Deep, 10 Competitors)</SelectItem>
-                      <SelectItem value="enterprise">Enterprise (5 Deep, 20 Competitors)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Default Report Frequency</label>
-                  <Select defaultValue="daily">
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="daily">Daily (Deep Tracked)</SelectItem>
-                      <SelectItem value="weekly">Weekly (Competitors)</SelectItem>
-                      <SelectItem value="biweekly">Bi-weekly (Competitors)</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex space-x-3">
+                    <Input placeholder="team@youragency.com" className="flex-1 h-9" />
+                    <Select defaultValue="editor">
+                      <SelectTrigger className="w-32 h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="editor">Editor</SelectItem>
+                        <SelectItem value="viewer">Viewer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white h-9">
+                      <UserPlus className="w-4 h-4 mr-2" />
+                      Invite
+                    </Button>
+                  </div>
+                  
+                  {/* Current Team Members */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-medium">JD</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">John Doe</p>
+                          <p className="text-xs text-gray-600">john@youragency.com</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">Admin</Badge>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Settings className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-medium">SM</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">Sarah Miller</p>
+                          <p className="text-xs text-gray-600">sarah@youragency.com</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">Editor</Badge>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Settings className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-            
-            <Card className="shadow-sm border-gray-200">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-base text-gray-900">Agency Branding</CardTitle>
-                <CardDescription className="text-sm text-gray-600">
-                  Customize the appearance for your clients
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Agency Name</label>
-                  <Input placeholder="Your Agency Name" className="h-9" />
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Custom Domain</label>
-                  <Input placeholder="reports.youragency.com" className="h-9" />
-                </div>
-                
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm h-9">
-                  Save Settings
-                </Button>
-              </CardContent>
-            </Card>
+
+            {/* White-Labeling & Default Settings */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="shadow-sm border-gray-200">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base text-gray-900 flex items-center">
+                    <Palette className="w-4 h-4 mr-2" />
+                    White-Labeling
+                  </CardTitle>
+                  <CardDescription className="text-sm text-gray-600">
+                    Customize reports and client-facing materials
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Agency Logo</label>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
+                        <Upload className="w-4 h-4 text-gray-400" />
+                      </div>
+                      <Button variant="outline" size="sm">
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload Logo
+                      </Button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Recommended: 200x200px, PNG or JPG</p>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Brand Color Theme</label>
+                    <div className="flex space-x-2">
+                      <div className="w-8 h-8 bg-blue-600 rounded-lg border-2 border-blue-700 cursor-pointer"></div>
+                      <div className="w-8 h-8 bg-green-600 rounded-lg border-2 border-transparent cursor-pointer"></div>
+                      <div className="w-8 h-8 bg-purple-600 rounded-lg border-2 border-transparent cursor-pointer"></div>
+                      <div className="w-8 h-8 bg-orange-600 rounded-lg border-2 border-transparent cursor-pointer"></div>
+                      <div className="w-8 h-8 bg-red-600 rounded-lg border-2 border-transparent cursor-pointer"></div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Custom Domain</label>
+                    <Input placeholder="reports.youragency.com" className="h-9" />
+                    <p className="text-xs text-gray-500 mt-1">For white-labeled client reports</p>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="shadow-sm border-gray-200">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base text-gray-900">Default Client Settings</CardTitle>
+                  <CardDescription className="text-sm text-gray-600">
+                    Configure default settings for new client accounts
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Default Subscription Tier</label>
+                    <Select defaultValue="professional">
+                      <SelectTrigger className="h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="basic">Basic (1 Deep, 5 Competitors)</SelectItem>
+                        <SelectItem value="professional">Professional (3 Deep, 10 Competitors)</SelectItem>
+                        <SelectItem value="enterprise">Enterprise (5 Deep, 20 Competitors)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Default Report Frequency</label>
+                    <Select defaultValue="daily">
+                      <SelectTrigger className="h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily">Daily (Deep Tracked)</SelectItem>
+                        <SelectItem value="weekly">Weekly (Competitors)</SelectItem>
+                        <SelectItem value="biweekly">Bi-weekly (Competitors)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">Auto-Generate Reports</label>
+                    <Select defaultValue="weekly">
+                      <SelectTrigger className="h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="disabled">Disabled</SelectItem>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm h-9">
+                    Save Settings
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </TabsContent>
       </Tabs>
