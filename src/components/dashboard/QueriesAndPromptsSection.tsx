@@ -353,20 +353,8 @@ export const QueriesAndPromptsSection = () => {
       </TabsContent>
 
       <TabsContent value="prompts" className="space-y-6">
-        {/* Prompts Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Target className="w-5 h-5 text-blue-500" />
-              <span>Prompts Analysis</span>
-            </CardTitle>
-            <CardDescription>
-              Detailed view of queries used to assess your brand's AI visibility across platforms.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {/* Filters */}
-            <div className="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+        {/* Filters */}
+        <div className="flex flex-wrap gap-4 mb-6 p-4 bg-muted/30 rounded-lg">
               <div className="flex items-center space-x-2">
                 <Filter className="w-4 h-4 text-gray-500" />
                 <span className="text-sm font-medium text-gray-700">Filters:</span>
@@ -432,129 +420,137 @@ export const QueriesAndPromptsSection = () => {
               </p>
             </div>
 
-            {/* Prompts Table */}
-            <div className="overflow-hidden rounded-xl border border-border/50 shadow-sm bg-card">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border/50">
-                    <TableHead className="w-2/5 font-semibold text-foreground py-4 px-6">Prompt</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Mentioned</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Result</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Platform</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Type</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPrompts.map((prompt, index) => (
-                    <>
-                      <TableRow 
-                        key={prompt.id} 
-                        className={`cursor-pointer hover:bg-muted/20 transition-all duration-200 border-b border-border/30 group ${
-                          index % 2 === 0 ? 'bg-background' : 'bg-muted/5'
+        {/* Prompts Table */}
+        <div className="overflow-hidden rounded-xl border border-border shadow-sm bg-background">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border">
+                <TableHead className="w-2/5 font-semibold text-foreground py-4 px-6">Prompt</TableHead>
+                <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Mentioned</TableHead>
+                <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Result</TableHead>
+                <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Platform</TableHead>
+                <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Type</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredPrompts.map((prompt, index) => (
+                <>
+                  <TableRow 
+                    key={prompt.id} 
+                    className={`cursor-pointer hover:bg-muted/20 transition-all duration-200 border-b border-border/30 group ${
+                      index % 2 === 0 ? 'bg-background' : 'bg-muted/5'
+                    }`}
+                  >
+                    <TableCell className="px-6 py-4">
+                      <div 
+                        className="flex items-start space-x-3"
+                        onClick={() => setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id)}
+                      >
+                        <div className={`mt-1 p-1 rounded-md transition-colors ${
+                          expandedPrompt === prompt.id 
+                            ? 'bg-primary/10 text-primary' 
+                            : 'text-muted-foreground group-hover:text-foreground group-hover:bg-muted/30'
+                        }`}>
+                          {expandedPrompt === prompt.id ? (
+                            <ChevronUp className="w-4 h-4" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-primary hover:text-primary/80 transition-colors mb-1 line-clamp-2">
+                            {prompt.prompt}
+                          </p>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs text-muted-foreground bg-muted/20 px-2 py-1 rounded-md">
+                              {prompt.timestamp}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center py-4">
+                      <div className="flex items-center justify-center">
+                        {prompt.mentioned ? (
+                          <img 
+                            src="/lovable-uploads/d05b928f-de69-4916-850b-f600b860758a.png" 
+                            alt="Yes" 
+                            className="w-6 h-6"
+                          />
+                        ) : (
+                          <img 
+                            src="/lovable-uploads/8dcbdc22-7aa7-4a13-9fb7-81745bf31ad7.png" 
+                            alt="No" 
+                            className="w-6 h-6"
+                          />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center py-4">
+                      <Badge 
+                        className={`text-xs font-medium px-3 py-1 border-0 shadow-sm ${
+                          prompt.result.includes('Ranked #1') 
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' :
+                          prompt.result.includes('Ranked #2') || prompt.result.includes('Ranked #3') 
+                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' :
+                          prompt.result.includes('Positive') || prompt.result.includes('Known') 
+                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400' :
+                          'bg-muted text-muted-foreground'
                         }`}
                       >
-                        <TableCell className="px-6 py-4">
-                          <div 
-                            className="flex items-start space-x-3"
-                            onClick={() => setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id)}
-                          >
-                            <div className={`mt-1 p-1 rounded-md transition-colors ${
-                              expandedPrompt === prompt.id 
-                                ? 'bg-primary/10 text-primary' 
-                                : 'text-muted-foreground group-hover:text-foreground group-hover:bg-muted/30'
-                            }`}>
-                              {expandedPrompt === prompt.id ? (
-                                <ChevronUp className="w-4 h-4" />
-                              ) : (
-                                <ChevronDown className="w-4 h-4" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-primary hover:text-primary/80 transition-colors mb-1 line-clamp-2">
-                                {prompt.prompt}
-                              </p>
-                              <div className="flex items-center space-x-2">
-                                <span className="text-xs text-muted-foreground bg-muted/20 px-2 py-1 rounded-md">
-                                  {prompt.timestamp}
-                                </span>
-                              </div>
-                            </div>
+                        {prompt.result}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center py-4">
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs font-medium border-primary/20 text-primary bg-primary/5 px-3 py-1 shadow-sm"
+                      >
+                        {prompt.platform}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center py-4">
+                      <Badge 
+                        variant="secondary" 
+                        className="text-xs font-medium bg-secondary/20 text-secondary-foreground border border-secondary/30 px-3 py-1 shadow-sm"
+                      >
+                        {prompt.queryType}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                  {expandedPrompt === prompt.id && (
+                    <TableRow className="animate-fade-in">
+                      <TableCell colSpan={5} className="bg-muted/10 border-t border-border/20 px-6 py-6">
+                        <div className="space-y-6 max-w-4xl">
+                          <div>
+                            <h4 className="font-medium text-foreground mb-2">Full Prompt:</h4>
+                            <p className="text-sm text-muted-foreground bg-background p-3 rounded border">
+                              {prompt.fullPrompt}
+                            </p>
                           </div>
-                        </TableCell>
-                        <TableCell className="text-center py-4">
-                          <div className="flex items-center justify-center">
-                            <div className={`rounded-full p-2 transition-colors ${
-                              prompt.mentioned 
-                                ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400' 
-                                : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                            }`}>
-                              {prompt.mentioned ? (
-                                <CheckCircle className="w-4 h-4" />
-                              ) : (
-                                <X className="w-4 h-4" />
-                              )}
-                            </div>
+                          <div>
+                            <h4 className="font-medium text-foreground mb-2">AI Response:</h4>
+                            <p className="text-sm text-muted-foreground bg-background p-3 rounded border">
+                              {prompt.fullResponse}
+                            </p>
                           </div>
-                        </TableCell>
-                        <TableCell className="text-center py-4">
-                          <Badge 
-                            className={`text-xs font-medium px-3 py-1 border-0 shadow-sm ${
-                              prompt.result.includes('Ranked #1') 
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' :
-                              prompt.result.includes('Ranked #2') || prompt.result.includes('Ranked #3') 
-                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' :
-                              prompt.result.includes('Positive') || prompt.result.includes('Known') 
-                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400' :
-                              'bg-muted text-muted-foreground'
-                            }`}
-                          >
-                            {prompt.result}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center py-4">
-                          <Badge 
-                            variant="outline" 
-                            className="text-xs font-medium border-primary/20 text-primary bg-primary/5 px-3 py-1 shadow-sm"
-                          >
-                            {prompt.platform}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center py-4">
-                          <Badge 
-                            variant="secondary" 
-                            className="text-xs font-medium bg-secondary/20 text-secondary-foreground border border-secondary/30 px-3 py-1 shadow-sm"
-                          >
-                            {prompt.queryType}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                      {expandedPrompt === prompt.id && (
-                        <TableRow className="animate-fade-in">
-                          <TableCell colSpan={5} className="bg-muted/10 border-t border-border/20 px-6 py-6">
-                            <div className="space-y-6 max-w-4xl">
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">Full Prompt:</h4>
-                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
-                                  {prompt.fullPrompt}
-                                </p>
-                              </div>
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">AI Response:</h4>
-                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
-                                  {prompt.fullResponse}
-                                </p>
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {filteredPrompts.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground">
+            <Target className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <p className="text-lg font-medium mb-2">No prompts found</p>
+            <p className="text-sm">Try adjusting your filters to see more results.</p>
+          </div>
+        )}
       </TabsContent>
     </Tabs>
     </>
