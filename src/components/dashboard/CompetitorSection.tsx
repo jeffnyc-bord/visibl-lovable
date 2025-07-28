@@ -8,14 +8,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { TrendingUp, TrendingDown, ExternalLink, Target, Plus, Filter, BarChart3, LineChart } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart as RechartsLineChart, Line, Area, AreaChart } from "recharts";
+import { TrendingUp, TrendingDown, ExternalLink, Target, Plus, Filter, BarChart3, LineChart, Crown, AlertTriangle, CheckCircle, Settings, Trophy, MessageSquare } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart as RechartsLineChart, Line, Area, AreaChart, ComposedChart } from "recharts";
 import { useState } from "react";
 
 export const CompetitorSection = () => {
   const [selectedCompetitors, setSelectedCompetitors] = useState<string[]>(["DataViz Pro", "Analytics Master", "ChartBuilder"]);
   const [dateRange, setDateRange] = useState("30");
   const [viewMode, setViewMode] = useState<"table" | "charts">("table");
+  const [customColumns, setCustomColumns] = useState<string[]>(["aiVisibility", "aiMentions", "sentiment", "topProducts"]);
+  const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
 
   const competitors = [
     {
@@ -27,7 +29,8 @@ export const CompetitorSection = () => {
       trendValue: 12,
       keyProducts: ["Advanced Charts", "Real-time Dashboards", "API Integration"],
       aiMentions: 342,
-      sentiment: 8.4
+      sentiment: 8.4,
+      ranking: 1
     },
     {
       name: "Analytics Master",
@@ -38,18 +41,8 @@ export const CompetitorSection = () => {
       trendValue: -5,
       keyProducts: ["ML Analytics", "Predictive Models", "Custom Reports"],
       aiMentions: 298,
-      sentiment: 7.9
-    },
-    {
-      name: "ChartBuilder",
-      domain: "chartbuilder.com",
-      aiVisibility: 68,
-      marketShare: 15,
-      trend: "up",
-      trendValue: 8,
-      keyProducts: ["Drag & Drop Builder", "Templates", "Collaboration Tools"],
-      aiMentions: 234,
-      sentiment: 7.6
+      sentiment: 7.9,
+      ranking: 2
     },
     {
       name: "InsightFlow",
@@ -60,7 +53,64 @@ export const CompetitorSection = () => {
       trendValue: 15,
       keyProducts: ["Data Pipelines", "Auto Insights", "Mobile Analytics"],
       aiMentions: 189,
-      sentiment: 8.1
+      sentiment: 8.1,
+      ranking: 3
+    },
+    {
+      name: "ChartBuilder",
+      domain: "chartbuilder.com",
+      aiVisibility: 68,
+      marketShare: 15,
+      trend: "up",
+      trendValue: 8,
+      keyProducts: ["Drag & Drop Builder", "Templates", "Collaboration Tools"],
+      aiMentions: 234,
+      sentiment: 7.6,
+      ranking: 4
+    }
+  ];
+
+  // Top prompts data for battleground section
+  const topPrompts = [
+    {
+      prompt: "What are the best data visualization tools for small businesses?",
+      yourResult: "Not Mentioned",
+      winningBrand: "DataViz Pro",
+      winnerPosition: "#1",
+      impact: "high",
+      category: "Product Recommendation"
+    },
+    {
+      prompt: "How to create interactive dashboards with real-time data?",
+      yourResult: "Mentioned #4",
+      winningBrand: "DataViz Pro", 
+      winnerPosition: "#1",
+      impact: "high",
+      category: "Tutorial/How-to"
+    },
+    {
+      prompt: "Which analytics platform has the best machine learning capabilities?",
+      yourResult: "Not Mentioned",
+      winningBrand: "Analytics Master",
+      winnerPosition: "#1", 
+      impact: "medium",
+      category: "Feature Comparison"
+    },
+    {
+      prompt: "Best drag and drop chart builders for non-technical users?",
+      yourResult: "Mentioned #3",
+      winningBrand: "ChartBuilder",
+      winnerPosition: "#1",
+      impact: "medium",
+      category: "Product Recommendation"
+    },
+    {
+      prompt: "How to set up automated data pipelines for analytics?",
+      yourResult: "Not Mentioned",
+      winningBrand: "InsightFlow",
+      winnerPosition: "#1",
+      impact: "high",
+      category: "Tutorial/How-to"
     }
   ];
 
@@ -69,8 +119,49 @@ export const CompetitorSection = () => {
     aiVisibility: 65,
     marketShare: 10,
     aiMentions: 156,
-    sentiment: 7.2
+    sentiment: 7.2,
+    ranking: 7
   };
+
+  // Create leaderboard with your brand included
+  const leaderboard = [...competitors, yourBrand]
+    .sort((a, b) => b.aiVisibility - a.aiVisibility)
+    .map((brand, index) => ({ ...brand, position: index + 1 }));
+
+  // Performance insights
+  const getPerformanceInsights = () => {
+    const avgVisibility = competitors.reduce((sum, c) => sum + c.aiVisibility, 0) / competitors.length;
+    const avgMentions = competitors.reduce((sum, c) => sum + c.aiMentions, 0) / competitors.length;
+    const avgSentiment = competitors.reduce((sum, c) => sum + c.sentiment, 0) / competitors.length;
+    
+    return {
+      visibilityGap: avgVisibility - yourBrand.aiVisibility,
+      mentionsGap: avgMentions - yourBrand.aiMentions,
+      sentimentAdvantage: yourBrand.sentiment - avgSentiment,
+      strongestCompetitor: competitors.find(c => c.aiVisibility === Math.max(...competitors.map(comp => comp.aiVisibility))),
+      weakestCompetitor: competitors.find(c => c.aiVisibility === Math.min(...competitors.map(comp => comp.aiVisibility)))
+    };
+  };
+
+  const insights = getPerformanceInsights();
+
+  // Multi-metric comparison data
+  const comparisonData = [
+    { 
+      brand: "Your Brand", 
+      aiVisibility: yourBrand.aiVisibility,
+      mentions: yourBrand.aiMentions,
+      sentiment: yourBrand.sentiment * 10
+    },
+    ...competitors
+      .filter(c => selectedCompetitors.includes(c.name))
+      .map(c => ({
+        brand: c.name,
+        aiVisibility: c.aiVisibility,
+        mentions: c.aiMentions,
+        sentiment: c.sentiment * 10
+      }))
+  ];
 
   // Chart data for AI Visibility comparison
   const visibilityData = [
@@ -110,7 +201,7 @@ export const CompetitorSection = () => {
 
   return (
     <div className="space-y-6">
-      {/* Competitive Landscape Overview */}
+      {/* Interactive Leaderboard Overview */}
       <Card className="border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -118,65 +209,223 @@ export const CompetitorSection = () => {
             <span>Competitive AI Landscape</span>
           </CardTitle>
           <CardDescription>
-            Analysis of key competitors and their AI visibility performance
+            Understand where you stand and identify opportunities to outperform competitors
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
-              <Target className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-blue-600 mb-1">4</div>
-              <div className="text-sm text-muted-foreground">Key Competitors</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
-              <BarChart3 className="w-8 h-8 text-green-600 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-green-600 mb-1">76%</div>
-              <div className="text-sm text-muted-foreground">Avg AI Visibility</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
-              <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-purple-600 mb-1">#7</div>
-              <div className="text-sm text-muted-foreground">Your Ranking</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg">
-              <LineChart className="w-8 h-8 text-orange-600 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-orange-600 mb-1">1,063</div>
-              <div className="text-sm text-muted-foreground">Total AI Mentions</div>
-            </div>
-          </div>
-          
-          {/* Quick trend visualization */}
-          <div className="p-4 bg-muted/30 rounded-lg">
-            <h4 className="text-sm font-medium mb-3">Your Performance vs. Competitors</h4>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Below Average</span>
-              <div className="flex-1 mx-4 relative">
-                <div className="h-2 bg-gradient-to-r from-red-200 via-yellow-200 to-green-200 rounded-full"></div>
-                <div className="absolute top-0 left-[65%] w-3 h-3 bg-blue-600 rounded-full transform -translate-x-1/2 -translate-y-0.5 border-2 border-white shadow-md"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            {/* Interactive Leaderboard */}
+            <div className="lg:col-span-1">
+              <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Trophy className="w-5 h-5 text-blue-600" />
+                  <h4 className="font-semibold text-blue-900">AI Visibility Leaderboard</h4>
+                </div>
+                <div className="space-y-2">
+                  {leaderboard.slice(0, 5).map((brand, index) => (
+                    <div 
+                      key={brand.name} 
+                      className={`flex items-center justify-between p-2 rounded ${
+                        brand.name === 'Your Brand' 
+                          ? 'bg-blue-200 border-2 border-blue-400' 
+                          : 'bg-white/50'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        {index === 0 && <Crown className="w-4 h-4 text-yellow-500" />}
+                        <span className="text-sm font-medium">#{index + 1}</span>
+                        <span className={`text-sm ${brand.name === 'Your Brand' ? 'font-bold' : ''}`}>
+                          {brand.name === 'Your Brand' ? 'You' : brand.name}
+                        </span>
+                      </div>
+                      <span className="text-sm font-bold">{brand.aiVisibility}%</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <span className="text-muted-foreground">Above Average</span>
             </div>
-            <div className="text-center mt-2">
-              <span className="text-xs text-muted-foreground">Your AI Visibility: 65% (Industry Avg: 76%)</span>
+
+            {/* Performance Insights */}
+            <div className="lg:col-span-2">
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                    <span className="text-sm font-medium text-red-900">Visibility Gap</span>
+                  </div>
+                  <div className="text-2xl font-bold text-red-600 mb-1">-{insights.visibilityGap.toFixed(1)}%</div>
+                  <div className="text-xs text-red-700">Behind industry average</div>
+                </div>
+                
+                <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <span className="text-sm font-medium text-green-900">Sentiment Advantage</span>
+                  </div>
+                  <div className="text-2xl font-bold text-green-600 mb-1">
+                    {insights.sentimentAdvantage > 0 ? '+' : ''}{insights.sentimentAdvantage.toFixed(1)}
+                  </div>
+                  <div className="text-xs text-green-700">
+                    {insights.sentimentAdvantage > 0 ? 'Above' : 'Below'} industry average
+                  </div>
+                </div>
+              </div>
+
+              {/* Key Competitive Narrative */}
+              <div className="p-4 bg-muted/30 rounded-lg">
+                <h4 className="text-sm font-semibold mb-3">Competitive Narrative</h4>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>• <strong>{insights.strongestCompetitor?.name}</strong> leads with {insights.strongestCompetitor?.aiVisibility}% visibility and high mention volume</p>
+                  <p>• You maintain {insights.sentimentAdvantage > 0 ? 'stronger' : 'competitive'} sentiment quality despite lower visibility</p>
+                  <p>• <strong>Opportunity:</strong> Focus on increasing mention frequency while maintaining sentiment quality</p>
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Competitive Comparison Dashboard */}
+      {/* Enhanced Performance Charts */}
+      <Card className="border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <BarChart3 className="w-5 h-5" />
+            <span>Multi-Metric Performance Analysis</span>
+          </CardTitle>
+          <CardDescription>
+            Visualize how your performance compares across key metrics
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* AI Visibility & Mentions Comparison */}
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Visibility vs. Mentions Volume</h4>
+              <ChartContainer
+                config={{
+                  aiVisibility: { label: "AI Visibility %", color: "hsl(var(--chart-1))" },
+                  mentions: { label: "AI Mentions", color: "hsl(var(--chart-2))" }
+                }}
+                className="h-64"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={comparisonData}>
+                    <XAxis dataKey="brand" angle={-45} textAnchor="end" height={80} />
+                    <YAxis yAxisId="left" />
+                    <YAxis yAxisId="right" orientation="right" />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar yAxisId="left" dataKey="aiVisibility" fill="hsl(var(--chart-1))" radius={4} />
+                    <Line yAxisId="right" type="monotone" dataKey="mentions" stroke="hsl(var(--chart-2))" strokeWidth={3} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+
+            {/* Sentiment Quality Analysis */}
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Sentiment Quality Comparison</h4>
+              <ChartContainer
+                config={{
+                  sentiment: { label: "Sentiment Score", color: "hsl(var(--chart-3))" }
+                }}
+                className="h-64"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={comparisonData}>
+                    <XAxis dataKey="brand" angle={-45} textAnchor="end" height={80} />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="sentiment" fill="hsl(var(--chart-3))" radius={4} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Top Prompt Battleground Section */}
+      <Card className="border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <MessageSquare className="w-5 h-5" />
+            <span>Top Prompt Battleground</span>
+          </CardTitle>
+          <CardDescription>
+            See which brands win on the most important AI prompts in your industry
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {topPrompts.map((prompt, index) => (
+              <div key={index} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h5 className="font-medium mb-1">{prompt.prompt}</h5>
+                    <Badge variant="outline" className="text-xs">{prompt.category}</Badge>
+                  </div>
+                  <Badge 
+                    variant={prompt.impact === "high" ? "destructive" : "secondary"}
+                    className="ml-2"
+                  >
+                    {prompt.impact} impact
+                  </Badge>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Crown className="w-4 h-4 text-yellow-500" />
+                    <span className="text-sm text-muted-foreground">Winner:</span>
+                    <span className="font-semibold text-green-600">{prompt.winningBrand}</span>
+                    <Badge variant="secondary" className="text-xs">{prompt.winnerPosition}</Badge>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Target className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm text-muted-foreground">Your Result:</span>
+                    <span className={`font-semibold ${
+                      prompt.yourResult === "Not Mentioned" ? "text-red-600" : "text-orange-600"
+                    }`}>
+                      {prompt.yourResult}
+                    </span>
+                  </div>
+                </div>
+                
+                {prompt.yourResult === "Not Mentioned" && (
+                  <div className="mt-3 p-3 bg-red-50 rounded-lg border-l-4 border-red-400">
+                    <p className="text-sm text-red-700">
+                      <strong>Opportunity:</strong> This high-impact prompt represents a key visibility gap. 
+                      Consider creating content that addresses this query.
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Enhanced Competitive Comparison Dashboard */}
       <Card className="border-0 shadow-lg">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center space-x-2">
                 <BarChart3 className="w-5 h-5" />
-                <span>Competitive Comparison</span>
+                <span>Competitive Comparison Dashboard</span>
               </CardTitle>
               <CardDescription>
-                Interactive analysis and side-by-side comparison of key metrics
+                Customizable deep-dive analysis with actionable insights
               </CardDescription>
             </div>
             <div className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowColumnCustomizer(!showColumnCustomizer)}
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Customize Columns
+              </Button>
               <Button 
                 variant="outline" 
                 size="sm"
@@ -199,6 +448,40 @@ export const CompetitorSection = () => {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Column Customizer */}
+          {showColumnCustomizer && (
+            <div className="mb-6 p-4 bg-muted/30 rounded-lg">
+              <h4 className="text-sm font-medium mb-3">Customize Table Columns</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {[
+                  { id: "aiVisibility", label: "AI Visibility" },
+                  { id: "aiMentions", label: "AI Mentions" },
+                  { id: "sentiment", label: "Sentiment" },
+                  { id: "topProducts", label: "Top Products" },
+                  { id: "marketShare", label: "Market Share" },
+                  { id: "trend", label: "Trend" }
+                ].map((column) => (
+                  <div key={column.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={column.id}
+                      checked={customColumns.includes(column.id)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setCustomColumns([...customColumns, column.id]);
+                        } else {
+                          setCustomColumns(customColumns.filter(id => id !== column.id));
+                        }
+                      }}
+                    />
+                    <label htmlFor={column.id} className="text-sm cursor-pointer">
+                      {column.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Filters and Controls */}
           <div className="flex flex-wrap gap-4 mb-6 p-4 bg-muted/30 rounded-lg">
             <div className="flex items-center space-x-2">
