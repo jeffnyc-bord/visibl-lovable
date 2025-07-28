@@ -8,8 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check } from "lucide-react";
+import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export const QueriesAndPromptsSection = () => {
   const { toast } = useToast();
@@ -17,12 +18,16 @@ export const QueriesAndPromptsSection = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [isBlasting, setIsBlasting] = useState(false);
   const [blastProgress, setBlastProgress] = useState(0);
+  const [showLiveResults, setShowLiveResults] = useState(false);
+  const [liveResults, setLiveResults] = useState<any[]>([]);
+  const [activeResultTab, setActiveResultTab] = useState("ChatGPT");
   
   // Prompts tab state
   const [expandedPrompt, setExpandedPrompt] = useState<number | null>(null);
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [mentionFilter, setMentionFilter] = useState<string>("all");
   const [queryTypeFilter, setQueryTypeFilter] = useState<string>("all");
+  const [expandedHistory, setExpandedHistory] = useState<number | null>(null);
 
   // Mock data for generated queries
   const coreQueries = [
@@ -32,30 +37,77 @@ export const QueriesAndPromptsSection = () => {
     { query: "Sustainable transportation options", relevanceScore: 82, brand: "Tesla", mentions: 89 },
   ];
 
-  const subQueries = [
-    { query: "Tesla Model Y safety features", parentQuery: "Best electric vehicle for families", aiResponse: "Tesla Model Y offers advanced safety features including...", platform: "ChatGPT" },
-    { query: "Tesla autopilot reliability", parentQuery: "Best electric vehicle for families", aiResponse: "Tesla's Autopilot system has undergone extensive...", platform: "Claude" },
-    { query: "Electric vehicle tax incentives", parentQuery: "Best electric vehicle for families", aiResponse: "Federal and state incentives for electric vehicles...", platform: "Gemini" },
-  ];
-
-  // Mock data for prompt blast history
+  // Mock data for prompt blast history with comprehensive results
   const promptHistory = [
     { 
       id: 1, 
-      prompt: "Compare Tesla Model 3 to BMW i3", 
-      platform: "ChatGPT", 
+      prompt: "Compare Tesla Model 3 to BMW i3 in terms of performance and value", 
       timestamp: "2024-01-15 14:30", 
-      response: "The Tesla Model 3 and BMW i3 represent different approaches to electric mobility...",
-      status: "completed"
+      testDate: "Today",
+      totalPlatforms: 4,
+      mentionedCount: 3,
+      results: [
+        {
+          platform: "ChatGPT",
+          mentioned: true,
+          sentiment: "positive",
+          responseTime: "2.4s",
+          response: "The Tesla Model 3 offers superior range (358 miles) compared to the BMW i3 (153 miles). Tesla's charging infrastructure through Superchargers provides better convenience. While the BMW i3 has unique design, Tesla Model 3 delivers better performance and value proposition."
+        },
+        {
+          platform: "Claude",
+          mentioned: true,
+          sentiment: "neutral",
+          responseTime: "1.8s",
+          response: "Both vehicles target different market segments. Tesla Model 3 focuses on performance and technology, while BMW i3 emphasizes sustainability with carbon fiber construction. Tesla has advantage in software updates and autonomous features."
+        },
+        {
+          platform: "Gemini",
+          mentioned: true,
+          sentiment: "positive",
+          responseTime: "2.1s",
+          response: "Tesla Model 3 leads in several categories: range, charging speed, and technology integration. BMW i3 offers premium interior materials and unique design language. For long-term value, Tesla's over-the-air updates provide ongoing improvements."
+        },
+        {
+          platform: "Perplexity",
+          mentioned: false,
+          sentiment: "neutral",
+          responseTime: "1.5s",
+          response: "Electric vehicle comparison focuses on range, charging, and cost. Both German and American manufacturers offer competitive options in this segment with different design philosophies."
+        }
+      ]
     },
     { 
       id: 2, 
-      prompt: "What are the environmental benefits of Tesla vehicles?", 
-      platform: "Claude", 
-      timestamp: "2024-01-15 12:15", 
-      response: "Tesla vehicles contribute to environmental sustainability through...",
-      status: "completed"
-    },
+      prompt: "What are the environmental benefits of electric vehicles?", 
+      timestamp: "2024-01-14 16:20", 
+      testDate: "Yesterday",
+      totalPlatforms: 3,
+      mentionedCount: 2,
+      results: [
+        {
+          platform: "ChatGPT",
+          mentioned: true,
+          sentiment: "positive",
+          responseTime: "2.1s",
+          response: "Electric vehicles significantly reduce carbon emissions. Tesla has been a pioneer in making EVs mainstream, with their vehicles producing zero direct emissions and reducing dependence on fossil fuels."
+        },
+        {
+          platform: "Claude",
+          mentioned: true,
+          sentiment: "positive",
+          responseTime: "1.9s",
+          response: "Environmental benefits include reduced air pollution and lower carbon footprint. Tesla's approach to sustainable energy through solar and battery storage creates a comprehensive clean energy ecosystem."
+        },
+        {
+          platform: "Gemini",
+          mentioned: false,
+          sentiment: "neutral",
+          responseTime: "1.7s",
+          response: "Electric vehicles contribute to cleaner air in urban areas and reduced greenhouse gas emissions when powered by renewable energy sources."
+        }
+      ]
+    }
   ];
 
   // Mock data for detailed prompts table
@@ -139,7 +191,16 @@ export const QueriesAndPromptsSection = () => {
     return platformMatch && mentionMatch && queryTypeMatch;
   });
 
-  const aiPlatforms = ["ChatGPT", "Claude", "Gemini", "Perplexity", "Grok", "Copilot", "Google AI Mode", "Google Overviews"];
+  const aiPlatforms = [
+    { id: "chatgpt", name: "ChatGPT", color: "bg-green-500" },
+    { id: "claude", name: "Claude", color: "bg-orange-500" },
+    { id: "gemini", name: "Gemini", color: "bg-blue-500" },
+    { id: "perplexity", name: "Perplexity", color: "bg-purple-500" },
+    { id: "grok", name: "Grok", color: "bg-pink-500" },
+    { id: "copilot", name: "Copilot", color: "bg-indigo-500" },
+    { id: "google-ai", name: "Google AI Mode", color: "bg-red-500" },
+    { id: "overviews", name: "Google Overviews", color: "bg-yellow-500" }
+  ];
 
   // Mock data for AI platform mentions from generated queries
   const platformMentionsData = [
@@ -160,6 +221,7 @@ export const QueriesAndPromptsSection = () => {
     
     setIsBlasting(true);
     setBlastProgress(0);
+    setShowLiveResults(false);
     
     // Simulate progress updates
     const progressInterval = setInterval(() => {
@@ -175,17 +237,45 @@ export const QueriesAndPromptsSection = () => {
     setTimeout(() => {
       clearInterval(progressInterval);
       setBlastProgress(100);
+      
+      // Mock live results
+      const mockResults = selectedPlatforms.map(platform => ({
+        platform,
+        mentioned: Math.random() > 0.3,
+        sentiment: Math.random() > 0.5 ? "positive" : Math.random() > 0.3 ? "neutral" : "negative",
+        responseTime: `${(Math.random() * 3 + 1).toFixed(1)}s`,
+        response: `Mock response from ${platform} for the prompt: "${customPrompt.slice(0, 50)}..."`
+      }));
+      
+      setLiveResults(mockResults);
+      setActiveResultTab(selectedPlatforms[0]);
+      
       setTimeout(() => {
         setIsBlasting(false);
         setBlastProgress(0);
-        setCustomPrompt("");
-        setSelectedPlatforms([]);
+        setShowLiveResults(true);
         toast({
           title: "Prompt Blast Complete",
           description: `Successfully tested prompt across ${selectedPlatforms.length} AI platforms.`,
         });
       }, 1000);
     }, 5000);
+  };
+
+  const getSentimentIcon = (sentiment: string) => {
+    switch (sentiment) {
+      case "positive": return <ThumbsUp className="w-4 h-4 text-green-600" />;
+      case "negative": return <ThumbsDown className="w-4 h-4 text-red-600" />;
+      default: return <Minus className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const getSentimentColor = (sentiment: string) => {
+    switch (sentiment) {
+      case "positive": return "bg-green-100 text-green-800";
+      case "negative": return "bg-red-100 text-red-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
   };
 
   return (
@@ -227,125 +317,264 @@ export const QueriesAndPromptsSection = () => {
 
     <Tabs defaultValue="blast" className="space-y-6">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="blast">Prompt Blast</TabsTrigger>
-        <TabsTrigger value="prompts">Prompts</TabsTrigger>
+        <TabsTrigger value="blast">Prompt Blast Lab</TabsTrigger>
+        <TabsTrigger value="prompts">Prompts Analysis</TabsTrigger>
       </TabsList>
 
       <TabsContent value="blast" className="space-y-6">
-        {/* Prompt Blast Interface */}
-        <Card>
-          <CardHeader>
+        {/* Modern Prompt Blast Workspace */}
+        <Card className="border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
             <CardTitle className="flex items-center space-x-2">
-              <img src="/lovable-uploads/16e9942d-2eaa-4c17-92d4-5ba4165ec013.png" alt="Custom Prompt Blast" className="w-5 h-5" />
-              <span>Custom Prompt Blast</span>
+              <div className="p-2 bg-white rounded-lg shadow-sm">
+                <Zap className="w-5 h-5 text-purple-600" />
+              </div>
+              <span>AI Testing Workspace</span>
             </CardTitle>
             <CardDescription>
-              Test custom prompts across multiple AI platforms to understand how your brand is represented.
+              Test custom prompts across multiple AI platforms in real-time and compare responses instantly.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Custom Prompt
+          <CardContent className="space-y-6 p-6">
+            {/* Prompt Input */}
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-gray-900">
+                Your Test Prompt
               </label>
               <Textarea
-                placeholder="Enter your custom prompt here (e.g., 'Compare Tesla to other electric vehicle brands')"
+                placeholder="Example: 'Compare Tesla to other electric vehicle brands in terms of innovation and market leadership...'"
                 value={customPrompt}
                 onChange={(e) => setCustomPrompt(e.target.value)}
-                rows={3}
-                className="w-full"
+                rows={4}
+                className="w-full resize-none border-2 border-gray-200 focus:border-purple-400 rounded-xl p-4 text-base"
               />
+              <p className="text-xs text-gray-500">
+                Write a detailed prompt to get comprehensive responses from AI platforms.
+              </p>
             </div>
             
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700">
+            {/* Platform Selection Cards */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-semibold text-gray-900">
                   Select AI Platforms
                 </label>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    if (selectedPlatforms.length === aiPlatforms.length) {
+                    const allPlatformNames = aiPlatforms.map(p => p.name);
+                    if (selectedPlatforms.length === allPlatformNames.length) {
                       setSelectedPlatforms([]);
                     } else {
-                      setSelectedPlatforms([...aiPlatforms]);
+                      setSelectedPlatforms([...allPlatformNames]);
                     }
                   }}
-                  className="text-xs"
+                  className="text-xs h-7"
                 >
                   {selectedPlatforms.length === aiPlatforms.length ? "Deselect All" : "Select All"}
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {aiPlatforms.map((platform) => (
-                  <label key={platform} className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedPlatforms.includes(platform)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedPlatforms([...selectedPlatforms, platform]);
-                        } else {
-                          setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform));
-                        }
-                      }}
-                      className="rounded border-gray-300"
-                    />
-                    <span className="text-sm">{platform}</span>
-                  </label>
+                  <div
+                    key={platform.id}
+                    className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
+                      selectedPlatforms.includes(platform.name)
+                        ? 'border-purple-400 bg-purple-50 shadow-sm'
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    }`}
+                    onClick={() => {
+                      if (selectedPlatforms.includes(platform.name)) {
+                        setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform.name));
+                      } else {
+                        setSelectedPlatforms([...selectedPlatforms, platform.name]);
+                      }
+                    }}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full ${platform.color}`}></div>
+                      <span className="text-sm font-medium">{platform.name}</span>
+                    </div>
+                    {selectedPlatforms.includes(platform.name) && (
+                      <div className="absolute top-2 right-2">
+                        <Check className="w-4 h-4 text-purple-600" />
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
+              <p className="text-xs text-gray-500">
+                Selected: {selectedPlatforms.length} of {aiPlatforms.length} platforms
+              </p>
             </div>
 
+            {/* Blast Button */}
             <Button 
               onClick={handlePromptBlast}
               disabled={!customPrompt.trim() || selectedPlatforms.length === 0 || isBlasting}
-              className="w-full"
+              className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200"
             >
-              <Play className="w-4 h-4 mr-2" />
-              {isBlasting ? "Blasting..." : "Blast Prompt to Selected Platforms"}
+              <Play className="w-5 h-5 mr-3" />
+              {isBlasting ? "Testing in Progress..." : `Blast to ${selectedPlatforms.length} Platforms`}
             </Button>
           </CardContent>
         </Card>
 
-        {/* Prompt History */}
+        {/* Live Results View */}
+        {showLiveResults && liveResults.length > 0 && (
+          <Card className="border-l-4 border-l-green-500">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <MessageSquare className="w-5 h-5 text-green-600" />
+                <span>Live Results</span>
+                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                  {liveResults.filter(r => r.mentioned).length}/{liveResults.length} Mentioned
+                </Badge>
+              </CardTitle>
+              <CardDescription>
+                Real-time responses from AI platforms for your test prompt.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs value={activeResultTab} onValueChange={setActiveResultTab} className="w-full">
+                <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full mb-4">
+                  {liveResults.map((result) => (
+                    <TabsTrigger 
+                      key={result.platform} 
+                      value={result.platform}
+                      className="flex items-center space-x-2"
+                    >
+                      <span>{result.platform}</span>
+                      {result.mentioned ? (
+                        <Check className="w-3 h-3 text-green-600" />
+                      ) : (
+                        <X className="w-3 h-3 text-red-600" />
+                      )}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                
+                {liveResults.map((result) => (
+                  <TabsContent key={result.platform} value={result.platform} className="space-y-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-gray-600">Status:</span>
+                        {result.mentioned ? (
+                          <Badge className="bg-green-100 text-green-800">Mentioned</Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-red-100 text-red-800">Not Mentioned</Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-gray-600">Sentiment:</span>
+                        <div className="flex items-center space-x-1">
+                          {getSentimentIcon(result.sentiment)}
+                          <Badge variant="secondary" className={getSentimentColor(result.sentiment)}>
+                            {result.sentiment}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Timer className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">{result.responseTime}</span>
+                      </div>
+                      <Button variant="ghost" size="sm" className="w-fit">
+                        <Copy className="w-4 h-4 mr-1" />
+                        Copy
+                      </Button>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-medium text-gray-900 mb-2">AI Response:</h4>
+                      <p className="text-sm text-gray-700 leading-relaxed">{result.response}</p>
+                    </div>
+                  </TabsContent>
+                ))}
+              </Tabs>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Enhanced Prompt History */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <History className="w-5 h-5 text-orange-500" />
-              <span>Prompt Blast History</span>
+              <span>Test History</span>
             </CardTitle>
             <CardDescription>
-              View and analyze previous custom prompt tests and their results.
+              Previous prompt tests with detailed platform-by-platform results.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {promptHistory.map((item) => (
-                <div key={item.id} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">{item.prompt}</p>
-                      <div className="flex items-center space-x-4 mt-1">
-                        <Badge variant="outline">{item.platform}</Badge>
-                        <span className="text-sm text-gray-500 flex items-center">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {item.timestamp}
-                        </span>
-                        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                          {item.status}
-                        </Badge>
+                <Collapsible key={item.id} open={expandedHistory === item.id} onOpenChange={(open) => setExpandedHistory(open ? item.id : null)}>
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <CollapsibleTrigger asChild>
+                      <div className="p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-900 mb-2">{item.prompt}</p>
+                            <div className="flex items-center space-x-4">
+                              <span className="text-sm text-gray-500 flex items-center">
+                                <Clock className="w-3 h-3 mr-1" />
+                                {item.testDate}
+                              </span>
+                              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                                {item.mentionedCount}/{item.totalPlatforms} Mentioned
+                              </Badge>
+                              <span className="text-xs text-gray-400">{item.timestamp}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button variant="ghost" size="sm">
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                            {expandedHistory === item.id ? (
+                              <ChevronUp className="w-4 h-4 text-gray-400" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-gray-400" />
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <Button variant="ghost" size="sm">
-                      <Copy className="w-4 h-4" />
-                    </Button>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                      <div className="border-t border-gray-200 bg-gray-50 p-4">
+                        <div className="grid gap-4">
+                          {item.results.map((result, index) => (
+                            <div key={index} className="bg-white rounded-lg p-4 border border-gray-200">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center space-x-3">
+                                  <Badge variant="outline">{result.platform}</Badge>
+                                  {result.mentioned ? (
+                                    <Badge className="bg-green-100 text-green-800">Mentioned</Badge>
+                                  ) : (
+                                    <Badge variant="secondary" className="bg-red-100 text-red-800">Not Mentioned</Badge>
+                                  )}
+                                  <div className="flex items-center space-x-1">
+                                    {getSentimentIcon(result.sentiment)}
+                                    <span className="text-xs text-gray-600 capitalize">{result.sentiment}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-2 text-xs text-gray-500">
+                                  <Timer className="w-3 h-3" />
+                                  <span>{result.responseTime}</span>
+                                </div>
+                              </div>
+                              <div className="bg-gray-50 rounded p-3">
+                                <p className="text-sm text-gray-700">{result.response}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </CollapsibleContent>
                   </div>
-                  <div className="bg-gray-50 rounded p-3">
-                    <p className="text-sm text-gray-700">{item.response}</p>
-                  </div>
-                </div>
+                </Collapsible>
               ))}
             </div>
           </CardContent>
@@ -353,7 +582,6 @@ export const QueriesAndPromptsSection = () => {
       </TabsContent>
 
       <TabsContent value="prompts" className="space-y-6">
-        {/* Prompts Table */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -376,10 +604,10 @@ export const QueriesAndPromptsSection = () => {
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="AI Platform" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                   <SelectItem value="all">All Platforms</SelectItem>
                   {aiPlatforms.map(platform => (
-                    <SelectItem key={platform} value={platform}>{platform}</SelectItem>
+                    <SelectItem key={platform.id} value={platform.name}>{platform.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -388,7 +616,7 @@ export const QueriesAndPromptsSection = () => {
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Mention Status" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                   <SelectItem value="all">All Results</SelectItem>
                   <SelectItem value="mentioned">Only Mentioned</SelectItem>
                   <SelectItem value="not-mentioned">Only Not Mentioned</SelectItem>
@@ -399,7 +627,7 @@ export const QueriesAndPromptsSection = () => {
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Query Type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="Ranking">Ranking</SelectItem>
                   <SelectItem value="Discovery">Discovery</SelectItem>
@@ -407,190 +635,90 @@ export const QueriesAndPromptsSection = () => {
                   <SelectItem value="Templated">Templated</SelectItem>
                 </SelectContent>
               </Select>
-
-              {(platformFilter !== "all" || mentionFilter !== "all" || queryTypeFilter !== "all") && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setPlatformFilter("all");
-                    setMentionFilter("all");
-                    setQueryTypeFilter("all");
-                  }}
-                  className="text-xs"
-                >
-                  <X className="w-3 h-3 mr-1" />
-                  Clear Filters
-                </Button>
-              )}
-            </div>
-
-            {/* Results Count */}
-            <div className="mb-4">
-              <p className="text-sm text-gray-600">
-                Showing {filteredPrompts.length} of {detailedPrompts.length} prompts
-              </p>
             </div>
 
             {/* Prompts Table */}
-            <div className="overflow-hidden rounded-xl border border-border/30 shadow-sm bg-card">
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
               <Table>
-                <TableHeader className="sticky top-0 z-10">
-                  <TableRow className="bg-gradient-to-r from-muted/40 to-muted/30 hover:bg-gradient-to-r hover:from-muted/40 hover:to-muted/30 border-b border-border/40">
-                    <TableHead className="w-2/5 font-semibold text-foreground py-5 px-6 text-base">Prompt</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-5 text-base">Brand Mention</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-5 text-base">Result</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-5 text-base">Platform</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-5 text-base">Type</TableHead>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="font-semibold">Prompt</TableHead>
+                    <TableHead className="font-semibold">Platform</TableHead>
+                    <TableHead className="font-semibold">Result</TableHead>
+                    <TableHead className="font-semibold">Type</TableHead>
+                    <TableHead className="font-semibold">Date</TableHead>
+                    <TableHead className="font-semibold">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredPrompts.map((prompt, index) => (
-                    <>
-                      <TableRow 
-                        key={prompt.id} 
-                        className={`cursor-pointer hover:bg-gradient-to-r hover:from-muted/10 hover:to-muted/5 transition-all duration-300 border-b border-border/20 group ${
-                          index % 2 === 0 ? 'bg-background' : 'bg-muted/3'
-                        } hover:shadow-sm`}
-                      >
-                        <TableCell className="px-6 py-5">
-                          <div 
-                            className="flex items-start space-x-4"
+                  {filteredPrompts.map((prompt) => (
+                    <TableRow key={prompt.id} className="hover:bg-gray-50">
+                      <TableCell>
+                        <div className="max-w-xs">
+                          <p className="font-medium text-gray-900 truncate">{prompt.prompt}</p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="mt-1 h-6 px-2 text-xs"
                             onClick={() => setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id)}
                           >
-                            <div className={`mt-0.5 p-1.5 rounded-full transition-all duration-200 ${
-                              expandedPrompt === prompt.id 
-                                ? 'bg-primary text-primary-foreground shadow-sm' 
-                                : 'bg-muted/40 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
-                            }`}>
-                              {expandedPrompt === prompt.id ? (
-                                <ChevronUp className="w-3.5 h-3.5" />
-                              ) : (
-                                <ChevronDown className="w-3.5 h-3.5" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate leading-relaxed">
-                                {prompt.prompt}
-                              </p>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center py-5">
-                          <div className="flex items-center justify-center">
-                            {prompt.mentioned ? (
-                              <img 
-                                src="/lovable-uploads/63ee4e55-b86e-4dc9-9082-d1772bb4cee7.png" 
-                                alt="Brand Mentioned" 
-                                className="w-4 h-4" 
-                              />
-                            ) : (
-                              <img 
-                                src="/lovable-uploads/889ef665-0a16-4731-ade4-f47010077738.png" 
-                                alt="Brand Not Mentioned" 
-                                className="w-4 h-4" 
-                              />
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center py-5">
-                          <Badge 
-                            className={`text-xs font-semibold px-3 py-1.5 border-0 shadow-sm transition-all duration-200 ${
-                              prompt.result.includes('Ranked #1') 
-                                ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-800 shadow-green-100/50 dark:from-green-900/30 dark:to-green-900/20 dark:text-green-400' :
-                              prompt.result.includes('Ranked #2') || prompt.result.includes('Ranked #3') 
-                                ? 'bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 shadow-blue-100/50 dark:from-blue-900/30 dark:to-blue-900/20 dark:text-blue-400' :
-                              prompt.result.includes('Positive') || prompt.result.includes('Known') 
-                                ? 'bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 shadow-purple-100/50 dark:from-purple-900/30 dark:to-purple-900/20 dark:text-purple-400' :
-                              'bg-gradient-to-r from-muted to-muted/80 text-muted-foreground'
-                            }`}
-                          >
-                            {prompt.result}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center py-5">
-                          <div className="flex items-center justify-center space-x-2">
-                            <div className={`w-2 h-2 rounded-full ${
-                              prompt.platform === 'ChatGPT' ? 'bg-green-500' :
-                              prompt.platform === 'Claude' ? 'bg-orange-500' :
-                              prompt.platform === 'Gemini' ? 'bg-blue-500' :
-                              prompt.platform === 'Copilot' ? 'bg-purple-500' :
-                              prompt.platform === 'Grok' ? 'bg-red-500' :
-                              prompt.platform === 'Perplexity' ? 'bg-indigo-500' :
-                              'bg-gray-500'
-                            }`} />
-                            <Badge 
-                              variant="outline" 
-                              className="text-xs font-medium border-border/30 text-foreground bg-background/50 px-2.5 py-1 shadow-sm"
-                            >
-                              {prompt.platform}
-                            </Badge>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center py-5">
-                          <Badge 
-                            variant="secondary" 
-                            className={`text-xs font-medium px-2.5 py-1 shadow-sm border transition-all duration-200 ${
-                              prompt.queryType === 'Ranking' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/30' :
-                              prompt.queryType === 'Discovery' ? 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-400 dark:border-cyan-800/30' :
-                              prompt.queryType === 'Factual' ? 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800/30' :
-                              'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-900/20 dark:text-violet-400 dark:border-violet-800/30'
-                            }`}
-                          >
-                            {prompt.queryType}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                      {expandedPrompt === prompt.id && (
-                        <TableRow className="animate-fade-in">
-                          <TableCell colSpan={5} className="bg-gradient-to-r from-muted/5 to-muted/10 border-t border-border/30 px-6 py-6">
-                            <div className="space-y-6 max-w-5xl">
-                              <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                  <div>
-                                    <h4 className="font-semibold text-foreground mb-3 flex items-center space-x-2">
-                                      <div className="w-1 h-4 bg-primary rounded-full" />
-                                      <span>Full Prompt</span>
-                                    </h4>
-                                    <div className="bg-card border border-border/30 rounded-lg p-4 shadow-sm">
-                                      <p className="text-sm text-foreground leading-relaxed">
-                                        {prompt.fullPrompt}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <h4 className="font-semibold text-foreground mb-3 flex items-center space-x-2">
-                                      <div className="w-1 h-4 bg-muted-foreground rounded-full" />
-                                      <span>Timestamp</span>
-                                    </h4>
-                                    <div className="bg-card border border-border/30 rounded-lg p-4 shadow-sm">
-                                      <p className="text-sm text-muted-foreground font-mono">
-                                        {prompt.timestamp}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div>
-                                  <h4 className="font-semibold text-foreground mb-3 flex items-center space-x-2">
-                                    <div className="w-1 h-4 bg-green-500 rounded-full" />
-                                    <span>AI Response</span>
-                                  </h4>
-                                  <div className="bg-card border border-border/30 rounded-lg p-4 shadow-sm max-h-64 overflow-y-auto">
-                                    <p className="text-sm text-foreground leading-relaxed">
-                                      {prompt.fullResponse}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </>
+                            {expandedPrompt === prompt.id ? "Hide Details" : "View Details"}
+                          </Button>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{prompt.platform}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          {prompt.mentioned ? (
+                            <Check className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <X className="w-4 h-4 text-red-600" />
+                          )}
+                          <span className="text-sm">{prompt.result}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="text-xs">
+                          {prompt.queryType}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-gray-600">
+                        {new Date(prompt.timestamp).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm">
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
+
+            {/* Expanded prompt details */}
+            {expandedPrompt && (
+              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                {filteredPrompts.find(p => p.id === expandedPrompt) && (
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-1">Full Prompt:</h4>
+                      <p className="text-sm text-gray-700">
+                        {filteredPrompts.find(p => p.id === expandedPrompt)?.fullPrompt}
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-1">AI Response:</h4>
+                      <p className="text-sm text-gray-700">
+                        {filteredPrompts.find(p => p.id === expandedPrompt)?.fullResponse}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </TabsContent>
