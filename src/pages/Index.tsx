@@ -19,6 +19,134 @@ import { ExternalAIVisibilitySection } from "@/components/dashboard/ExternalAIVi
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
 import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
 import { Settings as SettingsPage } from "@/pages/Settings";
+
+// Mock brand data structure
+interface BrandData {
+  id: string;
+  name: string;
+  logo: string;
+  url: string;
+  visibilityScore: number;
+  totalMentions: number;
+  platformCoverage: number;
+  industryRanking: number;
+  mentionTrend: string;
+  sentimentScore: number;
+  lastUpdated: string;
+  platforms: Array<{
+    name: string;
+    mentions: number;
+    sentiment: string;
+    coverage: number;
+    trend: string;
+  }>;
+  products: Array<{
+    id: number;
+    name: string;
+    category: string;
+    visibilityScore: number;
+    mentions: number;
+    sentiment: string;
+    lastOptimized: string;
+  }>;
+  competitors: Array<{
+    name: string;
+    visibilityScore: number;
+    mentions: number;
+    trend: string;
+  }>;
+}
+
+// Mock data for tracked brands
+const mockTrackedBrands: BrandData[] = [
+  {
+    id: "nike",
+    name: "Nike",
+    logo: "/lovable-uploads/eb27b2e0-a722-4723-8b57-eee040e312fb.png",
+    url: "nike.com",
+    visibilityScore: 87,
+    totalMentions: 12847,
+    platformCoverage: 89,
+    industryRanking: 2,
+    mentionTrend: "up",
+    sentimentScore: 78,
+    lastUpdated: "2024-01-15",
+    platforms: [
+      { name: "ChatGPT", mentions: 4234, sentiment: "positive", coverage: 92, trend: "up" },
+      { name: "Claude", mentions: 3456, sentiment: "positive", coverage: 87, trend: "up" },
+      { name: "Gemini", mentions: 2847, sentiment: "neutral", coverage: 84, trend: "stable" },
+      { name: "Perplexity", mentions: 2310, sentiment: "positive", coverage: 91, trend: "up" }
+    ],
+    products: [
+      { id: 1, name: "Air Max", category: "Footwear", visibilityScore: 92, mentions: 3421, sentiment: "positive", lastOptimized: "2024-01-12" },
+      { id: 2, name: "Air Jordan", category: "Footwear", visibilityScore: 94, mentions: 4123, sentiment: "positive", lastOptimized: "2024-01-10" },
+      { id: 3, name: "Nike Pro", category: "Apparel", visibilityScore: 78, mentions: 1892, sentiment: "neutral", lastOptimized: "2024-01-08" }
+    ],
+    competitors: [
+      { name: "Adidas", visibilityScore: 84, mentions: 11234, trend: "up" },
+      { name: "Puma", visibilityScore: 72, mentions: 8456, trend: "down" },
+      { name: "Under Armour", visibilityScore: 68, mentions: 6789, trend: "stable" }
+    ]
+  },
+  {
+    id: "adidas",
+    name: "Adidas",
+    logo: "/lovable-uploads/6d96032a-5e62-4e84-b278-3c492029f934.png",
+    url: "adidas.com",
+    visibilityScore: 84,
+    totalMentions: 11234,
+    platformCoverage: 86,
+    industryRanking: 3,
+    mentionTrend: "up",
+    sentimentScore: 76,
+    lastUpdated: "2024-01-15",
+    platforms: [
+      { name: "ChatGPT", mentions: 3789, sentiment: "positive", coverage: 88, trend: "up" },
+      { name: "Claude", mentions: 3123, sentiment: "positive", coverage: 85, trend: "stable" },
+      { name: "Gemini", mentions: 2456, sentiment: "neutral", coverage: 82, trend: "up" },
+      { name: "Perplexity", mentions: 1866, sentiment: "positive", coverage: 89, trend: "up" }
+    ],
+    products: [
+      { id: 1, name: "Ultraboost", category: "Footwear", visibilityScore: 89, mentions: 2987, sentiment: "positive", lastOptimized: "2024-01-11" },
+      { id: 2, name: "Stan Smith", category: "Footwear", visibilityScore: 85, mentions: 2234, sentiment: "positive", lastOptimized: "2024-01-09" },
+      { id: 3, name: "Originals", category: "Apparel", visibilityScore: 74, mentions: 1567, sentiment: "neutral", lastOptimized: "2024-01-07" }
+    ],
+    competitors: [
+      { name: "Nike", visibilityScore: 87, mentions: 12847, trend: "up" },
+      { name: "Puma", visibilityScore: 72, mentions: 8456, trend: "down" },
+      { name: "New Balance", visibilityScore: 69, mentions: 5432, trend: "up" }
+    ]
+  },
+  {
+    id: "apple",
+    name: "Apple",
+    logo: "/lovable-uploads/2e118f8d-a421-4c37-b61b-bdf56fc650c4.png",
+    url: "apple.com",
+    visibilityScore: 95,
+    totalMentions: 24567,
+    platformCoverage: 97,
+    industryRanking: 1,
+    mentionTrend: "up",
+    sentimentScore: 85,
+    lastUpdated: "2024-01-15",
+    platforms: [
+      { name: "ChatGPT", mentions: 8234, sentiment: "positive", coverage: 98, trend: "up" },
+      { name: "Claude", mentions: 7456, sentiment: "positive", coverage: 96, trend: "up" },
+      { name: "Gemini", mentions: 5847, sentiment: "positive", coverage: 95, trend: "up" },
+      { name: "Perplexity", mentions: 3030, sentiment: "positive", coverage: 99, trend: "up" }
+    ],
+    products: [
+      { id: 1, name: "iPhone", category: "Mobile", visibilityScore: 98, mentions: 8901, sentiment: "positive", lastOptimized: "2024-01-14" },
+      { id: 2, name: "MacBook", category: "Computing", visibilityScore: 94, mentions: 5432, sentiment: "positive", lastOptimized: "2024-01-13" },
+      { id: 3, name: "AirPods", category: "Audio", visibilityScore: 91, mentions: 4567, sentiment: "positive", lastOptimized: "2024-01-12" }
+    ],
+    competitors: [
+      { name: "Samsung", visibilityScore: 89, mentions: 19234, trend: "stable" },
+      { name: "Google", visibilityScore: 82, mentions: 15678, trend: "up" },
+      { name: "Microsoft", visibilityScore: 78, mentions: 13456, trend: "stable" }
+    ]
+  }
+];
 import { 
   Search, 
   TrendingUp, 
@@ -47,6 +175,13 @@ const Index = () => {
   const [activeView, setActiveView] = useState("dashboard");
   // Simulating role-based logic - in real app this would come from auth/context
   const [userRole, setUserRole] = useState<"business_user" | "agency_admin">("business_user");
+  
+  // Brand switching state
+  const [trackedBrands] = useState<BrandData[]>(mockTrackedBrands);
+  const [selectedBrandId, setSelectedBrandId] = useState<string>("nike");
+  
+  // Get current selected brand data
+  const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];
 
   const handleAnalysis = () => {
     setIsAnalyzing(true);
@@ -202,9 +337,25 @@ const Index = () => {
                 <div className="mb-3 bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm">
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2">
-                       <img src="/lovable-uploads/eb27b2e0-a722-4723-8b57-eee040e312fb.png" alt="Nike" className="w-5 h-5" />
-                      <span className="font-medium text-gray-900 text-sm">Nike</span>
-                      <ChevronDown className="w-3 h-3 text-gray-400" />
+                      <Select value={selectedBrandId} onValueChange={setSelectedBrandId}>
+                        <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent focus:ring-0 hover:bg-gray-50 rounded-md px-2 py-1">
+                          <div className="flex items-center space-x-2">
+                            <img src={selectedBrand.logo} alt={selectedBrand.name} className="w-5 h-5" />
+                            <span className="font-medium text-gray-900 text-sm">{selectedBrand.name}</span>
+                            <ChevronDown className="w-3 h-3 text-gray-400" />
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {trackedBrands.map((brand) => (
+                            <SelectItem key={brand.id} value={brand.id}>
+                              <div className="flex items-center space-x-2">
+                                <img src={brand.logo} alt={brand.name} className="w-4 h-4" />
+                                <span>{brand.name}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     
                     <Separator orientation="vertical" className="h-4" />
@@ -262,19 +413,19 @@ const Index = () => {
                   </TabsList>
 
                   <TabsContent value="overview">
-                    <OverviewSection />
+                    <OverviewSection brandData={selectedBrand} />
                   </TabsContent>
 
                   <TabsContent value="brand">
-                    <BrandAnalysisSection />
+                    <BrandAnalysisSection brandData={selectedBrand} />
                   </TabsContent>
 
                   <TabsContent value="queries">
-                    <QueriesAndPromptsSection />
+                    <QueriesAndPromptsSection brandData={selectedBrand} />
                   </TabsContent>
 
                   <TabsContent value="competitors">
-                    <CompetitorSection />
+                    <CompetitorSection brandData={selectedBrand} />
                   </TabsContent>
 
                   <TabsContent value="trends">
@@ -293,7 +444,7 @@ const Index = () => {
             </>
           )}
 
-          {activeView === "brands" && <BrandManagementSection />}
+          {activeView === "brands" && <BrandManagementSection selectedBrand={selectedBrand} trackedBrands={trackedBrands} />}
           {activeView === "agency" && <AgencyAdminSection />}
           {activeView === "settings" && <SettingsPage userRole={userRole} />}
         </main>

@@ -8,7 +8,47 @@ import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tool
 import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link } from "lucide-react";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 
-export const OverviewSection = () => {
+interface BrandData {
+  id: string;
+  name: string;
+  logo: string;
+  url: string;
+  visibilityScore: number;
+  totalMentions: number;
+  platformCoverage: number;
+  industryRanking: number;
+  mentionTrend: string;
+  sentimentScore: number;
+  lastUpdated: string;
+  platforms: Array<{
+    name: string;
+    mentions: number;
+    sentiment: string;
+    coverage: number;
+    trend: string;
+  }>;
+  products: Array<{
+    id: number;
+    name: string;
+    category: string;
+    visibilityScore: number;
+    mentions: number;
+    sentiment: string;
+    lastOptimized: string;
+  }>;
+  competitors: Array<{
+    name: string;
+    visibilityScore: number;
+    mentions: number;
+    trend: string;
+  }>;
+}
+
+interface OverviewSectionProps {
+  brandData: BrandData;
+}
+
+export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
 
   const visibilityData = [
@@ -133,7 +173,7 @@ export const OverviewSection = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">AI Visibility Overview</h2>
-          <p className="text-muted-foreground">Comprehensive AI visibility metrics and platform insights for Nike</p>
+          <p className="text-muted-foreground">Comprehensive AI visibility metrics and platform insights for {brandData.name}</p>
         </div>
         <ReportExportDialog
           trigger={
@@ -142,7 +182,7 @@ export const OverviewSection = () => {
               Export Report
             </Button>
           }
-          brandName="Tesla"
+          brandName={brandData.name}
           reportType="full"
         />
       </div>
@@ -156,12 +196,12 @@ export const OverviewSection = () => {
               <span className="text-sm font-medium text-gray-600">AI Visibility Score</span>
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-bold text-blue-600">87</span>
+              <span className="text-2xl font-bold text-blue-600">{brandData.visibilityScore}</span>
               <Badge variant="secondary" className="ml-2 text-xs bg-green-100 text-green-800">
-                +5
+                {brandData.mentionTrend === "up" ? "+" : ""}5
               </Badge>
             </div>
-            <Progress value={87} className="mt-2 h-2" />
+            <Progress value={brandData.visibilityScore} className="mt-2 h-2" />
           </CardContent>
         </Card>
 
@@ -172,9 +212,9 @@ export const OverviewSection = () => {
               <span className="text-sm font-medium text-gray-600">Total Mentions</span>
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-bold text-gray-900">{visibilityMetrics.totalMentions.toLocaleString()}</span>
+              <span className="text-2xl font-bold text-gray-900">{brandData.totalMentions.toLocaleString()}</span>
               <Badge variant="secondary" className="ml-2 text-xs bg-green-100 text-green-800">
-                {visibilityMetrics.trending}
+                +15%
               </Badge>
             </div>
           </CardContent>
@@ -187,12 +227,12 @@ export const OverviewSection = () => {
               <span className="text-sm font-medium text-gray-600">Industry AI Ranking</span>
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-bold text-green-600">#1</span>
+              <span className="text-2xl font-bold text-green-600">#{brandData.industryRanking}</span>
               <Badge variant="secondary" className="ml-2 text-xs bg-green-100 text-green-800">
                 +2
               </Badge>
             </div>
-            <div className="text-sm text-gray-600 mt-1">Among Electric Vehicle brands</div>
+            <div className="text-sm text-gray-600 mt-1">Among industry brands</div>
           </CardContent>
         </Card>
 
@@ -203,7 +243,7 @@ export const OverviewSection = () => {
               <span className="text-sm font-medium text-gray-600">Platform Coverage</span>
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-bold text-gray-900">{visibilityMetrics.platformCoverage}</span>
+              <span className="text-2xl font-bold text-gray-900">{brandData.platformCoverage}</span>
               <span className="text-sm text-gray-600 ml-1">platforms</span>
             </div>
           </CardContent>

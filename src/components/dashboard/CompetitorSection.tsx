@@ -12,7 +12,47 @@ import { TrendingUp, TrendingDown, ExternalLink, Target, Plus, Filter, BarChart3
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart as RechartsLineChart, Line, Area, AreaChart, ComposedChart } from "recharts";
 import { useState } from "react";
 
-export const CompetitorSection = () => {
+interface BrandData {
+  id: string;
+  name: string;
+  logo: string;
+  url: string;
+  visibilityScore: number;
+  totalMentions: number;
+  platformCoverage: number;
+  industryRanking: number;
+  mentionTrend: string;
+  sentimentScore: number;
+  lastUpdated: string;
+  platforms: Array<{
+    name: string;
+    mentions: number;
+    sentiment: string;
+    coverage: number;
+    trend: string;
+  }>;
+  products: Array<{
+    id: number;
+    name: string;
+    category: string;
+    visibilityScore: number;
+    mentions: number;
+    sentiment: string;
+    lastOptimized: string;
+  }>;
+  competitors: Array<{
+    name: string;
+    visibilityScore: number;
+    mentions: number;
+    trend: string;
+  }>;
+}
+
+interface CompetitorSectionProps {
+  brandData: BrandData;
+}
+
+export const CompetitorSection = ({ brandData }: CompetitorSectionProps) => {
   const [selectedCompetitors, setSelectedCompetitors] = useState<string[]>(["Adidas", "Under Armour", "New Balance"]);
   const [dateRange, setDateRange] = useState("30");
   const [viewMode, setViewMode] = useState<"table" | "charts">("table");

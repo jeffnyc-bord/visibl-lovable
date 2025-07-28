@@ -29,7 +29,47 @@ import {
   RotateCcw
 } from "lucide-react";
 
-export const BrandAnalysisSection = () => {
+interface BrandData {
+  id: string;
+  name: string;
+  logo: string;
+  url: string;
+  visibilityScore: number;
+  totalMentions: number;
+  platformCoverage: number;
+  industryRanking: number;
+  mentionTrend: string;
+  sentimentScore: number;
+  lastUpdated: string;
+  platforms: Array<{
+    name: string;
+    mentions: number;
+    sentiment: string;
+    coverage: number;
+    trend: string;
+  }>;
+  products: Array<{
+    id: number;
+    name: string;
+    category: string;
+    visibilityScore: number;
+    mentions: number;
+    sentiment: string;
+    lastOptimized: string;
+  }>;
+  competitors: Array<{
+    name: string;
+    visibilityScore: number;
+    mentions: number;
+    trend: string;
+  }>;
+}
+
+interface BrandAnalysisSectionProps {
+  brandData: BrandData;
+}
+
+export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [scoreFilter, setScoreFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -38,15 +78,20 @@ export const BrandAnalysisSection = () => {
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [isReanalyzing, setIsReanalyzing] = useState(false);
 
-  // Mock data for products
-  const mockProducts = [
-    { id: 1, name: "Nike Air Max 1", sku: "AIR-MAX-001", score: 98, trend: 5, category: "Footwear", gaps: "Schema optimization", mentions: 847, rank: 3, lastUpdated: "2 hours ago", isPinned: true },
-    { id: 2, name: "Nike Dunk Low", sku: "DUNK-LOW-002", score: 95, trend: 2, category: "Footwear", gaps: "FAQ Schema missing", mentions: 623, rank: 5, lastUpdated: "4 hours ago", isPinned: false },
-    { id: 3, name: "Nike React Infinity", sku: "REACT-INF-003", score: 87, trend: -1, category: "Footwear", gaps: "Content clarity", mentions: 412, rank: 8, lastUpdated: "1 hour ago", isPinned: false },
-    { id: 4, name: "Nike Flex Runner 2", sku: "FLEX-RUN-004", score: 45, trend: -8, category: "Footwear", gaps: "Missing product schema", mentions: 156, rank: 24, lastUpdated: "6 hours ago", isPinned: true },
-    { id: 5, name: "Nike Tech Fleece", sku: "TECH-FL-005", score: 78, trend: 3, category: "Apparel", gaps: "Low AI mentions", mentions: 234, rank: 12, lastUpdated: "3 hours ago", isPinned: false },
-    { id: 6, name: "Nike Academy Backpack", sku: "ACAD-BP-006", score: 52, trend: -2, category: "Accessories", gaps: "Poor content structure", mentions: 89, rank: 18, lastUpdated: "5 hours ago", isPinned: false },
-  ];
+  // Use brand's product data with enhanced mock structure
+  const mockProducts = brandData.products.map((product, index) => ({
+    id: product.id,
+    name: product.name,
+    sku: `${product.name.toUpperCase().replace(/\s+/g, '-')}-${String(product.id).padStart(3, '0')}`,
+    score: product.visibilityScore,
+    trend: product.sentiment === "positive" ? 5 : product.sentiment === "negative" ? -3 : 1,
+    category: product.category,
+    gaps: product.visibilityScore > 90 ? "Schema optimization" : product.visibilityScore > 70 ? "Content clarity" : "Missing product schema",
+    mentions: product.mentions,
+    rank: index + 3,
+    lastUpdated: `${Math.floor(Math.random() * 6) + 1} hours ago`,
+    isPinned: index < 2
+  }));
 
   const topProducts = mockProducts.filter(p => p.score >= 90).slice(0, 5);
   const bottomProducts = mockProducts.filter(p => p.score < 70).slice(0, 5);

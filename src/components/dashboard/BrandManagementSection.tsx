@@ -20,7 +20,48 @@ import {
   Building
 } from "lucide-react";
 
-export const BrandManagementSection = () => {
+interface BrandData {
+  id: string;
+  name: string;
+  logo: string;
+  url: string;
+  visibilityScore: number;
+  totalMentions: number;
+  platformCoverage: number;
+  industryRanking: number;
+  mentionTrend: string;
+  sentimentScore: number;
+  lastUpdated: string;
+  platforms: Array<{
+    name: string;
+    mentions: number;
+    sentiment: string;
+    coverage: number;
+    trend: string;
+  }>;
+  products: Array<{
+    id: number;
+    name: string;
+    category: string;
+    visibilityScore: number;
+    mentions: number;
+    sentiment: string;
+    lastOptimized: string;
+  }>;
+  competitors: Array<{
+    name: string;
+    visibilityScore: number;
+    mentions: number;
+    trend: string;
+  }>;
+}
+
+interface BrandManagementSectionProps {
+  selectedBrand: BrandData;
+  trackedBrands: BrandData[];
+}
+
+export const BrandManagementSection = ({ selectedBrand, trackedBrands }: BrandManagementSectionProps) => {
   const { toast } = useToast();
   const [isAddingBrand, setIsAddingBrand] = useState(false);
   const [addBrandProgress, setAddBrandProgress] = useState(0);
@@ -28,56 +69,35 @@ export const BrandManagementSection = () => {
   const [brandType, setBrandType] = useState("");
   const [reportFrequency, setReportFrequency] = useState("");
   
-  // User's primary brand
+  // Use selected brand as the primary brand
   const myBrand = {
     id: 1,
-    name: "Nike",
-    url: "nike.com",
+    name: selectedBrand.name,
+    url: selectedBrand.url,
     type: "primary",
     status: "Active",
-    visibilityScore: 94,
-    trend: "+3.2%",
+    visibilityScore: selectedBrand.visibilityScore,
+    trend: selectedBrand.mentionTrend === "up" ? "+3.2%" : selectedBrand.mentionTrend === "down" ? "-1.5%" : "0%",
     reportFrequency: "Daily",
     lastReport: "2 hours ago",
-    totalMentions: "2.4K",
-    platformCoverage: 12
+    totalMentions: `${(selectedBrand.totalMentions / 1000).toFixed(1)}K`,
+    platformCoverage: selectedBrand.platformCoverage
   };
 
-  const [competitors, setCompetitors] = useState([
-    {
-      id: 2,
-      name: "Adidas",
-      url: "adidas.com",
-      status: "Active",
-      visibilityScore: 87,
-      trend: "+1.8%",
-      reportFrequency: "Weekly",
+  // Get competitors for the selected brand (exclude the selected brand itself)
+  const [competitors, setCompetitors] = useState(() => 
+    selectedBrand.competitors.map((competitor, index) => ({
+      id: index + 2,
+      name: competitor.name,
+      url: `${competitor.name.toLowerCase().replace(/\s+/g, '')}.com`,
+      status: "Active" as const,
+      visibilityScore: competitor.visibilityScore,
+      trend: competitor.trend === "up" ? "+1.8%" : competitor.trend === "down" ? "-0.5%" : "0%",
+      reportFrequency: "Weekly" as const,
       lastReport: "3 days ago",
-      totalMentions: "1.9K"
-    },
-    {
-      id: 3,
-      name: "Under Armour",
-      url: "underarmour.com",
-      status: "Active",
-      visibilityScore: 72,
-      trend: "-0.5%",
-      reportFrequency: "Weekly",
-      lastReport: "1 week ago",
-      totalMentions: "1.2K"
-    },
-    {
-      id: 4,
-      name: "Puma",
-      url: "puma.com",
-      status: "Active",
-      visibilityScore: 68,
-      trend: "+2.1%",
-      reportFrequency: "Bi-weekly",
-      lastReport: "5 days ago",
-      totalMentions: "890"
-    }
-  ]);
+      totalMentions: `${(competitor.mentions / 1000).toFixed(1)}K`
+     }))
+  );
 
   const getTypeColor = (type: string) => {
     return type === "deep" 
