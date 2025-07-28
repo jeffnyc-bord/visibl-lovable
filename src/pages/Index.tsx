@@ -232,7 +232,7 @@ const Index = () => {
                 <Tabs defaultValue="overview" className="space-y-3">
                   <TabsList className="bg-white border border-gray-200 p-0.5 shadow-sm">
                     <TabsTrigger value="overview" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <TrendingUp className="w-3 h-3" />
+                      <img src="/lovable-uploads/d6adcc16-4b32-412c-8c1d-7767b3acda11.png" alt="Overview" className="w-3 h-3" />
                       <span>Overview</span>
                     </TabsTrigger>
                     <TabsTrigger value="visibility" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
