@@ -652,73 +652,86 @@ export const QueriesAndPromptsSection = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredPrompts.map((prompt) => (
-                    <TableRow key={prompt.id} className="hover:bg-gray-50">
-                      <TableCell>
-                        <div className="max-w-xs">
-                          <p className="font-medium text-gray-900 truncate">{prompt.prompt}</p>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="mt-1 h-6 px-2 text-xs"
-                            onClick={() => setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id)}
-                          >
-                            {expandedPrompt === prompt.id ? "Hide Details" : "View Details"}
+                    <>
+                      <TableRow key={prompt.id} className="hover:bg-gray-50">
+                        <TableCell>
+                          <div className="max-w-xs">
+                            <p className="font-medium text-gray-900 truncate">{prompt.prompt}</p>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="mt-1 h-6 px-2 text-xs"
+                              onClick={() => setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id)}
+                            >
+                              {expandedPrompt === prompt.id ? (
+                                <>
+                                  <ChevronUp className="w-3 h-3 mr-1" />
+                                  Hide Details
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown className="w-3 h-3 mr-1" />
+                                  View Details
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{prompt.platform}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            {prompt.mentioned ? (
+                              <Check className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <X className="w-4 h-4 text-red-600" />
+                            )}
+                            <span className="text-sm">{prompt.result}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className="text-xs">
+                            {prompt.queryType}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-gray-600">
+                          {new Date(prompt.timestamp).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="sm">
+                            <Copy className="w-4 h-4" />
                           </Button>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{prompt.platform}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          {prompt.mentioned ? (
-                            <Check className="w-4 h-4 text-green-600" />
-                          ) : (
-                            <X className="w-4 h-4 text-red-600" />
-                          )}
-                          <span className="text-sm">{prompt.result}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="text-xs">
-                          {prompt.queryType}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-600">
-                        {new Date(prompt.timestamp).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="sm">
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
+                        </TableCell>
+                      </TableRow>
+                      
+                      {/* Expandable row content */}
+                      {expandedPrompt === prompt.id && (
+                        <TableRow>
+                          <TableCell colSpan={6} className="bg-gray-50 p-0">
+                            <div className="p-4 space-y-4">
+                              <div>
+                                <h4 className="font-medium text-gray-900 mb-2">Full Prompt:</h4>
+                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
+                                  {prompt.fullPrompt}
+                                </p>
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-gray-900 mb-2">AI Response:</h4>
+                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
+                                  {prompt.fullResponse}
+                                </p>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
                   ))}
                 </TableBody>
               </Table>
             </div>
 
-            {/* Expanded prompt details */}
-            {expandedPrompt && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                {filteredPrompts.find(p => p.id === expandedPrompt) && (
-                  <div className="space-y-3">
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-1">Full Prompt:</h4>
-                      <p className="text-sm text-gray-700">
-                        {filteredPrompts.find(p => p.id === expandedPrompt)?.fullPrompt}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-1">AI Response:</h4>
-                      <p className="text-sm text-gray-700">
-                        {filteredPrompts.find(p => p.id === expandedPrompt)?.fullResponse}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
           </CardContent>
         </Card>
       </TabsContent>
