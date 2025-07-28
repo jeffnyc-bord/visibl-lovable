@@ -57,10 +57,10 @@ export const OverviewSection = () => {
   ];
 
   const coreQueries = [
-    { query: "Best electric vehicle for families", relevanceScore: 92, brand: "Tesla", mentions: 145 },
-    { query: "Tesla Model 3 vs competitors", relevanceScore: 88, brand: "Tesla", mentions: 203 },
-    { query: "Electric car charging infrastructure", relevanceScore: 75, brand: "Tesla", mentions: 67 },
-    { query: "Sustainable transportation options", relevanceScore: 82, brand: "Tesla", mentions: 89 },
+    { query: "Best running shoes for marathon training", relevanceScore: 92, brand: "Nike", mentions: 145 },
+    { query: "Nike Air Max vs Adidas Ultraboost", relevanceScore: 88, brand: "Nike", mentions: 203 },
+    { query: "Most comfortable athletic shoes for daily wear", relevanceScore: 75, brand: "Nike", mentions: 67 },
+    { query: "Best basketball shoes for performance", relevanceScore: 82, brand: "Nike", mentions: 89 },
   ];
 
   const sourceQuality = [
