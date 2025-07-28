@@ -433,15 +433,15 @@ export const QueriesAndPromptsSection = () => {
             </div>
 
             {/* Prompts Table */}
-            <div className="overflow-hidden rounded-xl border border-border/50 shadow-sm bg-card">
+            <div className="overflow-hidden rounded-xl border border-border/30 shadow-sm bg-card">
               <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border/50">
-                    <TableHead className="w-2/5 font-semibold text-foreground py-4 px-6">Prompt</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Mentioned</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Result</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Platform</TableHead>
-                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Type</TableHead>
+                <TableHeader className="sticky top-0 z-10">
+                  <TableRow className="bg-gradient-to-r from-muted/40 to-muted/30 hover:bg-gradient-to-r hover:from-muted/40 hover:to-muted/30 border-b border-border/40">
+                    <TableHead className="w-2/5 font-semibold text-foreground py-5 px-6 text-base">Prompt</TableHead>
+                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-5 text-base">Brand Mention</TableHead>
+                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-5 text-base">Result</TableHead>
+                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-5 text-base">Platform</TableHead>
+                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-5 text-base">Type</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -449,77 +449,99 @@ export const QueriesAndPromptsSection = () => {
                     <>
                       <TableRow 
                         key={prompt.id} 
-                        className={`cursor-pointer hover:bg-muted/20 transition-all duration-200 border-b border-border/30 group ${
-                          index % 2 === 0 ? 'bg-background' : 'bg-muted/5'
-                        }`}
+                        className={`cursor-pointer hover:bg-gradient-to-r hover:from-muted/10 hover:to-muted/5 transition-all duration-300 border-b border-border/20 group ${
+                          index % 2 === 0 ? 'bg-background' : 'bg-muted/3'
+                        } hover:shadow-sm`}
                       >
-                        <TableCell className="px-6 py-4">
+                        <TableCell className="px-6 py-5">
                           <div 
-                            className="flex items-start space-x-3"
+                            className="flex items-start space-x-4"
                             onClick={() => setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id)}
                           >
-                            <div className={`mt-1 p-1 rounded-md transition-colors ${
+                            <div className={`mt-0.5 p-1.5 rounded-full transition-all duration-200 ${
                               expandedPrompt === prompt.id 
-                                ? 'bg-primary/10 text-primary' 
-                                : 'text-muted-foreground group-hover:text-foreground group-hover:bg-muted/30'
+                                ? 'bg-primary text-primary-foreground shadow-sm' 
+                                : 'bg-muted/40 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
                             }`}>
                               {expandedPrompt === prompt.id ? (
-                                <ChevronUp className="w-4 h-4" />
+                                <ChevronUp className="w-3.5 h-3.5" />
                               ) : (
-                                <ChevronDown className="w-4 h-4" />
+                                <ChevronDown className="w-3.5 h-3.5" />
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-primary hover:text-primary/80 transition-colors truncate">
+                              <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate leading-relaxed">
                                 {prompt.prompt}
                               </p>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-center py-4">
+                        <TableCell className="text-center py-5">
                           <div className="flex items-center justify-center">
-                            {prompt.mentioned ? (
-                              <img 
-                                src="/lovable-uploads/63ee4e55-b86e-4dc9-9082-d1772bb4cee7.png" 
-                                alt="Mentioned" 
-                                className="w-4 h-4" 
-                              />
-                            ) : (
-                              <img 
-                                src="/lovable-uploads/889ef665-0a16-4731-ade4-f47010077738.png" 
-                                alt="Not Mentioned" 
-                                className="w-4 h-4" 
-                              />
-                            )}
+                            <div className={`p-2 rounded-full ${
+                              prompt.mentioned 
+                                ? 'bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800/30' 
+                                : 'bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800/30'
+                            }`}>
+                              {prompt.mentioned ? (
+                                <img 
+                                  src="/lovable-uploads/63ee4e55-b86e-4dc9-9082-d1772bb4cee7.png" 
+                                  alt="Brand Mentioned" 
+                                  className="w-4 h-4" 
+                                />
+                              ) : (
+                                <img 
+                                  src="/lovable-uploads/889ef665-0a16-4731-ade4-f47010077738.png" 
+                                  alt="Brand Not Mentioned" 
+                                  className="w-4 h-4" 
+                                />
+                              )}
+                            </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-center py-4">
+                        <TableCell className="text-center py-5">
                           <Badge 
-                            className={`text-xs font-medium px-3 py-1 border-0 shadow-sm ${
+                            className={`text-xs font-semibold px-3 py-1.5 border-0 shadow-sm transition-all duration-200 ${
                               prompt.result.includes('Ranked #1') 
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' :
+                                ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-800 shadow-green-100/50 dark:from-green-900/30 dark:to-green-900/20 dark:text-green-400' :
                               prompt.result.includes('Ranked #2') || prompt.result.includes('Ranked #3') 
-                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' :
+                                ? 'bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 shadow-blue-100/50 dark:from-blue-900/30 dark:to-blue-900/20 dark:text-blue-400' :
                               prompt.result.includes('Positive') || prompt.result.includes('Known') 
-                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400' :
-                              'bg-muted text-muted-foreground'
+                                ? 'bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 shadow-purple-100/50 dark:from-purple-900/30 dark:to-purple-900/20 dark:text-purple-400' :
+                              'bg-gradient-to-r from-muted to-muted/80 text-muted-foreground'
                             }`}
                           >
                             {prompt.result}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-center py-4">
-                          <Badge 
-                            variant="outline" 
-                            className="text-xs font-medium border-primary/20 text-primary bg-primary/5 px-3 py-1 shadow-sm"
-                          >
-                            {prompt.platform}
-                          </Badge>
+                        <TableCell className="text-center py-5">
+                          <div className="flex items-center justify-center space-x-2">
+                            <div className={`w-2 h-2 rounded-full ${
+                              prompt.platform === 'ChatGPT' ? 'bg-green-500' :
+                              prompt.platform === 'Claude' ? 'bg-orange-500' :
+                              prompt.platform === 'Gemini' ? 'bg-blue-500' :
+                              prompt.platform === 'Copilot' ? 'bg-purple-500' :
+                              prompt.platform === 'Grok' ? 'bg-red-500' :
+                              prompt.platform === 'Perplexity' ? 'bg-indigo-500' :
+                              'bg-gray-500'
+                            }`} />
+                            <Badge 
+                              variant="outline" 
+                              className="text-xs font-medium border-border/30 text-foreground bg-background/50 px-2.5 py-1 shadow-sm"
+                            >
+                              {prompt.platform}
+                            </Badge>
+                          </div>
                         </TableCell>
-                        <TableCell className="text-center py-4">
+                        <TableCell className="text-center py-5">
                           <Badge 
                             variant="secondary" 
-                            className="text-xs font-medium bg-secondary/20 text-secondary-foreground border border-secondary/30 px-3 py-1 shadow-sm"
+                            className={`text-xs font-medium px-2.5 py-1 shadow-sm border transition-all duration-200 ${
+                              prompt.queryType === 'Ranking' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/30' :
+                              prompt.queryType === 'Discovery' ? 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-400 dark:border-cyan-800/30' :
+                              prompt.queryType === 'Factual' ? 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800/30' :
+                              'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-900/20 dark:text-violet-400 dark:border-violet-800/30'
+                            }`}
                           >
                             {prompt.queryType}
                           </Badge>
@@ -527,25 +549,44 @@ export const QueriesAndPromptsSection = () => {
                       </TableRow>
                       {expandedPrompt === prompt.id && (
                         <TableRow className="animate-fade-in">
-                          <TableCell colSpan={5} className="bg-muted/10 border-t border-border/20 px-6 py-6">
-                            <div className="space-y-6 max-w-4xl">
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">Full Prompt:</h4>
-                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
-                                  {prompt.fullPrompt}
-                                </p>
-                              </div>
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">Timestamp:</h4>
-                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
-                                  {prompt.timestamp}
-                                </p>
-                              </div>
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">AI Response:</h4>
-                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
-                                  {prompt.fullResponse}
-                                </p>
+                          <TableCell colSpan={5} className="bg-gradient-to-r from-muted/5 to-muted/10 border-t border-border/30 px-6 py-6">
+                            <div className="space-y-6 max-w-5xl">
+                              <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                  <div>
+                                    <h4 className="font-semibold text-foreground mb-3 flex items-center space-x-2">
+                                      <div className="w-1 h-4 bg-primary rounded-full" />
+                                      <span>Full Prompt</span>
+                                    </h4>
+                                    <div className="bg-card border border-border/30 rounded-lg p-4 shadow-sm">
+                                      <p className="text-sm text-foreground leading-relaxed">
+                                        {prompt.fullPrompt}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold text-foreground mb-3 flex items-center space-x-2">
+                                      <div className="w-1 h-4 bg-muted-foreground rounded-full" />
+                                      <span>Timestamp</span>
+                                    </h4>
+                                    <div className="bg-card border border-border/30 rounded-lg p-4 shadow-sm">
+                                      <p className="text-sm text-muted-foreground font-mono">
+                                        {prompt.timestamp}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-foreground mb-3 flex items-center space-x-2">
+                                    <div className="w-1 h-4 bg-green-500 rounded-full" />
+                                    <span>AI Response</span>
+                                  </h4>
+                                  <div className="bg-card border border-border/30 rounded-lg p-4 shadow-sm max-h-64 overflow-y-auto">
+                                    <p className="text-sm text-foreground leading-relaxed">
+                                      {prompt.fullResponse}
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </TableCell>
