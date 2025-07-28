@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, CreditCard, Users, Plug } from "lucide-react";
+import { User, CreditCard, Users, Plug, Building } from "lucide-react";
 import { AccountSettings } from "@/components/settings/AccountSettings";
 import { BillingSettings } from "@/components/settings/BillingSettings";
 import { TeamSettings } from "@/components/settings/TeamSettings";
 import { IntegrationsSettings } from "@/components/settings/IntegrationsSettings";
+import { AgencySettings } from "@/components/settings/AgencySettings";
 
 interface SettingsProps {
   userRole: "business_user" | "agency_admin";
@@ -26,6 +27,12 @@ export const Settings = ({ userRole }: SettingsProps) => {
             <User className="w-4 h-4" />
             <span>Account</span>
           </TabsTrigger>
+          {userRole === "agency_admin" && (
+            <TabsTrigger value="agency" className="flex items-center space-x-2 data-[state=active]:bg-gray-100 text-sm px-4 py-2">
+              <Building className="w-4 h-4" />
+              <span>Agency</span>
+            </TabsTrigger>
+          )}
           <TabsTrigger value="billing" className="flex items-center space-x-2 data-[state=active]:bg-gray-100 text-sm px-4 py-2">
             <CreditCard className="w-4 h-4" />
             <span>Billing</span>
@@ -43,6 +50,12 @@ export const Settings = ({ userRole }: SettingsProps) => {
         <TabsContent value="account">
           <AccountSettings />
         </TabsContent>
+
+        {userRole === "agency_admin" && (
+          <TabsContent value="agency">
+            <AgencySettings />
+          </TabsContent>
+        )}
 
         <TabsContent value="billing">
           <BillingSettings userRole={userRole} />
