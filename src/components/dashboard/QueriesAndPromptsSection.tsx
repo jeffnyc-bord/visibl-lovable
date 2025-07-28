@@ -433,71 +433,105 @@ export const QueriesAndPromptsSection = () => {
             </div>
 
             {/* Prompts Table */}
-            <div className="border rounded-lg overflow-hidden">
+            <div className="overflow-hidden rounded-xl border border-border/50 shadow-sm bg-card">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-2/5">Prompt</TableHead>
-                    <TableHead className="w-1/6 text-center">Mentioned</TableHead>
-                    <TableHead className="w-1/6 text-center">Result</TableHead>
-                    <TableHead className="w-1/6 text-center">Platform</TableHead>
-                    <TableHead className="w-1/6 text-center">Type</TableHead>
+                  <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border/50">
+                    <TableHead className="w-2/5 font-semibold text-foreground py-4 px-6">Prompt</TableHead>
+                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Mentioned</TableHead>
+                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Result</TableHead>
+                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Platform</TableHead>
+                    <TableHead className="w-1/6 text-center font-semibold text-foreground py-4">Type</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredPrompts.map((prompt) => (
+                  {filteredPrompts.map((prompt, index) => (
                     <>
-                      <TableRow key={prompt.id} className="cursor-pointer hover:bg-gray-50">
-                        <TableCell>
+                      <TableRow 
+                        key={prompt.id} 
+                        className={`cursor-pointer hover:bg-muted/20 transition-all duration-200 border-b border-border/30 group ${
+                          index % 2 === 0 ? 'bg-background' : 'bg-muted/5'
+                        }`}
+                      >
+                        <TableCell className="px-6 py-4">
                           <div 
-                            className="flex items-center space-x-2"
+                            className="flex items-start space-x-3"
                             onClick={() => setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id)}
                           >
-                            {expandedPrompt === prompt.id ? (
-                              <ChevronUp className="w-4 h-4 text-gray-400" />
-                            ) : (
-                              <ChevronDown className="w-4 h-4 text-gray-400" />
-                            )}
-                            <div>
-                              <p className="text-sm font-medium text-blue-600 hover:text-blue-800">
-                                {prompt.prompt.length > 60 ? `${prompt.prompt.substring(0, 60)}...` : prompt.prompt}
+                            <div className={`mt-1 p-1 rounded-md transition-colors ${
+                              expandedPrompt === prompt.id 
+                                ? 'bg-primary/10 text-primary' 
+                                : 'text-muted-foreground group-hover:text-foreground group-hover:bg-muted/30'
+                            }`}>
+                              {expandedPrompt === prompt.id ? (
+                                <ChevronUp className="w-4 h-4" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-primary hover:text-primary/80 transition-colors mb-1 line-clamp-2">
+                                {prompt.prompt}
                               </p>
-                              <p className="text-xs text-gray-500 mt-1">{prompt.timestamp}</p>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-xs text-muted-foreground bg-muted/20 px-2 py-1 rounded-md">
+                                  {prompt.timestamp}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-center">
+                        <TableCell className="text-center py-4">
                           <div className="flex items-center justify-center">
-                            {prompt.mentioned ? (
-                              <Check className="w-5 h-5 text-green-600" />
-                            ) : (
-                              <X className="w-5 h-5 text-red-600" />
-                            )}
+                            <div className={`rounded-full p-2 transition-colors ${
+                              prompt.mentioned 
+                                ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400' 
+                                : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                            }`}>
+                              {prompt.mentioned ? (
+                                <CheckCircle className="w-4 h-4" />
+                              ) : (
+                                <X className="w-4 h-4" />
+                              )}
+                            </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-center">
+                        <TableCell className="text-center py-4">
                           <Badge 
-                            variant={prompt.mentioned ? "default" : "secondary"}
-                            className={prompt.mentioned ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
+                            className={`text-xs font-medium px-3 py-1 border-0 shadow-sm ${
+                              prompt.result.includes('Ranked #1') 
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' :
+                              prompt.result.includes('Ranked #2') || prompt.result.includes('Ranked #3') 
+                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' :
+                              prompt.result.includes('Positive') || prompt.result.includes('Known') 
+                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400' :
+                              'bg-muted text-muted-foreground'
+                            }`}
                           >
                             {prompt.result}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline">
+                        <TableCell className="text-center py-4">
+                          <Badge 
+                            variant="outline" 
+                            className="text-xs font-medium border-primary/20 text-primary bg-primary/5 px-3 py-1 shadow-sm"
+                          >
                             {prompt.platform}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-center">
-                          <span className="text-sm text-gray-600">
+                        <TableCell className="text-center py-4">
+                          <Badge 
+                            variant="secondary" 
+                            className="text-xs font-medium bg-secondary/20 text-secondary-foreground border border-secondary/30 px-3 py-1 shadow-sm"
+                          >
                             {prompt.queryType}
-                          </span>
+                          </Badge>
                         </TableCell>
                       </TableRow>
                       {expandedPrompt === prompt.id && (
-                        <TableRow>
-                          <TableCell colSpan={5} className="bg-gray-50 p-6">
-                            <div className="space-y-4">
+                        <TableRow className="animate-fade-in">
+                          <TableCell colSpan={5} className="bg-muted/10 border-t border-border/20 px-6 py-6">
+                            <div className="space-y-6 max-w-4xl">
                               <div>
                                 <h4 className="font-medium text-gray-900 mb-2">Full Prompt:</h4>
                                 <p className="text-sm text-gray-700 bg-white p-3 rounded border">
