@@ -240,7 +240,7 @@ const Index = () => {
                       <span>AI Visibility</span>
                     </TabsTrigger>
                     <TabsTrigger value="brand" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <img src="/lovable-uploads/2e118f8d-a421-4c37-b61b-bdf56fc650c4.png" alt="Package" className="w-4 h-4" />
+                      <img src="/lovable-uploads/153e42f9-e2e0-44d2-b4a0-07a8fbd42599.png" alt="Brand & Product Visibility" className="w-4 h-4" />
                       <span>Brand & Product Visibility</span>
                     </TabsTrigger>
                     <TabsTrigger value="queries" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
