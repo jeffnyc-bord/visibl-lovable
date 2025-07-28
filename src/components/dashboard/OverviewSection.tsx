@@ -431,7 +431,7 @@ export const OverviewSection = () => {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Target className="w-5 h-5 text-blue-500" />
+            <img src="/lovable-uploads/0fe89acd-e0a5-4388-8a50-3f25de035732.png" alt="Core Brand Queries" className="w-5 h-5" />
             <span>Core Brand Queries</span>
           </CardTitle>
           <CardDescription>
