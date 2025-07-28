@@ -478,25 +478,19 @@ export const QueriesAndPromptsSection = () => {
                         </TableCell>
                         <TableCell className="text-center py-5">
                           <div className="flex items-center justify-center">
-                            <div className={`p-2 rounded-full ${
-                              prompt.mentioned 
-                                ? 'bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800/30' 
-                                : 'bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800/30'
-                            }`}>
-                              {prompt.mentioned ? (
-                                <img 
-                                  src="/lovable-uploads/63ee4e55-b86e-4dc9-9082-d1772bb4cee7.png" 
-                                  alt="Brand Mentioned" 
-                                  className="w-4 h-4" 
-                                />
-                              ) : (
-                                <img 
-                                  src="/lovable-uploads/889ef665-0a16-4731-ade4-f47010077738.png" 
-                                  alt="Brand Not Mentioned" 
-                                  className="w-4 h-4" 
-                                />
-                              )}
-                            </div>
+                            {prompt.mentioned ? (
+                              <img 
+                                src="/lovable-uploads/63ee4e55-b86e-4dc9-9082-d1772bb4cee7.png" 
+                                alt="Brand Mentioned" 
+                                className="w-4 h-4" 
+                              />
+                            ) : (
+                              <img 
+                                src="/lovable-uploads/889ef665-0a16-4731-ade4-f47010077738.png" 
+                                alt="Brand Not Mentioned" 
+                                className="w-4 h-4" 
+                              />
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="text-center py-5">
