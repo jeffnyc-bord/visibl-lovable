@@ -21,11 +21,11 @@ export const OverviewSection = () => {
   ];
 
   const industryRanking = [
-    { rank: 1, brand: "Tesla", score: 87, change: "+2" },
-    { rank: 2, brand: "Apple", score: 85, change: "-1" },
-    { rank: 3, brand: "Microsoft", score: 82, change: "+1" },
-    { rank: 4, brand: "Google", score: 78, change: "0" },
-    { rank: 5, brand: "Amazon", score: 76, change: "+3" },
+    { rank: 1, brand: "Nike", score: 87, change: "+2" },
+    { rank: 2, brand: "Adidas", score: 85, change: "-1" },
+    { rank: 3, brand: "Under Armour", score: 82, change: "+1" },
+    { rank: 4, brand: "Puma", score: 78, change: "0" },
+    { rank: 5, brand: "New Balance", score: 76, change: "+3" },
   ];
 
   // AI Visibility data from ExternalAIVisibilitySection
