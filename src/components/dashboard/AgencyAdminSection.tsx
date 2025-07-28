@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
   Users, 
   Plus, 
@@ -24,7 +25,8 @@ import {
   ArrowDown,
   ExternalLink,
   Upload,
-  Palette
+  Palette,
+  Download
 } from "lucide-react";
 
 export const AgencyAdminSection = () => {
@@ -120,6 +122,12 @@ export const AgencyAdminSection = () => {
       case "Basic": return "bg-gray-100 text-gray-700 border-gray-200";
       default: return "bg-gray-100 text-gray-700 border-gray-200";
     }
+  };
+
+  const getHealthIndicator = (score: number) => {
+    if (score >= 80) return { color: "bg-green-500", label: "Excellent" };
+    if (score >= 60) return { color: "bg-yellow-500", label: "Needs Attention" };
+    return { color: "bg-red-500", label: "Critical" };
   };
 
   return (
@@ -219,123 +227,165 @@ export const AgencyAdminSection = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {clients.map((client) => (
-                  <div 
-                    key={client.id} 
-                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-blue-300 transition-all cursor-pointer group"
-                    onClick={() => handleViewDashboard(client.id)}
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
-                        <span className="text-white font-semibold text-sm">
-                          {client.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                        </span>
-                      </div>
-                      
-                      <div>
-                        <h3 className="font-medium text-gray-900 text-base group-hover:text-blue-600 transition-colors">{client.name}</h3>
-                        <div className="flex items-center space-x-3 text-xs text-gray-600 mt-1">
-                          <div className="flex items-center space-x-1">
-                            <Mail className="w-3 h-3" />
-                            <span>{client.email}</span>
+              <TooltipProvider>
+                <div className="space-y-3">
+                  {clients.map((client) => {
+                    const healthIndicator = getHealthIndicator(client.avgVisibilityScore);
+                    return (
+                      <div 
+                        key={client.id} 
+                        className="flex items-center justify-between p-5 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md hover:bg-gray-50 hover:border-blue-300 transition-all duration-200 cursor-pointer group"
+                        onClick={() => handleViewDashboard(client.id)}
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                            <span className="text-white font-semibold text-sm">
+                              {client.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                            </span>
                           </div>
-                          <span>•</span>
-                          <span className="text-blue-600 font-medium">{client.url}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-8">
-                      <div className="text-center">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <Badge className={`text-xs px-2 py-1 font-medium ${getStatusColor(client.status)}`}>
-                            {client.status}
-                          </Badge>
-                          <Badge className={`text-xs px-2 py-1 font-medium ${getTierColor(client.tier)}`}>
-                            {client.tier}
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-gray-600">Last AI Scan: {client.lastScan}</p>
-                      </div>
-                      
-                      <div className="text-center">
-                        <div className="flex items-center justify-center space-x-2 mb-1">
-                          <span className="text-lg font-bold text-gray-900">{client.avgVisibilityScore}%</span>
-                          <div className={`flex items-center ${
-                            client.visibilityTrend.direction === 'up' ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {client.visibilityTrend.direction === 'up' ? 
-                              <ArrowUp className="w-3 h-3" /> : 
-                              <ArrowDown className="w-3 h-3" />
-                            }
-                            <span className="text-xs font-medium">{client.visibilityTrend.value}%</span>
+                          
+                          <div>
+                            <h3 className="font-semibold text-gray-900 text-lg group-hover:text-blue-600 transition-colors">{client.name}</h3>
+                            <div className="flex items-center space-x-3 text-sm text-gray-600 mt-1">
+                              <div className="flex items-center space-x-1">
+                                <Mail className="w-3 h-3" />
+                                <span>{client.email}</span>
+                              </div>
+                              <span>•</span>
+                              <span className="text-blue-600 font-medium">{client.url}</span>
+                            </div>
                           </div>
                         </div>
-                        <p className="text-xs text-gray-600">Visibility Score</p>
+                        
+                        <div className="flex items-center space-x-8">
+                          <div className="text-center">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <Badge className={`text-xs px-2 py-1 font-medium ${getStatusColor(client.status)}`}>
+                                {client.status}
+                              </Badge>
+                              <Badge className={`text-xs px-2 py-1 font-medium ${getTierColor(client.tier)}`}>
+                                {client.tier}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-gray-600">Last AI Scan: {client.lastScan}</p>
+                          </div>
+                          
+                          <div className="text-center relative">
+                            <div className="flex items-center justify-center space-x-3 mb-1">
+                              <div className="flex items-center space-x-1">
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <div className={`w-3 h-3 rounded-full ${healthIndicator.color} ring-2 ring-white shadow-sm`}></div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{healthIndicator.label}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <span className="text-xl font-bold text-gray-900">{client.avgVisibilityScore}%</span>
+                              </div>
+                              <div className={`flex items-center ${
+                                client.visibilityTrend.direction === 'up' ? 'text-green-600' : 'text-red-600'
+                              }`}>
+                                {client.visibilityTrend.direction === 'up' ? 
+                                  <ArrowUp className="w-3 h-3" /> : 
+                                  <ArrowDown className="w-3 h-3" />
+                                }
+                                <span className="text-sm font-medium">{client.visibilityTrend.value}%</span>
+                              </div>
+                            </div>
+                            <p className="text-xs text-gray-600">Visibility Score</p>
+                          </div>
+                          
+                          <div className="text-center">
+                            <p className="text-sm font-semibold text-gray-900 mb-1">
+                              {client.deepTrackedBrands} Deep / {client.competitorBrands} Comp
+                            </p>
+                            <p className="text-xs text-gray-600">Brand Limits</p>
+                          </div>
+                          
+                          <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-9 w-9 p-0 hover:bg-blue-100 hover:text-blue-600"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleViewDashboard(client.id);
+                                  }}
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>View Dashboard</p>
+                              </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-9 w-9 p-0 hover:bg-green-100 hover:text-green-600"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleGenerateReport(client.id, client.name);
+                                  }}
+                                >
+                                  <Download className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Generate Report</p>
+                              </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-9 w-9 p-0 hover:bg-orange-100 hover:text-orange-600"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditClient(client.id);
+                                  }}
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Edit Client</p>
+                              </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-9 w-9 p-0 hover:bg-red-100 hover:text-red-600"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteClient(client.id);
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Delete Client</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </div>
                       </div>
-                      
-                      <div className="text-center">
-                        <p className="text-sm font-medium text-gray-900 mb-1">
-                          {client.deepTrackedBrands} Deep / {client.competitorBrands} Comp
-                        </p>
-                        <p className="text-xs text-gray-600">Brand Limits</p>
-                      </div>
-                      
-                      <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-600"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewDashboard(client.id);
-                          }}
-                          title="View Dashboard"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-600"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleGenerateReport(client.id, client.name);
-                          }}
-                          title="Generate Report"
-                        >
-                          <FileText className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-600"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditClient(client.id);
-                          }}
-                          title="Edit Client"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteClient(client.id);
-                          }}
-                          title="Delete Client"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    );
+                  })}
+                </div>
+              </TooltipProvider>
             </CardContent>
           </Card>
         </TabsContent>
