@@ -232,12 +232,8 @@ const Index = () => {
                 <Tabs defaultValue="overview" className="space-y-3">
                   <TabsList className="bg-white border border-gray-200 p-0.5 shadow-sm">
                     <TabsTrigger value="overview" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <img src="/lovable-uploads/d6adcc16-4b32-412c-8c1d-7767b3acda11.png" alt="Overview" className="w-4 h-4" />
-                      <span>Overview</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="visibility" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
-                      <img src="/lovable-uploads/bbadd30d-d143-4dae-b889-4797029e56f6.png" alt="AI Visibility" className="w-4 h-4" />
-                      <span>AI Visibility</span>
+                      <img src="/lovable-uploads/bbadd30d-d143-4dae-b889-4797029e56f6.png" alt="AI Visibility Overview" className="w-4 h-4" />
+                      <span>AI Visibility Overview</span>
                     </TabsTrigger>
                     <TabsTrigger value="brand" className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5">
                       <img src="/lovable-uploads/153e42f9-e2e0-44d2-b4a0-07a8fbd42599.png" alt="Brand & Product Visibility" className="w-4 h-4" />
@@ -267,10 +263,6 @@ const Index = () => {
 
                   <TabsContent value="overview">
                     <OverviewSection />
-                  </TabsContent>
-
-                  <TabsContent value="visibility">
-                    <ExternalAIVisibilitySection />
                   </TabsContent>
 
                   <TabsContent value="brand">
