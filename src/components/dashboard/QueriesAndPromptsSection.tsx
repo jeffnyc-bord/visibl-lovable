@@ -421,7 +421,7 @@ export const QueriesAndPromptsSection = () => {
             </div>
 
         {/* Prompts Table */}
-        <div className="overflow-hidden rounded-xl border border-border shadow-sm bg-background">
+        <Card>
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border">
@@ -542,7 +542,7 @@ export const QueriesAndPromptsSection = () => {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </Card>
 
         {filteredPrompts.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
