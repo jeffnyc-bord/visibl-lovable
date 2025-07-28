@@ -152,7 +152,7 @@ export const OverviewSection = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Eye className="w-4 h-4 text-blue-500" />
+              <img src="/lovable-uploads/f5efaad8-a8ef-4c09-a7e6-523328cd1fd8.png" alt="AI Visibility Score" className="w-4 h-4" />
               <span className="text-sm font-medium text-gray-600">AI Visibility Score</span>
             </div>
             <div className="mt-2">
@@ -216,7 +216,7 @@ export const OverviewSection = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="w-5 h-5 text-indigo-500" />
+              <img src="/lovable-uploads/c450af84-c4bc-4808-9aef-caf1ef5fb80c.png" alt="Overall AI Visibility Trend" className="w-5 h-5" />
               <span>Overall AI Visibility Trend</span>
             </CardTitle>
             <CardDescription>
