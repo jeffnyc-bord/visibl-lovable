@@ -523,55 +523,17 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
               >
                 <div className="flex-1">
                   <p className="font-medium text-gray-900">{query.query}</p>
-                  <div className="flex items-center space-x-4 mt-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600">Relevance:</span>
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                        {query.relevanceScore}%
-                      </Badge>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600">AI Mentions:</span>
-                      <span className="font-medium">{query.mentions}</span>
-                    </div>
-                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Progress value={query.relevanceScore} className="w-20 h-2" />
+                <div className="flex items-center space-x-6">
                   <div className="flex items-center space-x-2">
-                    {query.relevanceScore < 80 && (
-                      <UITooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 px-3 text-xs"
-                            onClick={() => window.open('/recommendations?filter=query-optimization', '_blank')}
-                          >
-                            <Settings className="w-3 h-3 mr-1" />
-                            Optimize
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Generate optimization recommendations for this query</p>
-                        </TooltipContent>
-                      </UITooltip>
-                    )}
-                    <UITooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => window.open('/recommendations?generate=content-blueprint', '_blank')}
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Generate content blueprint for this query</p>
-                      </TooltipContent>
-                    </UITooltip>
+                    <span className="text-sm text-gray-600">Relevance:</span>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                      {query.relevanceScore}%
+                    </Badge>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600">AI Mentions:</span>
+                    <span className="font-medium">{query.mentions}</span>
                   </div>
                 </div>
               </div>
