@@ -174,40 +174,119 @@ export const AddClientDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Upgrade prompt when limit is reached */}
+        {/* Enhanced upgrade modal when limit is reached */}
         {hasReachedLimit && (
-          <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg">
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0">
-                <AlertTriangle className="w-5 h-5 text-orange-600" />
+          <div className="space-y-6">
+            <div className="text-center space-y-3">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle className="w-8 h-8 text-white" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-medium text-orange-800">
-                  Upgrade Required
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Your Agency is Growing! Upgrade to Continue
                 </h3>
-                <p className="text-sm text-orange-700 mt-1">
-                  You've reached your {subscriptionTier} plan limit of {clientLimit} client accounts. 
-                  Upgrade to add more clients.
+                <p className="text-gray-600 mt-2">
+                  You've successfully managed {currentClientCount} clients on the {subscriptionTier} plan! 
+                  To continue growing and add more clients, an upgrade unlocks powerful new features.
                 </p>
-                <div className="mt-3 space-y-2">
-                  {subscriptionTier === "Starter" && (
-                    <div className="text-sm text-orange-700">
-                      <strong>Professional Plan:</strong> 15 clients for $2,500/month
+              </div>
+            </div>
+
+            {/* Plan comparison cards */}
+            <div className="space-y-4">
+              {subscriptionTier === "Starter" && (
+                <div className="border-2 border-blue-500 rounded-xl p-6 bg-gradient-to-br from-blue-50 to-indigo-50 relative">
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-blue-500 text-white px-3 py-1">Recommended</Badge>
+                  </div>
+                  <div className="text-center space-y-4">
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900">Professional Plan</h4>
+                      <div className="flex items-center justify-center space-x-2 mt-2">
+                        <span className="text-3xl font-bold text-gray-900">$2,500</span>
+                        <span className="text-gray-600">/month</span>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">or save 20% annually ($30k/year)</p>
                     </div>
-                  )}
-                  <div className="text-sm text-orange-700">
-                    <strong>Enterprise Plan:</strong> Unlimited clients - Contact Sales
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-700"><strong>15 Client Accounts</strong> (vs 5 current)</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">Advanced Reporting & Analytics</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">Expanded Competitor Tracking (15 vs 5 slots)</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">Priority Support & Training</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">White-label Reporting</span>
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3">
+                      Upgrade to Professional
+                    </Button>
                   </div>
                 </div>
-                <div className="mt-4 flex space-x-2">
-                  <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
-                    Upgrade Plan
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => onOpenChange(false)}>
-                    Cancel
+              )}
+
+              {/* Enterprise Plan */}
+              <div className="border rounded-xl p-6 bg-gradient-to-br from-gray-50 to-slate-50">
+                <div className="text-center space-y-4">
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900">Enterprise Plan</h4>
+                    <p className="text-gray-600 mt-1">Custom pricing for growing agencies</p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-sm text-gray-700"><strong>Unlimited Client Accounts</strong></span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-sm text-gray-700">Dedicated Account Manager</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-sm text-gray-700">Custom Integrations & APIs</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-sm text-gray-700">Advanced Security & Compliance</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-sm text-gray-700">24/7 Priority Support</span>
+                    </div>
+                  </div>
+
+                  <Button variant="outline" className="w-full border-gray-300 hover:bg-gray-50 font-medium py-3">
+                    Contact Sales
                   </Button>
                 </div>
               </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex flex-col space-y-3 pt-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-600">
+                  Need help choosing? Our team can help you find the perfect plan for your agency.
+                </p>
+              </div>
+              <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-gray-600 hover:text-gray-800">
+                Maybe Later
+              </Button>
             </div>
           </div>
         )}
