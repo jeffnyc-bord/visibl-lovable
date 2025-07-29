@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,11 +50,13 @@ interface BrandData {
 
 interface QueriesAndPromptsSectionProps {
   brandData: BrandData;
+  prefilledQuery?: string;
+  onQueryUsed?: () => void;
 }
 
-export const QueriesAndPromptsSection = ({ brandData }: QueriesAndPromptsSectionProps) => {
+export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUsed }: QueriesAndPromptsSectionProps) => {
   const { toast } = useToast();
-  const [customPrompt, setCustomPrompt] = useState("");
+  const [customPrompt, setCustomPrompt] = useState(prefilledQuery || "");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [isBlasting, setIsBlasting] = useState(false);
   const [blastProgress, setBlastProgress] = useState(0);
@@ -68,6 +70,14 @@ export const QueriesAndPromptsSection = ({ brandData }: QueriesAndPromptsSection
   const [mentionFilter, setMentionFilter] = useState<string>("all");
   const [queryTypeFilter, setQueryTypeFilter] = useState<string>("all");
   const [expandedHistory, setExpandedHistory] = useState<number | null>(null);
+
+  // Update prompt when prefilledQuery changes
+  useEffect(() => {
+    if (prefilledQuery) {
+      setCustomPrompt(prefilledQuery);
+      onQueryUsed?.();
+    }
+  }, [prefilledQuery, onQueryUsed]);
 
   // Mock data for generated queries
   const coreQueries = [

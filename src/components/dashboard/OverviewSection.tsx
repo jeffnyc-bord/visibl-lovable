@@ -49,9 +49,10 @@ interface BrandData {
 
 interface OverviewSectionProps {
   brandData: BrandData;
+  onQueryClick?: (query: string) => void;
 }
 
-export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
+export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProps) => {
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
 
@@ -515,7 +516,11 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
         <CardContent>
           <div className="space-y-4">
             {coreQueries.map((query, index) => (
-              <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+              <div 
+                key={index} 
+                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-primary/30 hover:bg-primary/5 cursor-pointer transition-all"
+                onClick={() => onQueryClick?.(query.query)}
+              >
                 <div className="flex-1">
                   <p className="font-medium text-gray-900">{query.query}</p>
                   <div className="flex items-center space-x-4 mt-2">

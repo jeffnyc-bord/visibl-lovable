@@ -185,6 +185,10 @@ const Index = () => {
     "overview", "brand", "queries", "competitors", "trends", "technical", "recommendations"
   ]);
   
+  // Query prompt state
+  const [prefilledQuery, setPrefilledQuery] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>("overview");
+  
   // Get current selected brand data
   const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];
 
@@ -445,7 +449,7 @@ const Index = () => {
 
               {/* Dashboard Content */}
               {hasAnalysis && (
-                <Tabs defaultValue="overview" className="space-y-3">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
                   <TabsList className="bg-white border border-gray-200 p-0.5 shadow-sm">
                     {allSections
                       .filter(section => visibleSections.includes(section.key))
@@ -467,7 +471,13 @@ const Index = () => {
 
                   {visibleSections.includes("overview") && (
                     <TabsContent value="overview">
-                      <OverviewSection brandData={selectedBrand} />
+                      <OverviewSection 
+                        brandData={selectedBrand} 
+                        onQueryClick={(query) => {
+                          setPrefilledQuery(query);
+                          setActiveTab("queries");
+                        }}
+                      />
                     </TabsContent>
                   )}
 
@@ -479,7 +489,11 @@ const Index = () => {
 
                   {visibleSections.includes("queries") && (
                     <TabsContent value="queries">
-                      <QueriesAndPromptsSection brandData={selectedBrand} />
+                      <QueriesAndPromptsSection 
+                        brandData={selectedBrand} 
+                        prefilledQuery={prefilledQuery}
+                        onQueryUsed={() => setPrefilledQuery("")}
+                      />
                     </TabsContent>
                   )}
 
