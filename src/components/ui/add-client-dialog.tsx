@@ -184,6 +184,16 @@ export const AddClientDialog = ({
                 className="w-16 h-16"
               />
             </div>
+            
+            <div className="text-center space-y-2">
+              <h2 className="text-xl font-semibold text-foreground">
+                Unlock More Clients & Features: Upgrade Your Plan
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Your agency has reached 5 clients! Upgrade your plan to unlock more capabilities.
+              </p>
+            </div>
+            
             <div className="text-center space-y-4">
               <h3 className="text-lg font-semibold text-foreground">
                 Choose Your Plan
