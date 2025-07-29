@@ -198,10 +198,7 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
           <CollapsibleTrigger asChild>
             <CardHeader className={`cursor-pointer hover:bg-white/50 transition-all duration-300 rounded-t-lg ${isInsightsOpen ? 'pb-6' : 'pb-3'}`}>
               <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <img src="/lovable-uploads/b6367269-4b7b-4fa2-b584-669d83dee700.png" alt="AI Insights" className="w-5 h-5" />
-                  <span>AI Insights Summary</span>
-                </div>
+                <span>AI Insights Summary</span>
                 <div className="transition-transform duration-300 ease-out" style={{ transform: isInsightsOpen ? 'rotate(0deg)' : 'rotate(180deg)' }}>
                   <ChevronUp className="w-4 h-4" />
                 </div>
