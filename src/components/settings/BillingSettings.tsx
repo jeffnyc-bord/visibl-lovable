@@ -14,12 +14,6 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
   const monthlyPrice = userRole === "agency_admin" ? "$1,500" : "$99";
   const yearlyPrice = userRole === "agency_admin" ? "$18,000" : "$1,188";
   const clientLimit = userRole === "agency_admin" ? 5 : 1;
-  
-  // Mock usage data - in real app this would come from actual usage
-  const currentClients = 3; // Current number of clients
-  const competitorsUsed = 47; // Current competitors being tracked
-  const competitorLimit = 150; // Limit based on plan
-  const nextBillingDate = "Feb 15, 2026"; // Next billing date
 
   const billingHistory = [
     { date: "2024-01-01", amount: "$99.00", status: "Paid", invoice: "INV-2024-001" },
@@ -29,76 +23,69 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Subscription & Billing Overview */}
+      {/* Current Subscription */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Star className="w-5 h-5" />
-            <span>Subscription & Billing</span>
+            <span>Current Subscription</span>
           </CardTitle>
           <CardDescription>
-            Manage your agency's Visibl subscription
+            Manage your subscription plan and usage
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Current Plan Card */}
-          <div className="flex items-center justify-between p-6 border rounded-lg bg-green-50 border-green-200">
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-4 border rounded-lg">
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="text-lg font-semibold text-green-800">{currentPlan} Plan</h3>
-                <Badge className="bg-green-600 text-white">Active</Badge>
+                <h3 className="font-semibold">{currentPlan} Plan</h3>
+                <Badge variant="secondary">Active</Badge>
               </div>
-              <p className="text-green-700 font-medium mt-1">
-                {userRole === "agency_admin" ? `${clientLimit} Clients • ${yearlyPrice} per year` : "1 Brand • $1,188 per year"}
+              <p className="text-sm text-gray-600 mt-1">
+                {userRole === "agency_admin" 
+                  ? `${monthlyPrice}/month • ${yearlyPrice}/year • Billed monthly` 
+                  : "Billed monthly"
+                }
               </p>
-              <p className="text-sm text-green-600 mt-1">
-                Monthly cost: {monthlyPrice}/month
-              </p>
+              <div className="mt-2 text-sm text-gray-500">
+                {userRole === "agency_admin" ? (
+                  <>
+                    <p>• {clientLimit} client accounts</p>
+                    <p>• Unlimited competitor tracking per client</p>
+                    <p>• White-label reports</p>
+                    <p>• Multi-client management dashboard</p>
+                    <p>• Team collaboration tools</p>
+                  </>
+                ) : (
+                  <>
+                    <p>• 1 deep-tracked brand</p>
+                    <p>• 5 competitor slots</p>
+                    <p>• Standard reports</p>
+                  </>
+                )}
+              </div>
             </div>
             <div className="text-right">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">Upgrade Plan</Button>
+              <Button variant="outline" size="sm">Change Plan</Button>
             </div>
           </div>
-
-          {/* Usage Metrics */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-gray-700">
-                  {userRole === "agency_admin" ? "Deep Brands/Clients Used" : "Brands Used"}
-                </p>
-              </div>
-              <p className="text-2xl font-bold text-gray-900">
-                {userRole === "agency_admin" ? `${currentClients}/${clientLimit}` : "1/1"}
+          
+          <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div>
+              <p className="text-sm font-medium text-gray-700">
+                {userRole === "agency_admin" ? "Client Accounts" : "Brands Used"}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
-                {userRole === "agency_admin" ? "Client accounts" : "Deep tracked brands"}
+              <p className="text-2xl font-semibold">
+                {userRole === "agency_admin" ? `3 / ${clientLimit}` : "1 / 1"}
               </p>
             </div>
-            
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-gray-700">Competitors Used</p>
-              </div>
-              <p className="text-2xl font-bold text-gray-900">
-                {userRole === "agency_admin" ? `${competitorsUsed}/${competitorLimit}` : "2/5"}
+            <div>
+              <p className="text-sm font-medium text-gray-700">
+                {userRole === "agency_admin" ? "Total Brands Tracked" : "Competitor Slots"}
               </p>
-              <p className="text-xs text-gray-500 mt-1">Competitor tracking slots</p>
-            </div>
-          </div>
-
-          {/* Billing Details */}
-          <div className="p-4 border rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-3">Billing Details</h4>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Next Billing Date:</span>
-                <span className="text-sm font-medium text-gray-900">{nextBillingDate}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Annual Cost:</span>
-                <span className="text-sm font-medium text-gray-900">{yearlyPrice}</span>
-              </div>
+              <p className="text-2xl font-semibold">
+                {userRole === "agency_admin" ? "8" : "2 / 5"}
+              </p>
             </div>
           </div>
         </CardContent>
@@ -196,12 +183,12 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                     <Badge className="bg-green-600">Current Plan</Badge>
                   </div>
                   <p className="text-green-700 font-medium">$1,500/month or $18,000/year</p>
-                   <ul className="text-sm text-green-700 mt-2 space-y-1">
-                     <li>• 5 client accounts</li>
-                     <li>• Unlimited competitor tracking per client</li>
-                     <li>• White labeled reports</li>
-                     <li>• Team collaboration tools</li>
-                   </ul>
+                  <ul className="text-sm text-green-700 mt-2 space-y-1">
+                    <li>• 5 client accounts</li>
+                    <li>• Unlimited competitor tracking per client</li>
+                    <li>• White-label reports</li>
+                    <li>• Team collaboration tools</li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -212,14 +199,13 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                 <div>
                   <h3 className="text-lg font-semibold">Professional</h3>
                   <p className="text-gray-700 font-medium">$2,500/month or $30,000/year</p>
-                   <ul className="text-sm text-gray-600 mt-2 space-y-1">
-                     <li>• 15 client accounts</li>
-                     <li>• Everything in Starter, plus:</li>
-                     <li>• White labeled reports</li>
-                     <li>• Advanced analytics and reporting</li>
-                     <li>• Priority support</li>
-                     <li>• Custom integrations</li>
-                   </ul>
+                  <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                    <li>• 15 client accounts</li>
+                    <li>• Everything in Starter, plus:</li>
+                    <li>• Advanced analytics and reporting</li>
+                    <li>• Priority support</li>
+                    <li>• Custom integrations</li>
+                  </ul>
                 </div>
                 <Button variant="outline">Upgrade</Button>
               </div>
@@ -231,14 +217,13 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                 <div>
                   <h3 className="text-lg font-semibold">Enterprise</h3>
                   <p className="text-gray-700 font-medium">Contact Sales</p>
-                   <ul className="text-sm text-gray-600 mt-2 space-y-1">
-                     <li>• Unlimited client accounts</li>
-                     <li>• Everything in Professional, plus:</li>
-                     <li>• White labeled reports</li>
-                     <li>• Dedicated account manager</li>
-                     <li>• Custom development</li>
-                     <li>• SLA guarantees</li>
-                   </ul>
+                  <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                    <li>• Unlimited client accounts</li>
+                    <li>• Everything in Professional, plus:</li>
+                    <li>• Dedicated account manager</li>
+                    <li>• Custom development</li>
+                    <li>• SLA guarantees</li>
+                  </ul>
                 </div>
                 <Button variant="outline">Contact Sales</Button>
               </div>
