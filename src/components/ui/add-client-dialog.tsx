@@ -175,6 +175,14 @@ export const AddClientDialog = ({
         {/* Clean upgrade modal when limit is reached */}
         {hasReachedLimit && (
           <div className="space-y-6">
+            {/* Bord Labs Logo */}
+            <div className="flex justify-center">
+              <img 
+                src="/lovable-uploads/5c4ac901-4fc8-4495-a4a6-6f9b87661e97.png" 
+                alt="Bord Labs" 
+                className="w-16 h-16"
+              />
+            </div>
             <div className="text-center space-y-3">
               <h3 className="text-lg font-semibold text-foreground">
                 You've reached your client limit
