@@ -95,9 +95,11 @@ export const AgencyAdminSection = () => {
   };
 
   const handleClientSettings = (clientId: number, clientName: string) => {
-    console.log(`Opening settings for client ${clientId}: ${clientName}`);
-    // Navigate to client-specific settings page
-    window.location.href = `/?client=${clientId}&view=settings`;
+    const client = clients.find(c => c.id === clientId);
+    const brandParam = client?.brand || clientName.toLowerCase();
+    console.log(`Opening settings for client ${clientId}: ${clientName} (${brandParam})`);
+    // Navigate to client-specific settings page with proper context
+    window.location.href = `/?brand=${brandParam}&view=settings`;
   };
 
   const handleDeleteClient = (clientId: number) => {
