@@ -410,7 +410,7 @@ const Index = () => {
                       <Select value={selectedBrandId} onValueChange={setSelectedBrandId}>
                         <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent focus:ring-0 hover:bg-gray-50 rounded-md px-2 py-1">
                           <div className="flex items-center space-x-2">
-                            <img src={selectedBrand.logo} alt={selectedBrand.name} className="w-5 h-5" />
+                            <img src={selectedBrand.logo} alt={selectedBrand.name} className="w-6 h-6 object-contain" />
                             <span className="font-medium text-gray-900 text-sm">{selectedBrand.name}</span>
                           </div>
                         </SelectTrigger>
@@ -418,7 +418,7 @@ const Index = () => {
                           {trackedBrands.map((brand) => (
                             <SelectItem key={brand.id} value={brand.id}>
                               <div className="flex items-center space-x-2">
-                                <img src={brand.logo} alt={brand.name} className="w-4 h-4" />
+                                <img src={brand.logo} alt={brand.name} className="w-5 h-5 object-contain" />
                                 <span>{brand.name}</span>
                               </div>
                             </SelectItem>
