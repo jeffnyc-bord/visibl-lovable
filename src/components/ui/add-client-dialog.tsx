@@ -45,7 +45,7 @@ export const AddClientDialog = ({
     name: "",
     website: "",
     industry: "",
-    plan: "Professional",
+    plan: "Standard",
     importData: false
   });
 
@@ -55,9 +55,7 @@ export const AddClientDialog = ({
   ];
 
   const plans = [
-    { id: "Basic", name: "Basic", price: "$99/month", features: ["Up to 1 brand", "Basic analytics"] },
-    { id: "Professional", name: "Professional", price: "$299/month", features: ["Up to 5 brands", "Advanced analytics"] },
-    { id: "Enterprise", name: "Enterprise", price: "Custom", features: ["Unlimited brands", "Custom features"] }
+    { id: "Standard", name: "Standard", price: "$0", features: ["Basic tracking", "Standard analytics"] }
   ];
 
   const validateCurrentStep = () => {
@@ -145,7 +143,7 @@ export const AddClientDialog = ({
       name: "",
       website: "",
       industry: "",
-      plan: "Professional",
+      plan: "Standard",
       importData: false
     });
     setCurrentStep(1);
@@ -174,162 +172,86 @@ export const AddClientDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Enhanced upgrade modal when limit is reached */}
+        {/* Clean upgrade modal when limit is reached */}
         {hasReachedLimit && (
-          <div className="space-y-8 animate-fade-in">
-            <div className="text-center space-y-4">
-              <div className="relative">
-                <div className="w-20 h-20 bg-gradient-success rounded-full flex items-center justify-center mx-auto shadow-lg">
-                  <CheckCircle className="w-10 h-10 text-white" />
-                </div>
-                <div className="absolute inset-0 w-20 h-20 bg-gradient-success rounded-full mx-auto animate-ping opacity-20"></div>
-              </div>
-              <div className="space-y-3">
-                <h3 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  Your Agency is Growing! 🚀
-                </h3>
-                <div className="max-w-md mx-auto">
-                  <p className="text-muted-foreground leading-relaxed">
-                    You've successfully managed <span className="font-semibold text-foreground">{currentClientCount} clients</span> on the {subscriptionTier} plan! 
-                    <br />
-                    Unlock powerful features to scale your agency even further.
-                  </p>
-                </div>
-              </div>
+          <div className="space-y-6">
+            <div className="text-center space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">
+                You've reached your client limit
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                You have {currentClientCount} clients on the {subscriptionTier} plan. 
+                Upgrade to add more clients and unlock additional features.
+              </p>
             </div>
 
-            {/* Plan comparison cards - side by side */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-96 overflow-y-auto">
+            {/* Clean plan cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {subscriptionTier === "Starter" && (
-                <div className="relative group hover-scale">
-                  <div className="absolute inset-0 bg-gradient-premium rounded-xl blur-sm opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                  <div className="relative border-2 border-premium/30 rounded-xl p-6 bg-card backdrop-blur-sm shadow-lg">
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-gradient-premium text-premium-foreground px-3 py-1 text-sm font-semibold shadow-md">
-                        ⭐ Recommended
-                      </Badge>
+                <div className="border border-border rounded-lg p-4 bg-card">
+                  <div className="space-y-3">
+                    <div className="text-center space-y-1">
+                      <h4 className="font-semibold text-foreground">Professional</h4>
+                      <div className="text-2xl font-bold text-foreground">$299</div>
+                      <p className="text-xs text-muted-foreground">per month</p>
                     </div>
-                    <div className="text-center space-y-4">
-                      <div className="space-y-2">
-                        <h4 className="text-xl font-bold text-foreground">Professional</h4>
-                        <div className="flex items-baseline justify-center space-x-1">
-                          <span className="text-3xl font-bold bg-gradient-premium bg-clip-text text-transparent">$2,500</span>
-                          <span className="text-sm text-muted-foreground">/month</span>
-                        </div>
-                        <p className="text-xs text-success font-medium bg-success/10 px-2 py-1 rounded-full inline-block">
-                          Save 20% yearly
-                        </p>
+                    
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-primary" />
+                        <span>15 Client Accounts</span>
                       </div>
-                      
-                      <div className="space-y-3 text-left">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-5 h-5 bg-gradient-success rounded-full flex items-center justify-center">
-                            <CheckCircle className="w-3 h-3 text-white" />
-                          </div>
-                          <span className="text-sm font-semibold text-foreground">15 Client Accounts</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-5 h-5 bg-gradient-success rounded-full flex items-center justify-center">
-                            <CheckCircle className="w-3 h-3 text-white" />
-                          </div>
-                          <span className="text-sm text-muted-foreground">Advanced Analytics Dashboard</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-5 h-5 bg-gradient-success rounded-full flex items-center justify-center">
-                            <CheckCircle className="w-3 h-3 text-white" />
-                          </div>
-                          <span className="text-sm text-muted-foreground">Expanded Competitor Tracking</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-5 h-5 bg-gradient-success rounded-full flex items-center justify-center">
-                            <CheckCircle className="w-3 h-3 text-white" />
-                          </div>
-                          <span className="text-sm text-muted-foreground">Priority Support & Training</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-5 h-5 bg-gradient-success rounded-full flex items-center justify-center">
-                            <CheckCircle className="w-3 h-3 text-white" />
-                          </div>
-                          <span className="text-sm text-muted-foreground">White-label Reports</span>
-                        </div>
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-primary" />
+                        <span>Advanced Analytics</span>
                       </div>
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-primary" />
+                        <span>Priority Support</span>
+                      </div>
+                    </div>
 
-                      <Button className="w-full bg-gradient-premium hover:shadow-lg text-premium-foreground font-semibold py-3 text-sm transition-all duration-200 hover-scale">
-                        Upgrade to Professional ✨
-                      </Button>
-                    </div>
+                    <Button className="w-full" size="sm">
+                      Upgrade to Professional
+                    </Button>
                   </div>
                 </div>
               )}
 
-              {/* Enterprise Plan */}
-              <div className="relative group hover-scale">
-                <div className="absolute inset-0 bg-gradient-enterprise rounded-xl blur-sm opacity-10 group-hover:opacity-20 transition-opacity"></div>
-                <div className="relative border border-border rounded-xl p-6 bg-card shadow-lg">
-                  <div className="text-center space-y-4">
-                    <div className="space-y-2">
-                      <h4 className="text-xl font-bold text-foreground">Enterprise</h4>
-                      <div className="flex items-baseline justify-center">
-                        <span className="text-lg font-semibold text-muted-foreground">Custom pricing</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full inline-block">
-                        Volume discounts available
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-3 text-left">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-5 h-5 bg-gradient-enterprise rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-3 h-3 text-white" />
-                        </div>
-                        <span className="text-sm font-semibold text-foreground">Unlimited Clients</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-5 h-5 bg-gradient-enterprise rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-3 h-3 text-white" />
-                        </div>
-                        <span className="text-sm text-muted-foreground">Dedicated Account Manager</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-5 h-5 bg-gradient-enterprise rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-3 h-3 text-white" />
-                        </div>
-                        <span className="text-sm text-muted-foreground">Custom Integrations & APIs</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-5 h-5 bg-gradient-enterprise rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-3 h-3 text-white" />
-                        </div>
-                        <span className="text-sm text-muted-foreground">Enterprise Security</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-5 h-5 bg-gradient-enterprise rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-3 h-3 text-white" />
-                        </div>
-                        <span className="text-sm text-muted-foreground">24/7 Premium Support</span>
-                      </div>
-                    </div>
-
-                    <Button variant="outline" className="w-full border-enterprise/30 hover:bg-enterprise/5 font-semibold py-3 text-sm transition-all duration-200 hover-scale">
-                      Contact Sales Team 💼
-                    </Button>
+              <div className="border border-border rounded-lg p-4 bg-card">
+                <div className="space-y-3">
+                  <div className="text-center space-y-1">
+                    <h4 className="font-semibold text-foreground">Enterprise</h4>
+                    <div className="text-lg font-semibold text-muted-foreground">Custom</div>
+                    <p className="text-xs text-muted-foreground">pricing</p>
                   </div>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                      <span>Unlimited Clients</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                      <span>Custom Integrations</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                      <span>Dedicated Support</span>
+                    </div>
+                  </div>
+
+                  <Button variant="outline" className="w-full" size="sm">
+                    Contact Sales
+                  </Button>
                 </div>
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="space-y-4 pt-6">
-              <div className="text-center p-4 bg-muted/30 rounded-lg">
-                <p className="text-sm text-muted-foreground">
-                  Need help choosing? Our team can help you find the perfect plan for your agency.
-                </p>
-              </div>
-              <div className="flex justify-center">
-                <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-muted-foreground hover:text-foreground px-8">
-                  Maybe Later
-                </Button>
-              </div>
+            <div className="flex justify-center pt-4">
+              <Button variant="ghost" onClick={() => onOpenChange(false)} size="sm">
+                Maybe Later
+              </Button>
             </div>
           </div>
         )}
