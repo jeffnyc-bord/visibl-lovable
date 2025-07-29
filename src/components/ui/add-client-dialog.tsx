@@ -192,47 +192,47 @@ export const AddClientDialog = ({
               </div>
             </div>
 
-            {/* Plan comparison cards */}
-            <div className="space-y-4">
+            {/* Plan comparison cards - side by side */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
               {subscriptionTier === "Starter" && (
-                <div className="border-2 border-blue-500 rounded-xl p-6 bg-gradient-to-br from-blue-50 to-indigo-50 relative">
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-500 text-white px-3 py-1">Recommended</Badge>
+                <div className="border-2 border-blue-500 rounded-lg p-4 bg-gradient-to-br from-blue-50 to-indigo-50 relative">
+                  <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-blue-500 text-white px-2 py-1 text-xs">Recommended</Badge>
                   </div>
-                  <div className="text-center space-y-4">
+                  <div className="text-center space-y-3">
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-900">Professional Plan</h4>
-                      <div className="flex items-center justify-center space-x-2 mt-2">
-                        <span className="text-3xl font-bold text-gray-900">$2,500</span>
-                        <span className="text-gray-600">/month</span>
+                      <h4 className="text-lg font-semibold text-gray-900">Professional</h4>
+                      <div className="flex items-center justify-center space-x-1 mt-1">
+                        <span className="text-2xl font-bold text-gray-900">$2,500</span>
+                        <span className="text-sm text-gray-600">/month</span>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">or save 20% annually ($30k/year)</p>
+                      <p className="text-xs text-gray-600">or $30k/year (save 20%)</p>
                     </div>
                     
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-700"><strong>15 Client Accounts</strong> (vs 5 current)</span>
+                    <div className="space-y-2 text-left">
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <span className="text-xs text-gray-700"><strong>15 Client Accounts</strong></span>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">Advanced Reporting & Analytics</span>
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <span className="text-xs text-gray-700">Advanced Analytics</span>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">Expanded Competitor Tracking (15 vs 5 slots)</span>
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <span className="text-xs text-gray-700">Expanded Competitor Tracking</span>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">Priority Support & Training</span>
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <span className="text-xs text-gray-700">Priority Support</span>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">White-label Reporting</span>
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <span className="text-xs text-gray-700">White-label Reporting</span>
                       </div>
                     </div>
 
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3">
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 text-sm">
                       Upgrade to Professional
                     </Button>
                   </div>
@@ -240,37 +240,37 @@ export const AddClientDialog = ({
               )}
 
               {/* Enterprise Plan */}
-              <div className="border rounded-xl p-6 bg-gradient-to-br from-gray-50 to-slate-50">
-                <div className="text-center space-y-4">
+              <div className="border rounded-lg p-4 bg-gradient-to-br from-gray-50 to-slate-50">
+                <div className="text-center space-y-3">
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900">Enterprise Plan</h4>
-                    <p className="text-gray-600 mt-1">Custom pricing for growing agencies</p>
+                    <h4 className="text-lg font-semibold text-gray-900">Enterprise</h4>
+                    <p className="text-sm text-gray-600 mt-1">Custom pricing</p>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm text-gray-700"><strong>Unlimited Client Accounts</strong></span>
+                  <div className="space-y-2 text-left">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <span className="text-xs text-gray-700"><strong>Unlimited Clients</strong></span>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">Dedicated Account Manager</span>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <span className="text-xs text-gray-700">Dedicated Account Manager</span>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">Custom Integrations & APIs</span>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <span className="text-xs text-gray-700">Custom Integrations & APIs</span>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">Advanced Security & Compliance</span>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <span className="text-xs text-gray-700">Advanced Security</span>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">24/7 Priority Support</span>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <span className="text-xs text-gray-700">24/7 Priority Support</span>
                     </div>
                   </div>
 
-                  <Button variant="outline" className="w-full border-gray-300 hover:bg-gray-50 font-medium py-3">
+                  <Button variant="outline" className="w-full border-gray-300 hover:bg-gray-50 font-medium py-2 text-sm">
                     Contact Sales
                   </Button>
                 </div>
