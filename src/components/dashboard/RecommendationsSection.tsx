@@ -369,14 +369,6 @@ export const RecommendationsSection = () => {
           : 'bg-gradient-to-br from-primary/5 via-background to-secondary/5'
       }`}>
         <CardHeader className="relative overflow-hidden">
-          {/* Animated Background Pattern for Empty State */}
-          {completedActions.length === 0 && (
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute top-4 right-4 w-32 h-32 rounded-full border border-primary animate-pulse"></div>
-              <div className="absolute top-8 right-8 w-24 h-24 rounded-full border border-primary animate-pulse animation-delay-300"></div>
-              <div className="absolute top-12 right-12 w-16 h-16 rounded-full border border-primary animate-pulse animation-delay-600"></div>
-            </div>
-          )}
           
           <CardTitle className="flex items-center space-x-2 text-foreground relative z-10">
             <Brain className={`w-6 h-6 text-primary ${completedActions.length === 0 ? 'animate-pulse' : ''}`} />
