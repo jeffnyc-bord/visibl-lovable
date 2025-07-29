@@ -213,7 +213,7 @@ export const AgencyAdminSection = () => {
               Manage all client accounts and their brand tracking configurations
             </CardDescription>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm h-9">
+          <Button className="bg-black hover:bg-gray-800 text-white text-sm h-9">
             <Plus className="w-4 h-4 mr-2" />
             Add New Client
           </Button>
