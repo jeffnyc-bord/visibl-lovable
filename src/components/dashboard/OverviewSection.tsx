@@ -578,7 +578,7 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
                       />
                       {showTooltips.coverage && (
                         <div className="absolute left-0 top-5 z-50 w-48 p-2 text-xs bg-popover border rounded-md shadow-md">
-                          <p>Percentage of queries where your brand appears compared to total relevant queries</p>
+                          <p>This metric shows what percentage of all relevant AI queries about your industry or brand result in a mention of your brand's information.</p>
                         </div>
                       )}
                     </div>
