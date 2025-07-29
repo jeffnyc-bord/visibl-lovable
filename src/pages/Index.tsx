@@ -62,7 +62,7 @@ const mockTrackedBrands: BrandData[] = [
   {
     id: "nike",
     name: "Nike",
-    logo: "/lovable-uploads/eb27b2e0-a722-4723-8b57-eee040e312fb.png",
+    logo: "/lovable-uploads/553a6e0e-c48a-4f90-a239-65dcadb5c750.png",
     url: "nike.com",
     visibilityScore: 87,
     totalMentions: 12847,
@@ -91,7 +91,7 @@ const mockTrackedBrands: BrandData[] = [
   {
     id: "adidas",
     name: "Adidas",
-    logo: "/lovable-uploads/6d96032a-5e62-4e84-b278-3c492029f934.png",
+    logo: "/lovable-uploads/5aa29f47-17b7-4269-bbf1-25359bb93f89.png",
     url: "adidas.com",
     visibilityScore: 84,
     totalMentions: 11234,
@@ -120,7 +120,7 @@ const mockTrackedBrands: BrandData[] = [
   {
     id: "apple",
     name: "Apple",
-    logo: "/lovable-uploads/2e118f8d-a421-4c37-b61b-bdf56fc650c4.png",
+    logo: "/lovable-uploads/4661680c-fc6d-49a7-8f3a-cfeb3aec5f12.png",
     url: "apple.com",
     visibilityScore: 95,
     totalMentions: 24567,
