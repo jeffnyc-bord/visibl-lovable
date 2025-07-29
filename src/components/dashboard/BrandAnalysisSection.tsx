@@ -270,34 +270,42 @@ export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) =
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {bottomProducts.map((product) => (
-                <div key={product.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
-                  <div className="flex-1">
-                    <div 
-                      className="font-medium text-sm cursor-pointer hover:text-blue-600" 
-                      onClick={() => window.location.href = `/product/${product.id}`}
-                    >
-                      {product.name}
+              {bottomProducts.length > 0 ? (
+                bottomProducts.map((product) => (
+                  <div key={product.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                    <div className="flex-1">
+                      <div 
+                        className="font-medium text-sm cursor-pointer hover:text-blue-600" 
+                        onClick={() => window.location.href = `/product/${product.id}`}
+                      >
+                        {product.name}
+                      </div>
+                      <div className="text-xs text-gray-500">{product.sku}</div>
                     </div>
-                    <div className="text-xs text-gray-500">{product.sku}</div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge className="bg-red-100 text-red-700 border-red-300">{product.score}%</Badge>
-                    <div className="flex items-center text-red-600">
-                      <TrendingDown className="w-3 h-3" />
-                      <span className="text-xs">{product.trend}%</span>
+                    <div className="flex items-center space-x-2">
+                      <Badge className="bg-red-100 text-red-700 border-red-300">{product.score}%</Badge>
+                      <div className="flex items-center text-red-600">
+                        <TrendingDown className="w-3 h-3" />
+                        <span className="text-xs">{product.trend}%</span>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="text-xs px-2 py-1"
+                        onClick={() => window.location.href = `/product/${product.id}?section=opportunities`}
+                      >
+                        Fix Now
+                      </Button>
                     </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="text-xs px-2 py-1"
-                      onClick={() => window.location.href = `/product/${product.id}?section=opportunities`}
-                    >
-                      Fix Now
-                    </Button>
                   </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center p-6 text-center">
+                  <CheckCircle className="w-8 h-8 text-green-500 mb-2" />
+                  <p className="text-sm font-medium text-gray-700 mb-1">All products performing well!</p>
+                  <p className="text-xs text-gray-500">No products currently need attention (all scores ≥70%)</p>
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
