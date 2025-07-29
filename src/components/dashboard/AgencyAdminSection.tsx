@@ -33,63 +33,54 @@ export const AgencyAdminSection = () => {
   const [clients, setClients] = useState([
     {
       id: 1,
-      name: "Tech Startup Inc",
-      email: "admin@techstartup.com",
+      name: "Nike",
+      email: "admin@nike.com",
       status: "Active",
-      tier: "Professional",
-      deepTrackedBrands: 2,
-      competitorBrands: 8,
-      lastScan: "2 hours ago",
-      avgVisibilityScore: 78,
-      visibilityTrend: { value: 5, direction: "up" },
-      url: "techstartup.com"
+      tier: "Enterprise",
+      deepTrackedBrands: 3,
+      competitorBrands: 12,
+      lastScan: "1 hour ago",
+      avgVisibilityScore: 89,
+      visibilityTrend: { value: 4, direction: "up" },
+      url: "nike.com",
+      brand: "nike"
     },
     {
       id: 2,
-      name: "Marketing Agency Co",
-      email: "contact@marketingco.com",
+      name: "Adidas",
+      email: "contact@adidas.com",
       status: "Active",
       tier: "Enterprise",
-      deepTrackedBrands: 5,
-      competitorBrands: 15,
-      lastScan: "1 hour ago",
-      avgVisibilityScore: 82,
-      visibilityTrend: { value: 3, direction: "up" },
-      url: "marketingco.com"
+      deepTrackedBrands: 2,
+      competitorBrands: 10,
+      lastScan: "2 hours ago",
+      avgVisibilityScore: 85,
+      visibilityTrend: { value: 6, direction: "up" },
+      url: "adidas.com",
+      brand: "adidas"
     },
     {
       id: 3,
-      name: "Local Restaurant Group",
-      email: "info@restaurants.com",
-      status: "Pending",
-      tier: "Basic",
-      deepTrackedBrands: 1,
-      competitorBrands: 5,
-      lastScan: "6 hours ago",
-      avgVisibilityScore: 65,
-      visibilityTrend: { value: 2, direction: "down" },
-      url: "restaurants.com"
-    },
-    {
-      id: 4,
-      name: "E-commerce Store",
-      email: "team@ecomstore.com",
+      name: "Apple",
+      email: "team@apple.com",
       status: "Active",
       tier: "Professional",
-      deepTrackedBrands: 3,
-      competitorBrands: 12,
+      deepTrackedBrands: 4,
+      competitorBrands: 8,
       lastScan: "30 minutes ago",
-      avgVisibilityScore: 91,
-      visibilityTrend: { value: 7, direction: "up" },
-      url: "ecomstore.com"
+      avgVisibilityScore: 94,
+      visibilityTrend: { value: 3, direction: "up" },
+      url: "apple.com",
+      brand: "apple"
     }
   ]);
 
   const handleViewDashboard = (clientId: number, clientName: string) => {
-    console.log(`Navigating to dashboard for client ${clientId}: ${clientName}`);
-    // Navigate to client's AI Visibility Dashboard
-    // This would typically use React Router or update parent component state
-    window.location.href = `/?client=${clientId}&view=dashboard`;
+    const client = clients.find(c => c.id === clientId);
+    const brandParam = client?.brand || clientName.toLowerCase();
+    console.log(`Navigating to dashboard for client ${clientId}: ${clientName} (${brandParam})`);
+    // Navigate to the specific brand's dashboard
+    window.location.href = `/?brand=${brandParam}&view=dashboard`;
   };
 
   const handleGenerateReport = (clientId: number, clientName: string) => {
