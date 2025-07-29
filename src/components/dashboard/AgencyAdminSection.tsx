@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { AddClientDialog } from "@/components/ui/add-client-dialog";
 import { 
   Users, 
   Plus, 
@@ -26,52 +27,57 @@ import {
   ExternalLink,
   Upload,
   Palette,
-  Download
+  Download,
+  Loader2
 } from "lucide-react";
 
 export const AgencyAdminSection = () => {
+  const [showAddClientDialog, setShowAddClientDialog] = useState(false);
   const [clients, setClients] = useState([
     {
       id: 1,
       name: "Nike",
       email: "admin@nike.com",
-      status: "Active",
+      status: "Active" as "Active" | "Scanning" | "Pending" | "Inactive",
       tier: "Enterprise",
       deepTrackedBrands: 3,
       competitorBrands: 12,
       lastScan: "1 hour ago",
       avgVisibilityScore: 89,
-      visibilityTrend: { value: 4, direction: "up" },
+      visibilityTrend: { value: 4, direction: "up" as const },
       url: "nike.com",
-      brand: "nike"
+      brand: "nike",
+      isScanning: false
     },
     {
       id: 2,
       name: "Adidas",
       email: "contact@adidas.com",
-      status: "Active",
+      status: "Active" as "Active" | "Scanning" | "Pending" | "Inactive",
       tier: "Enterprise",
       deepTrackedBrands: 2,
       competitorBrands: 10,
       lastScan: "2 hours ago",
       avgVisibilityScore: 85,
-      visibilityTrend: { value: 6, direction: "up" },
+      visibilityTrend: { value: 6, direction: "up" as const },
       url: "adidas.com",
-      brand: "adidas"
+      brand: "adidas",
+      isScanning: false
     },
     {
       id: 3,
       name: "Apple",
       email: "team@apple.com",
-      status: "Active",
+      status: "Active" as "Active" | "Scanning" | "Pending" | "Inactive",
       tier: "Professional",
       deepTrackedBrands: 4,
       competitorBrands: 8,
       lastScan: "30 minutes ago",
       avgVisibilityScore: 94,
-      visibilityTrend: { value: 3, direction: "up" },
+      visibilityTrend: { value: 3, direction: "up" as const },
       url: "apple.com",
-      brand: "apple"
+      brand: "apple",
+      isScanning: false
     }
   ]);
 
@@ -89,9 +95,28 @@ export const AgencyAdminSection = () => {
   };
 
   const handleAddNewClient = () => {
-    console.log("Opening Add New Client modal");
-    // This would open a modal/form for client onboarding
-    alert("Add New Client functionality would open here");
+    setShowAddClientDialog(true);
+  };
+
+  const handleClientAdded = (newClient: any) => {
+    setClients(prev => [...prev, newClient]);
+    
+    // Simulate completing the scan after 10 seconds
+    setTimeout(() => {
+      setClients(prev => 
+        prev.map(client => 
+          client.id === newClient.id 
+            ? { 
+                ...client, 
+                status: "Active" as const, 
+                isScanning: false,
+                avgVisibilityScore: Math.floor(Math.random() * 30) + 70, // Random score between 70-100
+                lastScan: "Just completed"
+              }
+            : client
+        )
+      );
+    }, 10000);
   };
 
   const handleClientSettings = (clientId: number, clientName: string) => {
@@ -111,6 +136,7 @@ export const AgencyAdminSection = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Active": return "bg-green-100 text-green-700 border-green-200";
+      case "Scanning": return "bg-blue-100 text-blue-700 border-blue-200";
       case "Pending": return "bg-yellow-100 text-yellow-700 border-yellow-200";
       case "Inactive": return "bg-gray-100 text-gray-700 border-gray-200";
       default: return "bg-gray-100 text-gray-700 border-gray-200";
@@ -236,13 +262,22 @@ export const AgencyAdminSection = () => {
                       >
                         <div className="flex items-center space-x-4">
                           <div className="w-10 h-10 bg-gradient-to-br from-secondary/20 to-secondary/40 rounded-lg flex items-center justify-center border">
-                            <Building className="w-5 h-5 text-secondary-foreground" />
+                            {client.isScanning ? (
+                              <Loader2 className="w-5 h-5 text-secondary-foreground animate-spin" />
+                            ) : (
+                              <Building className="w-5 h-5 text-secondary-foreground" />
+                            )}
                           </div>
                           
                           <div>
                             <div className="flex items-center space-x-2 mb-1">
                               <h3 className="font-medium text-foreground text-sm">{client.name}</h3>
                               <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                              {client.isScanning && (
+                                <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
+                                  Scanning...
+                                </Badge>
+                              )}
                             </div>
                             <p className="text-xs text-muted-foreground">{client.url}</p>
                           </div>
@@ -251,19 +286,27 @@ export const AgencyAdminSection = () => {
                         <div className="flex items-center space-x-6">
                           <div className="text-center">
                             <div className="flex items-center justify-center">
-                              <span className="text-lg font-bold text-foreground">{client.avgVisibilityScore}%</span>
-                              <span className={`text-xs ml-1 ${
-                                client.visibilityTrend.direction === 'up' ? 'text-green-600' : 'text-red-600'
-                              }`}>
-                                {client.visibilityTrend.direction === 'up' ? '+' : '-'}{client.visibilityTrend.value}%
-                              </span>
+                              {client.isScanning ? (
+                                <span className="text-sm text-muted-foreground">Setting up...</span>
+                              ) : (
+                                <>
+                                  <span className="text-lg font-bold text-foreground">{client.avgVisibilityScore}%</span>
+                                  <span className={`text-xs ml-1 ${
+                                    client.visibilityTrend.direction === 'up' ? 'text-green-600' : 'text-red-600'
+                                  }`}>
+                                    {client.visibilityTrend.direction === 'up' ? '+' : '-'}{client.visibilityTrend.value}%
+                                  </span>
+                                </>
+                              )}
                             </div>
                             <p className="text-xs text-muted-foreground">Visibility Score</p>
                           </div>
                           
-                          
                           <div className="text-center">
-                            <Badge variant="secondary" className="text-xs">
+                            <Badge 
+                              variant="secondary" 
+                              className={`text-xs ${client.status === 'Scanning' ? 'bg-blue-100 text-blue-700 border-blue-200' : ''}`}
+                            >
                               {client.status}
                             </Badge>
                             <p className="text-xs text-muted-foreground mt-1">{client.tier}</p>
@@ -275,6 +318,7 @@ export const AgencyAdminSection = () => {
                               size="sm" 
                               className="h-8 w-8 p-0"
                               onClick={() => handleClientSettings(client.id, client.name)}
+                              disabled={client.isScanning}
                             >
                               <Settings className="w-4 h-4" />
                             </Button>
@@ -287,6 +331,12 @@ export const AgencyAdminSection = () => {
               </TooltipProvider>
             </CardContent>
       </Card>
+
+      <AddClientDialog
+        open={showAddClientDialog}
+        onOpenChange={setShowAddClientDialog}
+        onClientAdded={handleClientAdded}
+      />
     </div>
   );
 };
