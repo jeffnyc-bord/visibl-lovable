@@ -319,11 +319,24 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Visibility Chart */}
-        <Card>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityTrend: false})}>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <img src="/lovable-uploads/c450af84-c4bc-4808-9aef-caf1ef5fb80c.png" alt="Overall AI Visibility Trend" className="w-5 h-5" />
-              <span>Overall AI Visibility Trend</span>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <img src="/lovable-uploads/c450af84-c4bc-4808-9aef-caf1ef5fb80c.png" alt="Overall AI Visibility Trend" className="w-5 h-5" />
+                <span>Overall AI Visibility Trend</span>
+              </div>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, visibilityTrend: !showTooltips.visibilityTrend})}
+                />
+                {showTooltips.visibilityTrend && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Track your brand's mention volume across the AI ecosystem over time to identify trends and measure progress.</p>
+                  </div>
+                )}
+              </div>
             </CardTitle>
             <CardDescription>
               Your brand's mention volume across the AI ecosystem over time
@@ -349,11 +362,24 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
         </Card>
 
         {/* Industry Ranking */}
-        <Card>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, industryRankingChart: false})}>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <TrendingUp className="w-5 h-5 text-green-500" />
-              <span>Industry AI Ranking</span>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-5 h-5 text-green-500" />
+                <span>Industry AI Ranking</span>
+              </div>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, industryRankingChart: !showTooltips.industryRankingChart})}
+                />
+                {showTooltips.industryRankingChart && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>See how your brand ranks against top competitors in AI visibility scores and track position changes over time.</p>
+                  </div>
+                )}
+              </div>
             </CardTitle>
             <CardDescription>
               Top performing brands in your industry for AI visibility
@@ -415,11 +441,24 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
       </div>
 
       {/* AI Platform Mention Distribution */}
-      <Card className="mb-6">
+      <Card className="mb-6 group relative" onMouseLeave={() => setShowTooltips({...showTooltips, platformDistribution: false})}>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <img src="/lovable-uploads/79e7d0e6-2ccc-40a4-a2c4-fa6f2406e0c6.png" alt="AI Platform Mention Distribution" className="w-5 h-5" />
-            <span>AI Platform Mention Distribution</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <img src="/lovable-uploads/79e7d0e6-2ccc-40a4-a2c4-fa6f2406e0c6.png" alt="AI Platform Mention Distribution" className="w-5 h-5" />
+              <span>AI Platform Mention Distribution</span>
+            </div>
+            <div className="relative">
+              <HelpCircle 
+                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                onClick={() => setShowTooltips({...showTooltips, platformDistribution: !showTooltips.platformDistribution})}
+              />
+              {showTooltips.platformDistribution && (
+                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <p>Visual breakdown of your brand mentions across different AI platforms, helping identify where to focus optimization efforts.</p>
+                </div>
+              )}
+            </div>
           </CardTitle>
           <CardDescription>
             Brand mentions across AI platforms from your generated queries and prompt blasts.
@@ -484,11 +523,24 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
       </Card>
 
       {/* Platform-wise Mentions */}
-      <Card className="mb-6">
+      <Card className="mb-6 group relative" onMouseLeave={() => setShowTooltips({...showTooltips, platformMentions: false})}>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <MessageSquare className="w-5 h-5 text-blue-500" />
-            <span>AI Platform Mentions</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <MessageSquare className="w-5 h-5 text-blue-500" />
+              <span>AI Platform Mentions</span>
+            </div>
+            <div className="relative">
+              <HelpCircle 
+                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                onClick={() => setShowTooltips({...showTooltips, platformMentions: !showTooltips.platformMentions})}
+              />
+              {showTooltips.platformMentions && (
+                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <p>Detailed breakdown of brand mentions across different AI platforms with sentiment analysis, coverage metrics, and trend indicators.</p>
+                </div>
+              )}
+            </div>
           </CardTitle>
           <CardDescription>
             Breakdown of brand mentions across different AI platforms and their sentiment analysis.
