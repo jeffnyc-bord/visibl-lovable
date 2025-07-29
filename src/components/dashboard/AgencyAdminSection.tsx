@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AddClientDialog } from "@/components/ui/add-client-dialog";
 import { 
   Users, 
@@ -125,6 +125,16 @@ export const AgencyAdminSection = () => {
     console.log(`Opening settings for client ${clientId}: ${clientName} (${brandParam})`);
     // Navigate to client-specific settings page with proper context
     window.location.href = `/?brand=${brandParam}&view=settings`;
+  };
+
+  const handleDisableClient = (clientId: number) => {
+    setClients(prev =>
+      prev.map(client =>
+        client.id === clientId
+          ? { ...client, status: client.status === "Active" ? "Inactive" : "Active" as "Active" | "Scanning" | "Pending" | "Inactive" }
+          : client
+      )
+    );
   };
 
   const handleDeleteClient = (clientId: number) => {
@@ -313,15 +323,44 @@ export const AgencyAdminSection = () => {
                           </div>
                           
                           <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleClientSettings(client.id, client.name)}
-                              disabled={client.isScanning}
-                            >
-                              <Settings className="w-4 h-4" />
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0"
+                                  disabled={client.isScanning}
+                                >
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleClientSettings(client.id, client.name)}>
+                                  <Settings className="w-4 h-4 mr-2" />
+                                  Settings
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDisableClient(client.id)}>
+                                  {client.status === "Active" ? (
+                                    <>
+                                      <Eye className="w-4 h-4 mr-2" />
+                                      Disable Client
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Eye className="w-4 h-4 mr-2" />
+                                      Enable Client
+                                    </>
+                                  )}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={() => handleDeleteClient(client.id)}
+                                  className="text-red-600 focus:text-red-600"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Remove Client
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       </div>
