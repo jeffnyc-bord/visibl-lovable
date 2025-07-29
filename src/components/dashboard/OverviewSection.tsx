@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link, Settings, ExternalLink, HelpCircle } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -52,6 +53,7 @@ interface OverviewSectionProps {
 
 export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
+  const [isInsightsOpen, setIsInsightsOpen] = useState(true);
 
   const visibilityData = [
     { month: "Jul", score: 75 },
@@ -262,25 +264,34 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
 
       {/* AI Insights Summary */}
       <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-l-primary">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Star className="w-5 h-5 text-primary" />
-            <span>AI Insights Summary</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="prose prose-sm max-w-none">
-            <p className="text-gray-700 leading-relaxed mb-3">
-              <strong>Nike's AI Visibility Score increased to 87 (+5 points)</strong> this period, primarily driven by strong performance on ChatGPT and positive mentions across core brand queries. The brand maintained its #1 industry ranking with significant growth in mention volume (+15%).
-            </p>
-            <p className="text-gray-700 leading-relaxed mb-3">
-              <strong>Key Performance Drivers:</strong> ChatGPT leads with 456 mentions (+12%), while Perplexity shows exceptional growth (+22%). Nike dominates in running shoe queries with 92% relevance scores and strong performance-related mentions.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              <strong>Strategic Opportunity:</strong> Competitors like Adidas are showing increased activity in product-specific mentions, particularly in sustainable product queries. Consider expanding content strategy around sustainability and lifestyle use cases to maintain competitive advantage.
-            </p>
-          </div>
-        </CardContent>
+        <Collapsible open={isInsightsOpen} onOpenChange={setIsInsightsOpen}>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-white/50 transition-colors rounded-t-lg">
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <img src="/lovable-uploads/b6367269-4b7b-4fa2-b584-669d83dee700.png" alt="AI Insights" className="w-5 h-5" />
+                  <span>AI Insights Summary</span>
+                </div>
+                {isInsightsOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </CardTitle>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent>
+              <div className="prose prose-sm max-w-none">
+                <p className="text-gray-700 leading-relaxed mb-3">
+                  <strong>Nike's AI Visibility Score increased to 87 (+5 points)</strong> this period, primarily driven by strong performance on ChatGPT and positive mentions across core brand queries. The brand maintained its #1 industry ranking with significant growth in mention volume (+15%).
+                </p>
+                <p className="text-gray-700 leading-relaxed mb-3">
+                  <strong>Key Performance Drivers:</strong> ChatGPT leads with 456 mentions (+12%), while Perplexity shows exceptional growth (+22%). Nike dominates in running shoe queries with 92% relevance scores and strong performance-related mentions.
+                </p>
+                <p className="text-gray-700 leading-relaxed">
+                  <strong>Strategic Opportunity:</strong> Competitors like Adidas are showing increased activity in product-specific mentions, particularly in sustainable product queries. Consider expanding content strategy around sustainability and lifestyle use cases to maintain competitive advantage.
+                </p>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
       </Card>
 
       {/* Main Content Grid */}
