@@ -362,22 +362,40 @@ export const RecommendationsSection = () => {
 
   return (
     <div className="space-y-3">
-      {/* Compact Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Brain className="w-5 h-5 text-primary" />
-          <h3 className="text-lg font-semibold text-foreground">AI-Powered Optimization Plan</h3>
-          <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs">
-            <Sparkles className="w-3 h-3 mr-1" />
-            AI Enhanced
-          </Badge>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="text-sm text-muted-foreground">
-            +{totalImpact}% potential • {recommendations.length} actions
+      {/* Minimal Overview */}
+      <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Brain className="w-5 h-5 text-primary" />
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">AI-Powered Optimization Plan</h3>
+                <p className="text-xs text-muted-foreground">
+                  {completedActions.length === 0 
+                    ? `${recommendations.length} strategic actions to boost AI visibility by +${totalImpact}%`
+                    : `${completedActions.length}/${recommendations.length} completed • +${completedImpact}% gained so far`
+                  }
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs">
+                <Sparkles className="w-3 h-3 mr-1" />
+                AI Enhanced
+              </Badge>
+              {completedActions.length > 0 && (
+                <div className="text-right">
+                  <div className="text-lg font-bold text-primary">+{completedImpact}%</div>
+                  <div className="text-xs text-muted-foreground">Impact Gained</div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+          {completedActions.length > 0 && (
+            <Progress value={(completedActions.length / recommendations.length) * 100} className="mt-2 h-1.5" />
+          )}
+        </CardContent>
+      </Card>
 
       {/* Compact Progress Row */}
       {completedActions.length > 0 && (
