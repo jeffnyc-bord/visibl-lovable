@@ -266,16 +266,7 @@ export const AgencyAdminSection = () => {
                           
                           <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <FileText className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                               <Settings className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
