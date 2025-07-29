@@ -200,7 +200,7 @@ const Index = () => {
     { key: "competitors", label: "Competitors", icon: "/lovable-uploads/6a43d419-c4e3-47a9-bd9d-d88e81f33fee.png" },
     { key: "trends", label: "AI Trends", icon: Globe },
     { key: "technical", label: "Technical Health", icon: Code },
-    { key: "recommendations", label: "Recommendations", icon: Lightbulb }
+    { key: "recommendations", label: "Recommendations", icon: "/lovable-uploads/aa7e3f0d-b714-499a-b96f-f48edabf1de9.png" }
   ];
 
   const toggleSectionVisibility = (sectionKey: string) => {
