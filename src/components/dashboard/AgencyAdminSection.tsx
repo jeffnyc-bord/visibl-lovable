@@ -85,9 +85,11 @@ export const AgencyAdminSection = () => {
     }
   ]);
 
-  const handleViewDashboard = (clientId: number) => {
-    console.log(`Navigating to dashboard for client ${clientId}`);
-    // In a real app, this would navigate to the client's dashboard
+  const handleViewDashboard = (clientId: number, clientName: string) => {
+    console.log(`Navigating to dashboard for client ${clientId}: ${clientName}`);
+    // Navigate to client's AI Visibility Dashboard
+    // This would typically use React Router or update parent component state
+    window.location.href = `/?client=${clientId}&view=dashboard`;
   };
 
   const handleGenerateReport = (clientId: number, clientName: string) => {
@@ -95,9 +97,16 @@ export const AgencyAdminSection = () => {
     // In a real app, this would trigger report generation
   };
 
-  const handleEditClient = (clientId: number) => {
-    console.log(`Editing client ${clientId}`);
-    // In a real app, this would open edit modal
+  const handleAddNewClient = () => {
+    console.log("Opening Add New Client modal");
+    // This would open a modal/form for client onboarding
+    alert("Add New Client functionality would open here");
+  };
+
+  const handleClientSettings = (clientId: number, clientName: string) => {
+    console.log(`Opening settings for client ${clientId}: ${clientName}`);
+    // Navigate to client-specific settings page
+    window.location.href = `/?client=${clientId}&view=settings`;
   };
 
   const handleDeleteClient = (clientId: number) => {
@@ -213,7 +222,10 @@ export const AgencyAdminSection = () => {
               Manage all client accounts and their brand tracking configurations
             </CardDescription>
           </div>
-          <Button className="bg-black hover:bg-gray-800 text-white text-sm h-9">
+          <Button 
+            onClick={handleAddNewClient}
+            className="bg-black hover:bg-gray-800 text-white text-sm h-9"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add New Client
           </Button>
@@ -227,7 +239,7 @@ export const AgencyAdminSection = () => {
                       <div 
                         key={client.id} 
                         className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors cursor-pointer"
-                        onClick={() => handleViewDashboard(client.id)}
+                        onClick={() => handleViewDashboard(client.id, client.name)}
                       >
                         <div className="flex items-center space-x-4">
                           <div className="w-10 h-10 bg-gradient-to-br from-secondary/20 to-secondary/40 rounded-lg flex items-center justify-center border">
@@ -265,7 +277,12 @@ export const AgencyAdminSection = () => {
                           </div>
                           
                           <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleClientSettings(client.id, client.name)}
+                            >
                               <Settings className="w-4 h-4" />
                             </Button>
                           </div>
