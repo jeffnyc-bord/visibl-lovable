@@ -552,9 +552,54 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
               <TableRow>
                 <TableHead>Platform</TableHead>
                 <TableHead>Mentions</TableHead>
-                <TableHead>Sentiment</TableHead>
-                <TableHead>Coverage</TableHead>
-                <TableHead>Trend</TableHead>
+                <TableHead className="relative">
+                  <div className="flex items-center space-x-1">
+                    <span>Sentiment</span>
+                    <div className="relative">
+                      <HelpCircle 
+                        className="w-3 h-3 text-gray-400 cursor-pointer" 
+                        onClick={() => setShowTooltips({...showTooltips, sentiment: !showTooltips.sentiment})}
+                      />
+                      {showTooltips.sentiment && (
+                        <div className="absolute left-0 top-5 z-50 w-48 p-2 text-xs bg-popover border rounded-md shadow-md">
+                          <p>How AI platforms express feelings about your brand (positive, neutral, negative)</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </TableHead>
+                <TableHead className="relative">
+                  <div className="flex items-center space-x-1">
+                    <span>Coverage</span>
+                    <div className="relative">
+                      <HelpCircle 
+                        className="w-3 h-3 text-gray-400 cursor-pointer" 
+                        onClick={() => setShowTooltips({...showTooltips, coverage: !showTooltips.coverage})}
+                      />
+                      {showTooltips.coverage && (
+                        <div className="absolute left-0 top-5 z-50 w-48 p-2 text-xs bg-popover border rounded-md shadow-md">
+                          <p>Percentage of queries where your brand appears compared to total relevant queries</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </TableHead>
+                <TableHead className="relative">
+                  <div className="flex items-center space-x-1">
+                    <span>Trend</span>
+                    <div className="relative">
+                      <HelpCircle 
+                        className="w-3 h-3 text-gray-400 cursor-pointer" 
+                        onClick={() => setShowTooltips({...showTooltips, trend: !showTooltips.trend})}
+                      />
+                      {showTooltips.trend && (
+                        <div className="absolute left-0 top-5 z-50 w-48 p-2 text-xs bg-popover border rounded-md shadow-md">
+                          <p>Growth or decline in mentions compared to the previous period</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -608,11 +653,24 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
       </Card>
 
       {/* Core Brand Queries */}
-      <Card className="mb-6">
+      <Card className="mb-6 group relative" onMouseLeave={() => setShowTooltips({...showTooltips, coreQueries: false})}>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <img src="/lovable-uploads/0fe89acd-e0a5-4388-8a50-3f25de035732.png" alt="Core Brand Queries" className="w-5 h-5" />
-            <span>Core Brand Queries</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <img src="/lovable-uploads/0fe89acd-e0a5-4388-8a50-3f25de035732.png" alt="Core Brand Queries" className="w-5 h-5" />
+              <span>Core Brand Queries</span>
+            </div>
+            <div className="relative">
+              <HelpCircle 
+                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                onClick={() => setShowTooltips({...showTooltips, coreQueries: !showTooltips.coreQueries})}
+              />
+              {showTooltips.coreQueries && (
+                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <p>Key search queries and questions where your brand appears most frequently across AI platforms, ranked by relevance score.</p>
+                </div>
+              )}
+            </div>
           </CardTitle>
           <CardDescription>
             System-generated queries that are most relevant to your brand, based on AI understanding and market analysis.
