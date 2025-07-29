@@ -120,7 +120,7 @@ const mockTrackedBrands: BrandData[] = [
   {
     id: "apple",
     name: "Apple",
-    logo: "/lovable-uploads/2e118f8d-a421-4c37-b61b-bdf56fc650c4.png",
+    logo: "/lovable-uploads/f7211f59-be5b-4e58-9bfa-3b6653217350.png",
     url: "apple.com",
     visibilityScore: 95,
     totalMentions: 24567,
