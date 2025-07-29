@@ -256,15 +256,6 @@ export const AgencyAdminSection = () => {
                             <p className="text-xs text-muted-foreground">Visibility Score</p>
                           </div>
                           
-                          <div className="text-center">
-                            <span className="text-lg font-bold text-foreground">{client.deepTrackedBrands}</span>
-                            <p className="text-xs text-muted-foreground">Deep Brands</p>
-                          </div>
-                          
-                          <div className="text-center">
-                            <span className="text-lg font-bold text-foreground">{client.competitorBrands}</span>
-                            <p className="text-xs text-muted-foreground">Competitors</p>
-                          </div>
                           
                           <div className="text-center">
                             <Badge variant="secondary" className="text-xs">
