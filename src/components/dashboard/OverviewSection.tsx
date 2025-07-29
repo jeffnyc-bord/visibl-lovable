@@ -55,6 +55,7 @@ interface OverviewSectionProps {
 export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProps) => {
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const visibilityData = [
     { month: "Jul", score: 75 },
@@ -195,21 +196,24 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
 
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="group relative">
+        <Card className="group relative" onMouseLeave={() => setShowTooltip(false)}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <img src="/lovable-uploads/f5efaad8-a8ef-4c09-a7e6-523328cd1fd8.png" alt="AI Visibility Score" className="w-4 h-4" />
                 <span className="text-sm font-medium text-gray-600">AI Visibility Score</span>
               </div>
-              <UITooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs">
-                  <p className="text-xs">Your brand's overall visibility score across AI platforms, calculated based on mention frequency, sentiment, and platform coverage.</p>
-                </TooltipContent>
-              </UITooltip>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltip(!showTooltip)}
+                />
+                {showTooltip && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Your brand's overall visibility score across AI platforms, calculated based on mention frequency, sentiment, and platform coverage.</p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-2">
               <span className="text-2xl font-bold text-blue-600">{brandData.visibilityScore}</span>
