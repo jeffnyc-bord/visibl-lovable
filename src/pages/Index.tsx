@@ -91,7 +91,7 @@ const mockTrackedBrands: BrandData[] = [
   {
     id: "adidas",
     name: "Adidas",
-    logo: "/lovable-uploads/6d96032a-5e62-4e84-b278-3c492029f934.png",
+    logo: "/lovable-uploads/443dfdf9-57da-486d-9339-83c684d1c404.png",
     url: "adidas.com",
     visibilityScore: 84,
     totalMentions: 11234,
