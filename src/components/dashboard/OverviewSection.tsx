@@ -261,24 +261,94 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
       </div>
 
       {/* AI Insights Summary */}
-      <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-l-primary">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Star className="w-5 h-5 text-primary" />
-            <span>AI Insights Summary</span>
+      <Card className="mb-6 relative overflow-hidden border-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }} />
+        </div>
+        
+        {/* Accent Line */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+        
+        <CardHeader className="relative">
+          <CardTitle className="flex items-center space-x-3">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-lg bg-cyan-400/20 blur-md" />
+              <div className="relative w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+                <Star className="w-3.5 h-3.5 text-white" />
+              </div>
+            </div>
+            <span className="text-xl font-semibold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              AI Insights Summary
+            </span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="prose prose-sm max-w-none">
-            <p className="text-gray-700 leading-relaxed mb-3">
-              <strong>Nike's AI Visibility Score increased to 87 (+5 points)</strong> this period, primarily driven by strong performance on ChatGPT and positive mentions across core brand queries. The brand maintained its #1 industry ranking with significant growth in mention volume (+15%).
-            </p>
-            <p className="text-gray-700 leading-relaxed mb-3">
-              <strong>Key Performance Drivers:</strong> ChatGPT leads with 456 mentions (+12%), while Perplexity shows exceptional growth (+22%). Nike dominates in running shoe queries with 92% relevance scores and strong performance-related mentions.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              <strong>Strategic Opportunity:</strong> Competitors like Adidas are showing increased activity in product-specific mentions, particularly in sustainable product queries. Consider expanding content strategy around sustainability and lifestyle use cases to maintain competitive advantage.
-            </p>
+        
+        <CardContent className="relative space-y-4">
+          {/* Key Metrics Bar */}
+          <div className="grid grid-cols-3 gap-4 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-cyan-400">+5</div>
+              <div className="text-xs text-gray-400">Score Increase</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-400">+15%</div>
+              <div className="text-xs text-gray-400">Mention Growth</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-400">#1</div>
+              <div className="text-xs text-gray-400">Industry Rank</div>
+            </div>
+          </div>
+
+          {/* Insights Content */}
+          <div className="space-y-3">
+            <div className="flex items-start space-x-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 flex-shrink-0" />
+              <p className="text-gray-300 leading-relaxed text-sm">
+                <span className="text-white font-semibold">Nike's AI Visibility Score increased to 87 (+5 points)</span> this period, primarily driven by strong performance on ChatGPT and positive mentions across core brand queries.
+              </p>
+            </div>
+            
+            <div className="flex items-start space-x-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-400 mt-2 flex-shrink-0" />
+              <p className="text-gray-300 leading-relaxed text-sm">
+                <span className="text-white font-semibold">Key Performance Drivers:</span> ChatGPT leads with 456 mentions (+12%), while Perplexity shows exceptional growth (+22%). Nike dominates in running shoe queries with 92% relevance scores.
+              </p>
+            </div>
+            
+            <div className="flex items-start space-x-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-2 flex-shrink-0" />
+              <p className="text-gray-300 leading-relaxed text-sm">
+                <span className="text-white font-semibold">Strategic Opportunity:</span> Competitors like Adidas are showing increased activity in product-specific mentions. Consider expanding content strategy around sustainability and lifestyle use cases.
+              </p>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-between pt-4 border-t border-white/10">
+            <div className="flex space-x-2">
+              <Button 
+                size="sm" 
+                className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-sm"
+                variant="outline"
+              >
+                <ExternalLink className="w-3 h-3 mr-1.5" />
+                View Details
+              </Button>
+              <Button 
+                size="sm" 
+                className="bg-cyan-500/80 hover:bg-cyan-500 text-white border-0"
+              >
+                <FileText className="w-3 h-3 mr-1.5" />
+                Export Summary
+              </Button>
+            </div>
+            <div className="text-xs text-gray-400">
+              Updated 2 minutes ago
+            </div>
           </div>
         </CardContent>
       </Card>
