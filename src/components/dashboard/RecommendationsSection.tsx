@@ -363,109 +363,196 @@ export const RecommendationsSection = () => {
   return (
     <div className="space-y-6">
       {/* Enhanced Progress & Summary */}
-      <Card className="border-0 shadow-lg bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-foreground">
-            <Brain className="w-6 h-6 text-primary" />
+      <Card className={`border-0 shadow-lg transition-all duration-500 ${
+        completedActions.length === 0 
+          ? 'bg-gradient-to-br from-primary/10 via-background to-secondary/10 animate-fade-in' 
+          : 'bg-gradient-to-br from-primary/5 via-background to-secondary/5'
+      }`}>
+        <CardHeader className="relative overflow-hidden">
+          {/* Animated Background Pattern for Empty State */}
+          {completedActions.length === 0 && (
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-4 right-4 w-32 h-32 rounded-full border border-primary animate-pulse"></div>
+              <div className="absolute top-8 right-8 w-24 h-24 rounded-full border border-primary animate-pulse animation-delay-300"></div>
+              <div className="absolute top-12 right-12 w-16 h-16 rounded-full border border-primary animate-pulse animation-delay-600"></div>
+            </div>
+          )}
+          
+          <CardTitle className="flex items-center space-x-2 text-foreground relative z-10">
+            <Brain className={`w-6 h-6 text-primary ${completedActions.length === 0 ? 'animate-pulse' : ''}`} />
             <span>AI-Powered Optimization Plan</span>
             <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary border-primary/20">
               <Sparkles className="w-3 h-3 mr-1" />
               AI Enhanced
             </Badge>
           </CardTitle>
-          <CardDescription>
-            Intelligent recommendations prioritized by real-time AI model behavior and competitive analysis
+          <CardDescription className="relative z-10">
+            {completedActions.length === 0 
+              ? "Your intelligent roadmap to AI visibility success - let's get started!"
+              : "Intelligent recommendations prioritized by real-time AI model behavior and competitive analysis"
+            }
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Dynamic Progress Visualization */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {/* Circular Progress Chart */}
-            <div className="flex items-center justify-center">
-              <div className="relative w-48 h-48">
-                <svg className="w-48 h-48 transform -rotate-90" viewBox="0 0 100 100">
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="40"
-                    stroke="hsl(var(--muted))"
-                    strokeWidth="8"
-                    fill="none"
-                    className="opacity-20"
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="40"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth="8"
-                    fill="none"
-                    strokeDasharray={`${(completedActions.length / recommendations.length) * 251.2} 251.2`}
-                    strokeLinecap="round"
-                    className="transition-all duration-1000 ease-in-out"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center flex-col">
-                  <div className="text-4xl font-bold text-primary">
-                    {Math.round((completedActions.length / recommendations.length) * 100)}%
+          {/* Empty State vs Progress State */}
+          {completedActions.length === 0 ? (
+            /* Motivating Empty State */
+            <div className="space-y-8">
+              <div className="text-center py-8">
+                <div className="relative inline-block">
+                  <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-full blur-lg animate-pulse"></div>
+                  <div className="relative w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center animate-scale-in">
+                    <TrendingUp className="w-16 h-16 text-primary animate-pulse" />
                   </div>
-                  <div className="text-sm text-muted-foreground mt-1">Complete</div>
                 </div>
-              </div>
-            </div>
-
-            {/* High-Level Impact Summary */}
-            <div className="space-y-4">
-              <div className="p-6 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
-                <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center">
-                  <Gauge className="w-5 h-5 mr-2 text-primary" />
-                  Target AI Visibility
+                <h3 className="text-2xl font-bold text-foreground mb-3 animate-fade-in">
+                  Ready to Boost Your AI Visibility?
                 </h3>
-                <div className="text-3xl font-bold text-primary mb-2">Potential Gain: +{totalImpact}%</div>
-                <p className="text-sm text-muted-foreground">
-                  Achieving this potential could increase your brand's AI mentions by ~40% and improve ranking for 200+ key queries.
+                <p className="text-muted-foreground max-w-md mx-auto leading-relaxed animate-fade-in animation-delay-200">
+                  Your optimization journey starts here. We've identified {recommendations.length} strategic actions that could increase your AI visibility by up to <span className="font-bold text-primary">+{totalImpact}%</span>
                 </p>
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 rounded-lg bg-card border">
-                  <CheckCircle className="w-6 h-6 text-success mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-success">{completedActions.length}</div>
-                  <div className="text-xs text-muted-foreground">Completed</div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Potential Impact */}
+                <div className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 text-center hover-scale">
+                  <Gauge className="w-8 h-8 text-primary mx-auto mb-3" />
+                  <div className="text-3xl font-bold text-primary mb-2 animate-fade-in">+{totalImpact}%</div>
+                  <div className="text-sm font-medium text-foreground mb-1">AI Visibility Potential</div>
+                  <div className="text-xs text-muted-foreground">Ready to unlock</div>
                 </div>
-                <div className="text-center p-4 rounded-lg bg-card border">
-                  <TrendingUp className="w-6 h-6 text-warning mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-warning">+{completedImpact}%</div>
-                  <div className="text-xs text-muted-foreground">Progress Made</div>
+                
+                {/* Quick Wins Available */}
+                <div className="p-6 rounded-lg bg-gradient-to-br from-success/10 to-success/5 border border-success/20 text-center hover-scale">
+                  <Timer className="w-8 h-8 text-success mx-auto mb-3" />
+                  <div className="text-3xl font-bold text-success mb-2">
+                    {recommendations.filter(rec => rec.effort === "Low" || rec.timeline.includes("1 week")).length}
+                  </div>
+                  <div className="text-sm font-medium text-foreground mb-1">Quick Wins</div>
+                  <div className="text-xs text-muted-foreground">Start here for fast results</div>
+                </div>
+                
+                {/* Total Actions */}
+                <div className="p-6 rounded-lg bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 text-center hover-scale">
+                  <CheckCircle className="w-8 h-8 text-accent mx-auto mb-3" />
+                  <div className="text-3xl font-bold text-accent mb-2">{recommendations.length}</div>
+                  <div className="text-sm font-medium text-foreground mb-1">Strategic Actions</div>
+                  <div className="text-xs text-muted-foreground">Optimized by AI</div>
+                </div>
+              </div>
+              
+              {/* Call to Action */}
+              <div className="text-center p-6 rounded-lg bg-gradient-to-r from-primary/5 via-background to-primary/5 border border-primary/10">
+                <p className="text-sm text-muted-foreground mb-4">
+                  🚀 <strong>Pro Tip:</strong> Start with Quick Wins below to see immediate results, then work through high-impact actions for maximum AI visibility gains.
+                </p>
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-200 animate-fade-in animation-delay-400"
+                  onClick={() => {
+                    const firstQuickWin = recommendations.find(rec => rec.effort === "Low" || rec.timeline.includes("1 week"));
+                    if (firstQuickWin && !expandedCards.includes(firstQuickWin.id)) {
+                      toggleCardExpansion(firstQuickWin.id);
+                    }
+                  }}
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Start with Quick Wins
+                </Button>
+              </div>
+            </div>
+          ) : (
+            /* Regular Progress State */
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Circular Progress Chart */}
+              <div className="flex items-center justify-center">
+                <div className="relative w-48 h-48">
+                  <svg className="w-48 h-48 transform -rotate-90" viewBox="0 0 100 100">
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      stroke="hsl(var(--muted))"
+                      strokeWidth="8"
+                      fill="none"
+                      className="opacity-20"
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeDasharray={`${(completedActions.length / recommendations.length) * 251.2} 251.2`}
+                      strokeLinecap="round"
+                      className="transition-all duration-1000 ease-in-out"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center flex-col">
+                    <div className="text-4xl font-bold text-primary">
+                      {Math.round((completedActions.length / recommendations.length) * 100)}%
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-1">Complete</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* High-Level Impact Summary */}
+              <div className="space-y-4">
+                <div className="p-6 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
+                  <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center">
+                    <Gauge className="w-5 h-5 mr-2 text-primary" />
+                    Target AI Visibility
+                  </h3>
+                  <div className="text-3xl font-bold text-primary mb-2">Potential Gain: +{totalImpact}%</div>
+                  <p className="text-sm text-muted-foreground">
+                    Achieving this potential could increase your brand's AI mentions by ~40% and improve ranking for 200+ key queries.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 rounded-lg bg-card border">
+                    <CheckCircle className="w-6 h-6 text-success mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-success">{completedActions.length}</div>
+                    <div className="text-xs text-muted-foreground">Completed</div>
+                  </div>
+                  <div className="text-center p-4 rounded-lg bg-card border">
+                    <TrendingUp className="w-6 h-6 text-warning mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-warning">+{completedImpact}%</div>
+                    <div className="text-xs text-muted-foreground">Progress Made</div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Multi-segment Progress Bar */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="font-medium text-foreground">Implementation Progress</span>
-              <button 
-                className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
-                onClick={() => setFilterBy(completedActions.length === recommendations.length ? "all" : "pending")}
-              >
-                {completedActions.length} of {recommendations.length} actions complete
-              </button>
-            </div>
-            <div className="w-full bg-muted rounded-full h-4 overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-1000 ease-in-out rounded-full flex items-center justify-end pr-2"
-                style={{ width: `${(completedActions.length / recommendations.length) * 100}%` }}
-              >
-                {completedActions.length > 0 && (
-                  <span className="text-xs font-medium text-primary-foreground">
-                    {Math.round((completedActions.length / recommendations.length) * 100)}%
-                  </span>
-                )}
+          {/* Progress Bar - Only show when there's progress */}
+          {completedActions.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-foreground">Implementation Progress</span>
+                <button 
+                  className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+                  onClick={() => setFilterBy(completedActions.length === recommendations.length ? "all" : "pending")}
+                >
+                  {completedActions.length} of {recommendations.length} actions complete
+                </button>
+              </div>
+              <div className="w-full bg-muted rounded-full h-4 overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-1000 ease-in-out rounded-full flex items-center justify-end pr-2"
+                  style={{ width: `${(completedActions.length / recommendations.length) * 100}%` }}
+                >
+                  {completedActions.length > 0 && (
+                    <span className="text-xs font-medium text-primary-foreground">
+                      {Math.round((completedActions.length / recommendations.length) * 100)}%
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
@@ -882,18 +969,25 @@ export const RecommendationsSection = () => {
         })}
       </div>
 
-      {/* Enhanced Quick Wins Section */}
-      <Card className="border-0 shadow-lg bg-gradient-to-br from-success/5 via-background to-success/10 border-success/20">
+      {/* Enhanced Quick Wins Section - Always Visible */}
+      <Card className={`border-0 shadow-lg transition-all duration-500 ${
+        completedActions.length === 0 
+          ? 'bg-gradient-to-br from-success/10 via-background to-success/15 border-success/30 animate-fade-in animation-delay-600' 
+          : 'bg-gradient-to-br from-success/5 via-background to-success/10 border-success/20'
+      }`}>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-foreground">
-            <Timer className="w-5 h-5 text-success" />
+            <Timer className={`w-5 h-5 text-success ${completedActions.length === 0 ? 'animate-pulse' : ''}`} />
             <span>Quick Wins (1-2 weeks)</span>
             <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
-              High Priority
+              {completedActions.length === 0 ? 'Start Here!' : 'High Priority'}
             </Badge>
           </CardTitle>
           <CardDescription>
-            Fast implementation actions for immediate AI visibility improvements - start here for maximum impact
+            {completedActions.length === 0 
+              ? "🎯 Perfect starting points for immediate AI visibility improvements - low effort, high impact!"
+              : "Fast implementation actions for immediate AI visibility improvements - start here for maximum impact"
+            }
           </CardDescription>
         </CardHeader>
         <CardContent>
