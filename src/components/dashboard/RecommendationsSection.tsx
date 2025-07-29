@@ -419,9 +419,9 @@ export const RecommendationsSection = () => {
               <div className="p-6 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
                 <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center">
                   <Gauge className="w-5 h-5 mr-2 text-primary" />
-                  AI Visibility Potential
+                  Target AI Visibility
                 </h3>
-                <div className="text-3xl font-bold text-primary mb-2">+{totalImpact}%</div>
+                <div className="text-3xl font-bold text-primary mb-2">Potential Gain: +{totalImpact}%</div>
                 <p className="text-sm text-muted-foreground">
                   Achieving this potential could increase your brand's AI mentions by ~40% and improve ranking for 200+ key queries.
                 </p>
@@ -446,9 +446,12 @@ export const RecommendationsSection = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="font-medium text-foreground">Implementation Progress</span>
-              <span className="text-sm text-muted-foreground">
+              <button 
+                className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+                onClick={() => setFilterBy(completedActions.length === recommendations.length ? "all" : "pending")}
+              >
                 {completedActions.length} of {recommendations.length} actions complete
-              </span>
+              </button>
             </div>
             <div className="w-full bg-muted rounded-full h-4 overflow-hidden">
               <div 
@@ -564,11 +567,20 @@ export const RecommendationsSection = () => {
                         className="data-[state=checked]:bg-success data-[state=checked]:border-success"
                       />
                       
-                      {/* Priority Indicator */}
-                      <div className={`w-2 h-12 rounded-full ${
-                        rec.priority === "High" ? "bg-destructive" : 
-                        rec.priority === "Medium" ? "bg-warning" : "bg-success"
-                      }`} />
+                      {/* Visual Priority Indicator */}
+                      <div className="flex items-center space-x-2">
+                        <div className={`px-2 py-1 rounded-full text-xs font-medium border ${
+                          rec.priority === "High" ? "bg-destructive/10 text-destructive border-destructive/20" : 
+                          rec.priority === "Medium" ? "bg-warning/10 text-warning border-warning/20" : 
+                          "bg-success/10 text-success border-success/20"
+                        }`}>
+                          P{rec.priority === "High" ? "1" : rec.priority === "Medium" ? "2" : "3"}
+                        </div>
+                        <div className={`w-1 h-12 rounded-full ${
+                          rec.priority === "High" ? "bg-destructive" : 
+                          rec.priority === "Medium" ? "bg-warning" : "bg-success"
+                        }`} />
+                      </div>
                       
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
@@ -635,30 +647,27 @@ export const RecommendationsSection = () => {
                           <span className="font-semibold text-primary">{rec.competitiveAdvantage}% competitive advantage</span>{" "}
                           with {rec.aiModelTrend}% relevance to current AI model trends. Implementing this could significantly improve your brand's visibility in AI-powered search results and recommendations.
                         </p>
-                        <div className="grid grid-cols-3 gap-4 text-xs">
-                          <div>
-                            <span className="font-medium text-muted-foreground">Competitive Edge</span>
-                            <div className="mt-1">
-                              <Progress value={rec.competitiveAdvantage} className="h-2" />
-                              <span className="text-xs text-muted-foreground">{rec.competitiveAdvantage}%</span>
-                            </div>
+                        
+                        <div className="grid grid-cols-3 gap-4 p-3 rounded-lg bg-background/50 border border-border/30">
+                          <div className="text-center">
+                            <div className="text-xs font-medium text-muted-foreground mb-1">Competitive Edge</div>
+                            <div className="text-lg font-bold text-primary">{rec.competitiveAdvantage}%</div>
+                            <Progress value={rec.competitiveAdvantage} className="h-1.5 mt-1" />
                           </div>
-                          <div>
-                            <span className="font-medium text-muted-foreground">AI Trend Alignment</span>
-                            <div className="mt-1">
-                              <Progress value={rec.aiModelTrend} className="h-2" />
-                              <span className="text-xs text-muted-foreground">{rec.aiModelTrend}%</span>
-                            </div>
+                          <div className="text-center">
+                            <div className="text-xs font-medium text-muted-foreground mb-1">AI Model Trend</div>
+                            <div className="text-lg font-bold text-primary">{rec.aiModelTrend}%</div>
+                            <Progress value={rec.aiModelTrend} className="h-1.5 mt-1" />
                           </div>
-                          <div>
-                            <span className="font-medium text-muted-foreground">Overall Score</span>
-                            <div className="mt-1 text-lg font-bold text-primary">{calculateAiScore(rec)}/100</div>
+                          <div className="text-center">
+                            <div className="text-xs font-medium text-muted-foreground mb-1">Overall AI Score</div>
+                            <div className="text-2xl font-bold text-primary">{calculateAiScore(rec)}<span className="text-sm text-muted-foreground">/100</span></div>
                           </div>
                         </div>
                       </div>
                     )}
 
-                    {/* How to Implement (Structured Guide) */}
+                    {/* How to Implement (Interactive Checklist) */}
                     <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
                       <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center">
                         <PlayCircle className="w-4 h-4 mr-2 text-primary" />
@@ -666,11 +675,20 @@ export const RecommendationsSection = () => {
                       </h4>
                       <div className="space-y-3">
                         {rec.details.map((detail, i) => (
-                          <div key={i} className="flex items-start space-x-3">
-                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <span className="text-xs font-medium text-primary">{i + 1}</span>
-                            </div>
-                            <span className="text-sm text-muted-foreground leading-relaxed">{detail}</span>
+                          <div key={i} className="flex items-start space-x-3 group">
+                            <Checkbox 
+                              className="mt-1 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                              id={`step-${rec.id}-${i}`}
+                            />
+                            <label 
+                              htmlFor={`step-${rec.id}-${i}`}
+                              className="text-sm text-muted-foreground leading-relaxed cursor-pointer group-hover:text-foreground transition-colors flex-1"
+                            >
+                              <span className="inline-block w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium mr-2 text-center leading-6">
+                                {i + 1}
+                              </span>
+                              {detail}
+                            </label>
                           </div>
                         ))}
                       </div>
@@ -692,25 +710,25 @@ export const RecommendationsSection = () => {
                           <Dialog>
                             <DialogTrigger asChild>
                               <Button 
-                                className="bg-accent hover:bg-accent/90 text-accent-foreground"
-                                size="sm"
+                                className="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-accent-foreground shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
+                                size="default"
                                 onClick={() => !generatedContent[rec.id] && generateContent(rec.id)}
                                 disabled={contentGenerationLoading === rec.id}
                               >
                                 {contentGenerationLoading === rec.id ? (
                                   <>
                                     <Bot className="w-4 h-4 mr-2 animate-pulse" />
-                                    Generating...
+                                    Generating Blueprint...
                                   </>
                                 ) : generatedContent[rec.id] ? (
                                   <>
                                     <FileText className="w-4 h-4 mr-2" />
-                                    View Blueprint
+                                    View Content Blueprint
                                   </>
                                 ) : (
                                   <>
                                     <Sparkles className="w-4 h-4 mr-2" />
-                                    Generate Blueprint
+                                    Generate Content Blueprint
                                   </>
                                 )}
                               </Button>
@@ -864,12 +882,18 @@ export const RecommendationsSection = () => {
         })}
       </div>
 
-      {/* Quick Wins */}
-      <Card className="border-0 shadow-lg">
+      {/* Enhanced Quick Wins Section */}
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-success/5 via-background to-success/10 border-success/20">
         <CardHeader>
-          <CardTitle>Quick Wins (1-2 weeks)</CardTitle>
+          <CardTitle className="flex items-center space-x-2 text-foreground">
+            <Timer className="w-5 h-5 text-success" />
+            <span>Quick Wins (1-2 weeks)</span>
+            <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
+              High Priority
+            </Badge>
+          </CardTitle>
           <CardDescription>
-            Fast implementation actions for immediate AI visibility improvements
+            Fast implementation actions for immediate AI visibility improvements - start here for maximum impact
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -877,12 +901,33 @@ export const RecommendationsSection = () => {
             {recommendations
               .filter(rec => rec.effort === "Low" || rec.timeline.includes("1 week"))
               .map((rec, index) => (
-                <div key={index} className="border rounded-lg p-4 bg-gray-50">
-                  <h4 className="font-medium text-gray-900 mb-2">{rec.title}</h4>
-                  <p className="text-sm text-gray-600 mb-2">{rec.description}</p>
+                <div 
+                  key={index} 
+                  className="border border-success/20 rounded-lg p-4 bg-success/5 hover:bg-success/10 transition-all duration-200 cursor-pointer group"
+                  onClick={() => !expandedCards.includes(rec.id) && toggleCardExpansion(rec.id)}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <h4 className="font-medium text-foreground group-hover:text-success transition-colors">{rec.title}</h4>
+                    <Badge className="bg-success/20 text-success border-success/30 text-xs">
+                      Quick Win
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{rec.description}</p>
                   <div className="flex items-center justify-between">
-                    <Badge className="bg-green-100 text-green-800">Quick Win</Badge>
-                    <span className="text-sm font-medium text-blue-600">+{rec.aiVisibilityIncrease}%</span>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-1">
+                        <Clock className="w-3 h-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">{rec.timeline}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Target className="w-3 h-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">{rec.effort} effort</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-bold text-success">+{rec.aiVisibilityIncrease}%</span>
+                      <TrendingUp className="w-4 h-4 text-success" />
+                    </div>
                   </div>
                 </div>
               ))}
