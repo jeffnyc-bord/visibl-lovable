@@ -69,7 +69,21 @@ export default {
 				warning: {
 					DEFAULT: 'hsl(var(--warning))',
 					foreground: 'hsl(var(--warning-foreground))'
+				},
+				premium: {
+					DEFAULT: 'hsl(var(--premium))',
+					foreground: 'hsl(var(--premium-foreground))'
+				},
+				enterprise: {
+					DEFAULT: 'hsl(var(--enterprise))',
+					foreground: 'hsl(var(--enterprise-foreground))'
 				}
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-success': 'var(--gradient-success)',
+				'gradient-premium': 'var(--gradient-premium)',
+				'gradient-enterprise': 'var(--gradient-enterprise)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
