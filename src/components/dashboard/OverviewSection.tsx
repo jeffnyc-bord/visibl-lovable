@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link } from "lucide-react";
+import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link, Settings, ExternalLink, HelpCircle } from "lucide-react";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
+import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface BrandData {
   id: string;
@@ -61,11 +63,11 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
   ];
 
   const industryRanking = [
-    { rank: 1, brand: "Nike", score: 87, change: "+2" },
-    { rank: 2, brand: "Adidas", score: 85, change: "-1" },
-    { rank: 3, brand: "Under Armour", score: 82, change: "+1" },
-    { rank: 4, brand: "Puma", score: 78, change: "0" },
-    { rank: 5, brand: "New Balance", score: 76, change: "+3" },
+    { rank: 1, brand: "Nike", score: 87, change: "+2", insight: "Leading in performance-focused queries", link: "/competitors?brand=nike" },
+    { rank: 2, brand: "Adidas", score: 85, change: "-1", insight: "Strong in sustainable product queries", link: "/competitors?brand=adidas" },
+    { rank: 3, brand: "Under Armour", score: 82, change: "+1", insight: "Growing in tech & innovation mentions", link: "/competitors?brand=under-armour" },
+    { rank: 4, brand: "Puma", score: 78, change: "0", insight: "Stable in lifestyle & fashion segments", link: "/competitors?brand=puma" },
+    { rank: 5, brand: "New Balance", score: 76, change: "+3", insight: "Rising in comfort & wellness categories", link: "/competitors?brand=new-balance" },
   ];
 
   // AI Visibility data from ExternalAIVisibilitySection
@@ -168,7 +170,8 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
   const pieChartColors = showAllPlatforms ? COLORS : [...COLORS.slice(0, 4), '#6B7280'];
 
   return (
-    <div className="space-y-6">
+    <TooltipProvider>
+      <div className="space-y-6">
       {/* Export Report Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -243,12 +246,42 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
               <span className="text-sm font-medium text-gray-600">Platform Coverage</span>
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-bold text-gray-900">{brandData.platformCoverage}</span>
+              <AIInsightsModal
+                trigger={
+                  <button className="text-2xl font-bold text-gray-900 hover:text-primary transition-colors cursor-pointer">
+                    {brandData.platformCoverage}
+                  </button>
+                }
+                platforms={platformMentions}
+              />
               <span className="text-sm text-gray-600 ml-1">platforms</span>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* AI Insights Summary */}
+      <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-l-primary">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Star className="w-5 h-5 text-primary" />
+            <span>AI Insights Summary</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="prose prose-sm max-w-none">
+            <p className="text-gray-700 leading-relaxed mb-3">
+              <strong>Nike's AI Visibility Score increased to 87 (+5 points)</strong> this period, primarily driven by strong performance on ChatGPT and positive mentions across core brand queries. The brand maintained its #1 industry ranking with significant growth in mention volume (+15%).
+            </p>
+            <p className="text-gray-700 leading-relaxed mb-3">
+              <strong>Key Performance Drivers:</strong> ChatGPT leads with 456 mentions (+12%), while Perplexity shows exceptional growth (+22%). Nike dominates in running shoe queries with 92% relevance scores and strong performance-related mentions.
+            </p>
+            <p className="text-gray-700 leading-relaxed">
+              <strong>Strategic Opportunity:</strong> Competitors like Adidas are showing increased activity in product-specific mentions, particularly in sustainable product queries. Consider expanding content strategy around sustainability and lifestyle use cases to maintain competitive advantage.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -307,7 +340,29 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
                 {industryRanking.map((brand) => (
                   <TableRow key={brand.rank}>
                     <TableCell className="font-medium">#{brand.rank}</TableCell>
-                    <TableCell className="font-medium">{brand.brand}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center space-x-2">
+                        <span>{brand.brand}</span>
+                        {brand.brand !== "Nike" && (
+                          <UITooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 opacity-60 hover:opacity-100"
+                                onClick={() => window.open(brand.link, '_blank')}
+                              >
+                                <HelpCircle className="w-3 h-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs">
+                              <p className="text-xs">{brand.insight}</p>
+                              <p className="text-xs text-muted-foreground mt-1">Click to compare in Competitors tab</p>
+                            </TooltipContent>
+                          </UITooltip>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>{brand.score}</TableCell>
                     <TableCell>
                       <Badge variant="secondary" className={
@@ -497,8 +552,43 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <Progress value={query.relevanceScore} className="w-20 h-2" />
+                  <div className="flex items-center space-x-2">
+                    {query.relevanceScore < 80 && (
+                      <UITooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-3 text-xs"
+                            onClick={() => window.open('/recommendations?filter=query-optimization', '_blank')}
+                          >
+                            <Settings className="w-3 h-3 mr-1" />
+                            Optimize
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Generate optimization recommendations for this query</p>
+                        </TooltipContent>
+                      </UITooltip>
+                    )}
+                    <UITooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => window.open('/recommendations?generate=content-blueprint', '_blank')}
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Generate content blueprint for this query</p>
+                      </TooltipContent>
+                    </UITooltip>
+                  </div>
                 </div>
               </div>
             ))}
@@ -551,6 +641,7 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
           </Table>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 };
