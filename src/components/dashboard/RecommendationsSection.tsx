@@ -365,8 +365,8 @@ export const RecommendationsSection = () => {
       {/* Enhanced Progress & Summary */}
       <Card className={`border-0 shadow-lg transition-all duration-500 ${
         completedActions.length === 0 
-          ? 'bg-gradient-to-br from-primary/10 via-background to-secondary/10 animate-fade-in' 
-          : 'bg-gradient-to-br from-primary/5 via-background to-secondary/5'
+          ? 'bg-card animate-fade-in' 
+          : 'bg-card'
       }`}>
         <CardHeader className="relative overflow-hidden">
           
@@ -785,7 +785,7 @@ export const RecommendationsSection = () => {
                           <Dialog>
                             <DialogTrigger asChild>
                               <Button 
-                                className="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-accent-foreground shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
+                                className="bg-accent hover:bg-accent/90 text-accent-foreground"
                                 size="default"
                                 onClick={() => !generatedContent[rec.id] && generateContent(rec.id)}
                                 disabled={contentGenerationLoading === rec.id}
