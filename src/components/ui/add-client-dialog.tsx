@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
 import { CheckCircle, AlertCircle, AlertTriangle, ArrowLeft, ArrowRight, Globe, Building, ScanLine } from "lucide-react";
 
 interface AddClientDialogProps {
@@ -27,6 +28,7 @@ export const AddClientDialog = ({
   const [isScanning, setIsScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const [scanProgress, setScanProgress] = useState(0);
+  const [isAnnual, setIsAnnual] = useState(false);
   
   // Get client limits based on subscription tier
   const getClientLimit = (tier: string) => {
@@ -162,15 +164,14 @@ export const AddClientDialog = ({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Add New Client</DialogTitle>
-          <DialogDescription>
-            {hasReachedLimit 
-              ? `You've reached your client limit (${clientLimit} clients on ${subscriptionTier} plan)`
-              : "Add a new client to your agency dashboard"
-            }
-          </DialogDescription>
-        </DialogHeader>
+        {!hasReachedLimit && (
+          <DialogHeader>
+            <DialogTitle>Add New Client</DialogTitle>
+            <DialogDescription>
+              Add a new client to your agency dashboard
+            </DialogDescription>
+          </DialogHeader>
+        )}
 
         {/* Clean upgrade modal when limit is reached */}
         {hasReachedLimit && (
@@ -183,14 +184,18 @@ export const AddClientDialog = ({
                 className="w-16 h-16"
               />
             </div>
-            <div className="text-center space-y-3">
+            <div className="text-center space-y-4">
               <h3 className="text-lg font-semibold text-foreground">
-                You've reached your client limit
+                Choose Your Plan
               </h3>
-              <p className="text-sm text-muted-foreground">
-                You have {currentClientCount} clients on the {subscriptionTier} plan. 
-                Upgrade to add more clients and unlock additional features.
-              </p>
+              
+              {/* Monthly/Annual Toggle */}
+              <div className="flex items-center justify-center space-x-3">
+                <span className={`text-sm ${!isAnnual ? 'font-semibold' : 'text-muted-foreground'}`}>Monthly</span>
+                <Switch checked={isAnnual} onCheckedChange={setIsAnnual} />
+                <span className={`text-sm ${isAnnual ? 'font-semibold' : 'text-muted-foreground'}`}>Annual</span>
+                {isAnnual && <Badge variant="secondary" className="text-xs">Save 20%</Badge>}
+              </div>
             </div>
 
             {/* Clean plan cards */}
@@ -200,8 +205,10 @@ export const AddClientDialog = ({
                   <div className="space-y-3">
                     <div className="text-center space-y-1">
                       <h4 className="font-semibold text-foreground">Professional</h4>
-                      <div className="text-2xl font-bold text-foreground">$299</div>
-                      <p className="text-xs text-muted-foreground">per month</p>
+                      <div className="text-2xl font-bold text-foreground">
+                        {isAnnual ? '$30,000' : '$2,500'}
+                      </div>
+                      <p className="text-xs text-muted-foreground">per {isAnnual ? 'year' : 'month'}</p>
                     </div>
                     
                     <div className="space-y-2 text-sm">
@@ -212,6 +219,10 @@ export const AddClientDialog = ({
                       <div className="flex items-center space-x-2">
                         <CheckCircle className="w-4 h-4 text-primary" />
                         <span>Advanced Analytics</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-primary" />
+                        <span>White Labeled Reports</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <CheckCircle className="w-4 h-4 text-primary" />
@@ -238,6 +249,10 @@ export const AddClientDialog = ({
                     <div className="flex items-center space-x-2">
                       <CheckCircle className="w-4 h-4 text-primary" />
                       <span>Unlimited Clients</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                      <span>White Labeled Reports</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <CheckCircle className="w-4 h-4 text-primary" />
