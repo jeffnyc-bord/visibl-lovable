@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Lightbulb, CheckCircle, Clock, AlertTriangle, TrendingUp, Star, Timer, Users, Target, Filter, BarChart3, Gauge, Brain, Sparkles, FileText, Code, Wand2, Bot, ChevronDown, ChevronUp, PlayCircle, Undo2, Calendar, PieChart } from "lucide-react";
+import { Lightbulb, CheckCircle, Clock, AlertTriangle, TrendingUp, Star, Timer, Users, Target, Filter, BarChart3, Gauge, Brain, Sparkles, FileText, Code, Wand2, Bot, ChevronDown, ChevronUp, PlayCircle, Undo2, Calendar, PieChart, HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export const RecommendationsSection = () => {
@@ -21,6 +21,7 @@ export const RecommendationsSection = () => {
   const [contentGenerationLoading, setContentGenerationLoading] = useState<number | null>(null);
   const [generatedContent, setGeneratedContent] = useState<Record<number, any>>({});
   const [expandedCards, setExpandedCards] = useState<number[]>([]);
+  const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
 
   const handleActionComplete = (actionId: number) => {
     setCompletedActions(prev => 

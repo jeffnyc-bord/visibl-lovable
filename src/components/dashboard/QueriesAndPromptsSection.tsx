@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus } from "lucide-react";
+import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -70,6 +70,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   const [mentionFilter, setMentionFilter] = useState<string>("all");
   const [queryTypeFilter, setQueryTypeFilter] = useState<string>("all");
   const [expandedHistory, setExpandedHistory] = useState<number | null>(null);
+  const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
 
   // Update prompt when prefilledQuery changes
   useEffect(() => {

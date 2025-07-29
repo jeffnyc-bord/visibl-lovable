@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { TrendingUp, TrendingDown, ExternalLink, Target, Plus, Filter, BarChart3, LineChart, Crown, AlertTriangle, CheckCircle, Settings, Trophy, MessageSquare } from "lucide-react";
+import { TrendingUp, TrendingDown, ExternalLink, Target, Plus, Filter, BarChart3, LineChart, Crown, AlertTriangle, CheckCircle, Settings, Trophy, MessageSquare, HelpCircle } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart as RechartsLineChart, Line, Area, AreaChart, ComposedChart } from "recharts";
 import { useState } from "react";
 
@@ -58,6 +58,7 @@ export const CompetitorSection = ({ brandData }: CompetitorSectionProps) => {
   const [viewMode, setViewMode] = useState<"table" | "charts">("table");
   const [customColumns, setCustomColumns] = useState<string[]>(["aiVisibility", "aiMentions", "sentiment", "topProducts"]);
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
+  const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
 
   const competitors = [
     {
@@ -242,11 +243,24 @@ export const CompetitorSection = ({ brandData }: CompetitorSectionProps) => {
   return (
     <div className="space-y-6">
       {/* Interactive Leaderboard Overview */}
-      <Card className="border-0 shadow-lg">
+      <Card className="border-0 shadow-lg group relative" onMouseLeave={() => setShowTooltips({...showTooltips, landscape: false})}>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <img src="/lovable-uploads/9ed4aa18-f1e1-454e-9a51-5342807e8e7a.png" alt="Competitive Landscape" className="w-5 h-5" />
-            <span>Nike's Competitive AI Landscape</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <img src="/lovable-uploads/9ed4aa18-f1e1-454e-9a51-5342807e8e7a.png" alt="Competitive Landscape" className="w-5 h-5" />
+              <span>Nike's Competitive AI Landscape</span>
+            </div>
+            <div className="relative">
+              <HelpCircle 
+                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                onClick={() => setShowTooltips({...showTooltips, landscape: !showTooltips.landscape})}
+              />
+              {showTooltips.landscape && (
+                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <p>Interactive competitive analysis showing where your brand stands against competitors in AI platform visibility and mentions.</p>
+                </div>
+              )}
+            </div>
           </CardTitle>
           <CardDescription>
             Understand where Nike stands and identify opportunities to outperform athletic competitors

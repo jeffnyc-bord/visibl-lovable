@@ -55,7 +55,7 @@ interface OverviewSectionProps {
 export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProps) => {
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
 
   const visibilityData = [
     { month: "Jul", score: 75 },
@@ -196,7 +196,7 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
 
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="group relative" onMouseLeave={() => setShowTooltip(false)}>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityScore: false})}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -206,9 +206,9 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
               <div className="relative">
                 <HelpCircle 
                   className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
-                  onClick={() => setShowTooltip(!showTooltip)}
+                  onClick={() => setShowTooltips({...showTooltips, visibilityScore: !showTooltips.visibilityScore})}
                 />
-                {showTooltip && (
+                {showTooltips.visibilityScore && (
                   <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
                     <p>Your brand's overall visibility score across AI platforms, calculated based on mention frequency, sentiment, and platform coverage.</p>
                   </div>
@@ -225,11 +225,24 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, totalMentions: false})}>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <img src="/lovable-uploads/2dfd4e75-59fe-4604-9bc8-e9465d077056.png" alt="Total Mentions" className="w-4 h-4" />
-              <span className="text-sm font-medium text-gray-600">Total Mentions</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <img src="/lovable-uploads/2dfd4e75-59fe-4604-9bc8-e9465d077056.png" alt="Total Mentions" className="w-4 h-4" />
+                <span className="text-sm font-medium text-gray-600">Total Mentions</span>
+              </div>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, totalMentions: !showTooltips.totalMentions})}
+                />
+                {showTooltips.totalMentions && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Total number of times your brand has been mentioned across all AI platforms in the selected time period.</p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-2">
               <span className="text-2xl font-bold text-gray-900">{brandData.totalMentions.toLocaleString()}</span>
@@ -240,11 +253,24 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, industryRanking: false})}>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4 text-green-500" />
-              <span className="text-sm font-medium text-gray-600">Industry AI Ranking</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-green-500" />
+                <span className="text-sm font-medium text-gray-600">Industry AI Ranking</span>
+              </div>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, industryRanking: !showTooltips.industryRanking})}
+                />
+                {showTooltips.industryRanking && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Your brand's ranking compared to competitors in your industry based on AI platform visibility and mentions.</p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-2">
               <span className="text-2xl font-bold text-green-600">#{brandData.industryRanking}</span>
@@ -256,11 +282,24 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, platformCoverage: false})}>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <MessageSquare className="w-4 h-4 text-purple-500" />
-              <span className="text-sm font-medium text-gray-600">Platform Coverage</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <MessageSquare className="w-4 h-4 text-purple-500" />
+                <span className="text-sm font-medium text-gray-600">Platform Coverage</span>
+              </div>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, platformCoverage: !showTooltips.platformCoverage})}
+                />
+                {showTooltips.platformCoverage && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Number of AI platforms where your brand has been mentioned. Click the number to see detailed platform insights.</p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-2">
               <AIInsightsModal

@@ -26,7 +26,8 @@ import {
   Pin,
   Plus,
   Loader2,
-  RotateCcw
+  RotateCcw,
+  HelpCircle
 } from "lucide-react";
 
 interface BrandData {
@@ -77,6 +78,7 @@ export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) =
   const [pinnedFilter, setPinnedFilter] = useState("all");
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [isReanalyzing, setIsReanalyzing] = useState(false);
+  const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
 
   // Use brand's product data with enhanced mock structure
   const mockProducts = brandData.products.map((product, index) => ({
@@ -149,9 +151,22 @@ export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) =
     <div className="space-y-6">
       {/* Section 1: Overall Product AI Readiness Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 group relative" onMouseLeave={() => setShowTooltips({...showTooltips, readiness: false})}>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Overall Product AI Readiness</CardTitle>
+            <CardTitle className="text-lg flex items-center justify-between">
+              <span>Overall Product AI Readiness</span>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, readiness: !showTooltips.readiness})}
+                />
+                {showTooltips.readiness && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Aggregated view of your entire product catalog's readiness for AI platform visibility and optimization.</p>
+                  </div>
+                )}
+              </div>
+            </CardTitle>
             <CardDescription>Aggregated view of your entire product catalog</CardDescription>
           </CardHeader>
           <CardContent>
@@ -171,11 +186,24 @@ export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) =
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, metrics: false})}>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center">
-              <Package className="w-4 h-4 mr-2" />
-              Product Metrics
+            <CardTitle className="text-base flex items-center justify-between">
+              <div className="flex items-center">
+                <Package className="w-4 h-4 mr-2" />
+                Product Metrics
+              </div>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, metrics: !showTooltips.metrics})}
+                />
+                {showTooltips.metrics && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Overview of your product catalog including total products and those needing attention or already AI-ready.</p>
+                  </div>
+                )}
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">

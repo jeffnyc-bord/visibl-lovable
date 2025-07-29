@@ -2,9 +2,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, Brain, Search } from "lucide-react";
+import { TrendingUp, Brain, Search, HelpCircle } from "lucide-react";
+import { useState } from "react";
 
 export const TrendsSection = () => {
+  const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const trends = [
     {
       topic: "Real-time Analytics",
@@ -88,11 +90,24 @@ export const TrendsSection = () => {
   return (
     <div className="space-y-6">
       {/* AI Market Trends */}
-      <Card className="border-0 shadow-lg">
+      <Card className="border-0 shadow-lg group relative" onMouseLeave={() => setShowTooltips({...showTooltips, trends: false})}>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <TrendingUp className="w-5 h-5 text-blue-600" />
-            <span>AI Market Trends</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
+              <span>AI Market Trends</span>
+            </div>
+            <div className="relative">
+              <HelpCircle 
+                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                onClick={() => setShowTooltips({...showTooltips, trends: !showTooltips.trends})}
+              />
+              {showTooltips.trends && (
+                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <p>Current and emerging trends in your industry as discussed by AI models, showing growth rates and mention frequency.</p>
+                </div>
+              )}
+            </div>
           </CardTitle>
           <CardDescription>
             Current and emerging trends in your industry as discussed by AI models
@@ -147,11 +162,24 @@ export const TrendsSection = () => {
       </Card>
 
       {/* AI Answer Gaps */}
-      <Card className="border-0 shadow-lg">
+      <Card className="border-0 shadow-lg group relative" onMouseLeave={() => setShowTooltips({...showTooltips, gaps: false})}>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Brain className="w-5 h-5 text-purple-600" />
-            <span>AI Answer Gaps</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Brain className="w-5 h-5 text-purple-600" />
+              <span>AI Answer Gaps</span>
+            </div>
+            <div className="relative">
+              <HelpCircle 
+                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                onClick={() => setShowTooltips({...showTooltips, gaps: !showTooltips.gaps})}
+              />
+              {showTooltips.gaps && (
+                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <p>Questions AI users ask where your brand could provide better answers, ranked by opportunity level and query frequency.</p>
+                </div>
+              )}
+            </div>
           </CardTitle>
           <CardDescription>
             Questions AI users ask where your brand could provide better answers
@@ -189,11 +217,24 @@ export const TrendsSection = () => {
       </Card>
 
       {/* Emerging Keywords */}
-      <Card className="border-0 shadow-lg">
+      <Card className="border-0 shadow-lg group relative" onMouseLeave={() => setShowTooltips({...showTooltips, keywords: false})}>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Search className="w-5 h-5 text-green-600" />
-            <span>Emerging Keyword Clusters</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Search className="w-5 h-5 text-green-600" />
+              <span>Emerging Keyword Clusters</span>
+            </div>
+            <div className="relative">
+              <HelpCircle 
+                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                onClick={() => setShowTooltips({...showTooltips, keywords: !showTooltips.keywords})}
+              />
+              {showTooltips.keywords && (
+                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <p>New keyword patterns emerging in AI responses relevant to your industry, showing both rising and declining trends.</p>
+                </div>
+              )}
+            </div>
           </CardTitle>
           <CardDescription>
             New keyword patterns emerging in AI responses relevant to your industry

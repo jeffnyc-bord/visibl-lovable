@@ -2,10 +2,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, TrendingUp, MessageSquare, Link, Calendar, Star, BarChart3, Target } from "lucide-react";
+import { Eye, TrendingUp, MessageSquare, Link, Calendar, Star, BarChart3, Target, HelpCircle } from "lucide-react";
+import { useState } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 
 export const ExternalAIVisibilitySection = () => {
+  const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   // Mock data for AI mentions and sources
   const visibilityMetrics = {
     totalMentions: 1700,
@@ -123,11 +125,24 @@ export const ExternalAIVisibilitySection = () => {
     <div className="space-y-6">
       {/* Overview Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, totalMentions: false})}>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <img src="/lovable-uploads/2dfd4e75-59fe-4604-9bc8-e9465d077056.png" alt="Total Mentions" className="w-4 h-4" />
-              <span className="text-sm font-medium text-gray-600">Total Mentions</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <img src="/lovable-uploads/2dfd4e75-59fe-4604-9bc8-e9465d077056.png" alt="Total Mentions" className="w-4 h-4" />
+                <span className="text-sm font-medium text-gray-600">Total Mentions</span>
+              </div>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, totalMentions: !showTooltips.totalMentions})}
+                />
+                {showTooltips.totalMentions && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Total number of mentions across all external AI platforms tracked.</p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-2">
               <span className="text-2xl font-bold text-gray-900">{visibilityMetrics.totalMentions.toLocaleString()}</span>
@@ -138,11 +153,24 @@ export const ExternalAIVisibilitySection = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, sentiment: false})}>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Star className="w-4 h-4 text-yellow-500" />
-              <span className="text-sm font-medium text-gray-600">Avg. Sentiment</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Star className="w-4 h-4 text-yellow-500" />
+                <span className="text-sm font-medium text-gray-600">Avg. Sentiment</span>
+              </div>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, sentiment: !showTooltips.sentiment})}
+                />
+                {showTooltips.sentiment && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Average sentiment rating of your brand mentions across AI platforms on a scale of 1-5.</p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-2">
               <span className="text-2xl font-bold text-gray-900">{visibilityMetrics.averageRating}/5</span>
@@ -158,11 +186,24 @@ export const ExternalAIVisibilitySection = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, platformCoverage: false})}>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <MessageSquare className="w-4 h-4 text-purple-500" />
-              <span className="text-sm font-medium text-gray-600">Platform Coverage</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <MessageSquare className="w-4 h-4 text-purple-500" />
+                <span className="text-sm font-medium text-gray-600">Platform Coverage</span>
+              </div>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, platformCoverage: !showTooltips.platformCoverage})}
+                />
+                {showTooltips.platformCoverage && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Number of different AI platforms where your brand has visibility.</p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-2">
               <span className="text-2xl font-bold text-gray-900">{visibilityMetrics.platformCoverage}</span>
@@ -171,11 +212,24 @@ export const ExternalAIVisibilitySection = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, growth: false})}>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4 text-green-500" />
-              <span className="text-sm font-medium text-gray-600">Growth Trend</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-green-500" />
+                <span className="text-sm font-medium text-gray-600">Growth Trend</span>
+              </div>
+              <div className="relative">
+                <HelpCircle 
+                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  onClick={() => setShowTooltips({...showTooltips, growth: !showTooltips.growth})}
+                />
+                {showTooltips.growth && (
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                    <p>Percentage change in mentions compared to the previous month.</p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-2">
               <span className="text-2xl font-bold text-green-600">{visibilityMetrics.trending}</span>
