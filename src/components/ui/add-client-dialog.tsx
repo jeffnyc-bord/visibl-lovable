@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, AlertCircle, AlertTriangle, ArrowLeft, ArrowRight, Globe, Building, Zap } from "lucide-react";
+import { CheckCircle, AlertCircle, AlertTriangle, ArrowLeft, ArrowRight, Globe, Building, ScanLine } from "lucide-react";
 
 interface AddClientDialogProps {
   open: boolean;
@@ -366,7 +366,7 @@ export const AddClientDialog = ({
             {currentStep === 3 && (
               <div className="space-y-4">
                 <div className="text-center space-y-2">
-                  <Zap className="w-8 h-8 mx-auto text-purple-600" />
+                  <ScanLine className="w-8 h-8 mx-auto text-purple-600" />
                   <h3 className="text-lg font-semibold">Review & Initialize</h3>
                   <p className="text-sm text-gray-600">Review client details and start initial scan</p>
                 </div>
