@@ -367,7 +367,7 @@ export const RecommendationsSection = () => {
         <CardContent className="p-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <img src="/lovable-uploads/4d49b771-3b86-4a47-84be-8d10660238a3.png" alt="AI Optimization" className="w-5 h-5" />
+              <img src="/lovable-uploads/aa7e3f0d-b714-499a-b96f-f48edabf1de9.png" alt="AI Recommendations" className="w-5 h-5" />
               <div>
                 <h3 className="text-sm font-semibold text-foreground">AI-Powered Optimization Plan</h3>
                 <p className="text-xs text-muted-foreground">
