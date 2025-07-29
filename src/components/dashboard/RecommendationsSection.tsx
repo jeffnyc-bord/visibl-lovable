@@ -396,36 +396,33 @@ export const RecommendationsSection = () => {
         <CardContent>
           {/* Empty State vs Progress State */}
           {completedActions.length === 0 ? (
-            /* Motivating Empty State */
-            <div className="space-y-8">
-              <div className="text-center py-8">
-                <div className="relative inline-block">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-full blur-lg animate-pulse"></div>
-                  <div className="relative w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center animate-scale-in">
-                    <TrendingUp className="w-16 h-16 text-primary animate-pulse" />
-                  </div>
+            /* Compact Empty State */
+            <div className="space-y-6">
+              <div className="text-center py-4">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <TrendingUp className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-2xl font-bold text-foreground mb-3 animate-fade-in">
+                <h3 className="text-xl font-semibold text-foreground mb-2">
                   Ready to Boost Your AI Visibility?
                 </h3>
-                <p className="text-muted-foreground max-w-md mx-auto leading-relaxed animate-fade-in animation-delay-200">
-                  Your optimization journey starts here. We've identified {recommendations.length} strategic actions that could increase your AI visibility by up to <span className="font-bold text-primary">+{totalImpact}%</span>
+                <p className="text-muted-foreground max-w-sm mx-auto text-sm">
+                  We've identified {recommendations.length} strategic actions that could increase your AI visibility by up to <span className="font-semibold text-primary">+{totalImpact}%</span>
                 </p>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Potential Impact */}
-                <div className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 text-center hover-scale">
-                  <Gauge className="w-8 h-8 text-primary mx-auto mb-3" />
-                  <div className="text-3xl font-bold text-primary mb-2 animate-fade-in">+{totalImpact}%</div>
+                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 text-center">
+                  <Gauge className="w-6 h-6 text-primary mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-primary mb-1">+{totalImpact}%</div>
                   <div className="text-sm font-medium text-foreground mb-1">AI Visibility Potential</div>
                   <div className="text-xs text-muted-foreground">Ready to unlock</div>
                 </div>
                 
                 {/* Quick Wins Available */}
-                <div className="p-6 rounded-lg bg-gradient-to-br from-success/10 to-success/5 border border-success/20 text-center hover-scale">
-                  <Timer className="w-8 h-8 text-success mx-auto mb-3" />
-                  <div className="text-3xl font-bold text-success mb-2">
+                <div className="p-4 rounded-lg bg-success/5 border border-success/20 text-center">
+                  <Timer className="w-6 h-6 text-success mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-success mb-1">
                     {recommendations.filter(rec => rec.effort === "Low" || rec.timeline.includes("1 week")).length}
                   </div>
                   <div className="text-sm font-medium text-foreground mb-1">Quick Wins</div>
@@ -433,22 +430,21 @@ export const RecommendationsSection = () => {
                 </div>
                 
                 {/* Total Actions */}
-                <div className="p-6 rounded-lg bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 text-center hover-scale">
-                  <CheckCircle className="w-8 h-8 text-accent mx-auto mb-3" />
-                  <div className="text-3xl font-bold text-accent mb-2">{recommendations.length}</div>
+                <div className="p-4 rounded-lg bg-accent/5 border border-accent/20 text-center">
+                  <CheckCircle className="w-6 h-6 text-accent mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-accent mb-1">{recommendations.length}</div>
                   <div className="text-sm font-medium text-foreground mb-1">Strategic Actions</div>
                   <div className="text-xs text-muted-foreground">Optimized by AI</div>
                 </div>
               </div>
               
               {/* Call to Action */}
-              <div className="text-center p-6 rounded-lg bg-gradient-to-r from-primary/5 via-background to-primary/5 border border-primary/10">
-                <p className="text-sm text-muted-foreground mb-4">
-                  🚀 <strong>Pro Tip:</strong> Start with Quick Wins below to see immediate results, then work through high-impact actions for maximum AI visibility gains.
+              <div className="text-center p-4 rounded-lg bg-background border border-border">
+                <p className="text-sm text-muted-foreground mb-3">
+                  <strong>Pro Tip:</strong> Start with Quick Wins below for immediate results, then work through high-impact actions.
                 </p>
                 <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-200 animate-fade-in animation-delay-400"
+                  className="bg-primary hover:bg-primary/90"
                   onClick={() => {
                     const firstQuickWin = recommendations.find(rec => rec.effort === "Low" || rec.timeline.includes("1 week"));
                     if (firstQuickWin && !expandedCards.includes(firstQuickWin.id)) {
