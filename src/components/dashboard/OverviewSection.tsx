@@ -560,11 +560,14 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
                         className="w-3 h-3 text-gray-400 cursor-pointer" 
                         onClick={() => setShowTooltips({...showTooltips, sentiment: !showTooltips.sentiment})}
                       />
-                      {showTooltips.sentiment && (
-                        <div className="absolute left-0 top-5 z-50 w-48 p-2 text-xs bg-popover border rounded-md shadow-md">
-                          <p>How AI platforms express feelings about your brand (positive, neutral, negative)</p>
-                        </div>
-                      )}
+                       {showTooltips.sentiment && (
+                         <div 
+                           className="absolute left-0 top-5 z-50 w-48 p-2 text-xs bg-popover border rounded-md shadow-md"
+                           onMouseLeave={() => setShowTooltips({...showTooltips, sentiment: false})}
+                         >
+                           <p>How AI platforms express feelings about your brand (positive, neutral, negative)</p>
+                         </div>
+                       )}
                     </div>
                   </div>
                 </TableHead>
@@ -576,11 +579,14 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
                         className="w-3 h-3 text-gray-400 cursor-pointer" 
                         onClick={() => setShowTooltips({...showTooltips, coverage: !showTooltips.coverage})}
                       />
-                      {showTooltips.coverage && (
-                        <div className="absolute left-0 top-5 z-50 w-48 p-2 text-xs bg-popover border rounded-md shadow-md">
-                          <p>This metric shows what percentage of all relevant AI queries about your industry or brand result in a mention of your brand's information.</p>
-                        </div>
-                      )}
+                       {showTooltips.coverage && (
+                         <div 
+                           className="absolute left-0 top-5 z-50 w-48 p-2 text-xs bg-popover border rounded-md shadow-md"
+                           onMouseLeave={() => setShowTooltips({...showTooltips, coverage: false})}
+                         >
+                           <p>This metric shows what percentage of all relevant AI queries about your industry or brand result in a mention of your brand's information.</p>
+                         </div>
+                       )}
                     </div>
                   </div>
                 </TableHead>
@@ -592,11 +598,14 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
                         className="w-3 h-3 text-gray-400 cursor-pointer" 
                         onClick={() => setShowTooltips({...showTooltips, trend: !showTooltips.trend})}
                       />
-                      {showTooltips.trend && (
-                        <div className="absolute left-0 top-5 z-50 w-48 p-2 text-xs bg-popover border rounded-md shadow-md">
-                          <p>Growth or decline in mentions compared to the previous period</p>
-                        </div>
-                      )}
+                       {showTooltips.trend && (
+                         <div 
+                           className="absolute left-0 top-5 z-50 w-48 p-2 text-xs bg-popover border rounded-md shadow-md"
+                           onMouseLeave={() => setShowTooltips({...showTooltips, trend: false})}
+                         >
+                           <p>Growth or decline in mentions compared to the previous period</p>
+                         </div>
+                       )}
                     </div>
                   </div>
                 </TableHead>
@@ -706,11 +715,24 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
       </Card>
 
       {/* Source Quality Analysis */}
-      <Card>
+      <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, sourceQuality: false})}>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Link className="w-5 h-5 text-orange-500" />
-            <span>Source Quality & Authority</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Link className="w-5 h-5 text-orange-500" />
+              <span>Source Quality & Authority</span>
+            </div>
+            <div className="relative">
+              <HelpCircle 
+                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                onClick={() => setShowTooltips({...showTooltips, sourceQuality: !showTooltips.sourceQuality})}
+              />
+              {showTooltips.sourceQuality && (
+                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <p>Analysis of the sources AI platforms reference when mentioning your brand, including authority level and content freshness.</p>
+                </div>
+              )}
+            </div>
           </CardTitle>
           <CardDescription>
             Analysis of the sources AI platforms reference when mentioning your brand.
