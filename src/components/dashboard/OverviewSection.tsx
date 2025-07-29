@@ -283,7 +283,7 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
           {!isInsightsOpen && (
             <CardContent className="pt-0 pb-4">
               <div className="prose prose-sm max-w-none">
-                <p className="text-gray-700 leading-relaxed mb-0 truncate">
+                <p className="text-gray-500 leading-relaxed mb-0 truncate opacity-60">
                   <strong>Nike's AI Visibility Score increased to 87 (+5 points)</strong> this period, primarily driven by strong performance on ChatGPT...
                 </p>
               </div>
