@@ -195,11 +195,21 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
 
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card>
+        <Card className="group relative">
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <img src="/lovable-uploads/f5efaad8-a8ef-4c09-a7e6-523328cd1fd8.png" alt="AI Visibility Score" className="w-4 h-4" />
-              <span className="text-sm font-medium text-gray-600">AI Visibility Score</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <img src="/lovable-uploads/f5efaad8-a8ef-4c09-a7e6-523328cd1fd8.png" alt="AI Visibility Score" className="w-4 h-4" />
+                <span className="text-sm font-medium text-gray-600">AI Visibility Score</span>
+              </div>
+              <UITooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p className="text-xs">Your brand's overall visibility score across AI platforms, calculated based on mention frequency, sentiment, and platform coverage.</p>
+                </TooltipContent>
+              </UITooltip>
             </div>
             <div className="mt-2">
               <span className="text-2xl font-bold text-blue-600">{brandData.visibilityScore}</span>
