@@ -62,7 +62,7 @@ const mockTrackedBrands: BrandData[] = [
   {
     id: "nike",
     name: "Nike",
-    logo: "/lovable-uploads/eb27b2e0-a722-4723-8b57-eee040e312fb.png",
+    logo: "/lovable-uploads/7c83c89c-25ba-4bd6-ac2d-3bfa6cd098db.png",
     url: "nike.com",
     visibilityScore: 87,
     totalMentions: 12847,
