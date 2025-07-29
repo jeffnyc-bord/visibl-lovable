@@ -251,7 +251,7 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
               <AIInsightsModal
                 trigger={
                   <button className="text-2xl font-bold text-gray-900 hover:text-primary transition-colors cursor-pointer">
-                    {brandData.platformCoverage}
+                    {Math.min(brandData.platformCoverage, 8)}
                   </button>
                 }
                 platforms={platformMentions}
