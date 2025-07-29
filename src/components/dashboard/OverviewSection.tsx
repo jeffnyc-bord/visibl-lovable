@@ -266,7 +266,7 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
       <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-l-primary overflow-hidden">
         <Collapsible open={isInsightsOpen} onOpenChange={setIsInsightsOpen}>
           <CollapsibleTrigger asChild>
-            <CardHeader className={`cursor-pointer hover:bg-white/50 transition-all duration-300 rounded-t-lg ${isInsightsOpen ? 'pb-6' : 'py-3'}`}>
+            <CardHeader className={`cursor-pointer hover:bg-white/50 transition-all duration-300 rounded-t-lg ${isInsightsOpen ? 'pb-6' : 'pb-3'}`}>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <img src="/lovable-uploads/b6367269-4b7b-4fa2-b584-669d83dee700.png" alt="AI Insights" className="w-5 h-5" />
@@ -278,6 +278,18 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
               </CardTitle>
             </CardHeader>
           </CollapsibleTrigger>
+          
+          {/* Preview content when collapsed */}
+          {!isInsightsOpen && (
+            <CardContent className="pt-0 pb-4">
+              <div className="prose prose-sm max-w-none">
+                <p className="text-gray-700 leading-relaxed mb-0 truncate">
+                  <strong>Nike's AI Visibility Score increased to 87 (+5 points)</strong> this period, primarily driven by strong performance on ChatGPT...
+                </p>
+              </div>
+            </CardContent>
+          )}
+          
           <CollapsibleContent className="transition-all duration-300 ease-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <CardContent className="pt-0">
               <div className="prose prose-sm max-w-none">
