@@ -261,87 +261,24 @@ export const OverviewSection = ({ brandData }: OverviewSectionProps) => {
       </div>
 
       {/* AI Insights Summary */}
-      <Card className="mb-6 relative overflow-hidden border border-border/50 shadow-lg">
-        {/* Background pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/20 to-background opacity-50"></div>
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-16 translate-x-16"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-secondary/5 rounded-full translate-y-12 -translate-x-12"></div>
-        
-        <CardHeader className="relative">
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="relative p-2 bg-white rounded-lg shadow-sm border border-border/20">
-                <img 
-                  src="/lovable-uploads/2246f1c3-f2e3-420e-9f35-6f7d86f3a8e4.png" 
-                  alt="AI Insights" 
-                  className="w-6 h-6" 
-                />
-              </div>
-              <div>
-                <span className="text-lg font-semibold text-foreground">AI Insights Summary</span>
-                <div className="text-xs text-muted-foreground mt-0.5">Last updated: Dec 2024</div>
-              </div>
-            </div>
-            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-              <CheckCircle className="w-3 h-3 mr-1" />
-              Updated
-            </Badge>
+      <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-l-primary">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Star className="w-5 h-5 text-primary" />
+            <span>AI Insights Summary</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative">
-          <div className="space-y-4">
-            {/* Key metrics bar */}
-            <div className="grid grid-cols-3 gap-4 p-4 bg-muted/30 rounded-lg border border-border/30">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">+5</div>
-                <div className="text-xs text-muted-foreground">Score Increase</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">+15%</div>
-                <div className="text-xs text-muted-foreground">Mention Growth</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">#1</div>
-                <div className="text-xs text-muted-foreground">Industry Rank</div>
-              </div>
-            </div>
-
-            {/* Insights content */}
-            <div className="prose prose-sm max-w-none space-y-3">
-              <div className="p-3 bg-green-50 border-l-4 border-green-400 rounded-r-lg">
-                <p className="text-sm text-foreground leading-relaxed mb-0">
-                  <strong className="text-green-700">Performance Highlight:</strong> Nike's AI Visibility Score increased to 87 (+5 points) this period, primarily driven by strong performance on ChatGPT and positive mentions across core brand queries. The brand maintained its #1 industry ranking with significant growth in mention volume (+15%).
-                </p>
-              </div>
-              
-              <div className="p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
-                <p className="text-sm text-foreground leading-relaxed mb-0">
-                  <strong className="text-blue-700">Key Performance Drivers:</strong> ChatGPT leads with 456 mentions (+12%), while Perplexity shows exceptional growth (+22%). Nike dominates in running shoe queries with 92% relevance scores and strong performance-related mentions.
-                </p>
-              </div>
-              
-              <div className="p-3 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg">
-                <p className="text-sm text-foreground leading-relaxed mb-0">
-                  <strong className="text-amber-700">Strategic Opportunity:</strong> Competitors like Adidas are showing increased activity in product-specific mentions, particularly in sustainable product queries. Consider expanding content strategy around sustainability and lifestyle use cases to maintain competitive advantage.
-                </p>
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Button variant="outline" size="sm" className="text-xs h-8">
-                <FileText className="w-3 h-3 mr-1" />
-                View Full Report
-              </Button>
-              <Button variant="outline" size="sm" className="text-xs h-8">
-                <Target className="w-3 h-3 mr-1" />
-                Create Action Plan
-              </Button>
-              <Button variant="outline" size="sm" className="text-xs h-8">
-                <Calendar className="w-3 h-3 mr-1" />
-                Schedule Review
-              </Button>
-            </div>
+        <CardContent>
+          <div className="prose prose-sm max-w-none">
+            <p className="text-gray-700 leading-relaxed mb-3">
+              <strong>Nike's AI Visibility Score increased to 87 (+5 points)</strong> this period, primarily driven by strong performance on ChatGPT and positive mentions across core brand queries. The brand maintained its #1 industry ranking with significant growth in mention volume (+15%).
+            </p>
+            <p className="text-gray-700 leading-relaxed mb-3">
+              <strong>Key Performance Drivers:</strong> ChatGPT leads with 456 mentions (+12%), while Perplexity shows exceptional growth (+22%). Nike dominates in running shoe queries with 92% relevance scores and strong performance-related mentions.
+            </p>
+            <p className="text-gray-700 leading-relaxed">
+              <strong>Strategic Opportunity:</strong> Competitors like Adidas are showing increased activity in product-specific mentions, particularly in sustainable product queries. Consider expanding content strategy around sustainability and lifestyle use cases to maintain competitive advantage.
+            </p>
           </div>
         </CardContent>
       </Card>
