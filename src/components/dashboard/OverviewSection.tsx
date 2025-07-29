@@ -204,9 +204,9 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
               </div>
               <UITooltip>
                 <TooltipTrigger asChild>
-                  <HelpCircle className="w-3 h-3 hover:w-4 hover:h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer" />
+                  <HelpCircle className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-help" />
                 </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs" onClick={(e) => e.stopPropagation()}>
+                <TooltipContent side="top" className="max-w-xs">
                   <p className="text-xs">Your brand's overall visibility score across AI platforms, calculated based on mention frequency, sentiment, and platform coverage.</p>
                 </TooltipContent>
               </UITooltip>
