@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Lightbulb, CheckCircle, Clock, AlertTriangle, TrendingUp, Star, Timer, Users, Target, Filter, BarChart3, Gauge, Brain, Sparkles, FileText, Code, Wand2, Bot } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Lightbulb, CheckCircle, Clock, AlertTriangle, TrendingUp, Star, Timer, Users, Target, Filter, BarChart3, Gauge, Brain, Sparkles, FileText, Code, Wand2, Bot, ChevronDown, ChevronUp, PlayCircle, Undo2, Calendar, PieChart } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export const RecommendationsSection = () => {
@@ -19,9 +20,18 @@ export const RecommendationsSection = () => {
   const [aiPrioritizationEnabled, setAiPrioritizationEnabled] = useState(true);
   const [contentGenerationLoading, setContentGenerationLoading] = useState<number | null>(null);
   const [generatedContent, setGeneratedContent] = useState<Record<number, any>>({});
+  const [expandedCards, setExpandedCards] = useState<number[]>([]);
 
   const handleActionComplete = (actionId: number) => {
     setCompletedActions(prev => 
+      prev.includes(actionId) 
+        ? prev.filter(id => id !== actionId)
+        : [...prev, actionId]
+    );
+  };
+
+  const toggleCardExpansion = (actionId: number) => {
+    setExpandedCards(prev => 
       prev.includes(actionId) 
         ? prev.filter(id => id !== actionId)
         : [...prev, actionId]
@@ -352,7 +362,7 @@ export const RecommendationsSection = () => {
 
   return (
     <div className="space-y-6">
-      {/* AI-Enhanced Action Plan Overview */}
+      {/* Enhanced Progress & Summary */}
       <Card className="border-0 shadow-lg bg-gradient-to-br from-primary/5 via-background to-secondary/5">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-foreground">
@@ -368,35 +378,90 @@ export const RecommendationsSection = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center p-4 rounded-lg bg-card border">
-              <Target className="w-8 h-8 text-primary mx-auto mb-2" />
-              <div className="text-3xl font-bold text-foreground mb-1">{recommendations.length}</div>
-              <div className="text-sm text-muted-foreground">Total Actions</div>
+          {/* Dynamic Progress Visualization */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* Circular Progress Chart */}
+            <div className="flex items-center justify-center">
+              <div className="relative w-48 h-48">
+                <svg className="w-48 h-48 transform -rotate-90" viewBox="0 0 100 100">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    stroke="hsl(var(--muted))"
+                    strokeWidth="8"
+                    fill="none"
+                    className="opacity-20"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth="8"
+                    fill="none"
+                    strokeDasharray={`${(completedActions.length / recommendations.length) * 251.2} 251.2`}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000 ease-in-out"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center flex-col">
+                  <div className="text-4xl font-bold text-primary">
+                    {Math.round((completedActions.length / recommendations.length) * 100)}%
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">Complete</div>
+                </div>
+              </div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-card border">
-              <CheckCircle className="w-8 h-8 text-success mx-auto mb-2" />
-              <div className="text-3xl font-bold text-success mb-1">{completedActions.length}</div>
-              <div className="text-sm text-muted-foreground">Completed</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-card border">
-              <Gauge className="w-8 h-8 text-primary mx-auto mb-2" />
-              <div className="text-3xl font-bold text-primary mb-1">+{totalImpact}%</div>
-              <div className="text-sm text-muted-foreground">Potential AI Visibility</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-card border">
-              <TrendingUp className="w-8 h-8 text-warning mx-auto mb-2" />
-              <div className="text-3xl font-bold text-warning mb-1">+{completedImpact}%</div>
-              <div className="text-sm text-muted-foreground">Progress Made</div>
+
+            {/* High-Level Impact Summary */}
+            <div className="space-y-4">
+              <div className="p-6 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
+                <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center">
+                  <Gauge className="w-5 h-5 mr-2 text-primary" />
+                  AI Visibility Potential
+                </h3>
+                <div className="text-3xl font-bold text-primary mb-2">+{totalImpact}%</div>
+                <p className="text-sm text-muted-foreground">
+                  Achieving this potential could increase your brand's AI mentions by ~40% and improve ranking for 200+ key queries.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 rounded-lg bg-card border">
+                  <CheckCircle className="w-6 h-6 text-success mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-success">{completedActions.length}</div>
+                  <div className="text-xs text-muted-foreground">Completed</div>
+                </div>
+                <div className="text-center p-4 rounded-lg bg-card border">
+                  <TrendingUp className="w-6 h-6 text-warning mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-warning">+{completedImpact}%</div>
+                  <div className="text-xs text-muted-foreground">Progress Made</div>
+                </div>
+              </div>
             </div>
           </div>
-          
-          <div className="mt-8 p-4 rounded-lg bg-muted/50">
-            <div className="flex items-center justify-between text-sm mb-3">
-              <span className="font-medium text-foreground">Overall Progress</span>
-              <span className="font-bold text-primary">{Math.round((completedActions.length / recommendations.length) * 100)}%</span>
+
+          {/* Multi-segment Progress Bar */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-foreground">Implementation Progress</span>
+              <span className="text-sm text-muted-foreground">
+                {completedActions.length} of {recommendations.length} actions complete
+              </span>
             </div>
-            <Progress value={(completedActions.length / recommendations.length) * 100} className="h-4" />
+            <div className="w-full bg-muted rounded-full h-4 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-1000 ease-in-out rounded-full flex items-center justify-end pr-2"
+                style={{ width: `${(completedActions.length / recommendations.length) * 100}%` }}
+              >
+                {completedActions.length > 0 && (
+                  <span className="text-xs font-medium text-primary-foreground">
+                    {Math.round((completedActions.length / recommendations.length) * 100)}%
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -461,305 +526,342 @@ export const RecommendationsSection = () => {
         </CardContent>
       </Card>
 
-      {/* Detailed Recommendations */}
+      {/* Streamlined Action Items */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">Action Items ({filteredRecommendations.length})</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-foreground">Action Items ({filteredRecommendations.length})</h3>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setExpandedCards(expandedCards.length === filteredRecommendations.length ? [] : filteredRecommendations.map(r => r.id))}
+          >
+            {expandedCards.length === filteredRecommendations.length ? "Collapse All" : "Expand All"}
+          </Button>
+        </div>
 
-        {filteredRecommendations.map((rec) => (
-          <Card key={rec.id} className={`transition-all duration-200 hover:shadow-lg ${
-            completedActions.includes(rec.id) 
-              ? 'bg-success/5 border-success/20 shadow-sm' 
-              : 'bg-card border hover:shadow-xl hover:border-primary/20'
-          }`}>
-            <CardHeader className="pb-4">
-              <div className="flex items-start space-x-4">
-                <Checkbox
-                  checked={completedActions.includes(rec.id)}
-                  onCheckedChange={() => handleActionComplete(rec.id)}
-                  className="mt-1 data-[state=checked]:bg-success data-[state=checked]:border-success"
-                />
-                <div className="flex-1">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <CardTitle className={`flex items-center space-x-3 text-lg ${
-                        completedActions.includes(rec.id) ? 'line-through text-muted-foreground' : 'text-foreground'
-                      }`}>
-                        <div className="p-2 rounded-lg bg-primary/10">
-                          {getCategoryIcon(rec.category)}
-                        </div>
-                        <span>{rec.title}</span>
-                      </CardTitle>
-                      <CardDescription className="mt-2 text-base leading-relaxed">
-                        {rec.description}
-                      </CardDescription>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Badge className={`${getPriorityColor(rec.priority)} border`}>
-                        {rec.priority} Priority
-                      </Badge>
-                      <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-semibold">
-                        +{rec.aiVisibilityIncrease}% AI Visibility
-                      </Badge>
-                      {aiPrioritizationEnabled && (
-                        <Badge variant="outline" className="bg-accent/10 text-accent-foreground border-accent/20">
-                          <Brain className="w-3 h-3 mr-1" />
-                          AI Score: {calculateAiScore(rec)}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="ml-10 space-y-6">
-              {/* Metrics Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
-                  <Users className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <div className="text-sm font-medium text-foreground mb-1">Effort Level</div>
-                    <div className="flex items-center space-x-2">
-                      {getEffortIcon(rec.effort)}
-                      <span className="text-sm font-medium text-muted-foreground">{rec.effort}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
-                  <Star className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <div className="text-sm font-medium text-foreground mb-1">Expected Impact</div>
-                    <div className="flex items-center space-x-2">
-                      {getImpactStars(rec.impact)}
-                      <span className="text-sm font-medium text-muted-foreground">{rec.impact}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
-                  <Timer className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <div className="text-sm font-medium text-foreground mb-1">Timeline</div>
-                    <div className="text-sm font-medium text-muted-foreground">
-                      {rec.timeline}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* AI Insights & Implementation Details */}
-              <div className="space-y-4">
-                {/* AI-driven insights */}
-                {aiPrioritizationEnabled && (
-                  <div className="p-4 rounded-lg bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20">
-                    <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center">
-                      <Brain className="w-4 h-4 mr-2 text-primary" />
-                      AI Analysis
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium text-muted-foreground">Competitive Edge:</span>
-                        <div className="mt-1">
-                          <Progress value={rec.competitiveAdvantage} className="h-2" />
-                          <span className="text-xs text-muted-foreground">{rec.competitiveAdvantage}% advantage</span>
+        {filteredRecommendations.map((rec) => {
+          const isExpanded = expandedCards.includes(rec.id);
+          const isCompleted = completedActions.includes(rec.id);
+          
+          return (
+            <Card key={rec.id} className={`transition-all duration-200 ${
+              isCompleted 
+                ? 'bg-success/5 border-success/20 shadow-sm' 
+                : 'bg-card border hover:shadow-md hover:border-primary/20'
+            }`}>
+              <Collapsible
+                open={isExpanded}
+                onOpenChange={() => toggleCardExpansion(rec.id)}
+              >
+                {/* Streamlined Initial View */}
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="pb-3 cursor-pointer hover:bg-muted/30 transition-colors">
+                    <div className="flex items-center space-x-4">
+                      <Checkbox
+                        checked={isCompleted}
+                        onCheckedChange={() => handleActionComplete(rec.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="data-[state=checked]:bg-success data-[state=checked]:border-success"
+                      />
+                      
+                      {/* Priority Indicator */}
+                      <div className={`w-2 h-12 rounded-full ${
+                        rec.priority === "High" ? "bg-destructive" : 
+                        rec.priority === "Medium" ? "bg-warning" : "bg-success"
+                      }`} />
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3 mb-2">
+                              <div className="p-1.5 rounded-md bg-primary/10">
+                                {getCategoryIcon(rec.category)}
+                              </div>
+                              <CardTitle className={`text-base font-semibold ${
+                                isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'
+                              }`}>
+                                {rec.title}
+                              </CardTitle>
+                              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${
+                                isExpanded ? 'transform rotate-180' : ''
+                              }`} />
+                            </div>
+                            <CardDescription className="text-sm">
+                              {rec.description}
+                            </CardDescription>
+                          </div>
+                          
+                          {/* Prominent Metrics */}
+                          <div className="flex items-center space-x-4 ml-4">
+                            <div className="text-center">
+                              <div className="text-xs text-muted-foreground mb-1">Effort</div>
+                              <div className="flex items-center justify-center">
+                                {getEffortIcon(rec.effort)}
+                              </div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-xs text-muted-foreground mb-1">Impact</div>
+                              <div className="flex items-center justify-center">
+                                {getImpactStars(rec.impact)}
+                              </div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-xs text-muted-foreground mb-1">Timeline</div>
+                              <div className="text-xs font-medium text-foreground">{rec.timeline}</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-xs text-muted-foreground mb-1">AI Impact</div>
+                              <div className="text-sm font-bold text-primary">+{rec.aiVisibilityIncrease}%</div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <span className="font-medium text-muted-foreground">AI Model Trend:</span>
-                        <div className="mt-1">
-                          <Progress value={rec.aiModelTrend} className="h-2" />
-                          <span className="text-xs text-muted-foreground">{rec.aiModelTrend}% relevance</span>
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+
+                {/* Expanded View - "Why" and "How" */}
+                <CollapsibleContent>
+                  <CardContent className="pt-0 ml-10 space-y-6">
+                    {/* Why This Matters (AI Analysis Summary) */}
+                    {aiPrioritizationEnabled && (
+                      <div className="p-4 rounded-lg bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20">
+                        <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center">
+                          <Brain className="w-4 h-4 mr-2 text-primary" />
+                          Why This Matters (AI Analysis)
+                        </h4>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          This action scores {calculateAiScore(rec)}/100 in our AI optimization model, offering a{" "}
+                          <span className="font-semibold text-primary">{rec.competitiveAdvantage}% competitive advantage</span>{" "}
+                          with {rec.aiModelTrend}% relevance to current AI model trends. Implementing this could significantly improve your brand's visibility in AI-powered search results and recommendations.
+                        </p>
+                        <div className="grid grid-cols-3 gap-4 text-xs">
+                          <div>
+                            <span className="font-medium text-muted-foreground">Competitive Edge</span>
+                            <div className="mt-1">
+                              <Progress value={rec.competitiveAdvantage} className="h-2" />
+                              <span className="text-xs text-muted-foreground">{rec.competitiveAdvantage}%</span>
+                            </div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-muted-foreground">AI Trend Alignment</span>
+                            <div className="mt-1">
+                              <Progress value={rec.aiModelTrend} className="h-2" />
+                              <span className="text-xs text-muted-foreground">{rec.aiModelTrend}%</span>
+                            </div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-muted-foreground">Overall Score</span>
+                            <div className="mt-1 text-lg font-bold text-primary">{calculateAiScore(rec)}/100</div>
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <span className="font-medium text-muted-foreground">Overall AI Score:</span>
-                        <div className="mt-1 text-lg font-bold text-primary">{calculateAiScore(rec)}/100</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                    )}
 
-                {/* Content Generation */}
-                {rec.contentGenerable && (
-                  <div className="p-4 rounded-lg bg-accent/5 border border-accent/20">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-semibold text-foreground flex items-center">
-                        <Wand2 className="w-4 h-4 mr-2 text-accent" />
-                        AI Content Generation
+                    {/* How to Implement (Structured Guide) */}
+                    <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
+                      <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center">
+                        <PlayCircle className="w-4 h-4 mr-2 text-primary" />
+                        How to Implement (Step-by-Step Guide)
                       </h4>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => !generatedContent[rec.id] && generateContent(rec.id)}
-                            disabled={contentGenerationLoading === rec.id}
-                          >
-                            {contentGenerationLoading === rec.id ? (
-                              <>
-                                <Bot className="w-4 h-4 mr-2 animate-pulse" />
-                                Generating...
-                              </>
-                            ) : generatedContent[rec.id] ? (
-                              <>
-                                <FileText className="w-4 h-4 mr-2" />
-                                View Content
-                              </>
-                            ) : (
-                              <>
-                                <Sparkles className="w-4 h-4 mr-2" />
-                                Generate Blueprint
-                              </>
-                            )}
-                          </Button>
-                        </DialogTrigger>
-                        {generatedContent[rec.id] && (
-                          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle className="flex items-center space-x-2">
-                                <Wand2 className="w-5 h-5 text-accent" />
-                                <span>Generated Content: {rec.title}</span>
-                              </DialogTitle>
-                              <DialogDescription>
-                                AI-generated content blueprint and templates to accelerate implementation
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                              <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
-                                {generatedContent[rec.id].type}
-                              </Badge>
-                              <Tabs defaultValue="content" className="w-full">
-                                <TabsList>
-                                  <TabsTrigger value="content">Content</TabsTrigger>
-                                  <TabsTrigger value="schema">Schema/Code</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="content" className="space-y-4">
-                                  {typeof generatedContent[rec.id].content === 'object' ? (
-                                    Object.entries(generatedContent[rec.id].content).map(([key, value]) => (
-                                      <div key={key} className="space-y-2">
-                                        <h4 className="font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1')}</h4>
-                                        {Array.isArray(value) ? (
-                                          <ul className="space-y-1">
-                                            {value.map((item, i) => (
-                                              <li key={i} className="flex items-start space-x-2">
-                                                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                                                <span className="text-sm">{item}</span>
-                                              </li>
-                                            ))}
-                                          </ul>
-                                        ) : (
-                                          <Textarea 
-                                            value={String(value)} 
-                                            readOnly 
-                                            className="min-h-[100px] font-mono text-sm"
-                                          />
-                                        )}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <Textarea 
-                                      value={generatedContent[rec.id].content} 
-                                      readOnly 
-                                      className="min-h-[200px]"
-                                    />
-                                  )}
-                                </TabsContent>
-                                <TabsContent value="schema">
-                                  {generatedContent[rec.id].content.schema || 
-                                   generatedContent[rec.id].content.productSchema || 
-                                   generatedContent[rec.id].content.contentFramework ? (
-                                    <div className="space-y-4">
-                                      {generatedContent[rec.id].content.schema && (
+                      <div className="space-y-3">
+                        {rec.details.map((detail, i) => (
+                          <div key={i} className="flex items-start space-x-3">
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="text-xs font-medium text-primary">{i + 1}</span>
+                            </div>
+                            <span className="text-sm text-muted-foreground leading-relaxed">{detail}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Prominent Generate Blueprint Button */}
+                    {rec.contentGenerable && (
+                      <div className="p-4 rounded-lg bg-accent/5 border border-accent/20">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <h4 className="text-sm font-semibold text-foreground flex items-center">
+                              <Wand2 className="w-4 h-4 mr-2 text-accent" />
+                              AI Content Generation
+                            </h4>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Generate ready-to-use blueprints and templates to accelerate implementation
+                            </p>
+                          </div>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                                size="sm"
+                                onClick={() => !generatedContent[rec.id] && generateContent(rec.id)}
+                                disabled={contentGenerationLoading === rec.id}
+                              >
+                                {contentGenerationLoading === rec.id ? (
+                                  <>
+                                    <Bot className="w-4 h-4 mr-2 animate-pulse" />
+                                    Generating...
+                                  </>
+                                ) : generatedContent[rec.id] ? (
+                                  <>
+                                    <FileText className="w-4 h-4 mr-2" />
+                                    View Blueprint
+                                  </>
+                                ) : (
+                                  <>
+                                    <Sparkles className="w-4 h-4 mr-2" />
+                                    Generate Blueprint
+                                  </>
+                                )}
+                              </Button>
+                            </DialogTrigger>
+                            {generatedContent[rec.id] && (
+                              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle className="flex items-center space-x-2">
+                                    <Wand2 className="w-5 h-5 text-accent" />
+                                    <span>Generated Blueprint: {rec.title}</span>
+                                  </DialogTitle>
+                                  <DialogDescription>
+                                    AI-generated content blueprint and templates to accelerate implementation
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                  <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
+                                    {generatedContent[rec.id].type}
+                                  </Badge>
+                                  <Tabs defaultValue="content" className="w-full">
+                                    <TabsList>
+                                      <TabsTrigger value="content">Content</TabsTrigger>
+                                      <TabsTrigger value="schema">Schema/Code</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="content" className="space-y-4">
+                                      {typeof generatedContent[rec.id].content === 'object' ? (
+                                        Object.entries(generatedContent[rec.id].content).map(([key, value]) => (
+                                          <div key={key} className="space-y-2">
+                                            <h4 className="font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1')}</h4>
+                                            {Array.isArray(value) ? (
+                                              <ul className="space-y-1">
+                                                {value.map((item, i) => (
+                                                  <li key={i} className="flex items-start space-x-2">
+                                                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                                    <span className="text-sm">{item}</span>
+                                                  </li>
+                                                ))}
+                                              </ul>
+                                            ) : (
+                                              <Textarea 
+                                                value={String(value)} 
+                                                readOnly 
+                                                className="min-h-[100px] font-mono text-sm"
+                                              />
+                                            )}
+                                          </div>
+                                        ))
+                                      ) : (
                                         <Textarea 
-                                          value={generatedContent[rec.id].content.schema} 
+                                          value={generatedContent[rec.id].content} 
                                           readOnly 
-                                          className="font-mono text-sm min-h-[200px]"
+                                          className="min-h-[200px]"
                                         />
                                       )}
-                                      {generatedContent[rec.id].content.productSchema && (
-                                        <div className="space-y-2">
-                                          <h4 className="font-semibold">Product Schema</h4>
-                                          <Textarea 
-                                            value={generatedContent[rec.id].content.productSchema} 
-                                            readOnly 
-                                            className="font-mono text-sm min-h-[150px]"
-                                          />
+                                    </TabsContent>
+                                    <TabsContent value="schema">
+                                      {generatedContent[rec.id].content.schema || 
+                                       generatedContent[rec.id].content.productSchema || 
+                                       generatedContent[rec.id].content.contentFramework ? (
+                                        <div className="space-y-4">
+                                          {generatedContent[rec.id].content.schema && (
+                                            <Textarea 
+                                              value={generatedContent[rec.id].content.schema} 
+                                              readOnly 
+                                              className="font-mono text-sm min-h-[200px]"
+                                            />
+                                          )}
+                                          {generatedContent[rec.id].content.productSchema && (
+                                            <div className="space-y-2">
+                                              <h4 className="font-semibold">Product Schema</h4>
+                                              <Textarea 
+                                                value={generatedContent[rec.id].content.productSchema} 
+                                                readOnly 
+                                                className="font-mono text-sm min-h-[150px]"
+                                              />
+                                            </div>
+                                          )}
+                                          {generatedContent[rec.id].content.organizationSchema && (
+                                            <div className="space-y-2">
+                                              <h4 className="font-semibold">Organization Schema</h4>
+                                              <Textarea 
+                                                value={generatedContent[rec.id].content.organizationSchema} 
+                                                readOnly 
+                                                className="font-mono text-sm min-h-[150px]"
+                                              />
+                                            </div>
+                                          )}
+                                          {generatedContent[rec.id].content.contentFramework && (
+                                            <div className="space-y-2">
+                                              <h4 className="font-semibold">Content Framework</h4>
+                                              <Textarea 
+                                                value={generatedContent[rec.id].content.contentFramework} 
+                                                readOnly 
+                                                className="font-mono text-sm min-h-[150px]"
+                                              />
+                                            </div>
+                                          )}
                                         </div>
+                                      ) : (
+                                        <p className="text-muted-foreground">No schema or code templates available for this content type.</p>
                                       )}
-                                      {generatedContent[rec.id].content.organizationSchema && (
-                                        <div className="space-y-2">
-                                          <h4 className="font-semibold">Organization Schema</h4>
-                                          <Textarea 
-                                            value={generatedContent[rec.id].content.organizationSchema} 
-                                            readOnly 
-                                            className="font-mono text-sm min-h-[150px]"
-                                          />
-                                        </div>
-                                      )}
-                                      {generatedContent[rec.id].content.contentFramework && (
-                                        <div className="space-y-2">
-                                          <h4 className="font-semibold">Content Framework</h4>
-                                          <Textarea 
-                                            value={generatedContent[rec.id].content.contentFramework} 
-                                            readOnly 
-                                            className="font-mono text-sm min-h-[150px]"
-                                          />
-                                        </div>
-                                      )}
-                                    </div>
-                                  ) : (
-                                    <p className="text-muted-foreground">No schema or code templates available for this content type.</p>
-                                  )}
-                                </TabsContent>
-                              </Tabs>
-                            </div>
-                          </DialogContent>
+                                    </TabsContent>
+                                  </Tabs>
+                                </div>
+                              </DialogContent>
+                            )}
+                          </Dialog>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline" className="bg-background text-xs">
+                          {rec.category}
+                        </Badge>
+                        <Badge className={`${getPriorityColor(rec.priority)} text-xs`}>
+                          {rec.priority}
+                        </Badge>
+                      </div>
+                      <div className="flex space-x-2">
+                        {isCompleted && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-xs"
+                            onClick={() => handleActionComplete(rec.id)}
+                          >
+                            <Undo2 className="w-3 h-3 mr-1" />
+                            Undo
+                          </Button>
                         )}
-                      </Dialog>
+                        {!isCompleted && (
+                          <Button 
+                            size="sm" 
+                            className="text-xs"
+                            onClick={() => handleActionComplete(rec.id)}
+                          >
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            Mark Complete
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      Generate ready-to-use content blueprints, schema markup, and implementation templates.
-                    </p>
-                  </div>
-                )}
-
-                {/* Implementation Details */}
-                <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-                  <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-primary" />
-                    Implementation Details
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                     {rec.details.map((detail, i) => (
-                       <div key={i} className="flex items-start space-x-3 text-sm">
-                         <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                         <span className="text-muted-foreground leading-relaxed">{detail}</span>
-                       </div>
-                     ))}
-                   </div>
-                 </div>
-               </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center justify-between pt-2">
-                <Badge variant="outline" className="bg-background">
-                  {rec.category}
-                </Badge>
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm" className="text-xs">
-                    View Details
-                  </Button>
-                  {!completedActions.includes(rec.id) && (
-                    <Button size="sm" className="text-xs">
-                      Mark Complete
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                  </CardContent>
+                </CollapsibleContent>
+              </Collapsible>
+            </Card>
+          );
+        })}
       </div>
 
       {/* Quick Wins */}
