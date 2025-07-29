@@ -33,14 +33,6 @@ import {
 
 export const AgencyAdminSection = () => {
   const [showAddClientDialog, setShowAddClientDialog] = useState(false);
-  
-  // Mock subscription plan data - in real app this would come from user's subscription
-  const [subscriptionPlan, setSubscriptionPlan] = useState({
-    tier: "Starter" as "Starter" | "Professional" | "Enterprise",
-    clientLimit: 5,
-    isUpgraded: false
-  });
-  
   const [clients, setClients] = useState([
     {
       id: 1,
@@ -103,14 +95,7 @@ export const AgencyAdminSection = () => {
   };
 
   const handleAddNewClient = () => {
-    // Check if user has reached client limit
-    if (clients.length >= subscriptionPlan.clientLimit && !subscriptionPlan.isUpgraded) {
-      // Show upgrade modal if at limit and not upgraded
-      setShowAddClientDialog(true);
-    } else {
-      // Direct to add client flow if under limit or upgraded
-      setShowAddClientDialog(true);
-    }
+    setShowAddClientDialog(true);
   };
 
   const handleClientAdded = (newClient: any) => {
@@ -391,7 +376,7 @@ export const AgencyAdminSection = () => {
           onOpenChange={setShowAddClientDialog}
           onClientAdded={handleClientAdded}
           currentClientCount={clients.length}
-          subscriptionTier={subscriptionPlan.tier}
+          subscriptionTier="Starter"
         />
     </div>
   );
