@@ -188,63 +188,6 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands }: BrandMa
       )}
 
     <div className="space-y-6">
-      {/* My Brand Hero Section */}
-      <Card className="shadow-lg border-2 border-primary/20 bg-gradient-to-r from-primary/5 via-background to-primary/5">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-xl text-primary flex items-center gap-2">
-                <Building className="w-5 h-5" />
-                My Brand
-              </CardTitle>
-              <CardDescription className="text-muted-foreground">
-                Your brand's AI visibility performance
-              </CardDescription>
-            </div>
-            <Button className="bg-primary hover:bg-primary/90">
-              <Eye className="w-4 h-4 mr-2" />
-              View Full Dashboard
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="text-center p-4 rounded-lg bg-background/50">
-              <div className="flex items-center justify-center mb-2">
-                <TrendingUp className="w-5 h-5 text-green-600 mr-2" />
-                <span className="text-2xl font-bold text-foreground">{myBrand.visibilityScore}%</span>
-                <span className="text-sm text-green-600 ml-1">{myBrand.trend}</span>
-              </div>
-              <p className="text-sm text-muted-foreground">AI Visibility Score</p>
-            </div>
-            
-            <div className="text-center p-4 rounded-lg bg-background/50">
-              <div className="flex items-center justify-center mb-2">
-                <Target className="w-5 h-5 text-blue-600 mr-2" />
-                <span className="text-2xl font-bold text-foreground">{myBrand.totalMentions}</span>
-              </div>
-              <p className="text-sm text-muted-foreground">Total Mentions</p>
-            </div>
-            
-            <div className="text-center p-4 rounded-lg bg-background/50">
-              <div className="flex items-center justify-center mb-2">
-                <Globe className="w-5 h-5 text-purple-600 mr-2" />
-                <span className="text-2xl font-bold text-foreground">{myBrand.platformCoverage}</span>
-              </div>
-              <p className="text-sm text-muted-foreground">Platform Coverage</p>
-            </div>
-            
-            <div className="text-center p-4 rounded-lg bg-background/50">
-              <div className="flex items-center justify-center mb-2">
-                <Calendar className="w-5 h-5 text-orange-600 mr-2" />
-                <span className="text-sm font-medium text-foreground">{myBrand.lastReport}</span>
-              </div>
-              <p className="text-sm text-muted-foreground">Last Updated</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Add Competitor */}
       <Card className="shadow-sm border-border">
         <CardHeader className="pb-4">
