@@ -371,11 +371,13 @@ export const AgencyAdminSection = () => {
             </CardContent>
       </Card>
 
-      <AddClientDialog
-        open={showAddClientDialog}
-        onOpenChange={setShowAddClientDialog}
-        onClientAdded={handleClientAdded}
-      />
+        <AddClientDialog 
+          open={showAddClientDialog} 
+          onOpenChange={setShowAddClientDialog}
+          onClientAdded={handleClientAdded}
+          currentClientCount={clients.length}
+          subscriptionTier="Starter"
+        />
     </div>
   );
 };

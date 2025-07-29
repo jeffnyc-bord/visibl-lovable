@@ -9,8 +9,11 @@ interface BillingSettingsProps {
 }
 
 export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
-  const currentPlan = userRole === "agency_admin" ? "Agency Pro" : "Business";
-  const monthlyPrice = userRole === "agency_admin" ? "$199" : "$99";
+  // Mock current plan - in real app this would come from subscription status
+  const currentPlan = userRole === "agency_admin" ? "Starter" : "Business";
+  const monthlyPrice = userRole === "agency_admin" ? "$1,500" : "$99";
+  const yearlyPrice = userRole === "agency_admin" ? "$18,000" : "$1,188";
+  const clientLimit = userRole === "agency_admin" ? 5 : 1;
 
   const billingHistory = [
     { date: "2024-01-01", amount: "$99.00", status: "Paid", invoice: "INV-2024-001" },
@@ -38,13 +41,28 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                 <h3 className="font-semibold">{currentPlan} Plan</h3>
                 <Badge variant="secondary">Active</Badge>
               </div>
-              <p className="text-sm text-gray-600 mt-1">{userRole === "agency_admin" ? `${monthlyPrice}/month • ` : ""}Billed monthly</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {userRole === "agency_admin" 
+                  ? `${monthlyPrice}/month • ${yearlyPrice}/year • Billed monthly` 
+                  : "Billed monthly"
+                }
+              </p>
               <div className="mt-2 text-sm text-gray-500">
-                <p>• {userRole === "agency_admin" ? "Unlimited" : "1"} deep-tracked brand{userRole === "agency_admin" ? "s" : ""}</p>
-                <p>• {userRole === "agency_admin" ? "Unlimited" : "5"} competitor slots</p>
-                <p>• {userRole === "agency_admin" ? "White-label reports" : "Standard reports"}</p>
-                {userRole === "agency_admin" && <p>• Multi-client management</p>}
-                {userRole !== "agency_admin" && <p className="text-xs mt-1 text-gray-400">This plan allows for a single deep-tracked brand and a limited number of competitors.</p>}
+                {userRole === "agency_admin" ? (
+                  <>
+                    <p>• {clientLimit} client accounts</p>
+                    <p>• Unlimited competitor tracking per client</p>
+                    <p>• White-label reports</p>
+                    <p>• Multi-client management dashboard</p>
+                    <p>• Team collaboration tools</p>
+                  </>
+                ) : (
+                  <>
+                    <p>• 1 deep-tracked brand</p>
+                    <p>• 5 competitor slots</p>
+                    <p>• Standard reports</p>
+                  </>
+                )}
               </div>
             </div>
             <div className="text-right">
@@ -54,12 +72,20 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
           
           <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
             <div>
-              <p className="text-sm font-medium text-gray-700">Brands Used</p>
-              <p className="text-2xl font-semibold">{userRole === "agency_admin" ? "3" : "1"} / {userRole === "agency_admin" ? "∞" : "1"}</p>
+              <p className="text-sm font-medium text-gray-700">
+                {userRole === "agency_admin" ? "Client Accounts" : "Brands Used"}
+              </p>
+              <p className="text-2xl font-semibold">
+                {userRole === "agency_admin" ? `3 / ${clientLimit}` : "1 / 1"}
+              </p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-700">Competitor Slots</p>
-              <p className="text-2xl font-semibold">{userRole === "agency_admin" ? "7" : "2"} / {userRole === "agency_admin" ? "∞" : "5"}</p>
+              <p className="text-sm font-medium text-gray-700">
+                {userRole === "agency_admin" ? "Total Brands Tracked" : "Competitor Slots"}
+              </p>
+              <p className="text-2xl font-semibold">
+                {userRole === "agency_admin" ? "8" : "2 / 5"}
+              </p>
             </div>
           </div>
         </CardContent>
@@ -135,12 +161,84 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
         </CardContent>
       </Card>
 
+      {/* Available Plans for Agency Admins */}
+      {userRole === "agency_admin" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Shield className="w-5 h-5" />
+              <span>Available Plans</span>
+            </CardTitle>
+            <CardDescription>
+              Choose the plan that best fits your agency's needs
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Current Starter Plan */}
+            <div className="border-2 border-green-200 bg-green-50 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-lg font-semibold text-green-800">Starter</h3>
+                    <Badge className="bg-green-600">Current Plan</Badge>
+                  </div>
+                  <p className="text-green-700 font-medium">$1,500/month or $18,000/year</p>
+                  <ul className="text-sm text-green-700 mt-2 space-y-1">
+                    <li>• 5 client accounts</li>
+                    <li>• Unlimited competitor tracking per client</li>
+                    <li>• White-label reports</li>
+                    <li>• Team collaboration tools</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Professional Plan */}
+            <div className="border rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold">Professional</h3>
+                  <p className="text-gray-700 font-medium">$2,500/month or $30,000/year</p>
+                  <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                    <li>• 15 client accounts</li>
+                    <li>• Everything in Starter, plus:</li>
+                    <li>• Advanced analytics and reporting</li>
+                    <li>• Priority support</li>
+                    <li>• Custom integrations</li>
+                  </ul>
+                </div>
+                <Button variant="outline">Upgrade</Button>
+              </div>
+            </div>
+
+            {/* Enterprise Plan */}
+            <div className="border rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold">Enterprise</h3>
+                  <p className="text-gray-700 font-medium">Contact Sales</p>
+                  <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                    <li>• Unlimited client accounts</li>
+                    <li>• Everything in Professional, plus:</li>
+                    <li>• Dedicated account manager</li>
+                    <li>• Custom development</li>
+                    <li>• SLA guarantees</li>
+                  </ul>
+                </div>
+                <Button variant="outline">Contact Sales</Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Upgrade prompt for business users */}
       {userRole !== "agency_admin" && (
         <Card className="border-orange-200 bg-orange-50">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-orange-800">
               <Shield className="w-5 h-5" />
-              <span>Upgrade to Agency Pro</span>
+              <span>Upgrade to Agency Plans</span>
             </CardTitle>
             <CardDescription className="text-orange-700">
               Unlock advanced features for agencies and larger teams
@@ -149,14 +247,13 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
           <CardContent>
             <div className="space-y-3">
               <ul className="text-sm text-orange-700 space-y-1">
-                <li>• Unlimited brands and competitor tracking</li>
+                <li>• Multiple client account management</li>
                 <li>• White-label reports with your branding</li>
-                <li>• Multi-client management dashboard</li>
-                <li>• Advanced team permissions</li>
+                <li>• Team collaboration tools</li>
                 <li>• Priority support</li>
               </ul>
               <Button className="bg-orange-600 hover:bg-orange-700">
-                Upgrade to Agency Pro
+                View Agency Plans
               </Button>
             </div>
           </CardContent>
