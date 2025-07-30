@@ -98,7 +98,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands }: BrandMa
       status: "Active" as "Active" | "Paused",
       visibilityScore: competitor.visibilityScore,
       trend: competitor.trend === "up" ? "+1.8%" : competitor.trend === "down" ? "-0.5%" : "0%",
-      reportFrequency: "Weekly" as const,
+      reportFrequency: "Weekly" as "Daily" | "Weekly" | "Bi-weekly" | "Monthly",
       lastReport: "3 days ago",
       totalMentions: `${(competitor.mentions / 1000).toFixed(1)}K`
      }))
@@ -168,13 +168,29 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands }: BrandMa
       clearInterval(progressInterval);
       setAddBrandProgress(100);
       setTimeout(() => {
+        // Create new competitor from form data
+        const newCompetitor = {
+          id: Math.max(...competitors.map(c => c.id), 1) + 1,
+          name: websiteUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').split('.')[0],
+          url: websiteUrl,
+          status: "Active" as "Active" | "Paused",
+          visibilityScore: Math.floor(Math.random() * 40) + 60, // Random score between 60-100
+          trend: Math.random() > 0.5 ? "+1.2%" : "-0.8%",
+          reportFrequency: reportFrequency === "biweekly" ? "Bi-weekly" : reportFrequency.charAt(0).toUpperCase() + reportFrequency.slice(1) as "Daily" | "Weekly" | "Bi-weekly" | "Monthly",
+          lastReport: "Just added",
+          totalMentions: `${(Math.random() * 5 + 1).toFixed(1)}K`
+        };
+        
+        // Add to competitors list
+        setCompetitors(prev => [...prev, newCompetitor]);
+        
         setIsAddingBrand(false);
         setAddBrandProgress(0);
         setWebsiteUrl("");
         setReportFrequency("");
         toast({
           title: "Competitor Added Successfully",
-          description: "Your competitor has been added to your watchlist.",
+          description: `${newCompetitor.name} has been added to your watchlist.`,
         });
       }, 1000);
     }, 6000);
