@@ -520,23 +520,44 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   </div>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
+                <ResponsiveContainer width="100%" height={280}>
+                  <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                     <Pie
                       data={pieChartData}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percentage }) => `${name} ${percentage}%`}
-                      outerRadius={80}
+                      label={({ name, percentage }) => `${name}\n${percentage}%`}
+                      outerRadius={90}
+                      innerRadius={30}
                       fill="#8884d8"
                       dataKey="mentions"
+                      stroke="none"
+                      paddingAngle={2}
+                      animationBegin={0}
+                      animationDuration={800}
                     >
                       {pieChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={pieChartColors[index % pieChartColors.length]} />
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={pieChartColors[index % pieChartColors.length]}
+                          style={{
+                            filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))',
+                            transition: 'all 0.3s ease'
+                          }}
+                        />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        fontSize: '12px'
+                      }}
+                      formatter={(value, name) => [`${value} mentions`, name]}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               )}
