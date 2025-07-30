@@ -527,7 +527,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percentage }) => `${name} ${percentage}%`}
+                      label={false}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="mentions"
