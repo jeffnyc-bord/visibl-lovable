@@ -70,7 +70,7 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-1 gap-4 p-4 bg-gray-50 rounded-lg">
             <div>
               <p className="text-sm font-medium text-gray-700">
                 {userRole === "agency_admin" ? "Client Accounts" : "Brands Used"}
@@ -79,14 +79,12 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                 {userRole === "agency_admin" ? `3 / ${clientLimit}` : "1 / 1"}
               </p>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-700">
-                {userRole === "agency_admin" ? "Total Brands Tracked" : "Competitor Slots"}
-              </p>
-              <p className="text-2xl font-semibold">
-                {userRole === "agency_admin" ? "8" : "2 / 5"}
-              </p>
-            </div>
+            {userRole !== "agency_admin" && (
+              <div>
+                <p className="text-sm font-medium text-gray-700">Competitor Slots</p>
+                <p className="text-2xl font-semibold">2 / 5</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
