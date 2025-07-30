@@ -74,8 +74,8 @@ export const AgencySettings = () => {
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-blue-900">Agency Pro Plan</h3>
-                  <p className="text-sm text-blue-700">50 Deep Brands • 150 Competitors</p>
+                  <h3 className="font-semibold text-blue-900">Starter Plan</h3>
+                  <p className="text-sm text-blue-700">5 Clients • 25 Competitors</p>
                 </div>
                 <Badge className="bg-blue-100 text-blue-800 border-blue-300">Active</Badge>
               </div>
@@ -83,11 +83,11 @@ export const AgencySettings = () => {
             
             <div className="grid grid-cols-2 gap-4 text-center">
               <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-lg font-bold text-gray-900">11/50</p>
-                <p className="text-xs text-gray-600">Deep Brands Used</p>
+                <p className="text-lg font-bold text-gray-900">3/5</p>
+                <p className="text-xs text-gray-600">Clients Used</p>
               </div>
               <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-lg font-bold text-gray-900">47/150</p>
+                <p className="text-lg font-bold text-gray-900">18/25</p>
                 <p className="text-xs text-gray-600">Competitors Used</p>
               </div>
             </div>
@@ -97,17 +97,10 @@ export const AgencySettings = () => {
                 <span className="text-gray-600">Next billing date:</span>
                 <span className="font-medium">Feb 15, 2025</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Monthly cost:</span>
-                <span className="font-medium">$299/month</span>
-              </div>
             </div>
             
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm" className="flex-1 text-xs h-8">
-                View Usage
-              </Button>
-              <Button variant="outline" size="sm" className="flex-1 text-xs h-8">
+              <Button variant="outline" size="sm" className="w-full text-xs h-8">
                 Upgrade Plan
               </Button>
             </div>
