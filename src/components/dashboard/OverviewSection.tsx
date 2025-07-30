@@ -312,7 +312,7 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
               />
               <span className="text-sm text-gray-600 ml-1">platforms</span>
               <div className="mt-2">
-                <img src="/lovable-uploads/3d04482a-74ec-404e-a6f1-5aa0edce7aad.png" alt="AI Platforms Coverage" className="w-full h-auto max-w-[200px]" />
+                <img src="/lovable-uploads/3d04482a-74ec-404e-a6f1-5aa0edce7aad.png" alt="AI Platforms Coverage" className="w-16 h-auto" />
               </div>
             </div>
           </CardContent>
