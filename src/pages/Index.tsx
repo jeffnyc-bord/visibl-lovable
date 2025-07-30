@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -205,7 +205,7 @@ const Index = () => {
     { key: "queries", label: "Prompt Blast Lab", icon: "/lovable-uploads/a89301fe-f6cc-44ec-80c8-e563e07e8f0c.png" },
     { key: "competitors", label: "Competitors", icon: "/lovable-uploads/6a43d419-c4e3-47a9-bd9d-d88e81f33fee.png" },
     { key: "trends", label: "AI Trends", icon: "/lovable-uploads/6b8b51ad-58c7-43a9-a4ea-c0097921f79f.png" },
-    { key: "technical", label: "Technical Health", icon: Code },
+    { key: "technical", label: "Technical Health", icon: "/lovable-uploads/768d3c42-b4d4-4542-8ca5-d73e44b8c475.png" },
     { key: "recommendations", label: "Recommendations", icon: "/lovable-uploads/aa7e3f0d-b714-499a-b96f-f48edabf1de9.png" }
   ];
 
@@ -379,7 +379,7 @@ const Index = () => {
                             {typeof section.icon === 'string' ? (
                               <img src={section.icon} alt={section.label} className="w-4 h-4" />
                             ) : (
-                              <section.icon className="w-4 h-4" />
+                              React.createElement(section.icon as any, { className: "w-4 h-4" })
                             )}
                             <span className="text-sm">{section.label}</span>
                           </div>
@@ -520,7 +520,7 @@ const Index = () => {
                           {typeof section.icon === 'string' ? (
                             <img src={section.icon} alt={section.label} className="w-4 h-4" />
                           ) : (
-                            <section.icon className="w-3 h-3" />
+                            React.createElement(section.icon as any, { className: "w-3 h-3" })
                           )}
                           <span>{section.label}</span>
                         </TabsTrigger>
