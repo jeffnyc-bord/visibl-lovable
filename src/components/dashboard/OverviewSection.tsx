@@ -152,14 +152,14 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       });
 
   const COLORS = [
-    '#3B82F6', // Blue
-    '#10B981', // Green  
-    '#F59E0B', // Orange
+    '#6366F1', // Indigo
+    '#10B981', // Emerald  
+    '#F59E0B', // Amber
     '#EF4444', // Red
-    '#8B5CF6', // Purple
+    '#8B5CF6', // Violet
     '#06B6D4', // Cyan
     '#84CC16', // Lime
-    '#F97316'  // Orange-red
+    '#F97316'  // Orange
   ];
 
   const getSentimentColor = (sentiment: string) => {
@@ -499,20 +499,20 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
+            <div className="relative">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-medium text-gray-700">Mentions by Platform</h4>
+                <h4 className="text-sm font-semibold text-gray-800">Mentions by Platform</h4>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowAllPlatforms(!showAllPlatforms)}
-                  className="text-xs h-6"
+                  className="text-xs h-6 hover:bg-primary/10"
                 >
                   {showAllPlatforms ? "Show Less" : "Show All"}
                 </Button>
               </div>
               {isOnlyOneModelSelected ? (
-                <div className="flex items-center justify-center h-[250px] border-2 border-dashed border-gray-300 rounded-lg">
+                <div className="flex items-center justify-center h-[300px] border-2 border-dashed border-gray-300 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100">
                   <div className="text-center">
                     <MessageSquare className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                     <p className="text-sm text-gray-600 mb-1">Select multiple models to view distribution</p>
@@ -520,63 +520,91 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   </div>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={280}>
-                  <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                    <Pie
-                      data={pieChartData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percentage }) => `${name}\n${percentage}%`}
-                      outerRadius={90}
-                      innerRadius={30}
-                      fill="#8884d8"
-                      dataKey="mentions"
-                      stroke="none"
-                      paddingAngle={2}
-                      animationBegin={0}
-                      animationDuration={800}
-                    >
-                      {pieChartData.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={pieChartColors[index % pieChartColors.length]}
-                          style={{
-                            filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))',
-                            transition: 'all 0.3s ease'
-                          }}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                        fontSize: '12px'
-                      }}
-                      formatter={(value, name) => [`${value} mentions`, name]}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="relative bg-gradient-to-br from-gray-50/50 to-white rounded-xl p-4 border border-gray-100">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart margin={{ top: 30, right: 30, bottom: 30, left: 30 }}>
+                      <defs>
+                        {pieChartColors.map((color, index) => (
+                          <linearGradient key={index} id={`gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor={color} stopOpacity={1}/>
+                            <stop offset="100%" stopColor={color} stopOpacity={0.8}/>
+                          </linearGradient>
+                        ))}
+                      </defs>
+                      <Pie
+                        data={pieChartData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percentage }) => `${name}\n${percentage}%`}
+                        outerRadius={95}
+                        innerRadius={35}
+                        dataKey="mentions"
+                        stroke="white"
+                        strokeWidth={3}
+                        paddingAngle={3}
+                        animationBegin={0}
+                        animationDuration={1000}
+                        className="drop-shadow-lg"
+                      >
+                        {pieChartData.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={`url(#gradient-${index})`}
+                            style={{
+                              filter: 'drop-shadow(0px 4px 8px rgba(0,0,0,0.15))',
+                              transition: 'all 0.3s ease',
+                              cursor: 'pointer'
+                            }}
+                            className="hover:opacity-90"
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '12px',
+                          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          padding: '12px'
+                        }}
+                        formatter={(value, name) => [`${value} mentions`, name]}
+                        labelStyle={{ color: '#374151', fontWeight: '600' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                      <div className="text-2xl font-bold text-gray-800">
+                        {pieChartData.reduce((sum, item) => sum + item.mentions, 0).toLocaleString()}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">Total Mentions</div>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Platform Breakdown</h4>
+              <h4 className="text-sm font-semibold text-gray-800 mb-4">Platform Breakdown</h4>
               <div className="space-y-3">
                 {pieChartData.map((platform, index) => (
-                  <div key={index} className="flex items-center justify-between">
+                  <div key={index} className="group flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200">
                     <div className="flex items-center space-x-3">
                       <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: pieChartColors[index % pieChartColors.length] }}
+                        className="w-4 h-4 rounded-full shadow-sm border-2 border-white" 
+                        style={{ 
+                          background: `linear-gradient(135deg, ${pieChartColors[index % pieChartColors.length]}, ${pieChartColors[index % pieChartColors.length]}dd)`
+                        }}
                       ></div>
-                      <span className="text-sm font-medium">{platform.platform}</span>
+                      <span className="text-sm font-medium text-gray-900">{platform.platform}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium">{platform.mentions}</span>
-                      <span className="text-xs text-gray-500">({platform.percentage}%)</span>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-sm font-semibold text-gray-800">{platform.mentions.toLocaleString()}</span>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                        {platform.percentage}%
+                      </span>
                     </div>
                   </div>
                 ))}
