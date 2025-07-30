@@ -311,7 +311,7 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
                     }
                     platforms={platformMentions}
                   />
-                  <span className="text-sm text-gray-600">platforms</span>
+                  <span className="text-xs text-gray-500">platforms</span>
                   <img src="/lovable-uploads/3d04482a-74ec-404e-a6f1-5aa0edce7aad.png" alt="AI Platforms Coverage" className="w-16 h-auto" />
                 </div>
             </div>
