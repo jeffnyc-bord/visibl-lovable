@@ -232,33 +232,6 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
         </Card>
       )}
 
-      {/* Upgrade prompt for business users */}
-      {userRole !== "agency_admin" && (
-        <Card className="border-orange-200 bg-orange-50">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-orange-800">
-              <Shield className="w-5 h-5" />
-              <span>Upgrade to Agency Plans</span>
-            </CardTitle>
-            <CardDescription className="text-orange-700">
-              Unlock advanced features for agencies and larger teams
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <ul className="text-sm text-orange-700 space-y-1">
-                <li>• Multiple client account management</li>
-                <li>• White-label reports with your branding</li>
-                <li>• Team collaboration tools</li>
-                <li>• Priority support</li>
-              </ul>
-              <Button className="bg-orange-600 hover:bg-orange-700">
-                View Agency Plans
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
