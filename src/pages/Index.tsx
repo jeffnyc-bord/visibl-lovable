@@ -325,12 +325,12 @@ const Index = () => {
               >
                 <Menu className="w-4 h-4" />
               </Button>
-              <h2 className="text-lg font-semibold text-gray-900">
-                {activeView === "dashboard" ? "Dashboard" : 
-                 activeView === "brands" ? (userRole === "business_user" ? "My Brand Analytics" : "Brand Management") :
-                 activeView === "agency" ? "Agency Admin" :
-                 activeView === "settings" ? "Settings" : "Dashboard"}
-              </h2>
+               <h2 className="text-lg font-semibold text-gray-900">
+                 {activeView === "dashboard" ? "Dashboard" : 
+                  activeView === "brands" ? "Brand Management" :
+                  activeView === "agency" ? "Agency Admin" :
+                  activeView === "settings" ? "Settings" : "Dashboard"}
+               </h2>
             </div>
             
             <div className="flex items-center space-x-3">
