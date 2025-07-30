@@ -316,7 +316,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <MessageSquare className="w-4 h-4 text-purple-500" />
+                <img src="/lovable-uploads/0a1405cf-54d9-4154-9c04-cbb22a4ad851.png" alt="Platform Coverage" className="w-4 h-4" />
                 <span className="text-sm font-medium text-gray-600">Platform Coverage</span>
               </div>
               <div className="relative">
