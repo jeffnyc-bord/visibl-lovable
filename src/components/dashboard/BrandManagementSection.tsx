@@ -282,9 +282,6 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands }: BrandMa
                   
                   <div className="flex items-center space-x-1">
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                       <Settings className="w-4 h-4" />
                     </Button>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
