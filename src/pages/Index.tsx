@@ -204,7 +204,7 @@ const Index = () => {
     { key: "brand", label: "Brand & Product Visibility", icon: "/lovable-uploads/153e42f9-e2e0-44d2-b4a0-07a8fbd42599.png" },
     { key: "queries", label: "Prompt Blast Lab", icon: "/lovable-uploads/a89301fe-f6cc-44ec-80c8-e563e07e8f0c.png" },
     { key: "competitors", label: "Competitors", icon: "/lovable-uploads/6a43d419-c4e3-47a9-bd9d-d88e81f33fee.png" },
-    { key: "trends", label: "AI Trends", icon: Globe },
+    { key: "trends", label: "AI Trends", icon: "/lovable-uploads/6b8b51ad-58c7-43a9-a4ea-c0097921f79f.png" },
     { key: "technical", label: "Technical Health", icon: Code },
     { key: "recommendations", label: "Recommendations", icon: "/lovable-uploads/aa7e3f0d-b714-499a-b96f-f48edabf1de9.png" }
   ];
