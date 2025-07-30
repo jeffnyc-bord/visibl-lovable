@@ -230,7 +230,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <img src="/lovable-uploads/f5efaad8-a8ef-4c09-a7e6-523328cd1fd8.png" alt="AI Visibility Score" className="w-4 h-4" />
+                <img src="/lovable-uploads/b3896000-028e-49c5-b74f-04e22725b257.png" alt="AI Visibility Score" className="w-4 h-4" />
                 <span className="text-sm font-medium text-gray-600">AI Visibility Score</span>
               </div>
               <div className="relative">
