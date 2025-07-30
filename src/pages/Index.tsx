@@ -451,7 +451,12 @@ const Index = () => {
                       </SelectContent>
                     </Select>
                     
-                    <Popover>
+                    <Popover onOpenChange={(open) => {
+                      // If closing the popover and no models are selected, default to "All models"
+                      if (!open && selectedModels.length === 0) {
+                        setSelectedModels(["All models"]);
+                      }
+                    }}>
                       <PopoverTrigger asChild>
                         <Button variant="outline" size="sm" className="flex items-center space-x-1 text-xs h-auto px-3 py-1.5">
                           <span>
@@ -459,7 +464,9 @@ const Index = () => {
                               ? "All models" 
                               : selectedModels.length === 1 
                                 ? selectedModels[0] 
-                                : `${selectedModels.length} models`}
+                                : selectedModels.length === 0
+                                  ? "Select models"
+                                  : `${selectedModels.length} models`}
                           </span>
                           <ChevronDown className="w-3 h-3" />
                         </Button>
