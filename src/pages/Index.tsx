@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
@@ -182,7 +184,7 @@ const Index = () => {
   
   // Filter states
   const [selectedDateRange, setSelectedDateRange] = useState("Last 7 days");
-  const [selectedModel, setSelectedModel] = useState("All models");
+  const [selectedModels, setSelectedModels] = useState<string[]>(["All models"]);
   
   // Section visibility state
   const [visibleSections, setVisibleSections] = useState<string[]>([
@@ -449,23 +451,54 @@ const Index = () => {
                       </SelectContent>
                     </Select>
                     
-                    <Select value={selectedModel} onValueChange={setSelectedModel}>
-                      <SelectTrigger className="w-auto h-auto border border-gray-300 bg-white rounded-md px-3 py-1.5 text-xs">
-                        <div className="flex items-center space-x-1">
-                          <span>{selectedModel}</span>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" size="sm" className="flex items-center space-x-1 text-xs h-auto px-3 py-1.5">
+                          <span>
+                            {selectedModels.includes("All models") 
+                              ? "All models" 
+                              : selectedModels.length === 1 
+                                ? selectedModels[0] 
+                                : `${selectedModels.length} models`}
+                          </span>
                           <ChevronDown className="w-3 h-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-3" align="start">
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-gray-900 mb-2">Select AI Models</div>
+                          {["All models", "ChatGPT", "Microsoft Copilot", "Gemini", "Claude", "Perplexity", "Grok"].map((model) => (
+                            <div key={model} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={model}
+                                checked={selectedModels.includes(model)}
+                                onCheckedChange={(checked) => {
+                                  if (model === "All models") {
+                                    if (checked) {
+                                      setSelectedModels(["All models"]);
+                                    } else {
+                                      setSelectedModels([]);
+                                    }
+                                  } else {
+                                    if (checked) {
+                                      const newModels = selectedModels.includes("All models") 
+                                        ? [model] 
+                                        : [...selectedModels.filter(m => m !== "All models"), model];
+                                      setSelectedModels(newModels);
+                                    } else {
+                                      setSelectedModels(selectedModels.filter(m => m !== model));
+                                    }
+                                  }
+                                }}
+                              />
+                              <label htmlFor={model} className="text-sm text-gray-700 cursor-pointer">
+                                {model}
+                              </label>
+                            </div>
+                          ))}
                         </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All models">All models</SelectItem>
-                        <SelectItem value="ChatGPT">ChatGPT</SelectItem>
-                        <SelectItem value="Microsoft Copilot">Microsoft Copilot</SelectItem>
-                        <SelectItem value="Gemini">Gemini</SelectItem>
-                        <SelectItem value="Claude">Claude</SelectItem>
-                        <SelectItem value="Perplexity">Perplexity</SelectItem>
-                        <SelectItem value="Grok">Grok</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               )}
@@ -496,7 +529,7 @@ const Index = () => {
                     <TabsContent value="overview">
                       <OverviewSection 
                         brandData={selectedBrand} 
-                        selectedModel={selectedModel}
+                        selectedModels={selectedModels}
                         selectedDateRange={selectedDateRange}
                         onQueryClick={(query) => {
                           setPrefilledQuery(query);

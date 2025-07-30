@@ -49,12 +49,12 @@ interface BrandData {
 
 interface OverviewSectionProps {
   brandData: BrandData;
-  selectedModel: string;
+  selectedModels: string[];
   selectedDateRange: string;
   onQueryClick?: (query: string) => void;
 }
 
-export const OverviewSection = ({ brandData, selectedModel, selectedDateRange, onQueryClick }: OverviewSectionProps) => {
+export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick }: OverviewSectionProps) => {
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
@@ -95,13 +95,15 @@ export const OverviewSection = ({ brandData, selectedModel, selectedDateRange, o
     { platform: "Google Overviews", mentions: 87, sentiment: "neutral", coverage: 42, trend: "+18%" },
   ];
 
-  // Filter platform mentions based on selected model
-  const platformMentions = selectedModel === "All models" 
+  // Filter platform mentions based on selected models
+  const platformMentions = selectedModels.includes("All models") 
     ? allPlatformMentions 
     : allPlatformMentions.filter(platform => {
-        // Map Microsoft Copilot to Copilot for filtering
-        const filterModel = selectedModel === "Microsoft Copilot" ? "Copilot" : selectedModel;
-        return platform.platform === filterModel;
+        return selectedModels.some(model => {
+          // Map Microsoft Copilot to Copilot for filtering
+          const filterModel = model === "Microsoft Copilot" ? "Copilot" : model;
+          return platform.platform === filterModel;
+        });
       });
 
   const visibilityTrendData = [
@@ -139,12 +141,14 @@ export const OverviewSection = ({ brandData, selectedModel, selectedDateRange, o
     { platform: "Google Overviews", mentions: 87, percentage: 5 },
   ];
 
-  // Filter platform mentions data for pie chart based on selected model
-  const platformMentionsData = selectedModel === "All models" 
+  // Filter platform mentions data for pie chart based on selected models
+  const platformMentionsData = selectedModels.includes("All models") 
     ? allPlatformMentionsData 
     : allPlatformMentionsData.filter(platform => {
-        const filterModel = selectedModel === "Microsoft Copilot" ? "Copilot" : selectedModel;
-        return platform.platform === filterModel;
+        return selectedModels.some(model => {
+          const filterModel = model === "Microsoft Copilot" ? "Copilot" : model;
+          return platform.platform === filterModel;
+        });
       });
 
   const COLORS = [
@@ -178,8 +182,11 @@ export const OverviewSection = ({ brandData, selectedModel, selectedDateRange, o
 
   const displayedPlatforms = showAllPlatforms ? platformMentions : platformMentions.slice(0, 4);
 
-  // Create pie chart data - adapt based on selected model and show/hide logic
-  const pieChartData = selectedModel === "All models" 
+  // Determine if only one specific model is selected (not "All models")
+  const isOnlyOneModelSelected = !selectedModels.includes("All models") && selectedModels.length === 1;
+  
+  // Create pie chart data - adapt based on selected models and show/hide logic
+  const pieChartData = selectedModels.includes("All models") 
     ? (showAllPlatforms 
         ? platformMentionsData 
         : [
@@ -190,9 +197,9 @@ export const OverviewSection = ({ brandData, selectedModel, selectedDateRange, o
               percentage: platformMentionsData.slice(4).reduce((sum, p) => sum + p.percentage, 0)
             }
           ])
-    : platformMentionsData; // For single model, show all available data
+    : platformMentionsData; // For multiple specific models, show all available data
 
-  const pieChartColors = selectedModel === "All models" 
+  const pieChartColors = selectedModels.includes("All models") 
     ? (showAllPlatforms ? COLORS : [...COLORS.slice(0, 4), '#6B7280'])
     : COLORS;
 
@@ -504,25 +511,35 @@ export const OverviewSection = ({ brandData, selectedModel, selectedDateRange, o
                   {showAllPlatforms ? "Show Less" : "Show All"}
                 </Button>
               </div>
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={pieChartData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percentage }) => `${name} ${percentage}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="mentions"
-                  >
-                    {pieChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={pieChartColors[index % pieChartColors.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              {isOnlyOneModelSelected ? (
+                <div className="flex items-center justify-center h-[250px] border-2 border-dashed border-gray-300 rounded-lg">
+                  <div className="text-center">
+                    <MessageSquare className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600 mb-1">Select multiple models to view distribution</p>
+                    <p className="text-xs text-gray-500">Choose "All models" or multiple specific models from the filter above</p>
+                  </div>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={pieChartData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percentage }) => `${name} ${percentage}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="mentions"
+                    >
+                      {pieChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={pieChartColors[index % pieChartColors.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
             </div>
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-3">Platform Breakdown</h4>
