@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { 
   Plus, 
   Globe, 
@@ -17,7 +19,10 @@ import {
   Eye,
   MoreHorizontal,
   Target,
-  Building
+  Building,
+  Pause,
+  Play,
+  Trash2
 } from "lucide-react";
 
 interface BrandData {
@@ -90,7 +95,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands }: BrandMa
       id: index + 2,
       name: competitor.name,
       url: `${competitor.name.toLowerCase().replace(/\s+/g, '')}.com`,
-      status: "Active" as const,
+      status: "Active" as "Active" | "Paused",
       visibilityScore: competitor.visibilityScore,
       trend: competitor.trend === "up" ? "+1.8%" : competitor.trend === "down" ? "-0.5%" : "0%",
       reportFrequency: "Weekly" as const,
@@ -115,6 +120,32 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands }: BrandMa
   };
 
   const competitorCount = competitors.length;
+
+  const handleToggleMonitoring = (competitorId: number) => {
+    setCompetitors(prev => prev.map(competitor => 
+      competitor.id === competitorId 
+        ? { ...competitor, status: competitor.status === "Active" ? "Paused" : "Active" }
+        : competitor
+    ));
+    
+    const competitor = competitors.find(c => c.id === competitorId);
+    const newStatus = competitor?.status === "Active" ? "Paused" : "Active";
+    
+    toast({
+      title: `Monitoring ${newStatus}`,
+      description: `${competitor?.name} monitoring has been ${newStatus.toLowerCase()}.`,
+    });
+  };
+
+  const handleRemoveCompetitor = (competitorId: number) => {
+    const competitor = competitors.find(c => c.id === competitorId);
+    setCompetitors(prev => prev.filter(c => c.id !== competitorId));
+    
+    toast({
+      title: "Competitor Removed",
+      description: `${competitor?.name} has been removed from your watchlist.`,
+    });
+  };
 
   const handleAddBrand = () => {
     if (!websiteUrl.trim() || !reportFrequency) return;
@@ -273,18 +304,62 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands }: BrandMa
                     <p className="text-xs text-muted-foreground">Mentions</p>
                   </div>
                   
-                  <div className="text-center">
-                    <Badge variant="secondary" className="text-xs">
-                      {competitor.status}
-                    </Badge>
-                    <p className="text-xs text-muted-foreground mt-1">{competitor.reportFrequency}</p>
-                  </div>
+                   <div className="text-center">
+                     <Badge 
+                       variant="secondary" 
+                       className={`text-xs ${getStatusColor(competitor.status)}`}
+                     >
+                       {competitor.status}
+                     </Badge>
+                     <p className="text-xs text-muted-foreground mt-1">{competitor.reportFrequency}</p>
+                   </div>
                   
-                  <div className="flex items-center space-x-1">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </div>
+                   <div className="flex items-center space-x-1">
+                     <DropdownMenu>
+                       <DropdownMenuTrigger asChild>
+                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                           <MoreHorizontal className="w-4 h-4" />
+                         </Button>
+                       </DropdownMenuTrigger>
+                       <DropdownMenuContent align="end" className="w-48">
+                         <DropdownMenuItem onClick={() => handleToggleMonitoring(competitor.id)}>
+                           {competitor.status === "Active" ? (
+                             <>
+                               <Pause className="w-4 h-4 mr-2" />
+                               Pause Monitoring
+                             </>
+                           ) : (
+                             <>
+                               <Play className="w-4 h-4 mr-2" />
+                               Activate Monitoring
+                             </>
+                           )}
+                         </DropdownMenuItem>
+                         <AlertDialog>
+                           <AlertDialogTrigger asChild>
+                             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                               <Trash2 className="w-4 h-4 mr-2" />
+                               Remove from Watchlist
+                             </DropdownMenuItem>
+                           </AlertDialogTrigger>
+                           <AlertDialogContent>
+                             <AlertDialogHeader>
+                               <AlertDialogTitle>Remove Competitor</AlertDialogTitle>
+                               <AlertDialogDescription>
+                                 Are you sure you want to remove {competitor.name} from your watchlist? This action cannot be undone.
+                               </AlertDialogDescription>
+                             </AlertDialogHeader>
+                             <AlertDialogFooter>
+                               <AlertDialogCancel>Cancel</AlertDialogCancel>
+                               <AlertDialogAction onClick={() => handleRemoveCompetitor(competitor.id)}>
+                                 Remove
+                               </AlertDialogAction>
+                             </AlertDialogFooter>
+                           </AlertDialogContent>
+                         </AlertDialog>
+                       </DropdownMenuContent>
+                     </DropdownMenu>
+                   </div>
                 </div>
               </div>
             ))}
