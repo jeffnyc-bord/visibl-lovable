@@ -429,20 +429,15 @@ const Index = () => {
                     
                     <Separator orientation="vertical" className="h-4" />
                     
-                    <div className="flex items-center space-x-1 text-xs text-gray-600">
+                    <Button variant="outline" size="sm" className="flex items-center space-x-1 text-xs">
                       <span>Last 7 days</span>
                       <ChevronDown className="w-3 h-3" />
-                    </div>
+                    </Button>
                     
-                    <div className="flex items-center space-x-1 text-xs text-gray-600">
-                      <span>All Tags</span>
+                    <Button variant="outline" size="sm" className="flex items-center space-x-1 text-xs">
+                      <span>All models</span>
                       <ChevronDown className="w-3 h-3" />
-                    </div>
-                    
-                    <div className="flex items-center space-x-1 text-xs text-gray-600">
-                      <span>All Models</span>
-                      <ChevronDown className="w-3 h-3" />
-                    </div>
+                    </Button>
                   </div>
                 </div>
               )}
