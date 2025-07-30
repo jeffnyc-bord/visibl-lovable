@@ -342,7 +342,7 @@ const Index = () => {
             <div className="flex items-center space-x-3">
               {/* Demo Role Switcher */}
               <div className="flex items-center space-x-2">
-                <span className="text-xs text-gray-600">Demo Role:</span>
+                <span className="text-xs text-gray-600">Role:</span>
                 <Select value={userRole} onValueChange={(value: "business_user" | "agency_admin") => setUserRole(value)}>
                   <SelectTrigger className="w-32 h-7 text-xs">
                     <SelectValue />
