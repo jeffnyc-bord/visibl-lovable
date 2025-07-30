@@ -316,16 +316,6 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
         </Card>
       </div>
 
-      {/* Supported AI Platforms */}
-      <div className="flex flex-col items-center space-y-3 mb-6">
-        <h3 className="text-lg font-semibold text-foreground">Supported AI Platforms</h3>
-        <img 
-          src="/lovable-uploads/70bfbd2f-976b-483a-9e7b-d366c6923f4d.png" 
-          alt="Supported AI Chatbots and Platforms" 
-          className="max-w-md w-full h-auto"
-        />
-      </div>
-
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Visibility Chart */}
