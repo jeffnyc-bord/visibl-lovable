@@ -259,7 +259,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <img src="/lovable-uploads/2dfd4e75-59fe-4604-9bc8-e9465d077056.png" alt="Total Mentions" className="w-4 h-4" />
+                <img src="/lovable-uploads/44498275-d714-4181-80c1-79b02c494519.png" alt="Total Mentions" className="w-4 h-4" />
                 <span className="text-sm font-medium text-gray-600">Total Mentions</span>
               </div>
               <div className="relative">
