@@ -390,11 +390,6 @@ const Index = () => {
                 </Select>
               </div>
               
-              <div className="flex items-center space-x-2 text-xs text-gray-500">
-                <div className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse"></div>
-                <span>00:25:15</span>
-                <span>3 pending prompts</span>
-              </div>
               <Button variant="ghost" size="sm" className="text-sm">
                 <HelpCircle className="w-4 h-4" />
                 <span className="ml-1">Help</span>
