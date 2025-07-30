@@ -49,10 +49,12 @@ interface BrandData {
 
 interface OverviewSectionProps {
   brandData: BrandData;
+  selectedModel: string;
+  selectedDateRange: string;
   onQueryClick?: (query: string) => void;
 }
 
-export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProps) => {
+export const OverviewSection = ({ brandData, selectedModel, selectedDateRange, onQueryClick }: OverviewSectionProps) => {
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
@@ -82,7 +84,7 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
     trending: "+15%"
   };
 
-  const platformMentions = [
+  const allPlatformMentions = [
     { platform: "ChatGPT", mentions: 456, sentiment: "positive", coverage: 85, trend: "+12%" },
     { platform: "Claude", mentions: 324, sentiment: "positive", coverage: 78, trend: "+8%" },
     { platform: "Gemini", mentions: 287, sentiment: "neutral", coverage: 72, trend: "+18%" },
@@ -92,6 +94,15 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
     { platform: "Google AI Mode", mentions: 98, sentiment: "positive", coverage: 45, trend: "+25%" },
     { platform: "Google Overviews", mentions: 87, sentiment: "neutral", coverage: 42, trend: "+18%" },
   ];
+
+  // Filter platform mentions based on selected model
+  const platformMentions = selectedModel === "All models" 
+    ? allPlatformMentions 
+    : allPlatformMentions.filter(platform => {
+        // Map Microsoft Copilot to Copilot for filtering
+        const filterModel = selectedModel === "Microsoft Copilot" ? "Copilot" : selectedModel;
+        return platform.platform === filterModel;
+      });
 
   const visibilityTrendData = [
     { month: "Jul", mentions: 890 },
@@ -117,7 +128,7 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
     { source: "Tesla Forums", mentions: 98, authority: "low", freshness: "current" },
   ];
 
-  const platformMentionsData = [
+  const allPlatformMentionsData = [
     { platform: "ChatGPT", mentions: 456, percentage: 28 },
     { platform: "Claude", mentions: 324, percentage: 20 },
     { platform: "Gemini", mentions: 287, percentage: 18 },
@@ -127,6 +138,14 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
     { platform: "Google AI Mode", mentions: 98, percentage: 6 },
     { platform: "Google Overviews", mentions: 87, percentage: 5 },
   ];
+
+  // Filter platform mentions data for pie chart based on selected model
+  const platformMentionsData = selectedModel === "All models" 
+    ? allPlatformMentionsData 
+    : allPlatformMentionsData.filter(platform => {
+        const filterModel = selectedModel === "Microsoft Copilot" ? "Copilot" : selectedModel;
+        return platform.platform === filterModel;
+      });
 
   const COLORS = [
     '#3B82F6', // Blue
@@ -159,19 +178,23 @@ export const OverviewSection = ({ brandData, onQueryClick }: OverviewSectionProp
 
   const displayedPlatforms = showAllPlatforms ? platformMentions : platformMentions.slice(0, 4);
 
-  // Create pie chart data - show top 4 platforms + "Others" when collapsed
-  const pieChartData = showAllPlatforms 
-    ? platformMentionsData 
-    : [
-        ...platformMentionsData.slice(0, 4),
-        {
-          platform: "Others",
-          mentions: platformMentionsData.slice(4).reduce((sum, p) => sum + p.mentions, 0),
-          percentage: platformMentionsData.slice(4).reduce((sum, p) => sum + p.percentage, 0)
-        }
-      ];
+  // Create pie chart data - adapt based on selected model and show/hide logic
+  const pieChartData = selectedModel === "All models" 
+    ? (showAllPlatforms 
+        ? platformMentionsData 
+        : [
+            ...platformMentionsData.slice(0, 4),
+            {
+              platform: "Others",
+              mentions: platformMentionsData.slice(4).reduce((sum, p) => sum + p.mentions, 0),
+              percentage: platformMentionsData.slice(4).reduce((sum, p) => sum + p.percentage, 0)
+            }
+          ])
+    : platformMentionsData; // For single model, show all available data
 
-  const pieChartColors = showAllPlatforms ? COLORS : [...COLORS.slice(0, 4), '#6B7280'];
+  const pieChartColors = selectedModel === "All models" 
+    ? (showAllPlatforms ? COLORS : [...COLORS.slice(0, 4), '#6B7280'])
+    : COLORS;
 
   return (
     <TooltipProvider>

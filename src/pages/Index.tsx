@@ -180,6 +180,10 @@ const Index = () => {
   const [trackedBrands] = useState<BrandData[]>(mockTrackedBrands);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("nike");
   
+  // Filter states
+  const [selectedDateRange, setSelectedDateRange] = useState("Last 7 days");
+  const [selectedModel, setSelectedModel] = useState("All models");
+  
   // Section visibility state
   const [visibleSections, setVisibleSections] = useState<string[]>([
     "overview", "brand", "queries", "competitors", "trends", "technical", "recommendations"
@@ -429,15 +433,39 @@ const Index = () => {
                     
                     <Separator orientation="vertical" className="h-4" />
                     
-                    <Button variant="outline" size="sm" className="flex items-center space-x-1 text-xs">
-                      <span>Last 7 days</span>
-                      <ChevronDown className="w-3 h-3" />
-                    </Button>
+                    <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
+                      <SelectTrigger className="w-auto h-auto border border-gray-300 bg-white rounded-md px-3 py-1.5 text-xs">
+                        <div className="flex items-center space-x-1">
+                          <span>{selectedDateRange}</span>
+                          <ChevronDown className="w-3 h-3" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Last 7 days">Last 7 days</SelectItem>
+                        <SelectItem value="Last 30 days">Last 30 days</SelectItem>
+                        <SelectItem value="Last 90 days">Last 90 days</SelectItem>
+                        <SelectItem value="Last 6 months">Last 6 months</SelectItem>
+                        <SelectItem value="Last year">Last year</SelectItem>
+                      </SelectContent>
+                    </Select>
                     
-                    <Button variant="outline" size="sm" className="flex items-center space-x-1 text-xs">
-                      <span>All models</span>
-                      <ChevronDown className="w-3 h-3" />
-                    </Button>
+                    <Select value={selectedModel} onValueChange={setSelectedModel}>
+                      <SelectTrigger className="w-auto h-auto border border-gray-300 bg-white rounded-md px-3 py-1.5 text-xs">
+                        <div className="flex items-center space-x-1">
+                          <span>{selectedModel}</span>
+                          <ChevronDown className="w-3 h-3" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All models">All models</SelectItem>
+                        <SelectItem value="ChatGPT">ChatGPT</SelectItem>
+                        <SelectItem value="Microsoft Copilot">Microsoft Copilot</SelectItem>
+                        <SelectItem value="Gemini">Gemini</SelectItem>
+                        <SelectItem value="Claude">Claude</SelectItem>
+                        <SelectItem value="Perplexity">Perplexity</SelectItem>
+                        <SelectItem value="Grok">Grok</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               )}
@@ -468,6 +496,8 @@ const Index = () => {
                     <TabsContent value="overview">
                       <OverviewSection 
                         brandData={selectedBrand} 
+                        selectedModel={selectedModel}
+                        selectedDateRange={selectedDateRange}
                         onQueryClick={(query) => {
                           setPrefilledQuery(query);
                           setActiveTab("queries");
