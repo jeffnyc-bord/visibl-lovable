@@ -18,20 +18,13 @@ export function FullDashboardError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="text-center space-y-6 max-w-lg mx-auto px-6">
-        {/* Friendly Robot Icon */}
+        {/* Construction Workers Icon */}
         <div className="mx-auto w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-          <div className="w-12 h-12 text-primary">
-            {/* Simple robot illustration using text/symbols */}
-            <svg viewBox="0 0 48 48" className="w-full h-full">
-              <circle cx="24" cy="20" r="8" fill="currentColor" opacity="0.3" />
-              <circle cx="20" cy="18" r="1.5" fill="currentColor" />
-              <circle cx="28" cy="18" r="1.5" fill="currentColor" />
-              <path d="M20 22 Q24 25 28 22" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-              <rect x="20" y="28" width="8" height="6" rx="2" fill="currentColor" opacity="0.3" />
-              <line x1="24" y1="12" x2="24" y2="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              <circle cx="24" cy="6" r="1.5" fill="currentColor" />
-            </svg>
-          </div>
+          <img 
+            src="/lovable-uploads/1f071db3-6a16-44cd-8b25-77653cbcb5b2.png" 
+            alt="Construction workers" 
+            className="w-16 h-16 object-contain"
+          />
         </div>
 
         <div className="space-y-3">
