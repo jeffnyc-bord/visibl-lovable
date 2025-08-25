@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle } from "lucide-react";
+import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle, AlertCircle, RefreshCw, ExternalLink, AlertTriangle, Loader2 } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -63,6 +63,14 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   const [showLiveResults, setShowLiveResults] = useState(false);
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [activeResultTab, setActiveResultTab] = useState("ChatGPT");
+  
+  // Platform-specific error states
+  const [platformStates, setPlatformStates] = useState<{
+    [key: string]: 'idle' | 'loading' | 'success' | 'error' | 'rate-limited' | 'prompt-rejected'
+  }>({});
+  const [platformErrors, setPlatformErrors] = useState<{[key: string]: string}>({});
+  const [globalError, setGlobalError] = useState<string | null>(null);
+  const [showNoSelectionWarning, setShowNoSelectionWarning] = useState(false);
   
   // Prompts tab state
   const [expandedPrompt, setExpandedPrompt] = useState<number | null>(null);
@@ -268,11 +276,30 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(220, 14%, 69%)', 'hsl(220, 14%, 83%)'];
 
   const handlePromptBlast = () => {
-    if (!customPrompt.trim() || selectedPlatforms.length === 0) return;
+    if (!customPrompt.trim()) {
+      setShowNoSelectionWarning(true);
+      setTimeout(() => setShowNoSelectionWarning(false), 3000);
+      return;
+    }
+    
+    if (selectedPlatforms.length === 0) {
+      setShowNoSelectionWarning(true);
+      setTimeout(() => setShowNoSelectionWarning(false), 3000);
+      return;
+    }
     
     setIsBlasting(true);
     setBlastProgress(0);
     setShowLiveResults(false);
+    setGlobalError(null);
+    setPlatformErrors({});
+    
+    // Initialize platform states to loading
+    const initialStates: {[key: string]: 'loading'} = {};
+    selectedPlatforms.forEach(platform => {
+      initialStates[platform] = 'loading';
+    });
+    setPlatformStates(initialStates);
     
     // Simulate progress updates
     const progressInterval = setInterval(() => {
@@ -285,18 +312,58 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       });
     }, 400);
     
+    // Simulate individual platform processing
+    selectedPlatforms.forEach((platform, index) => {
+      setTimeout(() => {
+        // Simulate various failure scenarios
+        const randomFailure = Math.random();
+        
+        if (randomFailure < 0.15) {
+          // API/Service interruption (15% chance)
+          setPlatformStates(prev => ({ ...prev, [platform]: 'error' }));
+          setPlatformErrors(prev => ({ 
+            ...prev, 
+            [platform]: `We're unable to connect to the ${platform} API at the moment. This is likely a temporary issue on their end.`
+          }));
+        } else if (randomFailure < 0.25) {
+          // Rate limiting (10% chance)
+          setPlatformStates(prev => ({ ...prev, [platform]: 'rate-limited' }));
+          setPlatformErrors(prev => ({ 
+            ...prev, 
+            [platform]: `You have reached your daily query limit for ${platform}. Try again later or consider upgrading your plan.`
+          }));
+        } else if (randomFailure < 0.35) {
+          // Prompt rejected (10% chance)
+          setPlatformStates(prev => ({ ...prev, [platform]: 'prompt-rejected' }));
+          setPlatformErrors(prev => ({ 
+            ...prev, 
+            [platform]: `${platform} rejected this prompt. This may be due to its length or content. Please review and try again.`
+          }));
+        } else {
+          // Success
+          setPlatformStates(prev => ({ ...prev, [platform]: 'success' }));
+        }
+      }, 1000 + (index * 500));
+    });
+    
     setTimeout(() => {
       clearInterval(progressInterval);
       setBlastProgress(100);
       
-      // Mock live results
-      const mockResults = selectedPlatforms.map(platform => ({
-        platform,
-        mentioned: Math.random() > 0.3,
-        sentiment: Math.random() > 0.5 ? "positive" : Math.random() > 0.3 ? "neutral" : "negative",
-        responseTime: `${(Math.random() * 3 + 1).toFixed(1)}s`,
-        response: `Mock response from ${platform} for the prompt: "${customPrompt.slice(0, 50)}..."`
-      }));
+      // Mock live results only for successful platforms
+      const mockResults = selectedPlatforms.map(platform => {
+        const state = platformStates[platform] || 'success';
+        if (state === 'success') {
+          return {
+            platform,
+            mentioned: Math.random() > 0.3,
+            sentiment: Math.random() > 0.5 ? "positive" : Math.random() > 0.3 ? "neutral" : "negative",
+            responseTime: `${(Math.random() * 3 + 1).toFixed(1)}s`,
+            response: `Mock response from ${platform} for the prompt: "${customPrompt.slice(0, 50)}..."`
+          };
+        }
+        return null;
+      }).filter(Boolean);
       
       setLiveResults(mockResults);
       setActiveResultTab(selectedPlatforms[0]);
@@ -305,12 +372,57 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
         setIsBlasting(false);
         setBlastProgress(0);
         setShowLiveResults(true);
-        toast({
-          title: "Prompt Blast Complete",
-          description: `Successfully tested prompt across ${selectedPlatforms.length} AI platforms.`,
-        });
+        
+        const successCount = Object.values(platformStates).filter(state => state === 'success').length;
+        const errorCount = selectedPlatforms.length - successCount;
+        
+        if (errorCount === 0) {
+          toast({
+            title: "Prompt Blast Complete",
+            description: `Successfully tested prompt across ${selectedPlatforms.length} AI platforms.`,
+          });
+        } else if (successCount > 0) {
+          toast({
+            title: "Prompt Blast Partially Complete",
+            description: `${successCount} platforms succeeded, ${errorCount} platforms encountered issues.`,
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Prompt Blast Failed",
+            description: "All platforms encountered issues. Please try again.",
+            variant: "destructive"
+          });
+        }
       }, 1000);
     }, 5000);
+  };
+
+  const retryPlatform = (platform: string) => {
+    setPlatformStates(prev => ({ ...prev, [platform]: 'loading' }));
+    setPlatformErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[platform];
+      return newErrors;
+    });
+
+    setTimeout(() => {
+      // Simulate retry with higher success rate
+      const randomFailure = Math.random();
+      if (randomFailure < 0.2) {
+        setPlatformStates(prev => ({ ...prev, [platform]: 'error' }));
+        setPlatformErrors(prev => ({ 
+          ...prev, 
+          [platform]: `We're still unable to connect to the ${platform} API. Please try again later.`
+        }));
+      } else {
+        setPlatformStates(prev => ({ ...prev, [platform]: 'success' }));
+        toast({
+          title: "Retry Successful",
+          description: `Successfully connected to ${platform}.`,
+        });
+      }
+    }, 2000);
   };
 
   const getSentimentIcon = (sentiment: string) => {
@@ -427,37 +539,134 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                 </Button>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {aiPlatforms.map((platform) => (
-                  <div
-                    key={platform.id}
-                    className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
-                      selectedPlatforms.includes(platform.name)
-                        ? 'border-purple-400 bg-purple-50 shadow-sm'
-                        : 'border-gray-200 bg-white hover:border-gray-300'
-                    }`}
-                    onClick={() => {
-                      if (selectedPlatforms.includes(platform.name)) {
-                        setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform.name));
-                      } else {
-                        setSelectedPlatforms([...selectedPlatforms, platform.name]);
-                      }
-                    }}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full ${platform.color}`}></div>
-                      <span className="text-sm font-medium">{platform.name}</span>
-                    </div>
-                    {selectedPlatforms.includes(platform.name) && (
-                      <div className="absolute top-2 right-2">
-                        <Check className="w-4 h-4 text-purple-600" />
+                {aiPlatforms.map((platform) => {
+                  const platformState = platformStates[platform.name] || 'idle';
+                  const platformError = platformErrors[platform.name];
+                  const isSelected = selectedPlatforms.includes(platform.name);
+                  
+                  return (
+                    <div
+                      key={platform.id}
+                      className={`relative p-4 rounded-xl border-2 transition-all duration-200 min-h-[120px] ${
+                        platformState === 'error' || platformState === 'rate-limited' || platformState === 'prompt-rejected'
+                          ? 'border-red-300 bg-red-50'
+                          : platformState === 'loading'
+                          ? 'border-blue-300 bg-blue-50'
+                          : platformState === 'success'
+                          ? 'border-green-300 bg-green-50'
+                          : isSelected
+                          ? 'border-purple-400 bg-purple-50 shadow-sm cursor-pointer hover:shadow-md'
+                          : 'border-gray-200 bg-white hover:border-gray-300 cursor-pointer hover:shadow-md'
+                      }`}
+                      onClick={() => {
+                        if (platformState === 'loading') return;
+                        if (isSelected) {
+                          setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform.name));
+                        } else {
+                          setSelectedPlatforms([...selectedPlatforms, platform.name]);
+                        }
+                      }}
+                    >
+                      {/* Platform Header */}
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className={`w-3 h-3 rounded-full ${platform.color}`}></div>
+                        <span className="text-sm font-medium">{platform.name}</span>
+                        
+                        {/* Status Icons */}
+                        {platformState === 'loading' && (
+                          <Loader2 className="w-4 h-4 text-blue-500 animate-spin ml-auto" />
+                        )}
+                        {platformState === 'success' && (
+                          <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
+                        )}
+                        {(platformState === 'error' || platformState === 'rate-limited') && (
+                          <AlertCircle className="w-4 h-4 text-red-500 ml-auto" />
+                        )}
+                        {platformState === 'prompt-rejected' && (
+                          <AlertTriangle className="w-4 h-4 text-orange-500 ml-auto" />
+                        )}
+                        {platformState === 'idle' && isSelected && (
+                          <Check className="w-4 h-4 text-purple-600 ml-auto" />
+                        )}
                       </div>
-                    )}
-                  </div>
-                ))}
+
+                      {/* Error States */}
+                      {platformError && (
+                        <div className="space-y-2">
+                          <div className="text-xs text-red-700 font-medium">
+                            {platformState === 'error' ? 'Service Unavailable' :
+                             platformState === 'rate-limited' ? 'Usage Limit Reached' :
+                             'Prompt Rejected'}
+                          </div>
+                          <div className="text-xs text-red-600 leading-relaxed">
+                            {platformError}
+                          </div>
+                          
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 mt-3">
+                            {platformState === 'error' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                className="h-6 px-2 text-xs border-red-300 text-red-700 hover:bg-red-100"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  retryPlatform(platform.name);
+                                }}
+                              >
+                                <RefreshCw className="w-3 h-3 mr-1" />
+                                Retry
+                              </Button>
+                            )}
+                            {platformState === 'rate-limited' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                className="h-6 px-2 text-xs border-orange-300 text-orange-700 hover:bg-orange-100"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // In real implementation, this would link to billing/upgrade page
+                                  toast({
+                                    title: "Upgrade Plan",
+                                    description: "This would redirect to upgrade options.",
+                                  });
+                                }}
+                              >
+                                <ExternalLink className="w-3 h-3 mr-1" />
+                                Upgrade
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Loading State */}
+                      {platformState === 'loading' && (
+                        <div className="text-xs text-blue-600 font-medium">
+                          Processing your prompt...
+                        </div>
+                      )}
+
+                      {/* Success State */}
+                      {platformState === 'success' && (
+                        <div className="text-xs text-green-600 font-medium">
+                          Response received successfully
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-              <p className="text-xs text-gray-500">
-                Selected: {selectedPlatforms.length} of {aiPlatforms.length} platforms
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-gray-500">
+                  Selected: {selectedPlatforms.length} of {aiPlatforms.length} platforms
+                </p>
+                {showNoSelectionWarning && (
+                  <div className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded border border-orange-200 animate-fade-in">
+                    Please select at least one AI platform to blast
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Blast Button */}
