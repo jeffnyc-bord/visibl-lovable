@@ -554,11 +554,14 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                   const platformState = platformStates[platform.name] || 'idle';
                   const platformError = platformErrors[platform.name];
                   const isSelected = selectedPlatforms.includes(platform.name);
+                  const hasBlasted = isBlasting || Object.keys(platformStates).length > 0;
                   
                   return (
                     <div
                       key={platform.id}
-                      className={`relative p-6 rounded-lg border cursor-pointer transition-all duration-200 min-h-[120px] ${
+                      className={`relative p-6 rounded-lg border cursor-pointer transition-all duration-300 overflow-hidden ${
+                        hasBlasted && isSelected ? 'min-h-[120px]' : 'h-16'
+                      } ${
                         platformState === 'error' || platformState === 'rate-limited' || platformState === 'prompt-rejected'
                           ? 'border-red-200/80 bg-red-50/50'
                           : platformState === 'loading'
@@ -603,65 +606,70 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                         )}
                       </div>
 
-                      {/* Error States */}
-                      {platformError && (
-                        <div className="space-y-3">
-                          <div className="text-xs font-medium text-red-600">
-                            {platformState === 'error' ? 'Service Unavailable' :
-                             platformState === 'rate-limited' ? 'Usage Limit Reached' :
-                             'Prompt Rejected'}
-                          </div>
-                          <div className="text-xs text-muted-foreground leading-relaxed">
-                            {platformError}
-                          </div>
-                          
-                          {/* Action Buttons */}
-                          {platformState === 'error' && (
-                            <Button 
-                              size="sm" 
-                              variant="ghost"
-                              className="h-7 px-2 text-xs text-red-600 hover:bg-red-50"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                retryPlatform(platform.name);
-                              }}
-                            >
-                              <RefreshCw className="w-3 h-3 mr-1" />
-                              Retry
-                            </Button>
+                      {/* States - only show after blast */}
+                      {hasBlasted && isSelected && (
+                        <>
+                          {/* Error States */}
+                          {platformError && (
+                            <div className="space-y-3">
+                              <div className="text-xs font-medium text-red-600">
+                                {platformState === 'error' ? 'Service Unavailable' :
+                                 platformState === 'rate-limited' ? 'Usage Limit Reached' :
+                                 'Prompt Rejected'}
+                              </div>
+                              <div className="text-xs text-muted-foreground leading-relaxed">
+                                {platformError}
+                              </div>
+                              
+                              {/* Action Buttons */}
+                              {platformState === 'error' && (
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="h-7 px-2 text-xs text-red-600 hover:bg-red-50"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    retryPlatform(platform.name);
+                                  }}
+                                >
+                                  <RefreshCw className="w-3 h-3 mr-1" />
+                                  Retry
+                                </Button>
+                              )}
+                              {platformState === 'rate-limited' && (
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="h-7 px-2 text-xs text-red-600 hover:bg-red-50"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toast({
+                                      title: "Upgrade Plan",
+                                      description: "This would redirect to upgrade options.",
+                                    });
+                                  }}
+                                >
+                                  <ExternalLink className="w-3 h-3 mr-1" />
+                                  Upgrade
+                                </Button>
+                              )}
+                            </div>
                           )}
-                          {platformState === 'rate-limited' && (
-                            <Button 
-                              size="sm" 
-                              variant="ghost"
-                              className="h-7 px-2 text-xs text-red-600 hover:bg-red-50"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toast({
-                                  title: "Upgrade Plan",
-                                  description: "This would redirect to upgrade options.",
-                                });
-                              }}
-                            >
-                              <ExternalLink className="w-3 h-3 mr-1" />
-                              Upgrade
-                            </Button>
+
+                          {/* Loading State */}
+                          {platformState === 'loading' && (
+                            <div className="text-xs text-blue-600 font-medium">
+                              Processing your prompt...
+                            </div>
                           )}
-                        </div>
-                      )}
 
-                      {/* Loading State */}
-                      {platformState === 'loading' && (
-                        <div className="text-xs text-blue-600 font-medium">
-                          Processing your prompt...
-                        </div>
-                      )}
-
-                      {/* Success State */}
-                      {platformState === 'success' && (
-                        <div className="text-xs text-green-600 font-medium">
-                          Response received successfully
-                        </div>
+                          {/* Success State */}
+                          {platformState === 'success' && (
+                            <div className="text-xs text-green-600 font-medium">
+                              Response received successfully
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   );
