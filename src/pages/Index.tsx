@@ -293,6 +293,8 @@ const Index = () => {
       <DeveloperControls 
         states={dashboardStates}
         onStateChange={handleStateChange}
+        userRole={userRole}
+        onRoleChange={setUserRole}
       />
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
@@ -386,20 +388,6 @@ const Index = () => {
             </div>
             
             <div className="flex items-center space-x-3">
-              {/* Demo Role Switcher */}
-              <div className="flex items-center space-x-2">
-                <span className="text-xs text-gray-600">Role:</span>
-                <Select value={userRole} onValueChange={(value: "business_user" | "agency_admin") => setUserRole(value)}>
-                  <SelectTrigger className="w-32 h-7 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="business_user">Business User</SelectItem>
-                    <SelectItem value="agency_admin">Agency Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
               {/* Section Visibility Toggle */}
               <div className="flex items-center space-x-2">
                 <span className="text-xs text-gray-600">Visible Sections:</span>

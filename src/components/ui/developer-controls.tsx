@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Settings, Eye, EyeOff } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -16,9 +17,11 @@ interface DeveloperControlsProps {
     emptyState: boolean;
   };
   onStateChange: (state: string, value: boolean) => void;
+  userRole: "business_user" | "agency_admin";
+  onRoleChange: (role: "business_user" | "agency_admin") => void;
 }
 
-export function DeveloperControls({ states, onStateChange }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const controlItems = [
@@ -94,7 +97,20 @@ export function DeveloperControls({ states, onStateChange }: DeveloperControlsPr
                 </div>
               ))}
               
-              <div className="pt-2 border-t">
+              <div className="pt-2 border-t space-y-3">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">User Role</Label>
+                  <Select value={userRole} onValueChange={onRoleChange}>
+                    <SelectTrigger className="w-full h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="business_user">Business User</SelectItem>
+                      <SelectItem value="agency_admin">Agency Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
                 <Button
                   variant="outline"
                   size="sm"
