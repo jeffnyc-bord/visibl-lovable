@@ -17,13 +17,6 @@ export function StatusIndicators({
 }: StatusIndicatorsProps) {
   return (
     <div className="flex items-center gap-3">
-      {/* Visible Sections Indicator */}
-      <div className="flex items-center gap-2">
-        <Eye className="w-4 h-4 text-muted-foreground" />
-        <Badge variant="outline" className="text-xs">
-          {visibleSections}/{totalSections} sections
-        </Badge>
-      </div>
 
       {/* Pending Tasks Indicator */}
       {pendingTasks > 0 && (
