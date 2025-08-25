@@ -74,21 +74,6 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [brandType, setBrandType] = useState("");
   const [reportFrequency, setReportFrequency] = useState("");
-  const [selectedCompetitorFromDropdown, setSelectedCompetitorFromDropdown] = useState("");
-  
-  // Predefined list of popular competitors
-  const popularCompetitors = [
-    { name: "Apple", url: "apple.com" },
-    { name: "Google", url: "google.com" },
-    { name: "Microsoft", url: "microsoft.com" },
-    { name: "Amazon", url: "amazon.com" },
-    { name: "Meta", url: "meta.com" },
-    { name: "Tesla", url: "tesla.com" },
-    { name: "OpenAI", url: "openai.com" },
-    { name: "Anthropic", url: "anthropic.com" },
-    { name: "Netflix", url: "netflix.com" },
-    { name: "Spotify", url: "spotify.com" }
-  ];
   
   // Use selected brand as the primary brand
   const myBrand = {
@@ -161,55 +146,6 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       title: "Competitor Removed",
       description: `${competitor?.name} has been removed from your watchlist.`,
     });
-  };
-
-  const handleAddCompetitorFromDropdown = (competitorName: string) => {
-    const competitor = popularCompetitors.find(c => c.name === competitorName);
-    if (!competitor) return;
-    
-    setIsAddingBrand(true);
-    setAddBrandProgress(0);
-    
-    // Simulate progress updates
-    const progressInterval = setInterval(() => {
-      setAddBrandProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return prev + Math.random() * 12;
-      });
-    }, 500);
-    
-    setTimeout(() => {
-      clearInterval(progressInterval);
-      setAddBrandProgress(100);
-      setTimeout(() => {
-        // Create new competitor from dropdown selection
-        const newCompetitor = {
-          id: Math.max(...competitors.map(c => c.id), 1) + 1,
-          name: competitor.name,
-          url: competitor.url,
-          status: "Active" as "Active" | "Paused",
-          visibilityScore: Math.floor(Math.random() * 40) + 60, // Random score between 60-100
-          trend: Math.random() > 0.5 ? "+1.2%" : "-0.8%",
-          reportFrequency: "Weekly" as "Daily" | "Weekly" | "Bi-weekly" | "Monthly",
-          lastReport: "Just added",
-          totalMentions: `${(Math.random() * 5 + 1).toFixed(1)}K`
-        };
-        
-        // Add to competitors list
-        setCompetitors(prev => [...prev, newCompetitor]);
-        
-        setIsAddingBrand(false);
-        setAddBrandProgress(0);
-        setSelectedCompetitorFromDropdown("");
-        toast({
-          title: "Competitor Added Successfully",
-          description: `${newCompetitor.name} has been added to your watchlist.`,
-        });
-      }, 1000);
-    }, loadingDuration * 1000);
   };
 
   const handleAddBrand = () => {
@@ -309,72 +245,35 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
           </CardDescription>
         </CardHeader>
          <CardContent>
-           <div className="space-y-4">
-             {/* Quick Add from Popular Competitors */}
-             <div className="p-4 bg-accent/30 rounded-lg border border-border">
-               <h4 className="text-sm font-medium text-foreground mb-3">Quick Add Popular Competitors</h4>
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                 <Select value={selectedCompetitorFromDropdown} onValueChange={setSelectedCompetitorFromDropdown}>
-                   <SelectTrigger className="h-9">
-                     <SelectValue placeholder="Select a competitor" />
-                   </SelectTrigger>
-                   <SelectContent>
-                     {popularCompetitors
-                       .filter(comp => !competitors.some(existing => existing.name.toLowerCase() === comp.name.toLowerCase()))
-                       .map((competitor) => (
-                         <SelectItem key={competitor.name} value={competitor.name}>
-                           {competitor.name}
-                         </SelectItem>
-                       ))
-                     }
-                   </SelectContent>
-                 </Select>
-                 
-                 <div className="md:col-span-2">
-                   <Button 
-                     className="w-full h-9"
-                     onClick={() => handleAddCompetitorFromDropdown(selectedCompetitorFromDropdown)}
-                     disabled={!selectedCompetitorFromDropdown || isAddingBrand}
-                     variant="secondary"
-                   >
-                     <Plus className="w-4 h-4 mr-2" />
-                     {isAddingBrand ? "Adding..." : "Add Selected"}
-                   </Button>
-                 </div>
-               </div>
-             </div>
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+             <Input 
+               placeholder="Enter competitor website URL" 
+               className="h-9" 
+               value={websiteUrl}
+               onChange={(e) => setWebsiteUrl(e.target.value)}
+             />
              
-             {/* Manual Add */}
-             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-               <Input 
-                 placeholder="Enter competitor website URL" 
-                 className="h-9" 
-                 value={websiteUrl}
-                 onChange={(e) => setWebsiteUrl(e.target.value)}
-               />
-               
-               <Select value={reportFrequency} onValueChange={setReportFrequency}>
-                 <SelectTrigger className="h-9">
-                   <SelectValue placeholder="Report Frequency" />
-                 </SelectTrigger>
-                 <SelectContent>
-                   <SelectItem value="daily">Daily</SelectItem>
-                   <SelectItem value="weekly">Weekly</SelectItem>
-                   <SelectItem value="biweekly">Bi-weekly</SelectItem>
-                   <SelectItem value="monthly">Monthly</SelectItem>
-                 </SelectContent>
-               </Select>
-               
-               <div className="md:col-span-2">
-                 <Button 
-                   className="w-full h-9"
-                   onClick={handleAddBrand}
-                   disabled={!websiteUrl.trim() || !reportFrequency || isAddingBrand}
-                 >
-                   <Plus className="w-4 h-4 mr-2" />
-                   {isAddingBrand ? "Adding..." : "Add Custom URL"}
-                 </Button>
-               </div>
+             <Select value={reportFrequency} onValueChange={setReportFrequency}>
+               <SelectTrigger className="h-9">
+                 <SelectValue placeholder="Report Frequency" />
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="daily">Daily</SelectItem>
+                 <SelectItem value="weekly">Weekly</SelectItem>
+                 <SelectItem value="biweekly">Bi-weekly</SelectItem>
+                 <SelectItem value="monthly">Monthly</SelectItem>
+               </SelectContent>
+             </Select>
+             
+             <div className="md:col-span-2">
+               <Button 
+                 className="w-full h-9"
+                 onClick={handleAddBrand}
+                 disabled={!websiteUrl.trim() || !reportFrequency || isAddingBrand}
+               >
+                 <Plus className="w-4 h-4 mr-2" />
+                 {isAddingBrand ? "Adding..." : "Add to Watchlist"}
+               </Button>
              </div>
            </div>
          </CardContent>
