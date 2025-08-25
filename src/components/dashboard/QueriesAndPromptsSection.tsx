@@ -382,17 +382,10 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
             description: `Successfully tested prompt across ${selectedPlatforms.length} AI platforms.`,
           });
         } else if (successCount > 0) {
-          toast({
-            title: "Prompt Blast Partially Complete",
-            description: `${successCount} platforms succeeded, ${errorCount} platforms encountered issues.`,
-            variant: "destructive"
-          });
+          // Show non-intrusive banner instead of toast for partial failures
+          setGlobalError(`Blast finished with errors: ${successCount} platforms succeeded, ${errorCount} encountered issues.`);
         } else {
-          toast({
-            title: "Prompt Blast Failed",
-            description: "All platforms encountered issues. Please try again.",
-            variant: "destructive"
-          });
+          setGlobalError("All platforms encountered issues. Please check your connections and try again.");
         }
       }, 1000);
     }, 5000);
@@ -478,6 +471,24 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
         </div>
       )}
 
+      {/* Error banner */}
+      {globalError && (
+        <div className="mb-4 p-3 bg-red-50/80 border border-red-200/60 rounded-lg flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-red-500" />
+            <span className="text-sm text-red-700">{globalError}</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setGlobalError(null)}
+            className="h-6 w-6 p-0 text-red-500 hover:bg-red-100"
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        </div>
+      )}
+
     <Tabs defaultValue="blast" className="space-y-6">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="blast">Prompt Blast Lab</TabsTrigger>
@@ -538,7 +549,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                   {selectedPlatforms.length === aiPlatforms.length ? "Deselect All" : "Select All"}
                 </Button>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {aiPlatforms.map((platform) => {
                   const platformState = platformStates[platform.name] || 'idle';
                   const platformError = platformErrors[platform.name];
@@ -547,16 +558,16 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                   return (
                     <div
                       key={platform.id}
-                      className={`relative p-4 rounded-xl border-2 transition-all duration-200 min-h-[120px] ${
+                      className={`relative p-6 rounded-lg border cursor-pointer transition-all duration-200 min-h-[120px] ${
                         platformState === 'error' || platformState === 'rate-limited' || platformState === 'prompt-rejected'
-                          ? 'border-red-300 bg-red-50'
+                          ? 'border-red-200/80 bg-red-50/50'
                           : platformState === 'loading'
-                          ? 'border-blue-300 bg-blue-50'
+                          ? 'border-blue-200/80 bg-blue-50/50'
                           : platformState === 'success'
-                          ? 'border-green-300 bg-green-50'
+                          ? 'border-green-200/80 bg-green-50/50'
                           : isSelected
-                          ? 'border-purple-400 bg-purple-50 shadow-sm cursor-pointer hover:shadow-md'
-                          : 'border-gray-200 bg-white hover:border-gray-300 cursor-pointer hover:shadow-md'
+                          ? 'border-primary/30 bg-primary/5 shadow-sm hover:shadow-md'
+                          : 'border-border/40 hover:border-border/60 hover:shadow-sm'
                       }`}
                       onClick={() => {
                         if (platformState === 'loading') return;
@@ -568,75 +579,74 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                       }}
                     >
                       {/* Platform Header */}
-                      <div className="flex items-center space-x-3 mb-2">
-                        <div className={`w-3 h-3 rounded-full ${platform.color}`}></div>
-                        <span className="text-sm font-medium">{platform.name}</span>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-2 h-2 rounded-full ${platform.color}`}></div>
+                          <span className="text-sm font-medium">{platform.name}</span>
+                        </div>
                         
                         {/* Status Icons */}
                         {platformState === 'loading' && (
-                          <Loader2 className="w-4 h-4 text-blue-500 animate-spin ml-auto" />
+                          <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
                         )}
                         {platformState === 'success' && (
-                          <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
+                          <CheckCircle className="w-4 h-4 text-green-500" />
                         )}
                         {(platformState === 'error' || platformState === 'rate-limited') && (
-                          <AlertCircle className="w-4 h-4 text-red-500 ml-auto" />
+                          <AlertCircle className="w-4 h-4 text-red-500" />
                         )}
                         {platformState === 'prompt-rejected' && (
-                          <AlertTriangle className="w-4 h-4 text-orange-500 ml-auto" />
+                          <AlertTriangle className="w-4 h-4 text-orange-500" />
                         )}
                         {platformState === 'idle' && isSelected && (
-                          <Check className="w-4 h-4 text-purple-600 ml-auto" />
+                          <Check className="w-4 h-4 text-primary" />
                         )}
                       </div>
 
                       {/* Error States */}
                       {platformError && (
-                        <div className="space-y-2">
-                          <div className="text-xs text-red-700 font-medium">
+                        <div className="space-y-3">
+                          <div className="text-xs font-medium text-red-600">
                             {platformState === 'error' ? 'Service Unavailable' :
                              platformState === 'rate-limited' ? 'Usage Limit Reached' :
                              'Prompt Rejected'}
                           </div>
-                          <div className="text-xs text-red-600 leading-relaxed">
+                          <div className="text-xs text-muted-foreground leading-relaxed">
                             {platformError}
                           </div>
                           
                           {/* Action Buttons */}
-                          <div className="flex gap-2 mt-3">
-                            {platformState === 'error' && (
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                className="h-6 px-2 text-xs border-red-300 text-red-700 hover:bg-red-100"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  retryPlatform(platform.name);
-                                }}
-                              >
-                                <RefreshCw className="w-3 h-3 mr-1" />
-                                Retry
-                              </Button>
-                            )}
-                            {platformState === 'rate-limited' && (
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                className="h-6 px-2 text-xs border-orange-300 text-orange-700 hover:bg-orange-100"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // In real implementation, this would link to billing/upgrade page
-                                  toast({
-                                    title: "Upgrade Plan",
-                                    description: "This would redirect to upgrade options.",
-                                  });
-                                }}
-                              >
-                                <ExternalLink className="w-3 h-3 mr-1" />
-                                Upgrade
-                              </Button>
-                            )}
-                          </div>
+                          {platformState === 'error' && (
+                            <Button 
+                              size="sm" 
+                              variant="ghost"
+                              className="h-7 px-2 text-xs text-red-600 hover:bg-red-50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                retryPlatform(platform.name);
+                              }}
+                            >
+                              <RefreshCw className="w-3 h-3 mr-1" />
+                              Retry
+                            </Button>
+                          )}
+                          {platformState === 'rate-limited' && (
+                            <Button 
+                              size="sm" 
+                              variant="ghost"
+                              className="h-7 px-2 text-xs text-red-600 hover:bg-red-50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toast({
+                                  title: "Upgrade Plan",
+                                  description: "This would redirect to upgrade options.",
+                                });
+                              }}
+                            >
+                              <ExternalLink className="w-3 h-3 mr-1" />
+                              Upgrade
+                            </Button>
+                          )}
                         </div>
                       )}
 
