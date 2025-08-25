@@ -21,9 +21,10 @@ import { ExternalAIVisibilitySection } from "@/components/dashboard/ExternalAIVi
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
 import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
 import { Settings as SettingsPage } from "@/pages/Settings";
-import { DashboardSkeleton, WidgetSkeleton } from "@/components/ui/dashboard-skeleton";
+import { DashboardSkeleton, ChartWidgetSkeleton, ScorecardSkeleton, TableSkeleton, WidgetSkeleton } from "@/components/ui/dashboard-skeleton";
 import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from "@/components/ui/error-states";
 import { DeveloperControls } from "@/components/ui/developer-controls";
+import { StatusIndicators } from "@/components/ui/status-indicators";
 
 // Mock brand data structure
 interface BrandData {
@@ -206,7 +207,7 @@ const Index = () => {
     widgetError: false,
     emptyState: false,
   });
-  
+
   // Get current selected brand data
   const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];
 
@@ -220,6 +221,11 @@ const Index = () => {
     { key: "technical", label: "Technical Health", icon: "/lovable-uploads/768d3c42-b4d4-4542-8ca5-d73e44b8c475.png" },
     { key: "recommendations", label: "Recommendations", icon: "/lovable-uploads/aa7e3f0d-b714-499a-b96f-f48edabf1de9.png" }
   ];
+
+  // Calculate visible sections and pending tasks
+  const visibleSectionsCount = visibleSections.length;
+  const totalSectionsCount = allSections.length;
+  const pendingTasks = Object.values(dashboardStates).filter(Boolean).length;
 
   const toggleSectionVisibility = (sectionKey: string) => {
     setVisibleSections(prev => {
@@ -423,6 +429,13 @@ const Index = () => {
                   </SelectContent>
                 </Select>
               </div>
+              
+              <StatusIndicators
+                visibleSections={visibleSectionsCount}
+                totalSections={totalSectionsCount}
+                pendingTasks={pendingTasks}
+                isLoading={dashboardStates.fullDashboardLoading || dashboardStates.widgetLoading}
+              />
               
               <Button variant="ghost" size="sm" className="text-sm">
                 <HelpCircle className="w-4 h-4" />
