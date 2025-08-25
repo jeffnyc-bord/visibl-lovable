@@ -170,8 +170,7 @@ import {
   Building,
   Code,
   Zap,
-  Eye,
-  Plus
+  Eye
 } from "lucide-react";
 
 const Index = () => {
@@ -191,7 +190,6 @@ const Index = () => {
   // Filter states
   const [selectedDateRange, setSelectedDateRange] = useState("Last 7 days");
   const [selectedModels, setSelectedModels] = useState<string[]>(["All models"]);
-  const [selectedCompetitor, setSelectedCompetitor] = useState<string>("");
   
   // Section visibility state
   const [visibleSections, setVisibleSections] = useState<string[]>([
@@ -480,40 +478,6 @@ const Index = () => {
                               </div>
                             </SelectItem>
                           ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <Separator orientation="vertical" className="h-4" />
-                    
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs text-gray-600">vs</span>
-                      <Select value={selectedCompetitor} onValueChange={setSelectedCompetitor}>
-                        <SelectTrigger className="w-auto h-auto border border-gray-300 bg-white rounded-md px-3 py-1.5 text-xs">
-                          <div className="flex items-center space-x-1">
-                            <span>{selectedCompetitor || "Select competitor"}</span>
-                            <ChevronDown className="w-3 h-3" />
-                          </div>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {selectedBrand.competitors.map((competitor) => (
-                            <SelectItem key={competitor.name} value={competitor.name}>
-                              {competitor.name}
-                            </SelectItem>
-                          ))}
-                          <div className="border-t border-gray-200 mt-1 pt-1">
-                            <button 
-                              className="w-full flex items-center space-x-2 px-2 py-1.5 text-xs text-gray-600 hover:bg-gray-50 rounded-sm"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                // TODO: Open add competitor modal/dialog
-                                console.log("Add new competitor clicked");
-                              }}
-                            >
-                              <Plus className="w-3 h-3" />
-                              <span>Add competitor</span>
-                            </button>
-                          </div>
                         </SelectContent>
                       </Select>
                     </div>
