@@ -44,10 +44,9 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
   const [clientLogo, setClientLogo] = useState<File | null>(null);
   const [agencyLogo, setAgencyLogo] = useState<File | null>(null);
   const [agencyName, setAgencyName] = useState("");
-  const [selectedFormats, setSelectedFormats] = useState<string[]>(["pdf"]);
+  const [selectedFormats, setSelectedFormats] = useState<string[]>(["excel"]);
 
   const exportFormats = [
-    { id: "pdf", label: "PDF Report", description: "Professional formatted document" },
     { id: "excel", label: "Excel Spreadsheet", description: "Data tables and charts" },
     { id: "powerpoint", label: "PowerPoint Presentation", description: "Slide deck for presentations" },
     { id: "csv", label: "CSV Data", description: "Raw data export" },
@@ -145,7 +144,7 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
     setClientLogo(null);
     setAgencyLogo(null);
     setAgencyName("");
-    setSelectedFormats(["pdf"]);
+    setSelectedFormats(["excel"]);
   };
 
   return (
