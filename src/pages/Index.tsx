@@ -21,6 +21,9 @@ import { ExternalAIVisibilitySection } from "@/components/dashboard/ExternalAIVi
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
 import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
 import { Settings as SettingsPage } from "@/pages/Settings";
+import { DashboardSkeleton, WidgetSkeleton } from "@/components/ui/dashboard-skeleton";
+import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from "@/components/ui/error-states";
+import { DeveloperControls } from "@/components/ui/developer-controls";
 
 // Mock brand data structure
 interface BrandData {
@@ -194,6 +197,15 @@ const Index = () => {
   // Query prompt state
   const [prefilledQuery, setPrefilledQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("overview");
+
+  // Dashboard state management
+  const [dashboardStates, setDashboardStates] = useState({
+    fullDashboardLoading: false,
+    widgetLoading: false,
+    fullDashboardError: false,
+    widgetError: false,
+    emptyState: false,
+  });
   
   // Get current selected brand data
   const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];
@@ -232,6 +244,23 @@ const Index = () => {
     }, 3000);
   };
 
+  const handleStateChange = (state: string, value: boolean) => {
+    setDashboardStates(prev => ({
+      ...prev,
+      [state]: value
+    }));
+  };
+
+  const handleRetryDashboard = () => {
+    setDashboardStates(prev => ({ ...prev, fullDashboardError: false }));
+    // In a real app, this would trigger a data refetch
+  };
+
+  const handleRetryWidget = () => {
+    setDashboardStates(prev => ({ ...prev, widgetError: false }));
+    // In a real app, this would trigger a widget-specific data refetch
+  };
+
   // Role-based navigation items
   const getNavigationItems = () => {
     const baseItems = [
@@ -253,8 +282,18 @@ const Index = () => {
 
   const sidebarItems = getNavigationItems();
 
+  // Show full dashboard error if triggered
+  if (dashboardStates.fullDashboardError) {
+    return <FullDashboardError onRetry={handleRetryDashboard} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex text-sm">
+      {/* Developer Controls */}
+      <DeveloperControls 
+        states={dashboardStates}
+        onStateChange={handleStateChange}
+      />
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
         {/* Logo/Brand */}
@@ -331,12 +370,19 @@ const Index = () => {
               >
                 <Menu className="w-4 h-4" />
               </Button>
-               <h2 className="text-lg font-semibold text-gray-900">
-                 {activeView === "dashboard" ? "Dashboard" : 
-                  activeView === "brands" ? "Brand Management" :
-                  activeView === "agency" ? "Agency Admin" :
-                  activeView === "settings" ? "Settings" : "Dashboard"}
-               </h2>
+                {dashboardStates.fullDashboardLoading ? (
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">Loading your AI Visibility Dashboard</h2>
+                    <p className="text-sm text-gray-600">Gathering real-time insights from across the AI ecosystem. This may take a moment...</p>
+                  </div>
+                ) : (
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {activeView === "dashboard" ? "Dashboard" : 
+                     activeView === "brands" ? "Brand Management" :
+                     activeView === "agency" ? "Agency Admin" :
+                     activeView === "settings" ? "Settings" : "Dashboard"}
+                  </h2>
+                )}
             </div>
             
             <div className="flex items-center space-x-3">
@@ -402,10 +448,14 @@ const Index = () => {
         <main className="flex-1 p-3 overflow-auto">
           {activeView === "dashboard" && (
             <>
-
-              {/* Filter Bar */}
-              {hasAnalysis && (
-                <div className="mb-3 bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm">
+              {/* Show skeleton if full dashboard loading */}
+              {dashboardStates.fullDashboardLoading ? (
+                <DashboardSkeleton />
+              ) : (
+                <>
+                  {/* Filter Bar */}
+                  {hasAnalysis && (
+                    <div className="mb-3 bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm">
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2">
                       <Select value={selectedBrandId} onValueChange={setSelectedBrandId}>
@@ -505,82 +555,138 @@ const Index = () => {
                 </div>
               )}
 
-              {/* Dashboard Content */}
-              {hasAnalysis && (
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
-                  <TabsList className="bg-white border border-gray-200 p-0.5 shadow-sm">
-                    {allSections
-                      .filter(section => visibleSections.includes(section.key))
-                      .map((section) => (
-                        <TabsTrigger 
-                          key={section.key}
-                          value={section.key} 
-                          className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5"
-                        >
-                          {typeof section.icon === 'string' ? (
-                            <img src={section.icon} alt={section.label} className="w-4 h-4" />
+                  {/* Dashboard Content */}
+                  {hasAnalysis && (
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
+                      <TabsList className="bg-white border border-gray-200 p-0.5 shadow-sm">
+                        {allSections
+                          .filter(section => visibleSections.includes(section.key))
+                          .map((section) => (
+                            <TabsTrigger 
+                              key={section.key}
+                              value={section.key} 
+                              className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5"
+                            >
+                              {typeof section.icon === 'string' ? (
+                                <img src={section.icon} alt={section.label} className="w-4 h-4" />
+                              ) : (
+                                React.createElement(section.icon as any, { className: "w-3 h-3" })
+                              )}
+                              <span>{section.label}</span>
+                            </TabsTrigger>
+                          ))}
+                      </TabsList>
+
+                      {visibleSections.includes("overview") && (
+                        <TabsContent value="overview">
+                          {dashboardStates.emptyState ? (
+                            <NoAIVisibilityEmpty />
+                          ) : dashboardStates.widgetError ? (
+                            <WidgetError onRetry={handleRetryWidget} />
+                          ) : dashboardStates.widgetLoading ? (
+                            <WidgetSkeleton />
                           ) : (
-                            React.createElement(section.icon as any, { className: "w-3 h-3" })
+                            <OverviewSection 
+                              brandData={selectedBrand} 
+                              selectedModels={selectedModels}
+                              selectedDateRange={selectedDateRange}
+                              onQueryClick={(query) => {
+                                setPrefilledQuery(query);
+                                setActiveTab("queries");
+                              }}
+                            />
                           )}
-                          <span>{section.label}</span>
-                        </TabsTrigger>
-                      ))}
-                  </TabsList>
+                        </TabsContent>
+                      )}
 
-                  {visibleSections.includes("overview") && (
-                    <TabsContent value="overview">
-                      <OverviewSection 
-                        brandData={selectedBrand} 
-                        selectedModels={selectedModels}
-                        selectedDateRange={selectedDateRange}
-                        onQueryClick={(query) => {
-                          setPrefilledQuery(query);
-                          setActiveTab("queries");
-                        }}
-                      />
-                    </TabsContent>
-                  )}
+                      {visibleSections.includes("brand") && (
+                        <TabsContent value="brand">
+                          {dashboardStates.widgetError ? (
+                            <WidgetError onRetry={handleRetryWidget} />
+                          ) : dashboardStates.widgetLoading ? (
+                            <WidgetSkeleton />
+                          ) : (
+                            <BrandAnalysisSection brandData={selectedBrand} />
+                          )}
+                        </TabsContent>
+                      )}
 
-                  {visibleSections.includes("brand") && (
-                    <TabsContent value="brand">
-                      <BrandAnalysisSection brandData={selectedBrand} />
-                    </TabsContent>
-                  )}
+                      {visibleSections.includes("queries") && (
+                        <TabsContent value="queries">
+                          {dashboardStates.widgetError ? (
+                            <WidgetError onRetry={handleRetryWidget} />
+                          ) : dashboardStates.widgetLoading ? (
+                            <WidgetSkeleton />
+                          ) : (
+                            <QueriesAndPromptsSection 
+                              brandData={selectedBrand} 
+                              prefilledQuery={prefilledQuery}
+                              onQueryUsed={() => setPrefilledQuery("")}
+                            />
+                          )}
+                        </TabsContent>
+                      )}
 
-                  {visibleSections.includes("queries") && (
-                    <TabsContent value="queries">
-                      <QueriesAndPromptsSection 
-                        brandData={selectedBrand} 
-                        prefilledQuery={prefilledQuery}
-                        onQueryUsed={() => setPrefilledQuery("")}
-                      />
-                    </TabsContent>
-                  )}
+                      {visibleSections.includes("competitors") && (
+                        <TabsContent value="competitors">
+                          {dashboardStates.emptyState ? (
+                            <EmptyState
+                              title="No Competitor Data"
+                              description="No competitor information is available for this brand. Data may still be processing or competitors may need to be configured."
+                            />
+                          ) : dashboardStates.widgetError ? (
+                            <WidgetError onRetry={handleRetryWidget} />
+                          ) : dashboardStates.widgetLoading ? (
+                            <WidgetSkeleton />
+                          ) : (
+                            <CompetitorSection brandData={selectedBrand} />
+                          )}
+                        </TabsContent>
+                      )}
 
-                  {visibleSections.includes("competitors") && (
-                    <TabsContent value="competitors">
-                      <CompetitorSection brandData={selectedBrand} />
-                    </TabsContent>
-                  )}
+                      {visibleSections.includes("trends") && (
+                        <TabsContent value="trends">
+                          {dashboardStates.emptyState ? (
+                            <EmptyState
+                              title="No Trend Data Available"
+                              description="Trend analysis requires at least 7 days of data. Please check back once more data has been collected."
+                            />
+                          ) : dashboardStates.widgetError ? (
+                            <WidgetError onRetry={handleRetryWidget} />
+                          ) : dashboardStates.widgetLoading ? (
+                            <WidgetSkeleton />
+                          ) : (
+                            <TrendsSection />
+                          )}
+                        </TabsContent>
+                      )}
 
-                  {visibleSections.includes("trends") && (
-                    <TabsContent value="trends">
-                      <TrendsSection />
-                    </TabsContent>
-                  )}
+                      {visibleSections.includes("technical") && (
+                        <TabsContent value="technical">
+                          {dashboardStates.widgetError ? (
+                            <WidgetError onRetry={handleRetryWidget} />
+                          ) : dashboardStates.widgetLoading ? (
+                            <WidgetSkeleton />
+                          ) : (
+                            <TechnicalCrawlabilitySection />
+                          )}
+                        </TabsContent>
+                      )}
 
-                  {visibleSections.includes("technical") && (
-                    <TabsContent value="technical">
-                      <TechnicalCrawlabilitySection />
-                    </TabsContent>
+                      {visibleSections.includes("recommendations") && (
+                        <TabsContent value="recommendations">
+                          {dashboardStates.widgetError ? (
+                            <WidgetError onRetry={handleRetryWidget} />
+                          ) : dashboardStates.widgetLoading ? (
+                            <WidgetSkeleton />
+                          ) : (
+                            <RecommendationsSection />
+                          )}
+                        </TabsContent>
+                      )}
+                    </Tabs>
                   )}
-
-                  {visibleSections.includes("recommendations") && (
-                    <TabsContent value="recommendations">
-                      <RecommendationsSection />
-                    </TabsContent>
-                  )}
-                </Tabs>
+                </>
               )}
             </>
           )}
