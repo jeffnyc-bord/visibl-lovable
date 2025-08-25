@@ -13,6 +13,7 @@ interface ErrorStateProps {
 
 export function FullDashboardError({ onRetry }: { onRetry: () => void }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -57,12 +58,12 @@ export function FullDashboardError({ onRetry }: { onRetry: () => void }) {
               What's happening?
             </button>
             <span className="text-muted-foreground/50">•</span>
-            <a 
-              href="#" 
+            <button
+              onClick={() => setShowSupport(!showSupport)}
               className="hover:text-foreground underline-offset-4 hover:underline transition-colors"
             >
-              System Status
-            </a>
+              Contact Support
+            </button>
           </div>
 
           {/* Collapsible Details */}
@@ -75,6 +76,22 @@ export function FullDashboardError({ onRetry }: { onRetry: () => void }) {
               <div>
                 <p className="font-medium text-foreground">Technical details:</p>
                 <p className="text-sm font-mono">Error Code: 503 Service Unavailable</p>
+              </div>
+            </div>
+          )}
+
+          {/* Support Contact */}
+          {showSupport && (
+            <div className="mt-4 p-4 bg-muted/50 rounded-lg text-center space-y-2 border border-border/50">
+              <div>
+                <p className="font-medium text-foreground">Need help?</p>
+                <p className="text-sm">Get in touch with our support team:</p>
+                <a 
+                  href="mailto:support@company.com" 
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  support@company.com
+                </a>
               </div>
             </div>
           )}
