@@ -6,13 +6,18 @@ import { cn } from "@/lib/utils";
 export function DashboardSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
-      {/* Top Metrics Cards with unified shimmer */}
+      {/* Top Metrics Cards with visible titles */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 4 }).map((_, i) => (
+        {[
+          "Total Mentions",
+          "Response Rate",
+          "Sentiment Score", 
+          "Visibility Trend"
+        ].map((title, i) => (
           <Card key={i} className="relative overflow-hidden">
             <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             <CardHeader className="pb-2">
-              <div className="h-4 w-24 bg-muted rounded" />
+              <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
             </CardHeader>
             <CardContent>
               <div className="h-8 w-16 bg-muted rounded mb-2" />
@@ -26,27 +31,17 @@ export function DashboardSkeleton() {
       <Card className="relative overflow-hidden">
         <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <CardHeader>
-          <div className="h-6 w-48 bg-muted rounded" />
-          <div className="h-4 w-80 bg-muted rounded" />
+          <h2 className="text-lg font-semibold">Overall AI Visibility Trend</h2>
+          <p className="text-sm text-muted-foreground">Track your brand's visibility across AI platforms over time</p>
         </CardHeader>
         <CardContent>
-          {/* Chart skeleton with grid pattern */}
+          {/* Chart skeleton with grid pattern only */}
           <div className="h-64 w-full bg-muted rounded relative">
             <div className="absolute inset-4 space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="h-0.5 w-full bg-muted-foreground/20 rounded" />
               ))}
             </div>
-            {/* Simulated chart line */}
-            <svg className="absolute inset-4 w-full h-full">
-              <path
-                d="M 0 80 Q 100 40 200 60 T 400 50"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-                className="text-muted-foreground/30"
-              />
-            </svg>
           </div>
         </CardContent>
       </Card>
@@ -55,8 +50,8 @@ export function DashboardSkeleton() {
       <Card className="relative overflow-hidden">
         <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <CardHeader>
-          <div className="h-6 w-56 bg-muted rounded" />
-          <div className="h-4 w-80 bg-muted rounded" />
+          <h2 className="text-lg font-semibold">Industry AI Ranking</h2>
+          <p className="text-sm text-muted-foreground">See how your brand ranks against competitors in AI visibility</p>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -85,7 +80,7 @@ export function DashboardSkeleton() {
         <Card className="relative overflow-hidden">
           <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <CardHeader>
-            <div className="h-6 w-40 bg-muted rounded" />
+            <h2 className="text-lg font-semibold">Recommendations</h2>
           </CardHeader>
           <CardContent>
             <div className="h-64 w-full bg-muted rounded" />
@@ -94,7 +89,7 @@ export function DashboardSkeleton() {
         <Card className="relative overflow-hidden">
           <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <CardHeader>
-            <div className="h-6 w-40 bg-muted rounded" />
+            <h2 className="text-lg font-semibold">Recent Activity</h2>
           </CardHeader>
           <CardContent>
             <div className="h-64 w-full bg-muted rounded" />
