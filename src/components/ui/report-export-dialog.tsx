@@ -17,6 +17,7 @@ interface ReportExportDialogProps {
   trigger: React.ReactNode;
   brandName?: string;
   reportType?: "full" | "ai-mentions" | "visibility";
+  userRole?: "business_user" | "agency_admin";
 }
 
 interface ReportSection {
@@ -26,7 +27,7 @@ interface ReportSection {
   enabled: boolean;
 }
 
-export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = "full" }: ReportExportDialogProps) => {
+export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = "full", userRole = "business_user" }: ReportExportDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
@@ -43,6 +44,14 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
   const [clientLogo, setClientLogo] = useState<File | null>(null);
   const [agencyLogo, setAgencyLogo] = useState<File | null>(null);
   const [agencyName, setAgencyName] = useState("");
+  const [selectedFormats, setSelectedFormats] = useState<string[]>(["pdf"]);
+
+  const exportFormats = [
+    { id: "pdf", label: "PDF Report", description: "Professional formatted document" },
+    { id: "excel", label: "Excel Spreadsheet", description: "Data tables and charts" },
+    { id: "powerpoint", label: "PowerPoint Presentation", description: "Slide deck for presentations" },
+    { id: "csv", label: "CSV Data", description: "Raw data export" },
+  ];
 
   const [reportSections, setReportSections] = useState<ReportSection[]>([
     { id: "executive-summary", label: "Executive Summary", description: "AI-generated overview of key findings", enabled: true },
@@ -63,6 +72,14 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
     );
   };
 
+  const handleFormatToggle = (formatId: string, checked: boolean) => {
+    setSelectedFormats(prev => 
+      checked 
+        ? [...prev, formatId]
+        : prev.filter(id => id !== formatId)
+    );
+  };
+
   const handleFileUpload = (file: File, type: 'client' | 'agency') => {
     if (type === 'client') {
       setClientLogo(file);
@@ -77,6 +94,15 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
       toast({
         title: "No sections selected",
         description: "Please select at least one section to include in your report.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (selectedFormats.length === 0) {
+      toast({
+        title: "No formats selected",
+        description: "Please select at least one export format.",
         variant: "destructive"
       });
       return;
@@ -106,7 +132,7 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
         setStep(1);
         toast({
           title: "Report Export Complete",
-          description: `Your ${reportType === 'full' ? 'comprehensive' : 'focused'} ${brandName} report has been downloaded successfully.`,
+          description: `Your ${reportType === 'full' ? 'comprehensive' : 'focused'} ${brandName} report has been downloaded in ${selectedFormats.length} format${selectedFormats.length > 1 ? 's' : ''}.`,
         });
       }, 1500);
     }, 6000);
@@ -119,6 +145,7 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
     setClientLogo(null);
     setAgencyLogo(null);
     setAgencyName("");
+    setSelectedFormats(["pdf"]);
   };
 
   return (
@@ -138,7 +165,7 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
                 <span>Export {reportType === 'full' ? 'Comprehensive' : 'Focused'} Report</span>
               </DialogTitle>
               <DialogDescription>
-                Generate a professional, branded report for {brandName} with customizable sections and white-label options.
+                Generate a professional, branded report for {brandName} with customizable sections{userRole === "agency_admin" ? " and white-label options" : ""}.
               </DialogDescription>
             </DialogHeader>
 
@@ -218,18 +245,50 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
                   </div>
                 </div>
 
+                {/* Export Formats */}
+                <div className="space-y-3">
+                  <Label className="text-base font-medium">Export Formats</Label>
+                  <div className="space-y-3 border rounded-lg p-4">
+                    {exportFormats.map((format) => (
+                      <div key={format.id} className="flex items-start space-x-3">
+                        <Checkbox
+                          id={format.id}
+                          checked={selectedFormats.includes(format.id)}
+                          onCheckedChange={(checked) => handleFormatToggle(format.id, checked as boolean)}
+                        />
+                        <div className="grid gap-1.5 leading-none">
+                          <label
+                            htmlFor={format.id}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                            {format.label}
+                          </label>
+                          <p className="text-xs text-muted-foreground">
+                            {format.description}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="flex justify-end space-x-2">
                   <Button variant="outline" onClick={() => setIsOpen(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={() => setStep(2)}>
-                    Next: Branding
+                  <Button onClick={userRole === "agency_admin" ? () => setStep(2) : handleExport}>
+                    {userRole === "agency_admin" ? "Next: Branding" : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Generate Report
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
             )}
 
-            {step === 2 && (
+            {step === 2 && userRole === "agency_admin" && (
               <div className="space-y-6 py-4">
                 {/* Report Title */}
                 <div className="space-y-2">
