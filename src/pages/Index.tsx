@@ -181,6 +181,7 @@ const Index = () => {
   const [activeView, setActiveView] = useState("dashboard");
   // Simulating role-based logic - in real app this would come from auth/context
   const [userRole, setUserRole] = useState<"business_user" | "agency_admin">("business_user");
+  const [loadingDuration, setLoadingDuration] = useState(6);
   
   // Brand switching state
   const [trackedBrands] = useState<BrandData[]>(mockTrackedBrands);
@@ -301,6 +302,8 @@ const Index = () => {
         onStateChange={handleStateChange}
         userRole={userRole}
         onRoleChange={setUserRole}
+        loadingDuration={loadingDuration}
+        onLoadingDurationChange={setLoadingDuration}
       />
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
@@ -692,7 +695,7 @@ const Index = () => {
             </>
           )}
 
-          {activeView === "brands" && <BrandManagementSection selectedBrand={selectedBrand} trackedBrands={trackedBrands} />}
+          {activeView === "brands" && <BrandManagementSection selectedBrand={selectedBrand} trackedBrands={trackedBrands} loadingDuration={loadingDuration} />}
           {activeView === "agency" && <AgencyAdminSection />}
           {activeView === "settings" && <SettingsPage userRole={userRole} />}
         </main>
