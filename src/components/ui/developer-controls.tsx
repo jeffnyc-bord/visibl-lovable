@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Settings, Eye, EyeOff } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface DeveloperControlsProps {
@@ -20,11 +19,9 @@ interface DeveloperControlsProps {
   onStateChange: (state: string, value: boolean) => void;
   userRole: "business_user" | "agency_admin";
   onRoleChange: (role: "business_user" | "agency_admin") => void;
-  loadingDuration: number;
-  onLoadingDurationChange: (duration: number) => void;
 }
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const controlItems = [
@@ -112,22 +109,6 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                       <SelectItem value="agency_admin">Agency Admin</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Loading Duration (seconds)</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="30"
-                    value={loadingDuration}
-                    onChange={(e) => onLoadingDurationChange(Number(e.target.value))}
-                    className="h-8 text-xs"
-                    placeholder="Duration in seconds"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Controls how long competitor addition loading lasts
-                  </p>
                 </div>
                 
                 <Button

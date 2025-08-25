@@ -64,10 +64,9 @@ interface BrandData {
 interface BrandManagementSectionProps {
   selectedBrand: BrandData;
   trackedBrands: BrandData[];
-  loadingDuration?: number;
 }
 
-export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDuration = 6 }: BrandManagementSectionProps) => {
+export const BrandManagementSection = ({ selectedBrand, trackedBrands }: BrandManagementSectionProps) => {
   const { toast } = useToast();
   const [isAddingBrand, setIsAddingBrand] = useState(false);
   const [addBrandProgress, setAddBrandProgress] = useState(0);
@@ -194,7 +193,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
           description: `${newCompetitor.name} has been added to your watchlist.`,
         });
       }, 1000);
-    }, loadingDuration * 1000);
+    }, 6000);
   };
 
   return (
