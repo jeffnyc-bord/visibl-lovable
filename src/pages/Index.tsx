@@ -420,9 +420,9 @@ const Index = () => {
                           />
                           <div className="flex items-center space-x-2">
                             {typeof section.icon === 'string' ? (
-                              <img src={section.icon} alt={section.label} className="w-4 h-4" />
+                              <img src={section.icon} alt={section.label} className="w-5 h-5" />
                             ) : (
-                              React.createElement(section.icon as any, { className: "w-4 h-4" })
+                              React.createElement(section.icon as any, { className: "w-5 h-5" })
                             )}
                             <span className="text-sm">{section.label}</span>
                           </div>
@@ -572,9 +572,9 @@ const Index = () => {
                               className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5"
                             >
                               {typeof section.icon === 'string' ? (
-                                <img src={section.icon} alt={section.label} className="w-4 h-4" />
+                                <img src={section.icon} alt={section.label} className="w-5 h-5" />
                               ) : (
-                                React.createElement(section.icon as any, { className: "w-3 h-3" })
+                                React.createElement(section.icon as any, { className: "w-5 h-5" })
                               )}
                               <span>{section.label}</span>
                             </TabsTrigger>
