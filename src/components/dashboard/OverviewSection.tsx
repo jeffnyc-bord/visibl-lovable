@@ -531,13 +531,13 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               ) : (
                 <div className="p-6 rounded-lg">
                   <div className="flex justify-center items-center">
-                    <div className="relative w-64 h-64">
+                    <div className="relative w-48 h-48">
                       {/* Surrounding Donut Chart */}
-                      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 160 160">
+                      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 120 120">
                         {platformMentionsData.slice(0, 4).map((platform, index) => {
                           const isHovered = hoveredSegment === index;
-                          const strokeWidth = isHovered ? 20 : 16;
-                          const radius = 65;
+                          const strokeWidth = isHovered ? 12 : 10;
+                          const radius = 45;
                           const circumference = 2 * Math.PI * radius;
                           const segmentLength = (platform.percentage / 100) * circumference;
                           const offset = platformMentionsData.slice(0, index).reduce((acc, p) => acc + (p.percentage / 100) * circumference, 0);
@@ -546,8 +546,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                           return (
                             <circle
                               key={index}
-                              cx="80"
-                              cy="80"
+                              cx="60"
+                              cy="60"
                               r={radius}
                               fill="none"
                               stroke={DONUT_COLORS[index]}
@@ -569,7 +569,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
                       {/* Central Pie Chart */}
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="relative w-24 h-24">
+                        <div className="relative w-20 h-20">
                           {hoveredSegment !== null && (
                             <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 32 32">
                               <circle
@@ -608,15 +608,15 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                         {platformMentionsData.slice(0, 4).map((platform, index) => {
                           const angle = (platformMentionsData.slice(0, index).reduce((acc, p) => acc + p.percentage, 0) + platform.percentage / 2) * 3.6;
                           const radian = (angle - 90) * (Math.PI / 180);
-                          const labelRadius = 90;
+                          const labelRadius = 70;
                           const x = 50 + Math.cos(radian) * labelRadius;
                           const y = 50 + Math.sin(radian) * labelRadius;
                           
                           return (
                             <div
                               key={index}
-                              className="absolute text-white text-xs font-medium pointer-events-none"
-                              style={{
+                            className="absolute text-gray-700 text-xs font-medium pointer-events-none"
+                            style={{
                                 left: `${x}%`,
                                 top: `${y}%`,
                                 transform: 'translate(-50%, -50%)',
