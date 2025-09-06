@@ -32,6 +32,7 @@ import {
   Pin,
   PinOff
 } from "lucide-react";
+import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
 
 export const ProductDetail = () => {
   const { productId } = useParams();
@@ -41,6 +42,8 @@ export const ProductDetail = () => {
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [showMentionDetails, setShowMentionDetails] = useState(false);
+  const [selectedMentionId, setSelectedMentionId] = useState<number | null>(null);
 
   // Mock product data - in real app this would come from API
   const mockProduct = {
@@ -120,6 +123,41 @@ export const ProductDetail = () => {
       setActiveSection('opportunities');
     }
   }, []);
+
+  const handleMentionClick = (mentionId: number) => {
+    setSelectedMentionId(mentionId);
+    setShowMentionDetails(true);
+  };
+
+  // Transform AI mention data to work with PromptDetailsPanel
+  const transformMentionToPromptData = (mentionId: number) => {
+    const mention = aiMentions.find(m => m.id === mentionId);
+    if (!mention) return null;
+
+    const baseUrl = mention.url.startsWith('http') ? mention.url : `https://${mention.url}`;
+
+    return {
+      id: mention.id,
+      prompt: mention.query,
+      timestamp: new Date().toISOString(),
+      results: [{
+        platform: mention.model,
+        mentioned: true,
+        sentiment: mention.sentiment as "positive" | "neutral" | "negative",
+        response: mention.excerpt,
+        sources: [{
+          title: `${mention.model} Response`,
+          url: baseUrl,
+          domain: mention.url.split('/')[0]
+        }]
+      }],
+      metrics: {
+        totalMentions: 1,
+        topPlatforms: [mention.model],
+        avgSentiment: mention.sentiment
+      }
+    };
+  };
 
   const handleReanalyze = () => {
     setIsReanalyzing(true);
@@ -535,11 +573,12 @@ export const ProductDetail = () => {
               <h3 className="text-xl font-semibold text-gray-900 mb-3">AI Platform Mentions</h3>
               <p className="text-gray-600 mb-8">How {mockProduct.name} appears across different AI platforms</p>
               <div className="space-y-6">
-                {aiMentions.map((mention) => (
-                  <div 
-                    key={mention.id} 
-                    className="border-l-4 border-purple-500 bg-white pl-6 pr-6 py-6 hover:bg-gray-50 transition-colors duration-200 rounded-r-3xl shadow-sm"
-                  >
+                 {aiMentions.map((mention) => (
+                   <div 
+                     key={mention.id} 
+                     className="border-l-4 border-purple-500 bg-white pl-6 pr-6 py-6 hover:bg-gray-50 transition-colors duration-200 rounded-r-3xl shadow-sm cursor-pointer"
+                     onClick={() => handleMentionClick(mention.id)}
+                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 rounded-3xl bg-gradient-to-r from-purple-500 to-violet-500 flex items-center justify-center">
@@ -613,9 +652,16 @@ export const ProductDetail = () => {
               </div>
             </div>
           </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-    </>
-  );
+         </Tabs>
+       </div>
+     </div>
+
+     {/* AI Mention Details Panel */}
+     <PromptDetailsPanel
+       isOpen={showMentionDetails}
+       onClose={() => setShowMentionDetails(false)}
+       promptData={selectedMentionId ? transformMentionToPromptData(selectedMentionId) : null}
+     />
+     </>
+   );
 };
