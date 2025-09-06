@@ -161,31 +161,45 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
             <h3 className="text-lg font-semibold text-gray-900">Platform Analysis</h3>
             
             {/* Enhanced Carousel Navigation */}
-            <div className="flex items-center justify-center space-x-12 py-8">
-              {promptData.results.map((result) => {
-                const styles = getPlatformStyles(result.platform);
-                const isSelected = selectedPlatform === result.platform;
-                
-                return (
-                  <button
-                    key={result.platform}
-                    onClick={() => setSelectedPlatform(result.platform)}
-                    className={cn(
-                      "relative transition-all duration-300 transform-gpu",
-                      isSelected ? "scale-150" : "scale-75 opacity-50 hover:scale-90 hover:opacity-70"
-                    )}
-                  >
-                    <img 
-                      src={styles.logo} 
-                      alt={`${result.platform} logo`}
+            <div className="flex items-center justify-center py-8">
+              <div className="flex items-center space-x-2">
+                {promptData.results.map((result, index) => {
+                  const styles = getPlatformStyles(result.platform);
+                  const isSelected = selectedPlatform === result.platform;
+                  const selectedIndex = promptData.results.findIndex(r => r.platform === selectedPlatform);
+                  
+                  // Calculate dynamic margin based on position relative to selected
+                  let marginClass = "";
+                  if (isSelected) {
+                    marginClass = "mx-6"; // Extra space for selected item
+                  } else if (Math.abs(index - selectedIndex) === 1) {
+                    marginClass = "mx-4"; // Medium space for adjacent items
+                  } else {
+                    marginClass = "mx-1"; // Minimal space for distant items
+                  }
+                  
+                  return (
+                    <button
+                      key={result.platform}
+                      onClick={() => setSelectedPlatform(result.platform)}
                       className={cn(
-                        "w-20 h-20 object-contain transition-all duration-300",
-                        isSelected ? "drop-shadow-lg" : ""
+                        "relative transition-all duration-500 transform-gpu",
+                        isSelected ? "scale-150 z-10" : "scale-75 opacity-50 hover:scale-90 hover:opacity-70",
+                        marginClass
                       )}
-                    />
-                  </button>
-                );
-              })}
+                    >
+                      <img 
+                        src={styles.logo} 
+                        alt={`${result.platform} logo`}
+                        className={cn(
+                          "w-16 h-16 object-contain transition-all duration-500",
+                          isSelected ? "drop-shadow-lg" : ""
+                        )}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
