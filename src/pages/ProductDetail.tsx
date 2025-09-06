@@ -566,7 +566,7 @@ export const ProductDetail = () => {
 
           <TabsContent value="mentions" className="space-y-8">
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">AI Platform Mentions</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Product AI Mentions</h3>
               <p className="text-gray-600 mb-8">How {mockProduct.name} appears across different AI platforms</p>
               <div className="space-y-6">
                  {aiMentions.map((mention) => (
