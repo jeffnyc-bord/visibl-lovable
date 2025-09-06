@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Clock, ThumbsUp, ThumbsDown, MessageSquare, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ThumbsUp, ThumbsDown, MessageSquare, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,7 +9,6 @@ interface PromptResult {
   platform: string;
   mentioned: boolean;
   sentiment: "positive" | "neutral" | "negative";
-  responseTime: string;
   response: string;
   sources?: Array<{
     title: string;
@@ -27,7 +26,6 @@ interface PromptDetailsData {
     totalMentions: number;
     topPlatforms: string[];
     avgSentiment: string;
-    responseTime: string;
   };
 }
 
@@ -64,35 +62,39 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
     switch (platform.toLowerCase()) {
       case "chatgpt":
         return {
-          bg: "bg-green-50",
+          bg: "bg-gradient-to-br from-green-50 to-emerald-100",
           border: "border-green-200",
           accent: "text-green-700",
           bubble: "bg-green-100 border-green-200",
-          logo: "https://cdn.openai.com/API/logo-openai.svg"
+          logo: "/lovable-uploads/21661e0f-75fe-4662-8b83-54120e1f0e7c.png",
+          gradient: "from-green-400 to-emerald-600"
         };
       case "gemini":
         return {
-          bg: "bg-blue-50",
+          bg: "bg-gradient-to-br from-blue-50 to-indigo-100",
           border: "border-blue-200", 
           accent: "text-blue-700",
           bubble: "bg-blue-100 border-blue-200",
-          logo: "https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg"
+          logo: "/lovable-uploads/65ec39db-9a58-4ca5-9d92-81f8768dfc3f.png",
+          gradient: "from-blue-400 to-indigo-600"
         };
       case "grok":
         return {
-          bg: "bg-pink-50",
-          border: "border-pink-200",
-          accent: "text-pink-700", 
-          bubble: "bg-pink-100 border-pink-200",
-          logo: "https://upload.wikimedia.org/wikipedia/commons/5/5a/X_icon_2.svg"
+          bg: "bg-gradient-to-br from-gray-50 to-slate-100",
+          border: "border-gray-200",
+          accent: "text-gray-700", 
+          bubble: "bg-gray-100 border-gray-200",
+          logo: "/lovable-uploads/b1669738-c954-407c-a16a-fc81886dda6b.png",
+          gradient: "from-gray-600 to-black"
         };
       case "perplexity":
         return {
-          bg: "bg-purple-50",
-          border: "border-purple-200",
-          accent: "text-purple-700",
-          bubble: "bg-purple-100 border-purple-200",
-          logo: "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/perplexity-ai-icon.svg"
+          bg: "bg-gradient-to-br from-teal-50 to-cyan-100",
+          border: "border-teal-200",
+          accent: "text-teal-700",
+          bubble: "bg-teal-100 border-teal-200",
+          logo: "/lovable-uploads/74062f18-e53e-487e-ad8e-f12d3c959444.png",
+          gradient: "from-teal-400 to-cyan-600"
         };
       default:
         return {
@@ -100,7 +102,8 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
           border: "border-gray-200",
           accent: "text-gray-700",
           bubble: "bg-gray-100 border-gray-200",
-          logo: ""
+          logo: "",
+          gradient: "from-gray-400 to-gray-600"
         };
     }
   };
@@ -132,7 +135,6 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
               </h2>
               <div className="flex items-center space-x-4 mt-2">
                 <div className="flex items-center space-x-1 text-sm text-gray-500">
-                  <Clock className="w-4 h-4" />
                   <span>{new Date(promptData.timestamp).toLocaleString()}</span>
                 </div>
                 <Badge variant="outline" className="text-xs">
@@ -157,7 +159,7 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
           <Card>
             <CardContent className="p-4">
               <h3 className="font-medium text-gray-900 mb-3">Quick Insights</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div className="grid grid-cols-3 gap-6 text-center">
                 <div>
                   <div className="text-2xl font-bold text-primary">{promptData.metrics.totalMentions}</div>
                   <div className="text-xs text-gray-500">Total Mentions</div>
@@ -172,10 +174,6 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                   <div className="text-2xl font-bold text-blue-600 capitalize">{promptData.metrics.avgSentiment}</div>
                   <div className="text-xs text-gray-500">Avg Sentiment</div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-600">{promptData.metrics.responseTime}</div>
-                  <div className="text-xs text-gray-500">Avg Response Time</div>
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -184,8 +182,8 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Platform Analysis</h3>
             
-            {/* Carousel Navigation */}
-            <div className="flex items-center justify-center space-x-4 py-4 bg-gray-50 rounded-lg">
+            {/* Enhanced Carousel Navigation */}
+            <div className="flex items-center justify-center space-x-6 py-8">
               {promptData.results.map((result) => {
                 const styles = getPlatformStyles(result.platform);
                 const isSelected = selectedPlatform === result.platform;
@@ -195,30 +193,47 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                     key={result.platform}
                     onClick={() => setSelectedPlatform(result.platform)}
                     className={cn(
-                      "flex flex-col items-center space-y-2 p-4 rounded-lg transition-all duration-200",
-                      "hover:scale-105 hover:shadow-md",
+                      "relative flex flex-col items-center space-y-3 p-6 rounded-2xl transition-all duration-300",
+                      "hover:scale-110 hover:shadow-xl transform-gpu",
                       isSelected 
-                        ? cn("ring-2 ring-primary shadow-lg", styles.bg, styles.border, "border-2")
-                        : "bg-white border border-gray-200 hover:border-gray-300"
+                        ? cn("shadow-2xl ring-4 ring-primary/20", styles.bg)
+                        : "bg-white/80 border border-gray-200/60 hover:border-gray-300/80 backdrop-blur-sm"
                     )}
                   >
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border border-gray-200">
-                      <span className={cn("font-bold text-sm", isSelected ? styles.accent : "text-gray-600")}>
-                        {result.platform.slice(0, 2).toUpperCase()}
-                      </span>
-                    </div>
-                    <span className={cn("text-xs font-medium", isSelected ? styles.accent : "text-gray-600")}>
-                      {result.platform}
-                    </span>
-                    {result.mentioned ? (
-                      <Badge className="bg-green-100 text-green-800 text-xs px-2 py-0.5">
-                        Mentioned
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="bg-red-100 text-red-800 text-xs px-2 py-0.5">
-                        Not Mentioned
-                      </Badge>
+                    {isSelected && (
+                      <div className={cn("absolute inset-0 rounded-2xl bg-gradient-to-br opacity-10", `bg-gradient-to-br ${styles.gradient}`)} />
                     )}
+                    <div className={cn(
+                      "relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300",
+                      isSelected 
+                        ? cn("bg-white shadow-lg ring-2", styles.border)
+                        : "bg-gray-50 border border-gray-200"
+                    )}>
+                      <img 
+                        src={styles.logo} 
+                        alt={`${result.platform} logo`}
+                        className="w-10 h-10 object-contain"
+                      />
+                    </div>
+                    <div className="relative text-center">
+                      <span className={cn(
+                        "text-sm font-semibold transition-colors duration-300", 
+                        isSelected ? styles.accent : "text-gray-600"
+                      )}>
+                        {result.platform}
+                      </span>
+                      <div className="mt-2">
+                        {result.mentioned ? (
+                          <Badge className="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full border border-green-200">
+                            ✓ Mentioned
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-red-100 text-red-800 text-xs px-3 py-1 rounded-full border border-red-200">
+                            ✗ Not Mentioned
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
                   </button>
                 );
               })}
@@ -253,10 +268,6 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                     <div className="flex items-center space-x-1">
                       {getSentimentIcon(currentResult.sentiment)}
                       <span className="capitalize">{currentResult.sentiment}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{currentResult.responseTime}</span>
                     </div>
                   </div>
                 </div>
