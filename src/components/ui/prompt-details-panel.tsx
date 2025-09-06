@@ -196,11 +196,6 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                 {/* Platform Header */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-gray-200">
-                      <span className={cn("font-bold text-sm", currentStyles.accent)}>
-                        {currentResult.platform.slice(0, 2).toUpperCase()}
-                      </span>
-                    </div>
                     <h4 className={cn("text-xl font-semibold", currentStyles.accent)}>
                       {currentResult.platform}
                     </h4>
