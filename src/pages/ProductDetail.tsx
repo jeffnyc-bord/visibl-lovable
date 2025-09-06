@@ -269,7 +269,7 @@ export const ProductDetail = () => {
         {/* AI Readiness Hero Section */}
         <div className="space-y-8 mb-8">
           {/* Main Score Card */}
-          <div className="group bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-blue-100 hover:border-blue-200 cursor-pointer transform hover:scale-[1.02]">
+          <div className="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-blue-100 hover:border-blue-200 cursor-pointer transform hover:scale-[1.02] relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent">
             <div className="flex items-end justify-between mb-6">
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
