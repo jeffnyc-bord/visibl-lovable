@@ -210,7 +210,7 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                 {/* Platform Header */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center space-x-3">
-                    <h4 className={cn("text-xl font-semibold", currentStyles.accent)}>
+                    <h4 className="text-xl font-semibold text-black">
                       {currentResult.platform}
                     </h4>
                     {currentResult.mentioned ? (
