@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle, AlertCircle, RefreshCw, ExternalLink, AlertTriangle, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle, AlertCircle, RefreshCw, ExternalLink, AlertTriangle, Loader2, Plus, Trash2, Lightbulb, Calendar, ArrowUpDown } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -72,13 +73,21 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [showNoSelectionWarning, setShowNoSelectionWarning] = useState(false);
   
-  // Prompts tab state
+  // Dashboard state
+  const [sortBy, setSortBy] = useState<'mentions' | 'date'>('mentions');
+  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  const [dateFilter, setDateFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [showAddPromptDialog, setShowAddPromptDialog] = useState(false);
+  const [showSuggestPromptsDialog, setShowSuggestPromptsDialog] = useState(false);
+  const [newPrompt, setNewPrompt] = useState("");
+  const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
+  const [isGeneratingPrompts, setIsGeneratingPrompts] = useState(false);
+  const [expandedHistory, setExpandedHistory] = useState<number | null>(null);
   const [expandedPrompt, setExpandedPrompt] = useState<number | null>(null);
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [mentionFilter, setMentionFilter] = useState<string>("all");
   const [queryTypeFilter, setQueryTypeFilter] = useState<string>("all");
-  const [expandedHistory, setExpandedHistory] = useState<number | null>(null);
-  const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
 
   // Update prompt when prefilledQuery changes
   useEffect(() => {
@@ -169,86 +178,109 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
     }
   ];
 
-  // Mock data for detailed prompts table
-  const detailedPrompts = [
+  // Mock data for dashboard prompts
+  const dashboardPrompts = [
     {
       id: 1,
       prompt: "What are the best running shoes for marathon training?",
-      fullPrompt: "What are the best running shoes for marathon training? I'm looking for shoes that provide excellent cushioning, durability, and support for long-distance running.",
-      platform: "ChatGPT",
-      mentioned: true,
-      result: "Ranked #1",
-      queryType: "Ranking",
-      timestamp: "2024-01-20 09:15",
-      fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Brooks Ghost - Reliable cushioning 4. Hoka Clifton - Maximum comfort..."
+      date: "2024-01-20",
+      mentions: 127,
+      topPlatforms: ["ChatGPT", "Claude", "Gemini"],
+      type: "Visibl Generated",
+      isGenerated: true
     },
     {
       id: 2,
       prompt: "Best basketball shoes for performance and comfort",
-      fullPrompt: "What are the best basketball shoes for performance and comfort? Looking for shoes with excellent support and traction.",
-      platform: "Claude",
-      mentioned: true,
-      result: "Positive Mention",
-      queryType: "Discovery",
-      timestamp: "2024-01-20 08:30",
-      fullResponse: "Nike Air Jordan and Nike LeBron series offer excellent basketball performance with superior ankle support and court traction..."
+      date: "2024-01-19",
+      mentions: 95,
+      topPlatforms: ["ChatGPT", "Perplexity"],
+      type: "User Added",
+      isGenerated: false
     },
     {
       id: 3,
-      prompt: "How does sustainable footwear manufacturing impact the environment?",
-      fullPrompt: "How does sustainable footwear manufacturing impact the environment? Please explain the benefits of eco-friendly athletic shoes.",
-      platform: "Gemini",
-      mentioned: false,
-      result: "Not Mentioned",
-      queryType: "Factual",
-      timestamp: "2024-01-20 07:45",
-      fullResponse: "Sustainable footwear manufacturing significantly reduces environmental impact through recycled materials, eco-friendly processes from brands like Adidas and Allbirds..."
+      prompt: "Compare athletic shoe brands by innovation",
+      date: "2024-01-19",
+      mentions: 84,
+      topPlatforms: ["Claude", "Gemini", "Copilot"],
+      type: "Visibl Generated",
+      isGenerated: true
     },
     {
       id: 4,
-      prompt: "Compare athletic shoe brands by innovation",
-      fullPrompt: "Compare athletic shoe brands by innovation and technological advancement in 2024.",
-      platform: "Copilot",
-      mentioned: true,
-      result: "Ranked #1",
-      queryType: "Ranking",
-      timestamp: "2024-01-19 16:20",
-      fullResponse: "Nike leads the athletic footwear industry in innovation with their Air Max technology, React foam, and Nike Adapt self-lacing systems..."
+      prompt: "How does sustainable footwear manufacturing impact the environment?",
+      date: "2024-01-18",
+      mentions: 73,
+      topPlatforms: ["Gemini"],
+      type: "User Added",
+      isGenerated: false
     },
     {
       id: 5,
       prompt: "Best athletic shoes for cross-training",
-      fullPrompt: "What are the best athletic shoes for cross-training and versatile workouts?",
-      platform: "Perplexity",
-      mentioned: true,
-      result: "Brand Known",
-      queryType: "Discovery",
-      timestamp: "2024-01-19 14:10",
-      fullResponse: "The best cross-training shoes include Nike Metcon series, Reebok Nano, and Under Armour HOVR for versatile workouts..."
+      date: "2024-01-18",
+      mentions: 67,
+      topPlatforms: ["Perplexity", "ChatGPT"],
+      type: "Visibl Generated",
+      isGenerated: true
     },
     {
       id: 6,
       prompt: "Smart shoe technology comparison",
-      fullPrompt: "Compare smart shoe technology across different manufacturers in the premium segment.",
-      platform: "Grok",
-      mentioned: false,
-      result: "Not Mentioned",
-      queryType: "Templated",
-      timestamp: "2024-01-19 11:30",
-      fullResponse: "Smart shoe technology varies significantly across brands like Adidas, Under Armour, and Puma, offering different approaches to fitness tracking..."
+      date: "2024-01-17",
+      mentions: 52,
+      topPlatforms: ["Grok"],
+      type: "User Added",
+      isGenerated: false
     }
   ];
 
-  // Filter prompts based on selected filters
-  const filteredPrompts = detailedPrompts.filter(prompt => {
-    const platformMatch = platformFilter === "all" || prompt.platform === platformFilter;
-    const mentionMatch = mentionFilter === "all" || 
-      (mentionFilter === "mentioned" && prompt.mentioned) ||
-      (mentionFilter === "not-mentioned" && !prompt.mentioned);
-    const queryTypeMatch = queryTypeFilter === "all" || prompt.queryType === queryTypeFilter;
-    
-    return platformMatch && mentionMatch && queryTypeMatch;
-  });
+  // Mock data for prompts in queue
+  const queuedPrompts = [
+    {
+      id: 101,
+      prompt: "What are the most comfortable walking shoes for all-day wear?",
+      submittedDate: "2024-01-21 10:30",
+      status: "processing"
+    },
+    {
+      id: 102,
+      prompt: "Compare Nike vs Adidas running shoe technologies",
+      submittedDate: "2024-01-21 09:15",
+      status: "queued"
+    },
+    {
+      id: 103,
+      prompt: "Best eco-friendly athletic footwear brands",
+      submittedDate: "2024-01-21 08:45",
+      status: "queued"
+    }
+  ];
+
+  // Filter and sort dashboard prompts
+  const filteredDashboardPrompts = dashboardPrompts
+    .filter(prompt => {
+      const dateMatch = dateFilter === "all" || 
+        (dateFilter === "today" && prompt.date === "2024-01-20") ||
+        (dateFilter === "week" && new Date(prompt.date) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) ||
+        (dateFilter === "month" && new Date(prompt.date) >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+      
+      const typeMatch = typeFilter === "all" || 
+        (typeFilter === "generated" && prompt.isGenerated) ||
+        (typeFilter === "user" && !prompt.isGenerated);
+      
+      return dateMatch && typeMatch;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'mentions') {
+        return sortOrder === 'desc' ? b.mentions - a.mentions : a.mentions - b.mentions;
+      } else {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+      }
+    });
 
   const aiPlatforms = [
     { id: "chatgpt", name: "ChatGPT", color: "bg-green-500" },
@@ -418,6 +450,68 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
     }, 2000);
   };
 
+  const handleAddPrompt = () => {
+    if (!newPrompt.trim()) return;
+    
+    // Here you would typically add the prompt to your database
+    toast({
+      title: "Prompt Added",
+      description: "Your prompt has been added to the queue for processing.",
+    });
+    
+    setNewPrompt("");
+    setShowAddPromptDialog(false);
+  };
+
+  const handleSuggestPrompts = () => {
+    setIsGeneratingPrompts(true);
+    
+    // Simulate AI prompt generation
+    setTimeout(() => {
+      setSuggestedPrompts([
+        "What are the most durable athletic shoes for intensive training?",
+        "Compare Nike Air technology with competitors' cushioning systems",
+        "Best sustainable running shoes for environmentally conscious athletes",
+        "Which brand offers the best value for money in basketball shoes?",
+        "Latest innovations in athletic footwear for 2024"
+      ]);
+      setIsGeneratingPrompts(false);
+    }, 2000);
+  };
+
+  const handleDeletePrompt = (promptId: number) => {
+    // Here you would typically delete from your database
+    toast({
+      title: "Prompt Deleted",
+      description: "The prompt has been removed from your analysis.",
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const togglePlatform = (platformId: string) => {
+    setSelectedPlatforms(prev => 
+      prev.includes(platformId) 
+        ? prev.filter(id => id !== platformId)
+        : [...prev, platformId]
+    );
+  };
+
+  const copyPrompt = (prompt: string) => {
+    navigator.clipboard.writeText(prompt);
+    toast({
+      title: "Copied!",
+      description: "Prompt copied to clipboard",
+    });
+  };
+
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
       case "positive": return <ThumbsUp className="w-4 h-4 text-green-600" />;
@@ -435,585 +529,522 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   };
 
   return (
-    <>
-      {/* Loading Overlay */}
-      {isBlasting && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
-            <div className="text-center space-y-6">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-                <Zap className="w-8 h-8 text-purple-600 animate-pulse" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Blasting Prompt...
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Testing your prompt across {selectedPlatforms.length} AI platforms...
-                </p>
-              </div>
-              <div className="space-y-3">
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div 
-                    className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-300 ease-out"
-                    style={{ width: `${Math.min(blastProgress, 100)}%` }}
-                  />
-                </div>
-                <p className="text-sm text-gray-500">
-                  {blastProgress < 25 ? "Preparing queries..." :
-                   blastProgress < 50 ? "Sending to AI platforms..." :
-                   blastProgress < 75 ? "Collecting responses..." :
-                   "Analyzing results..."}
-                </p>
-              </div>
+    <div className="space-y-6">
+      <Tabs defaultValue="dashboard" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="generator">Prompt Generator</TabsTrigger>
+          <TabsTrigger value="history">Testing History</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="dashboard" className="space-y-4">
+          {/* Header with Action Buttons */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">AI Visibility Dashboard</h2>
+              <p className="text-muted-foreground">Manage and analyze your brand's AI visibility prompts</p>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Error banner */}
-      {globalError && (
-        <div className="mb-4 p-3 bg-red-50/80 border border-red-200/60 rounded-lg flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-            <span className="text-sm text-red-700">{globalError}</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setGlobalError(null)}
-            className="h-6 w-6 p-0 text-red-500 hover:bg-red-100"
-          >
-            <X className="h-3 w-3" />
-          </Button>
-        </div>
-      )}
-
-    <Tabs defaultValue="blast" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="blast">Prompt Blast Lab</TabsTrigger>
-        <TabsTrigger value="prompts">Prompts Analysis</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="blast" className="space-y-6">
-        {/* Modern Prompt Blast Workspace */}
-        <Card className="border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors">
-          <CardHeader className="bg-gray-50/50">
-            <CardTitle className="flex items-center space-x-2">
-              <div className="p-2 bg-white rounded-lg shadow-sm">
-                <img src="/lovable-uploads/31ceee67-302b-4950-8dcf-30088590bd21.png" alt="AI Testing Workspace" className="w-5 h-5" />
-              </div>
-              <span>AI Testing Workspace</span>
-            </CardTitle>
-            <CardDescription>
-              Test custom prompts across multiple AI platforms in real-time and compare responses instantly.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6 p-6">
-            {/* Prompt Input */}
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold text-gray-900">
-                Your Test Prompt
-              </label>
-              <Textarea
-                placeholder="Example: 'Compare Nike to other athletic footwear brands in terms of innovation and market leadership...'"
-                value={customPrompt}
-                onChange={(e) => setCustomPrompt(e.target.value)}
-                rows={4}
-                className="w-full resize-none border-2 border-gray-200 focus:border-purple-400 rounded-xl p-4 text-base"
-              />
-              <p className="text-xs text-gray-500">
-                Write a detailed prompt to get comprehensive responses from AI platforms.
-              </p>
-            </div>
-            
-            {/* Platform Selection Cards */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="block text-sm font-semibold text-gray-900">
-                  Select AI Platforms
-                </label>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const allPlatformNames = aiPlatforms.map(p => p.name);
-                    if (selectedPlatforms.length === allPlatformNames.length) {
-                      setSelectedPlatforms([]);
-                    } else {
-                      setSelectedPlatforms([...allPlatformNames]);
-                    }
-                  }}
-                  className="text-xs h-7"
-                >
-                  {selectedPlatforms.length === aiPlatforms.length ? "Deselect All" : "Select All"}
-                </Button>
-              </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {aiPlatforms.map((platform) => {
-                  const platformState = platformStates[platform.name] || 'idle';
-                  const platformError = platformErrors[platform.name];
-                  const isSelected = selectedPlatforms.includes(platform.name);
-                  const hasBlasted = isBlasting || Object.keys(platformStates).length > 0;
-                  
-                  return (
-                    <div
-                      key={platform.id}
-                      className={`relative p-6 rounded-lg border cursor-pointer transition-all duration-300 overflow-hidden ${
-                        hasBlasted && isSelected ? 'min-h-[120px]' : 'h-16'
-                      } ${
-                        platformState === 'error' || platformState === 'rate-limited' || platformState === 'prompt-rejected'
-                          ? 'border-red-200/80 bg-red-50/50'
-                          : platformState === 'loading'
-                          ? 'border-blue-200/80 bg-blue-50/50'
-                          : platformState === 'success'
-                          ? 'border-green-200/80 bg-green-50/50'
-                          : isSelected
-                          ? 'border-primary/30 bg-primary/5 shadow-sm hover:shadow-md'
-                          : 'border-border/40 hover:border-border/60 hover:shadow-sm'
-                      }`}
-                      onClick={() => {
-                        if (platformState === 'loading') return;
-                        if (isSelected) {
-                          setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform.name));
-                        } else {
-                          setSelectedPlatforms([...selectedPlatforms, platform.name]);
-                        }
-                      }}
-                    >
-                      {/* Platform Header */}
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-2 h-2 rounded-full ${platform.color}`}></div>
-                          <span className="text-sm font-medium">{platform.name}</span>
-                        </div>
-                        
-                        {/* Status Icons */}
-                        {platformState === 'loading' && (
-                          <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
-                        )}
-                        {platformState === 'success' && (
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                        )}
-                        {(platformState === 'error' || platformState === 'rate-limited') && (
-                          <AlertCircle className="w-4 h-4 text-red-500" />
-                        )}
-                        {platformState === 'prompt-rejected' && (
-                          <AlertTriangle className="w-4 h-4 text-orange-500" />
-                        )}
-                        {platformState === 'idle' && isSelected && (
-                          <Check className="w-4 h-4 text-primary" />
-                        )}
+            <div className="flex items-center gap-3">
+              <Dialog open={showSuggestPromptsDialog} onOpenChange={setShowSuggestPromptsDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" onClick={handleSuggestPrompts}>
+                    <Lightbulb className="h-4 w-4 mr-2" />
+                    Suggest Prompts
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>AI-Generated Prompt Suggestions</DialogTitle>
+                    <DialogDescription>
+                      Based on your brand profile and industry trends, here are personalized prompt suggestions
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    {isGeneratingPrompts ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                        Generating personalized prompts...
                       </div>
-
-                      {/* States - only show after blast */}
-                      {hasBlasted && isSelected && (
-                        <>
-                          {/* Error States */}
-                          {platformError && (
-                            <div className="space-y-3">
-                              <div className="text-xs font-medium text-red-600">
-                                {platformState === 'error' ? 'Service Unavailable' :
-                                 platformState === 'rate-limited' ? 'Usage Limit Reached' :
-                                 'Prompt Rejected'}
-                              </div>
-                              <div className="text-xs text-muted-foreground leading-relaxed">
-                                {platformError}
-                              </div>
-                              
-                              {/* Action Buttons */}
-                              {platformState === 'error' && (
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost"
-                                  className="h-7 px-2 text-xs text-red-600 hover:bg-red-50"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    retryPlatform(platform.name);
-                                  }}
-                                >
-                                  <RefreshCw className="w-3 h-3 mr-1" />
-                                  Retry
-                                </Button>
-                              )}
-                              {platformState === 'rate-limited' && (
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost"
-                                  className="h-7 px-2 text-xs text-red-600 hover:bg-red-50"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toast({
-                                      title: "Upgrade Plan",
-                                      description: "This would redirect to upgrade options.",
-                                    });
-                                  }}
-                                >
-                                  <ExternalLink className="w-3 h-3 mr-1" />
-                                  Upgrade
-                                </Button>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Loading State */}
-                          {platformState === 'loading' && (
-                            <div className="text-xs text-blue-600 font-medium">
-                              Processing your prompt...
-                            </div>
-                          )}
-
-                          {/* Success State */}
-                          {platformState === 'success' && (
-                            <div className="text-xs text-green-600 font-medium">
-                              Response received successfully
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-gray-500">
-                  Selected: {selectedPlatforms.length} of {aiPlatforms.length} platforms
-                </p>
-                {showNoSelectionWarning && (
-                  <div className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded border border-orange-200 animate-fade-in">
-                    Please select at least one AI platform to blast
+                    ) : (
+                      <div className="space-y-3">
+                        {suggestedPrompts.map((prompt, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                            <p className="text-sm flex-1">{prompt}</p>
+                            <Button size="sm" variant="outline" onClick={() => {
+                              setNewPrompt(prompt);
+                              setShowAddPromptDialog(true);
+                            }}>
+                              Add to Queue
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* Blast Button */}
-            <Button 
-              onClick={handlePromptBlast}
-              disabled={!customPrompt.trim() || selectedPlatforms.length === 0 || isBlasting}
-              className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <Play className="w-5 h-5 mr-3" />
-              {isBlasting ? "Testing in Progress..." : `Blast to ${selectedPlatforms.length} Platforms`}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Live Results View */}
-        {showLiveResults && liveResults.length > 0 && (
-          <Card className="border-l-4 border-l-green-500">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MessageSquare className="w-5 h-5 text-green-600" />
-                <span>Live Results</span>
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
-                  {liveResults.filter(r => r.mentioned).length}/{liveResults.length} Mentioned
-                </Badge>
-              </CardTitle>
-              <CardDescription>
-                Real-time responses from AI platforms for your test prompt.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs value={activeResultTab} onValueChange={setActiveResultTab} className="w-full">
-                <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full mb-4">
-                  {liveResults.map((result) => (
-                    <TabsTrigger 
-                      key={result.platform} 
-                      value={result.platform}
-                      className="flex items-center space-x-2"
-                    >
-                      <span>{result.platform}</span>
-                      {result.mentioned ? (
-                        <Check className="w-3 h-3 text-green-600" />
-                      ) : (
-                        <X className="w-3 h-3 text-red-600" />
-                      )}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                
-                {liveResults.map((result) => (
-                  <TabsContent key={result.platform} value={result.platform} className="space-y-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-600">Status:</span>
-                        {result.mentioned ? (
-                          <Badge className="bg-green-100 text-green-800">Mentioned</Badge>
-                        ) : (
-                          <Badge variant="secondary" className="bg-red-100 text-red-800">Not Mentioned</Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-600">Sentiment:</span>
-                        <div className="flex items-center space-x-1">
-                          {getSentimentIcon(result.sentiment)}
-                          <Badge variant="secondary" className={getSentimentColor(result.sentiment)}>
-                            {result.sentiment}
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Timer className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">{result.responseTime}</span>
-                      </div>
-                      <Button variant="ghost" size="sm" className="w-fit">
-                        <Copy className="w-4 h-4 mr-1" />
-                        Copy
+                </DialogContent>
+              </Dialog>
+              
+              <Dialog open={showAddPromptDialog} onOpenChange={setShowAddPromptDialog}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Prompt
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Prompt</DialogTitle>
+                    <DialogDescription>
+                      Create a new prompt to test your brand's AI visibility
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Textarea
+                      placeholder="Enter your prompt here..."
+                      value={newPrompt}
+                      onChange={(e) => setNewPrompt(e.target.value)}
+                      rows={4}
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => setShowAddPromptDialog(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleAddPrompt}>
+                        Add to Queue
                       </Button>
                     </div>
-                    
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <h4 className="font-medium text-gray-900 mb-2">AI Response:</h4>
-                      <p className="text-sm text-gray-700 leading-relaxed">{result.response}</p>
-                    </div>
-                  </TabsContent>
-                ))}
-              </Tabs>
-            </CardContent>
-          </Card>
-        )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
 
-        {/* Enhanced Prompt History */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <History className="w-5 h-5 text-orange-500" />
-              <span>Test History</span>
-            </CardTitle>
-            <CardDescription>
-              Previous prompt tests with detailed platform-by-platform results.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {promptHistory.map((item) => (
-                <Collapsible key={item.id} open={expandedHistory === item.id} onOpenChange={(open) => setExpandedHistory(open ? item.id : null)}>
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <CollapsibleTrigger asChild>
-                      <div className="p-4 hover:bg-gray-50 cursor-pointer transition-colors">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900 mb-2">{item.prompt}</p>
-                            <div className="flex items-center space-x-4">
-                              <span className="text-sm text-gray-500 flex items-center">
-                                <Clock className="w-3 h-3 mr-1" />
-                                {item.testDate}
-                              </span>
-                              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                                {item.mentionedCount}/{item.totalPlatforms} Mentioned
-                              </Badge>
-                              <span className="text-xs text-gray-400">{item.timestamp}</span>
-                            </div>
+          {/* Prompts in Queue Section */}
+          {queuedPrompts.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-5 w-5" />
+                  Prompts in Queue ({queuedPrompts.length})
+                </CardTitle>
+                <CardDescription>
+                  Prompts submitted for processing
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {queuedPrompts.map((prompt) => (
+                    <div key={prompt.id} className="flex items-center justify-between p-3 border rounded-lg bg-blue-50">
+                      <div className="flex-1">
+                        <p className="font-medium">{prompt.prompt}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Submitted: {formatDate(prompt.submittedDate)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={prompt.status === 'processing' ? 'default' : 'secondary'}>
+                          {prompt.status === 'processing' ? (
+                            <>
+                              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                              Processing
+                            </>
+                          ) : (
+                            'Queued'
+                          )}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Main Dashboard Table */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Prompt Analysis Dashboard</CardTitle>
+                  <CardDescription>
+                    Track and analyze your AI visibility performance across platforms
+                  </CardDescription>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Select value={dateFilter} onValueChange={setDateFilter}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue placeholder="Date Range" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Time</SelectItem>
+                      <SelectItem value="today">Today</SelectItem>
+                      <SelectItem value="week">This Week</SelectItem>
+                      <SelectItem value="month">This Month</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={typeFilter} onValueChange={setTypeFilter}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue placeholder="Prompt Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      <SelectItem value="generated">Visibl Generated</SelectItem>
+                      <SelectItem value="user">User Added</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Prompt</TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            if (sortBy === 'date') {
+                              setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
+                            } else {
+                              setSortBy('date');
+                              setSortOrder('desc');
+                            }
+                          }}
+                          className="h-auto p-0 font-medium"
+                        >
+                          Date
+                          <ArrowUpDown className="h-4 w-4 ml-2" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>Top Platforms</TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            if (sortBy === 'mentions') {
+                              setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
+                            } else {
+                              setSortBy('mentions');
+                              setSortOrder('desc');
+                            }
+                          }}
+                          className="h-auto p-0 font-medium"
+                        >
+                          Mentions
+                          <ArrowUpDown className="h-4 w-4 ml-2" />
+                        </Button>
+                      </TableHead>
+                      <TableHead className="w-[100px]">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredDashboardPrompts.map((prompt) => (
+                      <TableRow key={prompt.id}>
+                        <TableCell className="max-w-[400px]">
+                          <div className="space-y-1">
+                            <p className="font-medium">{prompt.prompt}</p>
+                            <Badge 
+                              variant={prompt.isGenerated ? "default" : "secondary"}
+                              className="text-xs"
+                            >
+                              {prompt.type}
+                            </Badge>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <Button variant="ghost" size="sm">
-                              <Copy className="w-4 h-4" />
-                            </Button>
-                            {expandedHistory === item.id ? (
-                              <ChevronUp className="w-4 h-4 text-gray-400" />
-                            ) : (
-                              <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm text-muted-foreground">
+                            {formatDate(prompt.date)}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {prompt.topPlatforms.slice(0, 3).map((platform) => (
+                              <Badge key={platform} variant="outline" className="text-xs">
+                                {platform}
+                              </Badge>
+                            ))}
+                            {prompt.topPlatforms.length > 3 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{prompt.topPlatforms.length - 3}
+                              </Badge>
                             )}
                           </div>
-                        </div>
-                      </div>
-                    </CollapsibleTrigger>
-                    
-                    <CollapsibleContent>
-                      <div className="border-t border-gray-200 bg-gray-50 p-4">
-                        <div className="grid gap-4">
-                          {item.results.map((result, index) => (
-                            <div key={index} className="bg-white rounded-lg p-4 border border-gray-200">
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center space-x-3">
-                                  <Badge variant="outline">{result.platform}</Badge>
-                                  {result.mentioned ? (
-                                    <Badge className="bg-green-100 text-green-800">Mentioned</Badge>
-                                  ) : (
-                                    <Badge variant="secondary" className="bg-red-100 text-red-800">Not Mentioned</Badge>
-                                  )}
-                                  <div className="flex items-center space-x-1">
-                                    {getSentimentIcon(result.sentiment)}
-                                    <span className="text-xs text-gray-600 capitalize">{result.sentiment}</span>
-                                  </div>
-                                </div>
-                                <div className="flex items-center space-x-2 text-xs text-gray-500">
-                                  <Timer className="w-3 h-3" />
-                                  <span>{result.responseTime}</span>
-                                </div>
-                              </div>
-                              <div className="bg-gray-50 rounded p-3">
-                                <p className="text-sm text-gray-700">{result.response}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </CollapsibleContent>
-                  </div>
-                </Collapsible>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      <TabsContent value="prompts" className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <img src="/lovable-uploads/d065101f-8248-41db-a466-8cd39c5a5533.png" alt="Terminal" className="w-5 h-5" />
-              <span>Prompts Analysis</span>
-            </CardTitle>
-            <CardDescription>
-              Detailed view of queries used to assess your brand's AI visibility across platforms.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {/* Filters */}
-            <div className="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-2">
-                <Filter className="w-4 h-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">Filters:</span>
-              </div>
-              
-              <Select value={platformFilter} onValueChange={setPlatformFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="AI Platform" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                  <SelectItem value="all">All Platforms</SelectItem>
-                  {aiPlatforms.map(platform => (
-                    <SelectItem key={platform.id} value={platform.name}>{platform.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={mentionFilter} onValueChange={setMentionFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Mention Status" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                  <SelectItem value="all">All Results</SelectItem>
-                  <SelectItem value="mentioned">Only Mentioned</SelectItem>
-                  <SelectItem value="not-mentioned">Only Not Mentioned</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={queryTypeFilter} onValueChange={setQueryTypeFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Query Type" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="Ranking">Ranking</SelectItem>
-                  <SelectItem value="Discovery">Discovery</SelectItem>
-                  <SelectItem value="Factual">Factual</SelectItem>
-                  <SelectItem value="Templated">Templated</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Prompts Table */}
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold">Prompt</TableHead>
-                    <TableHead className="font-semibold">Platform</TableHead>
-                    <TableHead className="font-semibold">Result</TableHead>
-                    <TableHead className="font-semibold">Type</TableHead>
-                    <TableHead className="font-semibold">Date</TableHead>
-                    <TableHead className="font-semibold">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPrompts.map((prompt) => (
-                    <>
-                      <TableRow key={prompt.id} className="hover:bg-gray-50">
+                        </TableCell>
                         <TableCell>
-                          <div className="max-w-xs">
-                            <p className="font-medium text-gray-900 truncate">{prompt.prompt}</p>
+                          <div className="flex items-center gap-1">
+                            <span className="font-semibold text-lg">{prompt.mentions}</span>
+                            <span className="text-sm text-muted-foreground">mentions</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="mt-1 h-6 px-2 text-xs"
-                              onClick={() => setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id)}
+                              onClick={() => handleDeletePrompt(prompt.id)}
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
                             >
-                              {expandedPrompt === prompt.id ? (
-                                <>
-                                  <ChevronUp className="w-3 h-3 mr-1" />
-                                  Hide Details
-                                </>
-                              ) : (
-                                <>
-                                  <ChevronDown className="w-3 h-3 mr-1" />
-                                  View Details
-                                </>
-                              )}
+                              <Trash2 className="h-3 w-3" />
                             </Button>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{prompt.platform}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            {prompt.mentioned ? (
-                              <Check className="w-4 h-4 text-green-600" />
-                            ) : (
-                              <X className="w-4 h-4 text-red-600" />
-                            )}
-                            <span className="text-sm">{prompt.result}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="text-xs">
-                            {prompt.queryType}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-gray-600">
-                          {new Date(prompt.timestamp).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="ghost" size="sm">
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                        </TableCell>
                       </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              {filteredDashboardPrompts.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No prompts match your current filters
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="generator" className="space-y-4">
+          {/* AI Visibility Generator section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                AI Visibility Generator
+              </CardTitle>
+              <CardDescription>
+                Create intelligent prompts to test your brand's visibility across AI platforms
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Custom Prompt Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">Custom Prompt</h3>
+                  <Button variant="outline" size="sm" onClick={() => copyPrompt(customPrompt)}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy
+                  </Button>
+                </div>
+                <Textarea
+                  placeholder="Enter your custom prompt to test across AI platforms..."
+                  value={customPrompt}
+                  onChange={(e) => setCustomPrompt(e.target.value)}
+                  className="min-h-[100px]"
+                />
+              </div>
+
+              {/* Platform Selection */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Select AI Platforms</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {aiPlatforms.map((platform) => (
+                    <div
+                      key={platform.id}
+                      onClick={() => togglePlatform(platform.id)}
+                      className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                        selectedPlatforms.includes(platform.id)
+                          ? 'border-primary bg-primary/5'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-3 h-3 rounded-full ${platform.color}`}></div>
+                        <span className="font-medium text-sm">{platform.name}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Blast Button and Warning */}
+              <div className="space-y-3">
+                {showNoSelectionWarning && (
+                  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-center gap-2 text-yellow-800">
+                      <AlertTriangle className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        Please enter a prompt and select at least one platform to continue.
+                      </span>
+                    </div>
+                  </div>
+                )}
+                
+                <Button 
+                  onClick={handlePromptBlast}
+                  className="w-full"
+                  size="lg"
+                  disabled={isBlasting}
+                >
+                  {isBlasting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Blasting Prompts... {Math.round(blastProgress)}%
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4 mr-2" />
+                      Blast to Platforms ({selectedPlatforms.length} selected)
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Platform Status Cards */}
+              {(isBlasting || Object.keys(platformStates).length > 0) && (
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold">Platform Status</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedPlatforms.map((platformId) => {
+                      const platform = aiPlatforms.find(p => p.id === platformId);
+                      const state = platformStates[platformId] || 'idle';
+                      const error = platformErrors[platformId];
                       
-                      {/* Expandable row content */}
-                      {expandedPrompt === prompt.id && (
-                        <TableRow>
-                          <TableCell colSpan={6} className="bg-gray-50 p-0">
-                            <div className="p-4 space-y-4">
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">Full Prompt:</h4>
-                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
-                                  {prompt.fullPrompt}
-                                </p>
+                      return (
+                        <Card key={platformId} className={`transition-all ${
+                          state === 'success' ? 'border-green-500 bg-green-50' :
+                          state === 'error' || state === 'rate-limited' || state === 'prompt-rejected' ? 'border-red-500 bg-red-50' :
+                          state === 'loading' ? 'border-blue-500 bg-blue-50' :
+                          'border-gray-200'
+                        }`}>
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className={`w-3 h-3 rounded-full ${platform?.color}`}></div>
+                                <span className="font-medium">{platform?.name}</span>
                               </div>
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">AI Response:</h4>
-                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
-                                  {prompt.fullResponse}
-                                </p>
+                              <div className="flex items-center gap-2">
+                                {state === 'loading' && <Loader2 className="h-4 w-4 animate-spin text-blue-600" />}
+                                {state === 'success' && <CheckCircle className="h-4 w-4 text-green-600" />}
+                                {(state === 'error' || state === 'rate-limited' || state === 'prompt-rejected') && (
+                                  <>
+                                    <AlertCircle className="h-4 w-4 text-red-600" />
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => retryPlatform(platformId)}
+                                      className="h-6 px-2 text-xs"
+                                    >
+                                      <RefreshCw className="h-3 w-3 mr-1" />
+                                      Retry
+                                    </Button>
+                                  </>
+                                )}
                               </div>
                             </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                            {error && (
+                              <p className="text-sm text-red-600 mt-2">{error}</p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
-    </>
+        <TabsContent value="history" className="space-y-4">
+          {/* Testing History section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <History className="h-5 w-5" />
+                Testing History
+              </CardTitle>
+              <CardDescription>
+                Review past prompt tests and their detailed results across AI platforms
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {promptHistory.map((test, index) => (
+                <Card key={test.id} className="border-l-4 border-l-primary">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-1">
+                        <CardTitle className="text-base">{test.prompt}</CardTitle>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {test.testDate}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            {test.timestamp}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-600">{test.mentionedCount}</div>
+                          <div className="text-xs text-muted-foreground">Mentioned</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-blue-600">{test.totalPlatforms}</div>
+                          <div className="text-xs text-muted-foreground">Platforms</div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <Tabs defaultValue={test.results[0]?.platform} className="w-full">
+                      <TabsList className="grid w-full grid-cols-4">
+                        {test.results.map((result) => (
+                          <TabsTrigger 
+                            key={result.platform} 
+                            value={result.platform}
+                            className="text-xs"
+                          >
+                            <div className="flex items-center gap-1">
+                              {result.mentioned ? (
+                                <CheckCircle className="h-3 w-3 text-green-500" />
+                              ) : (
+                                <X className="h-3 w-3 text-red-500" />
+                              )}
+                              {result.platform}
+                            </div>
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+                      {test.results.map((result) => (
+                        <TabsContent key={result.platform} value={result.platform} className="mt-4">
+                          <Card>
+                            <CardHeader className="pb-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <Badge variant={result.mentioned ? "default" : "secondary"}>
+                                    {result.mentioned ? "Mentioned" : "Not Mentioned"}
+                                  </Badge>
+                                  <Badge variant="outline" className={
+                                    result.sentiment === "positive" ? "border-green-500 text-green-700" :
+                                    result.sentiment === "negative" ? "border-red-500 text-red-700" :
+                                    "border-gray-500 text-gray-700"
+                                  }>
+                                    {result.sentiment} sentiment
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <Timer className="h-4 w-4" />
+                                  {result.responseTime}
+                                </div>
+                              </div>
+                            </CardHeader>
+                            <CardContent>
+                              <p className="text-sm leading-relaxed">{result.response}</p>
+                            </CardContent>
+                          </Card>
+                        </TabsContent>
+                      ))}
+                    </Tabs>
+                  </CardContent>
+                </Card>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
