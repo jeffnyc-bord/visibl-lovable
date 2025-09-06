@@ -484,22 +484,6 @@ const Index = () => {
                     
                     <Separator orientation="vertical" className="h-4" />
                     
-                    <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
-                      <SelectTrigger className="w-auto h-auto border border-gray-300 bg-white rounded-md px-3 py-1.5 text-xs">
-                        <div className="flex items-center space-x-1">
-                          <span>{selectedDateRange}</span>
-                          <ChevronDown className="w-3 h-3" />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Last 7 days">Last 7 days</SelectItem>
-                        <SelectItem value="Last 30 days">Last 30 days</SelectItem>
-                        <SelectItem value="Last 90 days">Last 90 days</SelectItem>
-                        <SelectItem value="Last 6 months">Last 6 months</SelectItem>
-                        <SelectItem value="Last year">Last year</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    
                     <Popover onOpenChange={(open) => {
                       // If closing the popover and no models are selected, default to "All models"
                       if (!open && selectedModels.length === 0) {
