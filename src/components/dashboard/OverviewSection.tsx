@@ -58,6 +58,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
+  const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
 
   const visibilityData = [
     { month: "Jul", score: 75 },
@@ -150,6 +151,14 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           return platform.platform === filterModel;
         });
       });
+
+  // Vibrant color palette for donut segments
+  const DONUT_COLORS = [
+    '#65CAD2', // Light teal
+    '#FFB366', // Light orange
+    '#FF6633', // Darker orange
+    '#33CCB3'  // Bright teal
+  ];
 
   const COLORS = [
     '#3B82F6', // Blue
@@ -520,25 +529,108 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   </div>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
-                    <Pie
-                      data={pieChartData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ percentage }) => `${percentage}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="mentions"
-                    >
-                      {pieChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={pieChartColors[index % pieChartColors.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="bg-[#1A2B4D] p-6 rounded-lg">
+                  <div className="flex justify-center items-center">
+                    <div className="relative w-64 h-64">
+                      {/* Surrounding Donut Chart */}
+                      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 160 160">
+                        {platformMentionsData.slice(0, 4).map((platform, index) => {
+                          const isHovered = hoveredSegment === index;
+                          const strokeWidth = isHovered ? 20 : 16;
+                          const radius = 65;
+                          const circumference = 2 * Math.PI * radius;
+                          const segmentLength = (platform.percentage / 100) * circumference;
+                          const offset = platformMentionsData.slice(0, index).reduce((acc, p) => acc + (p.percentage / 100) * circumference, 0);
+                          const gap = 2;
+                          
+                          return (
+                            <circle
+                              key={index}
+                              cx="80"
+                              cy="80"
+                              r={radius}
+                              fill="none"
+                              stroke={DONUT_COLORS[index]}
+                              strokeWidth={strokeWidth}
+                              strokeLinecap="round"
+                              strokeDasharray={`${segmentLength - gap} ${circumference - segmentLength + gap}`}
+                              strokeDashoffset={-offset}
+                              className="transition-all duration-300 cursor-pointer"
+                              style={{
+                                filter: isHovered ? 'brightness(1.2)' : 'brightness(1)',
+                                animationDelay: `${index * 0.2}s`,
+                              }}
+                              onMouseEnter={() => setHoveredSegment(index)}
+                              onMouseLeave={() => setHoveredSegment(null)}
+                            />
+                          );
+                        })}
+                      </svg>
+
+                      {/* Central Pie Chart */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="relative w-24 h-24">
+                          {hoveredSegment !== null && (
+                            <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 32 32">
+                              <circle
+                                cx="16"
+                                cy="16"
+                                r="14"
+                                fill="none"
+                                stroke="#6AA4CC"
+                                strokeWidth="0.5"
+                                opacity="0.5"
+                              />
+                              <circle
+                                cx="16"
+                                cy="16"
+                                r="14"
+                                fill="none"
+                                stroke="#2D588A"
+                                strokeWidth="28"
+                                strokeDasharray={`${platformMentionsData[hoveredSegment].percentage * 0.88} 100`}
+                                className="transition-all duration-500"
+                              />
+                            </svg>
+                          )}
+                          
+                          {/* Central Percentage Text */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-white text-lg font-bold">
+                              {hoveredSegment !== null ? `${platformMentionsData[hoveredSegment].percentage}%` : ''}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Platform Labels */}
+                      <div className="absolute inset-0">
+                        {platformMentionsData.slice(0, 4).map((platform, index) => {
+                          const angle = (platformMentionsData.slice(0, index).reduce((acc, p) => acc + p.percentage, 0) + platform.percentage / 2) * 3.6;
+                          const radian = (angle - 90) * (Math.PI / 180);
+                          const labelRadius = 90;
+                          const x = 50 + Math.cos(radian) * labelRadius;
+                          const y = 50 + Math.sin(radian) * labelRadius;
+                          
+                          return (
+                            <div
+                              key={index}
+                              className="absolute text-white text-xs font-medium pointer-events-none"
+                              style={{
+                                left: `${x}%`,
+                                top: `${y}%`,
+                                transform: 'translate(-50%, -50%)',
+                                opacity: hoveredSegment === index ? 1 : 0.7
+                              }}
+                            >
+                              {platform.platform}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
             <div>
