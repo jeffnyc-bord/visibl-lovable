@@ -8,6 +8,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 
 export const ExternalAIVisibilitySection = () => {
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
+  const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
   // Mock data for AI mentions and sources
   const visibilityMetrics = {
     totalMentions: 1700,
@@ -80,16 +81,20 @@ export const ExternalAIVisibilitySection = () => {
     { query: "Sustainable transportation options", relevanceScore: 82, brand: "Tesla", mentions: 89 },
   ];
 
-  // AI Platform Mention Distribution data
+  // AI Platform Mention Distribution data - Top 4 platforms for donut chart
   const platformMentionsData = [
     { platform: "ChatGPT", mentions: 456, percentage: 28 },
     { platform: "Claude", mentions: 324, percentage: 20 },
     { platform: "Gemini", mentions: 287, percentage: 18 },
     { platform: "Perplexity", mentions: 180, percentage: 11 },
-    { platform: "Grok", mentions: 145, percentage: 9 },
-    { platform: "Copilot", mentions: 123, percentage: 8 },
-    { platform: "Google AI Mode", mentions: 98, percentage: 6 },
-    { platform: "Google Overviews", mentions: 87, percentage: 5 },
+  ];
+
+  // Vibrant color palette for donut segments
+  const DONUT_COLORS = [
+    '#65CAD2', // Light teal
+    '#FFB366', // Light orange
+    '#FF6633', // Darker orange
+    '#33CCB3'  // Bright teal
   ];
 
   const COLORS = [
@@ -280,51 +285,170 @@ export const ExternalAIVisibilitySection = () => {
             Brand mentions across AI platforms from your generated queries and prompt blasts.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Mentions by Platform</h4>
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={platformMentionsData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percentage }) => `${name} ${percentage}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="mentions"
-                  >
-                    {platformMentionsData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Platform Breakdown</h4>
-              <div className="space-y-3">
-                {platformMentionsData.map((platform, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                      ></div>
-                      <span className="text-sm font-medium">{platform.platform}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium">{platform.mentions}</span>
-                      <span className="text-xs text-gray-500">({platform.percentage}%)</span>
-                    </div>
+        <CardContent className="bg-[#1A2B4D] p-8 rounded-lg">
+          <div className="flex justify-center items-center">
+            <div className="relative w-80 h-80">
+              {/* Surrounding Donut Chart */}
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 160 160">
+                <defs>
+                  {/* Gradient definitions for animation */}
+                  <linearGradient id="teal" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#65CAD2" />
+                    <stop offset="100%" stopColor="#33CCB3" />
+                  </linearGradient>
+                </defs>
+                {platformMentionsData.map((platform, index) => {
+                  const isHovered = hoveredSegment === index;
+                  const strokeWidth = isHovered ? 20 : 16;
+                  const radius = 65;
+                  const circumference = 2 * Math.PI * radius;
+                  const segmentLength = (platform.percentage / 100) * circumference;
+                  const offset = platformMentionsData.slice(0, index).reduce((acc, p) => acc + (p.percentage / 100) * circumference, 0);
+                  const gap = 2; // Small gap between segments
+                  
+                  return (
+                    <circle
+                      key={index}
+                      cx="80"
+                      cy="80"
+                      r={radius}
+                      fill="none"
+                      stroke={DONUT_COLORS[index]}
+                      strokeWidth={strokeWidth}
+                      strokeLinecap="round"
+                      strokeDasharray={`${segmentLength - gap} ${circumference - segmentLength + gap}`}
+                      strokeDashoffset={-offset}
+                      className="transition-all duration-300 cursor-pointer"
+                      style={{
+                        filter: isHovered ? 'brightness(1.2)' : 'brightness(1)',
+                        animationDelay: `${index * 0.2}s`,
+                        animation: `drawSegment 1s ease-out forwards`
+                      }}
+                      onMouseEnter={() => setHoveredSegment(index)}
+                      onMouseLeave={() => setHoveredSegment(null)}
+                    />
+                  );
+                })}
+              </svg>
+
+              {/* Central Pie Chart */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative w-32 h-32">
+                  {hoveredSegment !== null && (
+                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 32 32">
+                      <circle
+                        cx="16"
+                        cy="16"
+                        r="14"
+                        fill="none"
+                        stroke="#6AA4CC"
+                        strokeWidth="0.5"
+                        opacity="0.5"
+                      />
+                      <circle
+                        cx="16"
+                        cy="16"
+                        r="14"
+                        fill="none"
+                        stroke="#2D588A"
+                        strokeWidth="28"
+                        strokeDasharray={`${platformMentionsData[hoveredSegment].percentage * 0.88} 100`}
+                        className="transition-all duration-500"
+                        style={{
+                          animation: 'fillCentralPie 0.8s ease-out forwards'
+                        }}
+                      />
+                    </svg>
+                  )}
+                  
+                  {/* Central Percentage Text */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-white text-lg font-bold">
+                      {hoveredSegment !== null ? `${platformMentionsData[hoveredSegment].percentage}%` : ''}
+                    </span>
                   </div>
-                ))}
+                </div>
+              </div>
+
+              {/* Platform Labels */}
+              <div className="absolute inset-0">
+                {platformMentionsData.map((platform, index) => {
+                  const angle = (platformMentionsData.slice(0, index).reduce((acc, p) => acc + p.percentage, 0) + platform.percentage / 2) * 3.6;
+                  const radian = (angle - 90) * (Math.PI / 180);
+                  const labelRadius = 100;
+                  const x = 50 + Math.cos(radian) * labelRadius;
+                  const y = 50 + Math.sin(radian) * labelRadius;
+                  
+                  return (
+                    <div
+                      key={index}
+                      className="absolute text-white text-xs font-medium pointer-events-none"
+                      style={{
+                        left: `${x}%`,
+                        top: `${y}%`,
+                        transform: 'translate(-50%, -50%)',
+                        opacity: hoveredSegment === index ? 1 : 0.7
+                      }}
+                    >
+                      {platform.platform}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
+
+          {/* Platform Breakdown List */}
+          <div className="mt-8">
+            <h4 className="text-sm font-medium text-white mb-4 text-center">Platform Breakdown</h4>
+            <div className="grid grid-cols-2 gap-4">
+              {platformMentionsData.map((platform, index) => (
+                <div 
+                  key={index} 
+                  className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
+                    hoveredSegment === index 
+                      ? 'border-white/30 bg-white/10' 
+                      : 'border-white/10 bg-white/5'
+                  }`}
+                  onMouseEnter={() => setHoveredSegment(index)}
+                  onMouseLeave={() => setHoveredSegment(null)}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: DONUT_COLORS[index] }}
+                    ></div>
+                    <span className="text-sm font-medium text-white">{platform.platform}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-white">{platform.mentions}</span>
+                    <span className="text-xs text-white/60">({platform.percentage}%)</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Inline CSS for animations */}
+          <style>{`
+            @keyframes drawSegment {
+              0% {
+                stroke-dasharray: 0 1000;
+              }
+              100% {
+                stroke-dasharray: var(--segment-length) var(--gap-length);
+              }
+            }
+            
+            @keyframes fillCentralPie {
+              0% {
+                stroke-dasharray: 0 100;
+              }
+              100% {
+                stroke-dasharray: var(--percentage) 100;
+              }
+            }
+          `}</style>
         </CardContent>
       </Card>
 
