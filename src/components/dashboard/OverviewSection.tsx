@@ -529,7 +529,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   </div>
                 </div>
               ) : (
-                <div className="bg-[#1A2B4D] p-6 rounded-lg">
+                <div className="p-6 rounded-lg">
                   <div className="flex justify-center items-center">
                     <div className="relative w-64 h-64">
                       {/* Surrounding Donut Chart */}
