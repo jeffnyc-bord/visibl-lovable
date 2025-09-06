@@ -175,7 +175,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 1,
       prompt: "What are the best running shoes for marathon training?",
       fullPrompt: "What are the best running shoes for marathon training? I'm looking for shoes that provide excellent cushioning, durability, and support for long-distance running.",
-      topPlatforms: "ChatGPT, Claude, Gemini",
+      topPlatforms: <img src="/lovable-uploads/40b161be-d934-42ce-81e4-ebbf0fb10606.png" alt="AI Platform" className="w-5 h-5" />,
       mentions: 145,
       source: "User",
       timestamp: "2024-01-20 09:15",
@@ -185,7 +185,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 2,
       prompt: "Best basketball shoes for performance and comfort",
       fullPrompt: "What are the best basketball shoes for performance and comfort? Looking for shoes with excellent support and traction.",
-      topPlatforms: "Claude, ChatGPT",
+      topPlatforms: <img src="/lovable-uploads/386be939-ecf0-4dbd-9319-0aa9efd55547.png" alt="AI Platform" className="w-5 h-5" />,
       mentions: 203,
       source: "Visibl",
       timestamp: "2024-01-20 08:30",
@@ -195,7 +195,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 3,
       prompt: "How does sustainable footwear manufacturing impact the environment?",
       fullPrompt: "How does sustainable footwear manufacturing impact the environment? Please explain the benefits of eco-friendly athletic shoes.",
-      topPlatforms: "Perplexity, Gemini",
+      topPlatforms: <img src="/lovable-uploads/100b4798-e926-4380-9d91-684520172a3c.png" alt="AI Platform" className="w-5 h-5" />,
       mentions: 67,
       source: "User",
       timestamp: "2024-01-20 07:45",
@@ -205,7 +205,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 4,
       prompt: "Compare athletic shoe brands by innovation",
       fullPrompt: "Compare athletic shoe brands by innovation and technological advancement in 2024.",
-      topPlatforms: "ChatGPT, Copilot, Claude",
+      topPlatforms: <img src="/lovable-uploads/73c7d411-1ae3-4a7e-ba8b-c1a3e8eb4880.png" alt="AI Platform" className="w-5 h-5" />,
       mentions: 89,
       source: "Visibl",
       timestamp: "2024-01-19 16:20",
@@ -215,7 +215,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 5,
       prompt: "Best athletic shoes for cross-training",
       fullPrompt: "What are the best athletic shoes for cross-training and versatile workouts?",
-      topPlatforms: "Perplexity, Grok",
+      topPlatforms: <img src="/lovable-uploads/40b161be-d934-42ce-81e4-ebbf0fb10606.png" alt="AI Platform" className="w-5 h-5" />,
       mentions: 124,
       source: "User",
       timestamp: "2024-01-19 14:10",
@@ -225,7 +225,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 6,
       prompt: "Smart shoe technology comparison",
       fullPrompt: "Compare smart shoe technology across different manufacturers in the premium segment.",
-      topPlatforms: "Gemini, Claude",
+      topPlatforms: <img src="/lovable-uploads/386be939-ecf0-4dbd-9319-0aa9efd55547.png" alt="AI Platform" className="w-5 h-5" />,
       mentions: 56,
       source: "Visibl",
       timestamp: "2024-01-19 11:30",
@@ -235,7 +235,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
 
   // Filter prompts based on selected filters
   const filteredPrompts = detailedPrompts.filter(prompt => {
-    const platformMatch = platformFilter === "all" || prompt.topPlatforms.includes(platformFilter);
+    const platformMatch = platformFilter === "all"; // Simplified since topPlatforms is now JSX
     const mentionMatch = mentionFilter === "all" || 
       (mentionFilter === "mentioned" && prompt.mentions > 0) ||
       (mentionFilter === "not-mentioned" && prompt.mentions === 0);
@@ -929,7 +929,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                  <TableHeader>
                    <TableRow className="bg-gray-50">
                      <TableHead className="font-semibold">Prompt</TableHead>
-                     <TableHead className="font-semibold">Top Platforms</TableHead>
+                     <TableHead className="font-semibold">Top Platform</TableHead>
                      <TableHead className="font-semibold">Mentions</TableHead>
                      <TableHead className="font-semibold">Source</TableHead>
                      <TableHead className="font-semibold">Date</TableHead>
@@ -963,7 +963,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                           </div>
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm text-gray-600">{prompt.topPlatforms}</span>
+                          <div className="flex items-center">{prompt.topPlatforms}</div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
