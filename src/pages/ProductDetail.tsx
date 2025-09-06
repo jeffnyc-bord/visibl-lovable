@@ -350,7 +350,7 @@ export const ProductDetail = () => {
                 </div>
               </div>
               <div>
-                <div className="text-sm font-medium text-gray-900 mb-1">AI Mentions</div>
+                <div className="text-sm font-medium text-gray-900 mb-1">Product Mentions</div>
                 <div className="text-xs text-gray-600">Total mentions across AI platforms</div>
               </div>
             </div>
