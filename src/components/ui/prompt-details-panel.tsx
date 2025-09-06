@@ -44,10 +44,10 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
 
   // Initialize selected platform with the first available result
   React.useEffect(() => {
-    if (promptData?.results?.length > 0) {
+    if (isOpen && promptData?.results?.length > 0) {
       setSelectedPlatform(promptData.results[0].platform);
     }
-  }, [promptData]);
+  }, [promptData, isOpen]);
 
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
