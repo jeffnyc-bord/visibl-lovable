@@ -256,61 +256,138 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                     </div>
                   </div>
                 ) : currentResult.platform.toLowerCase() === "gemini" ? (
-                  // Gemini structured format
-                  <div className="space-y-4">
-                    <h5 className="font-semibold text-blue-700 text-lg mb-3">Analysis Results</h5>
-                    {currentResult.response.split('. ').map((sentence, i) => (
-                      <div key={i} className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
-                        <p className="text-gray-700 leading-relaxed">{sentence}{i < currentResult.response.split('. ').length - 1 ? '.' : ''}</p>
+                  // Gemini interface format
+                  <div className="bg-gray-50 p-6 space-y-6 rounded-lg">
+                    {/* User Message */}
+                    <div className="flex justify-end">
+                      <div className="bg-gray-800 text-white px-4 py-3 rounded-2xl max-w-lg">
+                        <p className="text-sm">{promptData.prompt}</p>
                       </div>
-                    ))}
-                  </div>
-                ) : currentResult.platform.toLowerCase() === "grok" ? (
-                  // Grok informal format
-                  <div className="space-y-4">
-                    <div className="text-center mb-4">
-                      <span className="text-2xl">🤖</span>
-                      <h5 className="font-bold text-pink-700 text-lg">Grok's Hot Take</h5>
                     </div>
-                    <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
-                      <p className="text-gray-700 italic text-base leading-relaxed">"{currentResult.response}"</p>
-                    </div>
-                    <p className="text-xs text-pink-600 font-normal text-right">- Your friendly neighborhood AI</p>
-                  </div>
-                ) : (
-                  // Perplexity formal format with sources
-                  <div className="space-y-6">
-                    <div>
-                      <h5 className="font-semibold text-purple-700 text-lg mb-3 flex items-center">
-                        <span className="mr-2">📚</span>
-                        Research Summary
-                      </h5>
-                      <p className="text-gray-700 leading-relaxed text-base bg-purple-50 p-4 rounded-lg">{currentResult.response}</p>
-                    </div>
-                    {currentResult.sources && currentResult.sources.length > 0 && (
-                      <div className="border-t pt-4">
-                        <h5 className="text-sm font-semibold text-purple-700 mb-3 flex items-center">
-                          <ExternalLink className="w-4 h-4 mr-2" />
-                          Sources & References:
-                        </h5>
-                        <div className="space-y-2 bg-purple-50 p-4 rounded-lg">
-                          {currentResult.sources.map((source, sourceIndex) => (
-                            <a
-                              key={sourceIndex}
-                              href={source.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center space-x-2 text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
-                            >
-                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                              <span className="font-medium">{source.title}</span>
-                              <span className="text-purple-400">• {source.domain}</span>
-                            </a>
-                          ))}
+                    
+                    {/* Gemini Response */}
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <img 
+                          src="/lovable-uploads/65ec39db-9a58-4ca5-9d92-81f8768dfc3f.png" 
+                          alt="Gemini" 
+                          className="w-5 h-5 brightness-0 invert"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-gray-900 text-sm leading-relaxed mb-3">
+                          {currentResult.response}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <ThumbsUp className="w-4 h-4" />
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <ThumbsDown className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
-                    )}
+                    </div>
+                  </div>
+                ) : currentResult.platform.toLowerCase() === "grok" ? (
+                  // Grok interface format
+                  <div className="bg-gray-50 p-6 space-y-6 rounded-lg">
+                    {/* User Message */}
+                    <div className="flex justify-end">
+                      <div className="bg-gray-800 text-white px-4 py-3 rounded-2xl max-w-lg">
+                        <p className="text-sm">{promptData.prompt}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Grok Response */}
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+                        <img 
+                          src="/lovable-uploads/b1669738-c954-407c-a16a-fc81886dda6b.png" 
+                          alt="Grok" 
+                          className="w-5 h-5 brightness-0 invert"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-gray-900 text-sm leading-relaxed mb-3">
+                          {currentResult.response}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <ThumbsUp className="w-4 h-4" />
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <ThumbsDown className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Perplexity interface format
+                  <div className="bg-gray-50 p-6 space-y-6 rounded-lg">
+                    {/* User Message */}
+                    <div className="flex justify-end">
+                      <div className="bg-gray-800 text-white px-4 py-3 rounded-2xl max-w-lg">
+                        <p className="text-sm">{promptData.prompt}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Perplexity Response */}
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <img 
+                          src="/lovable-uploads/74062f18-e53e-487e-ad8e-f12d3c959444.png" 
+                          alt="Perplexity" 
+                          className="w-5 h-5 brightness-0 invert"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-gray-900 text-sm leading-relaxed mb-3">
+                          {currentResult.response}
+                        </div>
+                        {currentResult.sources && currentResult.sources.length > 0 && (
+                          <div className="border-t pt-3 mt-3">
+                            <h6 className="text-xs font-semibold text-gray-600 mb-2 flex items-center">
+                              <ExternalLink className="w-3 h-3 mr-1" />
+                              Sources:
+                            </h6>
+                            <div className="space-y-1">
+                              {currentResult.sources.map((source, sourceIndex) => (
+                                <a
+                                  key={sourceIndex}
+                                  href={source.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center space-x-2 text-xs text-teal-600 hover:text-teal-800 hover:underline transition-colors"
+                                >
+                                  <ExternalLink className="w-2.5 h-2.5 flex-shrink-0" />
+                                  <span>{source.title}</span>
+                                  <span className="text-gray-400">• {source.domain}</span>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex items-center space-x-2 mt-3">
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <ThumbsUp className="w-4 h-4" />
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <ThumbsDown className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
