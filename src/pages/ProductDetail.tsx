@@ -190,9 +190,9 @@ export const ProductDetail = () => {
       {/* Loading Overlay */}
       {isReanalyzing && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
             <div className="text-center space-y-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 bg-blue-100 rounded-3xl flex items-center justify-center mx-auto">
                 <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
               </div>
               <div>
@@ -203,13 +203,13 @@ export const ProductDetail = () => {
                   Running AI analysis and updating readiness metrics...
                 </p>
               </div>
-              <div className="space-y-3">
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300 ease-out"
-                    style={{ width: `${Math.min(analysisProgress, 100)}%` }}
-                  />
-                </div>
+                <div className="space-y-3">
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${Math.min(analysisProgress, 100)}%` }}
+                    />
+                  </div>
                 <p className="text-sm text-gray-500">
                   {analysisProgress < 30 ? "Scanning product pages..." :
                    analysisProgress < 60 ? "Analyzing AI mentions..." :
@@ -246,8 +246,7 @@ export const ProductDetail = () => {
               <Button 
                 onClick={handleTogglePin}
                 variant="outline"
-                className="rounded-2xl border-gray-300 text-gray-600 hover:bg-gray-50"
-                style={{ borderRadius: '1rem' }}
+                className="rounded-3xl border-gray-300 text-gray-600 hover:bg-gray-50"
               >
                 {isPinned ? <Pin className="w-4 h-4 mr-2" /> : <PinOff className="w-4 h-4 mr-2" />}
                 {isPinned ? 'Pinned' : 'Pin to Watchlist'}
@@ -255,8 +254,8 @@ export const ProductDetail = () => {
               <Button 
                 onClick={handleReanalyze}
                 disabled={isReanalyzing}
-                className="text-white shadow-sm rounded-2xl"
-                style={{ backgroundColor: '#2F7EFE', borderRadius: '1rem' }}
+                className="text-white shadow-sm rounded-3xl"
+                style={{ backgroundColor: '#2F7EFE' }}
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isReanalyzing ? 'animate-spin' : ''}`} />
                 {isReanalyzing ? 'Re-analyzing...' : 'Re-analyze Product'}
@@ -374,7 +373,7 @@ export const ProductDetail = () => {
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">Performance Trend</h3>
                   <p className="text-gray-600 mb-6">AI readiness score over the last 30 days</p>
-                  <div className="h-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg flex items-center justify-center text-gray-600">
+                  <div className="h-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl flex items-center justify-center text-gray-600">
                     <div className="text-center">
                       <BarChart3 className="w-12 h-12 mx-auto mb-2 text-blue-400" />
                       <p>Interactive chart showing AI readiness trend</p>
@@ -495,7 +494,7 @@ export const ProductDetail = () => {
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-violet-500 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-3xl bg-gradient-to-r from-purple-500 to-violet-500 flex items-center justify-center">
                           <Globe className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -534,7 +533,7 @@ export const ProductDetail = () => {
             <div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Search Performance</h3>
               <p className="text-gray-600 mb-8">Keyword rankings and performance metrics for {mockProduct.name}</p>
-              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden">
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                   <div className="grid grid-cols-7 gap-4 text-sm font-semibold text-gray-700">
                     <div>Keyword</div>
