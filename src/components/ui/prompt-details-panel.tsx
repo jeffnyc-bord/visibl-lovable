@@ -171,8 +171,8 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                     key={result.platform}
                     onClick={() => setSelectedPlatform(result.platform)}
                     className={cn(
-                      "relative transition-all duration-300 hover:scale-110 transform-gpu",
-                      isSelected ? "scale-125" : "opacity-60 hover:opacity-80"
+                      "relative transition-all duration-300 transform-gpu",
+                      isSelected ? "scale-150" : "scale-75 opacity-50 hover:scale-90 hover:opacity-70"
                     )}
                   >
                     <img 
