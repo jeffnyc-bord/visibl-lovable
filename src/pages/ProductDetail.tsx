@@ -222,7 +222,7 @@ export const ProductDetail = () => {
         </div>
       )}
 
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen" style={{ backgroundColor: '#F9FAFC' }}>
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -232,27 +232,22 @@ export const ProductDetail = () => {
                 variant="ghost" 
                 size="sm" 
                 onClick={() => navigate('/')}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-gray-500 hover:text-gray-900"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
               </Button>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                  <Package className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-semibold text-gray-900">{mockProduct.name}</h1>
-                  <p className="text-sm text-gray-500">SKU: {mockProduct.sku} • {mockProduct.category}</p>
-                </div>
-              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <h1 className="text-xl font-bold text-gray-900">{mockProduct.name}</h1>
+              <p className="text-sm text-gray-500">SKU: {mockProduct.sku}</p>
             </div>
             <div className="flex items-center space-x-3">
               <Button 
                 onClick={handleTogglePin}
-                variant={isPinned ? "default" : "outline"}
-                className={isPinned ? "bg-amber-500 hover:bg-amber-600 text-white" : "border-amber-500 text-amber-600 hover:bg-amber-50"}
+                variant="outline"
+                className="rounded-2xl border-gray-300 text-gray-600 hover:bg-gray-50"
+                style={{ borderRadius: '1rem' }}
               >
                 {isPinned ? <Pin className="w-4 h-4 mr-2" /> : <PinOff className="w-4 h-4 mr-2" />}
                 {isPinned ? 'Pinned' : 'Pin to Watchlist'}
@@ -260,7 +255,8 @@ export const ProductDetail = () => {
               <Button 
                 onClick={handleReanalyze}
                 disabled={isReanalyzing}
-                className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+                className="text-white shadow-sm rounded-2xl"
+                style={{ backgroundColor: '#2F7EFE', borderRadius: '1rem' }}
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isReanalyzing ? 'animate-spin' : ''}`} />
                 {isReanalyzing ? 'Re-analyzing...' : 'Re-analyze Product'}
@@ -272,90 +268,102 @@ export const ProductDetail = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {/* AI Readiness Hero Section */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-8 py-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
+        <div className="bg-white shadow-sm border border-gray-200 overflow-hidden" style={{ borderRadius: '1rem' }}>
+          <div className="p-8">
+            <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">AI Readiness Score</h2>
-                <p className="text-gray-600">Current performance and optimization status</p>
               </div>
               <div className="text-right">
-                <div className="text-5xl font-bold text-blue-600 mb-2">{mockProduct.score}%</div>
-                <div className="flex items-center justify-end text-green-600">
+                <div className="text-6xl font-bold mb-2" style={{ color: '#2F7EFE' }}>{mockProduct.score}%</div>
+                <div className="flex items-center justify-end" style={{ color: '#38A169' }}>
                   <TrendingUp className="w-5 h-5 mr-2" />
                   <span className="font-medium">+{mockProduct.trend}% this week</span>
                 </div>
               </div>
             </div>
-            <div className="mt-6">
-              <Progress value={mockProduct.score} className="h-3 bg-white/50" />
-              <div className="flex justify-between text-sm text-gray-600 mt-2">
-                <span>Last analyzed: {mockProduct.lastAnalyzed}</span>
-                <span>Excellent Performance</span>
-              </div>
+            
+            <div className="mb-8">
+              <Progress value={mockProduct.score} className="h-2" style={{ backgroundColor: '#E6F2FF' }} />
             </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-gray-200">
-            <div className="px-8 py-6 text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <Eye className="w-6 h-6 text-green-600" />
+            
+            {/* Metrics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white border border-gray-200 p-6 text-center" style={{ borderRadius: '1rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'linear-gradient(135deg, #38A169, #48BB78)' }}>
+                  <Eye className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">{mockProduct.mentions}</div>
+                <div className="text-sm font-medium" style={{ color: '#6B7280' }}>Total AI Mentions</div>
               </div>
-              <div className="text-2xl font-bold text-gray-900">{mockProduct.mentions}</div>
-              <div className="text-sm text-gray-500">Total AI Mentions</div>
-            </div>
-            <div className="px-8 py-6 text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <Search className="w-6 h-6 text-blue-600" />
+              
+              <div className="bg-white border border-gray-200 p-6 text-center" style={{ borderRadius: '1rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'linear-gradient(135deg, #2F7EFE, #4F9CFE)' }}>
+                  <Search className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">#{mockProduct.avgRank}</div>
+                <div className="text-sm font-medium" style={{ color: '#6B7280' }}>Avg. Organic Rank</div>
               </div>
-              <div className="text-2xl font-bold text-gray-900">#{mockProduct.avgRank}</div>
-              <div className="text-sm text-gray-500">Avg. Organic Rank</div>
-            </div>
-            <div className="px-8 py-6 text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <Code className="w-6 h-6 text-purple-600" />
+              
+              <div className="bg-white border border-gray-200 p-6 text-center" style={{ borderRadius: '1rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'linear-gradient(135deg, #8B5CF6, #A78BFA)' }}>
+                  <Code className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-green-600 mb-1">Good</div>
+                <div className="text-sm font-medium" style={{ color: '#6B7280' }}>Technical Health</div>
               </div>
-              <div className="text-2xl font-bold text-green-600">Good</div>
-              <div className="text-sm text-gray-500">Technical Health</div>
-            </div>
-            <div className="px-8 py-6 text-center">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <Activity className="w-6 h-6 text-orange-600" />
+              
+              <div className="bg-white border border-gray-200 p-6 text-center" style={{ borderRadius: '1rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'linear-gradient(135deg, #F59E0B, #FBBF24)' }}>
+                  <Activity className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">{mockProduct.pagesCrawled}</div>
+                <div className="text-sm font-medium" style={{ color: '#6B7280' }}>Pages Analyzed</div>
               </div>
-              <div className="text-2xl font-bold text-gray-900">{mockProduct.pagesCrawled}</div>
-              <div className="text-sm text-gray-500">Pages Analyzed</div>
             </div>
           </div>
         </div>
 
         {/* Main Content Tabs */}
         <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-1">
-            <TabsList className="grid w-full grid-cols-4 bg-transparent">
+          <div className="bg-white border border-gray-200 p-2" style={{ borderRadius: '1rem' }}>
+            <TabsList className="grid w-full grid-cols-4 bg-transparent gap-2">
               <TabsTrigger 
                 value="overview" 
-                className="flex items-center space-x-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:border-blue-200 rounded-md px-4 py-2"
+                className="flex items-center space-x-2 data-[state=active]:text-blue-700 data-[state=active]:font-semibold px-4 py-3 rounded-lg transition-all"
+                style={{ 
+                  backgroundColor: activeSection === 'overview' ? '#E6F2FF' : 'transparent'
+                }}
               >
                 <BarChart3 className="w-4 h-4" />
                 <span>Overview</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="opportunities" 
-                className="flex items-center space-x-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:border-blue-200 rounded-md px-4 py-2"
+                className="flex items-center space-x-2 data-[state=active]:text-blue-700 data-[state=active]:font-semibold px-4 py-3 rounded-lg transition-all"
+                style={{ 
+                  backgroundColor: activeSection === 'opportunities' ? '#E6F2FF' : 'transparent'
+                }}
               >
                 <Target className="w-4 h-4" />
                 <span>Opportunities</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="mentions" 
-                className="flex items-center space-x-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:border-blue-200 rounded-md px-4 py-2"
+                className="flex items-center space-x-2 data-[state=active]:text-blue-700 data-[state=active]:font-semibold px-4 py-3 rounded-lg transition-all"
+                style={{ 
+                  backgroundColor: activeSection === 'mentions' ? '#E6F2FF' : 'transparent'
+                }}
               >
                 <Eye className="w-4 h-4" />
                 <span>AI Mentions</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="keywords" 
-                className="flex items-center space-x-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:border-blue-200 rounded-md px-4 py-2"
+                className="flex items-center space-x-2 data-[state=active]:text-blue-700 data-[state=active]:font-semibold px-4 py-3 rounded-lg transition-all"
+                style={{ 
+                  backgroundColor: activeSection === 'keywords' ? '#E6F2FF' : 'transparent'
+                }}
               >
                 <Search className="w-4 h-4" />
                 <span>Keywords</span>
@@ -365,234 +373,213 @@ export const ProductDetail = () => {
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="shadow-sm">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center space-x-2">
-                    <TrendingUp className="w-5 h-5 text-blue-600" />
-                    <span>Performance Trend</span>
-                  </CardTitle>
-                  <CardDescription>AI readiness score over the last 30 days</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg flex items-center justify-center text-gray-600">
-                    <div className="text-center">
-                      <BarChart3 className="w-12 h-12 mx-auto mb-2 text-blue-400" />
-                      <p>Interactive chart showing AI readiness trend</p>
-                    </div>
+              <div className="bg-white border border-gray-200 p-6" style={{ borderRadius: '1rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Performance Trend</h3>
+                  <p className="text-sm text-gray-600">AI readiness score over the last 30 days</p>
+                </div>
+                <div className="h-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg flex items-center justify-center text-gray-600">
+                  <div className="text-center">
+                    <BarChart3 className="w-12 h-12 mx-auto mb-2 text-blue-400" />
+                    <p>Interactive chart showing AI readiness trend</p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className="shadow-sm">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center space-x-2">
-                    <Award className="w-5 h-5 text-green-600" />
-                    <span>Performance Breakdown</span>
-                  </CardTitle>
-                  <CardDescription>Detailed scoring across different factors</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Content Quality</span>
-                      <div className="flex items-center space-x-2">
-                        <Progress value={95} className="w-20 h-2" />
-                        <span className="text-sm font-medium text-green-600">95%</span>
+              <div className="bg-white border border-gray-200 p-6" style={{ borderRadius: '1rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Performance Breakdown</h3>
+                  <p className="text-sm text-gray-600">Detailed scoring across different factors</p>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">Content Quality</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-24 h-3 bg-gray-200 rounded-full">
+                        <div className="h-3 rounded-full" style={{ width: '95%', backgroundColor: '#2F7EFE' }}></div>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Schema Markup</span>
-                      <div className="flex items-center space-x-2">
-                        <Progress value={75} className="w-20 h-2" />
-                        <span className="text-sm font-medium text-amber-600">75%</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Link Authority</span>
-                      <div className="flex items-center space-x-2">
-                        <Progress value={88} className="w-20 h-2" />
-                        <span className="text-sm font-medium text-blue-600">88%</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Technical Health</span>
-                      <div className="flex items-center space-x-2">
-                        <Progress value={92} className="w-20 h-2" />
-                        <span className="text-sm font-medium text-green-600">92%</span>
-                      </div>
+                      <span className="text-sm font-bold text-gray-900">95%</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">Schema Markup</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-24 h-3 bg-gray-200 rounded-full">
+                        <div className="h-3 rounded-full" style={{ width: '75%', backgroundColor: '#2F7EFE' }}></div>
+                      </div>
+                      <span className="text-sm font-bold text-gray-900">75%</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">Link Authority</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-24 h-3 bg-gray-200 rounded-full">
+                        <div className="h-3 rounded-full" style={{ width: '88%', backgroundColor: '#2F7EFE' }}></div>
+                      </div>
+                      <span className="text-sm font-bold text-gray-900">88%</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">Technical Health</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-24 h-3 bg-gray-200 rounded-full">
+                        <div className="h-3 rounded-full" style={{ width: '92%', backgroundColor: '#2F7EFE' }}></div>
+                      </div>
+                      <span className="text-sm font-bold text-gray-900">92%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </TabsContent>
 
           <TabsContent value="opportunities" className="space-y-6">
-            <Card className="shadow-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center space-x-2">
-                  <Target className="w-5 h-5 text-blue-600" />
-                  <span>Optimization Opportunities</span>
-                </CardTitle>
-                <CardDescription>
-                  Prioritized improvements to boost your product's AI readiness score
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {gaps.map((gap) => (
-                    <div 
-                      key={gap.id} 
-                      className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200 bg-white"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-3">
-                            {getStatusIcon(gap.status)}
-                            <h3 className="font-semibold text-gray-900">{gap.title}</h3>
-                            <Badge className={getPriorityColor(gap.priority)} variant="outline">
-                              {gap.priority} Priority
-                            </Badge>
-                            <Badge className={getStatusColor(gap.status)} variant="outline">
-                              {gap.status === 'in-progress' ? 'In Progress' : gap.status === 'resolved' ? 'Resolved' : 'Pending'}
-                            </Badge>
-                          </div>
-                          <p className="text-gray-600 mb-4">{gap.description}</p>
-                          <div className="flex items-center space-x-6 text-sm">
-                            <div className="flex items-center space-x-1">
-                              <span className="font-medium text-gray-700">Impact:</span>
-                              <Badge variant="outline" className="text-xs">
-                                {gap.impact}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <span className="font-medium text-gray-700">Effort:</span>
-                              <Badge variant="outline" className="text-xs">
-                                {gap.effort}
-                              </Badge>
-                            </div>
-                          </div>
+            <div className="bg-white border border-gray-200 p-6" style={{ borderRadius: '1rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Optimization Opportunities</h3>
+                <p className="text-sm text-gray-600">Prioritized improvements to boost your product's AI readiness score</p>
+              </div>
+              <div className="space-y-4">
+                {gaps.map((gap) => (
+                  <div 
+                    key={gap.id} 
+                    className="border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 bg-white"
+                    style={{ borderRadius: '1rem' }}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-3">
+                          {getStatusIcon(gap.status)}
+                          <h3 className="font-semibold text-gray-900">{gap.title}</h3>
+                          <Badge className={getPriorityColor(gap.priority)} variant="outline">
+                            {gap.priority} Priority
+                          </Badge>
+                          <Badge className={getStatusColor(gap.status)} variant="outline">
+                            {gap.status === 'in-progress' ? 'In Progress' : gap.status === 'resolved' ? 'Resolved' : 'Pending'}
+                          </Badge>
                         </div>
-                        <div className="flex flex-col space-y-2 ml-6">
-                          <Button size="sm" variant="outline" className="text-xs">
-                            Mark In Progress
-                          </Button>
-                          <Button size="sm" className="text-xs bg-blue-600 hover:bg-blue-700">
-                            Get Guidance
-                          </Button>
+                        <p className="text-gray-600 mb-4">{gap.description}</p>
+                        <div className="flex items-center space-x-6 text-sm">
+                          <div className="flex items-center space-x-1">
+                            <span className="font-medium text-gray-700">Impact:</span>
+                            <Badge variant="outline" className="text-xs">
+                              {gap.impact}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <span className="font-medium text-gray-700">Effort:</span>
+                            <Badge variant="outline" className="text-xs">
+                              {gap.effort}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
+                      <div className="flex flex-col space-y-2 ml-6">
+                        <Button size="sm" variant="outline" className="text-xs rounded-lg">
+                          Mark In Progress
+                        </Button>
+                        <Button size="sm" className="text-xs rounded-lg" style={{ backgroundColor: '#2F7EFE' }}>
+                          Get Guidance
+                        </Button>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                ))}
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="mentions" className="space-y-6">
-            <Card className="shadow-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center space-x-2">
-                  <Eye className="w-5 h-5 text-blue-600" />
-                  <span>AI Platform Mentions</span>
-                </CardTitle>
-                <CardDescription>
-                  How {mockProduct.name} appears across different AI platforms
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {aiMentions.map((mention) => (
-                    <div 
-                      key={mention.id} 
-                      className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors duration-200"
-                    >
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
-                            <Globe className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                            <Badge variant="outline" className="mb-1">{mention.model}</Badge>
-                            <div className="text-xs text-gray-500">{mention.date}</div>
-                          </div>
+            <div className="bg-white border border-gray-200 p-6" style={{ borderRadius: '1rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Platform Mentions</h3>
+                <p className="text-sm text-gray-600">How {mockProduct.name} appears across different AI platforms</p>
+              </div>
+              <div className="space-y-4">
+                {aiMentions.map((mention) => (
+                  <div 
+                    key={mention.id} 
+                    className="border border-gray-200 p-6 hover:bg-gray-50 transition-colors duration-200"
+                    style={{ borderRadius: '1rem' }}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #8B5CF6, #A78BFA)' }}>
+                          <Globe className="w-5 h-5 text-white" />
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Badge 
-                            className={
-                              mention.sentiment === 'positive' ? 'bg-green-50 text-green-700 border-green-200' :
-                              mention.sentiment === 'negative' ? 'bg-red-50 text-red-700 border-red-200' :
-                              'bg-gray-50 text-gray-700 border-gray-200'
-                            }
-                            variant="outline"
-                          >
-                            {mention.sentiment}
-                          </Badge>
-                          <Button size="sm" variant="ghost" className="text-gray-400 hover:text-gray-600">
-                            <ExternalLink className="w-4 h-4" />
-                          </Button>
+                        <div>
+                          <Badge variant="outline" className="mb-1">{mention.model}</Badge>
+                          <div className="text-xs text-gray-500">{mention.date}</div>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <p className="font-medium text-gray-900">"{mention.query}"</p>
-                        <p className="text-gray-600 leading-relaxed">"{mention.excerpt}"</p>
-                        <p className="text-xs text-gray-500">Source: {mention.url}</p>
+                      <div className="flex items-center space-x-2">
+                        <Badge 
+                          className={
+                            mention.sentiment === 'positive' ? 'bg-green-50 text-green-700 border-green-200' :
+                            mention.sentiment === 'negative' ? 'bg-red-50 text-red-700 border-red-200' :
+                            'bg-gray-50 text-gray-700 border-gray-200'
+                          }
+                          variant="outline"
+                        >
+                          {mention.sentiment}
+                        </Badge>
+                        <Button size="sm" variant="ghost" className="text-gray-400 hover:text-gray-600">
+                          <ExternalLink className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-medium text-gray-900">"{mention.query}"</p>
+                      <p className="text-gray-600 leading-relaxed">"{mention.excerpt}"</p>
+                      <p className="text-xs text-gray-500">Source: {mention.url}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="keywords" className="space-y-6">
+            <div className="bg-white border border-gray-200 p-6" style={{ borderRadius: '1rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Search Performance</h3>
+                <p className="text-sm text-gray-600">Keyword rankings and performance metrics for {mockProduct.name}</p>
+              </div>
+              <div className="overflow-hidden border border-gray-200" style={{ borderRadius: '1rem' }}>
+                <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
+                  <div className="grid grid-cols-7 gap-4 text-sm font-medium text-gray-700">
+                    <div>Keyword</div>
+                    <div>Volume</div>
+                    <div>Rank</div>
+                    <div>Clicks</div>
+                    <div>Impressions</div>
+                    <div>CTR</div>
+                    <div>Trend</div>
+                  </div>
+                </div>
+                <div className="divide-y divide-gray-200">
+                  {keywords.map((keyword, index) => (
+                    <div key={index} className="grid grid-cols-7 gap-4 px-6 py-4 text-sm hover:bg-gray-50 transition-colors">
+                      <div className="font-medium text-gray-900">{keyword.keyword}</div>
+                      <div className="text-gray-600">{keyword.volume.toLocaleString()}</div>
+                      <div className="font-semibold" style={{ color: '#2F7EFE' }}>#{keyword.rank}</div>
+                      <div className="text-gray-600">{keyword.clicks}</div>
+                      <div className="text-gray-600">{keyword.impressions.toLocaleString()}</div>
+                      <div className="text-gray-600">{keyword.ctr}%</div>
+                      <div className="flex items-center">
+                        {keyword.trend === 'up' && <TrendingUp className="w-4 h-4 text-green-600" />}
+                        {keyword.trend === 'down' && <TrendingDown className="w-4 h-4 text-red-600" />}
+                        {keyword.trend === 'stable' && <div className="w-4 h-4 bg-gray-400 rounded-full" />}
                       </div>
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="keywords" className="space-y-6">
-            <Card className="shadow-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center space-x-2">
-                  <Search className="w-5 h-5 text-blue-600" />
-                  <span>Search Performance</span>
-                </CardTitle>
-                <CardDescription>
-                  Keyword rankings and performance metrics for {mockProduct.name}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-hidden rounded-lg border border-gray-200">
-                  <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
-                    <div className="grid grid-cols-7 gap-4 text-sm font-medium text-gray-700">
-                      <div>Keyword</div>
-                      <div>Volume</div>
-                      <div>Rank</div>
-                      <div>Clicks</div>
-                      <div>Impressions</div>
-                      <div>CTR</div>
-                      <div>Trend</div>
-                    </div>
-                  </div>
-                  <div className="divide-y divide-gray-200">
-                    {keywords.map((keyword, index) => (
-                      <div key={index} className="grid grid-cols-7 gap-4 px-6 py-4 text-sm hover:bg-gray-50 transition-colors">
-                        <div className="font-medium text-gray-900">{keyword.keyword}</div>
-                        <div className="text-gray-600">{keyword.volume.toLocaleString()}</div>
-                        <div className="font-semibold text-blue-600">#{keyword.rank}</div>
-                        <div className="text-gray-600">{keyword.clicks}</div>
-                        <div className="text-gray-600">{keyword.impressions.toLocaleString()}</div>
-                        <div className="text-gray-600">{keyword.ctr}%</div>
-                        <div className="flex items-center">
-                          {keyword.trend === 'up' && <TrendingUp className="w-4 h-4 text-green-600" />}
-                          {keyword.trend === 'down' && <TrendingDown className="w-4 h-4 text-red-600" />}
-                          {keyword.trend === 'stable' && <div className="w-4 h-4 bg-gray-400 rounded-full" />}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
-        </div>
       </div>
+    </div>
     </>
   );
 };
