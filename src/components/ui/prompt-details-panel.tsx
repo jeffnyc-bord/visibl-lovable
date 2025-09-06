@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, ThumbsUp, ThumbsDown, MessageSquare, ExternalLink } from "lucide-react";
+import { X, ThumbsUp, ThumbsDown, MessageSquare, ExternalLink, User, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -241,11 +241,49 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                       ))}
                     </div>
                   ) : currentResult.platform.toLowerCase() === "chatgpt" ? (
-                    // ChatGPT bubble format
-                    <div className="relative">
-                      <div className="absolute -left-10 top-0 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-green-100" />
-                      <div className="bg-white p-4 rounded-lg border border-green-200">
-                        <p className="text-gray-700 leading-relaxed text-base">{currentResult.response}</p>
+                    // ChatGPT conversational format
+                    <div className="bg-gray-50 p-6 space-y-8">
+                      {/* User Prompt Bubble */}
+                      <div className="flex items-start space-x-3 justify-end">
+                        <div className="flex-shrink-0 order-2">
+                          <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                            <User className="w-4 h-4 text-white" />
+                          </div>
+                        </div>
+                        <div className="bg-gray-200 text-gray-900 p-4 rounded-xl max-w-md">
+                          <p className="text-sm leading-relaxed">{promptData.prompt}</p>
+                        </div>
+                      </div>
+                      
+                      {/* ChatGPT Response Bubble */}
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0">
+                          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                            <img 
+                              src="/lovable-uploads/21661e0f-75fe-4662-8b83-54120e1f0e7c.png" 
+                              alt="ChatGPT" 
+                              className="w-5 h-5 object-contain brightness-0 invert"
+                            />
+                          </div>
+                        </div>
+                        <div className="bg-white p-4 rounded-xl rounded-tl-none shadow-sm border border-gray-100 flex-1 max-w-4xl">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <p className="text-gray-900 leading-relaxed text-sm whitespace-pre-wrap">{currentResult.response}</p>
+                            </div>
+                            <div className="flex items-center space-x-2 ml-4 flex-shrink-0">
+                              <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                                <Copy className="w-4 h-4" />
+                              </button>
+                              <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                                <ThumbsUp className="w-4 h-4" />
+                              </button>
+                              <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                                <ThumbsDown className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ) : currentResult.platform.toLowerCase() === "grok" ? (
