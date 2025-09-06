@@ -40,14 +40,14 @@ interface PromptDetailsPanelProps {
 export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetailsPanelProps) => {
   const [selectedPlatform, setSelectedPlatform] = useState<string>("ChatGPT");
   
-  if (!isOpen || !promptData) return null;
-
   // Initialize selected platform with the first available result
   React.useEffect(() => {
     if (isOpen && promptData?.results?.length > 0) {
       setSelectedPlatform(promptData.results[0].platform);
     }
   }, [promptData, isOpen]);
+
+  if (!isOpen || !promptData) return null;
 
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
