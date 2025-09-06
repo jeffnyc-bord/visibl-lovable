@@ -269,18 +269,19 @@ export const ExternalAIVisibilitySection = () => {
         </CardContent>
       </Card>
 
-      {/* AI Platform Mention Distribution */}
+      {/* AI Platform Mentions & Distribution */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <img src="/lovable-uploads/79e7d0e6-2ccc-40a4-a2c4-fa6f2406e0c6.png" alt="AI Platform Mention Distribution" className="w-5 h-5" />
-            <span>AI Platform Mention Distribution</span>
+            <MessageSquare className="w-5 h-5 text-blue-500" />
+            <span>AI Platform Mentions & Distribution</span>
           </CardTitle>
           <CardDescription>
-            Brand mentions across AI platforms from your generated queries and prompt blasts.
+            Brand mentions across AI platforms with distribution breakdown and detailed analytics.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+          {/* Distribution Chart and Breakdown */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-3">Mentions by Platform</h4>
@@ -325,56 +326,46 @@ export const ExternalAIVisibilitySection = () => {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Platform-wise Mentions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <MessageSquare className="w-5 h-5 text-blue-500" />
-            <span>AI Platform Mentions</span>
-          </CardTitle>
-          <CardDescription>
-            Breakdown of brand mentions across different AI platforms and their sentiment analysis.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Platform</TableHead>
-                <TableHead>Mentions</TableHead>
-                <TableHead>Sentiment</TableHead>
-                <TableHead>Coverage</TableHead>
-                <TableHead>Trend</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {platformMentions.map((platform, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{platform.platform}</TableCell>
-                  <TableCell>{platform.mentions}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className={getSentimentColor(platform.sentiment)}>
-                      {platform.sentiment}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Progress value={platform.coverage} className="w-16 h-2" />
-                      <span className="text-sm text-gray-600">{platform.coverage}%</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                      {platform.trend}
-                    </Badge>
-                  </TableCell>
+          {/* Detailed Platform Analytics */}
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Detailed Platform Analytics</h4>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Platform</TableHead>
+                  <TableHead>Mentions</TableHead>
+                  <TableHead>Sentiment</TableHead>
+                  <TableHead>Coverage</TableHead>
+                  <TableHead>Trend</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {platformMentions.map((platform, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{platform.platform}</TableCell>
+                    <TableCell>{platform.mentions}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className={getSentimentColor(platform.sentiment)}>
+                        {platform.sentiment}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Progress value={platform.coverage} className="w-16 h-2" />
+                        <span className="text-sm text-gray-600">{platform.coverage}%</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                        {platform.trend}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
