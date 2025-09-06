@@ -155,28 +155,6 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
 
         {/* Content */}
         <div className="p-6 space-y-6">
-          {/* Quick Metrics */}
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="font-medium text-gray-900 mb-3">Quick Insights</h3>
-              <div className="grid grid-cols-3 gap-6 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-primary">{promptData.metrics.totalMentions}</div>
-                  <div className="text-xs text-gray-500">Total Mentions</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-green-600">
-                    {promptData.results.filter(r => r.mentioned).length}
-                  </div>
-                  <div className="text-xs text-gray-500">Platforms Mentioned</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-blue-600 capitalize">{promptData.metrics.avgSentiment}</div>
-                  <div className="text-xs text-gray-500">Avg Sentiment</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Platform Carousel */}
           <div className="space-y-4">
