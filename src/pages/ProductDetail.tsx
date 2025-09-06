@@ -101,12 +101,8 @@ export const ProductDetail = () => {
 
   const aiMentions = [
     { id: 1, model: "ChatGPT", query: "best running shoes 2024", excerpt: "Nike Air Max 1 offers excellent cushioning for daily runs with its Air Max technology providing superior comfort and impact protection.", sentiment: "positive", url: "nike.com/air-max-1", date: "2 hours ago" },
-    { id: 2, model: "Claude", query: "comfortable athletic shoes", excerpt: "The Air Max 1 features innovative design that combines style with performance, making it ideal for both casual wear and light athletic activities.", sentiment: "positive", url: "nike.com/products", date: "4 hours ago" },
     { id: 3, model: "Perplexity", query: "retro sneakers style", excerpt: "Air Max 1 maintains its classic appeal while incorporating modern comfort technologies, though some newer models offer better performance.", sentiment: "neutral", url: "nike.com/heritage", date: "6 hours ago" },
-    { id: 4, model: "Grok", query: "athletic shoes innovation", excerpt: "Nike Air Max 1 represents a breakthrough in sneaker design with its visible air cushioning technology that revolutionized athletic footwear.", sentiment: "positive", url: "nike.com/innovation", date: "8 hours ago" },
-    { id: 5, model: "Copilot", query: "premium running sneakers", excerpt: "The Air Max 1 combines premium materials with advanced cushioning technology, though pricing may be higher than some alternatives.", sentiment: "neutral", url: "nike.com/premium", date: "12 hours ago" },
-    { id: 6, model: "Google AI Mode", query: "iconic sneaker designs", excerpt: "Nike Air Max 1 is widely recognized as an iconic design that influenced modern sneaker aesthetics and continues to be popular today.", sentiment: "positive", url: "nike.com/classics", date: "1 day ago" },
-    { id: 7, model: "Google Overviews", query: "nike air max shoes", excerpt: "Air Max 1 is part of Nike's Air Max line known for visible air cushioning. Available in various colorways and considered a classic silhouette.", sentiment: "neutral", url: "nike.com/air-max", date: "1 day ago" }
+    { id: 4, model: "Grok", query: "athletic shoes innovation", excerpt: "Nike Air Max 1 represents a breakthrough in sneaker design with its visible air cushioning technology that revolutionized athletic footwear.", sentiment: "positive", url: "nike.com/innovation", date: "8 hours ago" }
   ];
 
   const keywords = [
