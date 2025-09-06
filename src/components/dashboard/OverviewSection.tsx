@@ -536,12 +536,12 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 120 120">
                         {platformMentionsData.slice(0, 4).map((platform, index) => {
                           const isHovered = hoveredSegment === index;
-                          const strokeWidth = isHovered ? 12 : 10;
+                          const strokeWidth = isHovered ? 8 : 6;
                           const radius = 45;
                           const circumference = 2 * Math.PI * radius;
                           const segmentLength = (platform.percentage / 100) * circumference;
                           const offset = platformMentionsData.slice(0, index).reduce((acc, p) => acc + (p.percentage / 100) * circumference, 0);
-                          const gap = 2;
+                          const gap = 8; // Larger gap between segments
                           
                           return (
                             <circle
@@ -553,8 +553,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                               stroke={DONUT_COLORS[index]}
                               strokeWidth={strokeWidth}
                               strokeLinecap="round"
-                              strokeDasharray={`${segmentLength - gap} ${circumference - segmentLength + gap}`}
-                              strokeDashoffset={-offset}
+                              strokeDasharray={`${segmentLength - gap} ${circumference - (segmentLength - gap)}`}
+                              strokeDashoffset={-(offset + (index * gap))}
                               className="transition-all duration-300 cursor-pointer"
                               style={{
                                 filter: isHovered ? 'brightness(1.2)' : 'brightness(1)',
