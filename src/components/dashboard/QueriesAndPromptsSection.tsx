@@ -175,10 +175,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 1,
       prompt: "What are the best running shoes for marathon training?",
       fullPrompt: "What are the best running shoes for marathon training? I'm looking for shoes that provide excellent cushioning, durability, and support for long-distance running.",
-      platform: "ChatGPT",
-      mentioned: true,
-      result: "Ranked #1",
-      queryType: "Ranking",
+      topPlatforms: "ChatGPT, Claude, Gemini",
+      mentions: 145,
+      source: "User Generated",
       timestamp: "2024-01-20 09:15",
       fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Brooks Ghost - Reliable cushioning 4. Hoka Clifton - Maximum comfort..."
     },
@@ -186,10 +185,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 2,
       prompt: "Best basketball shoes for performance and comfort",
       fullPrompt: "What are the best basketball shoes for performance and comfort? Looking for shoes with excellent support and traction.",
-      platform: "Claude",
-      mentioned: true,
-      result: "Positive Mention",
-      queryType: "Discovery",
+      topPlatforms: "Claude, ChatGPT",
+      mentions: 203,
+      source: "Visibl Generated",
       timestamp: "2024-01-20 08:30",
       fullResponse: "Nike Air Jordan and Nike LeBron series offer excellent basketball performance with superior ankle support and court traction..."
     },
@@ -197,10 +195,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 3,
       prompt: "How does sustainable footwear manufacturing impact the environment?",
       fullPrompt: "How does sustainable footwear manufacturing impact the environment? Please explain the benefits of eco-friendly athletic shoes.",
-      platform: "Gemini",
-      mentioned: false,
-      result: "Not Mentioned",
-      queryType: "Factual",
+      topPlatforms: "Perplexity, Gemini",
+      mentions: 67,
+      source: "User Generated",
       timestamp: "2024-01-20 07:45",
       fullResponse: "Sustainable footwear manufacturing significantly reduces environmental impact through recycled materials, eco-friendly processes from brands like Adidas and Allbirds..."
     },
@@ -208,10 +205,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 4,
       prompt: "Compare athletic shoe brands by innovation",
       fullPrompt: "Compare athletic shoe brands by innovation and technological advancement in 2024.",
-      platform: "Copilot",
-      mentioned: true,
-      result: "Ranked #1",
-      queryType: "Ranking",
+      topPlatforms: "ChatGPT, Copilot, Claude",
+      mentions: 89,
+      source: "Visibl Generated",
       timestamp: "2024-01-19 16:20",
       fullResponse: "Nike leads the athletic footwear industry in innovation with their Air Max technology, React foam, and Nike Adapt self-lacing systems..."
     },
@@ -219,10 +215,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 5,
       prompt: "Best athletic shoes for cross-training",
       fullPrompt: "What are the best athletic shoes for cross-training and versatile workouts?",
-      platform: "Perplexity",
-      mentioned: true,
-      result: "Brand Known",
-      queryType: "Discovery",
+      topPlatforms: "Perplexity, Grok",
+      mentions: 124,
+      source: "User Generated",
       timestamp: "2024-01-19 14:10",
       fullResponse: "The best cross-training shoes include Nike Metcon series, Reebok Nano, and Under Armour HOVR for versatile workouts..."
     },
@@ -230,10 +225,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       id: 6,
       prompt: "Smart shoe technology comparison",
       fullPrompt: "Compare smart shoe technology across different manufacturers in the premium segment.",
-      platform: "Grok",
-      mentioned: false,
-      result: "Not Mentioned",
-      queryType: "Templated",
+      topPlatforms: "Gemini, Claude",
+      mentions: 56,
+      source: "Visibl Generated",
       timestamp: "2024-01-19 11:30",
       fullResponse: "Smart shoe technology varies significantly across brands like Adidas, Under Armour, and Puma, offering different approaches to fitness tracking..."
     }
@@ -241,13 +235,13 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
 
   // Filter prompts based on selected filters
   const filteredPrompts = detailedPrompts.filter(prompt => {
-    const platformMatch = platformFilter === "all" || prompt.platform === platformFilter;
+    const platformMatch = platformFilter === "all" || prompt.topPlatforms.includes(platformFilter);
     const mentionMatch = mentionFilter === "all" || 
-      (mentionFilter === "mentioned" && prompt.mentioned) ||
-      (mentionFilter === "not-mentioned" && !prompt.mentioned);
-    const queryTypeMatch = queryTypeFilter === "all" || prompt.queryType === queryTypeFilter;
+      (mentionFilter === "mentioned" && prompt.mentions > 0) ||
+      (mentionFilter === "not-mentioned" && prompt.mentions === 0);
+    const sourceMatch = queryTypeFilter === "all" || prompt.source === queryTypeFilter;
     
-    return platformMatch && mentionMatch && queryTypeMatch;
+    return platformMatch && mentionMatch && sourceMatch;
   });
 
   const aiPlatforms = [
@@ -918,16 +912,15 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
             {/* Prompts Table */}
             <div className="border border-gray-200 rounded-lg overflow-hidden">
               <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold">Prompt</TableHead>
-                    <TableHead className="font-semibold">Platform</TableHead>
-                    <TableHead className="font-semibold">Result</TableHead>
-                    <TableHead className="font-semibold">Type</TableHead>
-                    <TableHead className="font-semibold">Date</TableHead>
-                    <TableHead className="font-semibold">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
+                 <TableHeader>
+                   <TableRow className="bg-gray-50">
+                     <TableHead className="font-semibold">Prompt</TableHead>
+                     <TableHead className="font-semibold">Top Platforms</TableHead>
+                     <TableHead className="font-semibold">Mentions</TableHead>
+                     <TableHead className="font-semibold">Source</TableHead>
+                     <TableHead className="font-semibold">Date</TableHead>
+                   </TableRow>
+                 </TableHeader>
                 <TableBody>
                   {filteredPrompts.map((prompt) => (
                     <>
@@ -956,37 +949,27 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">{prompt.platform}</Badge>
+                          <span className="text-sm text-gray-600">{prompt.topPlatforms}</span>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
-                            {prompt.mentioned ? (
-                              <Check className="w-4 h-4 text-green-600" />
-                            ) : (
-                              <X className="w-4 h-4 text-red-600" />
-                            )}
-                            <span className="text-sm">{prompt.result}</span>
+                            <span className="font-medium text-gray-900">{prompt.mentions}</span>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary" className="text-xs">
-                            {prompt.queryType}
+                          <Badge variant={prompt.source === "Visibl Generated" ? "default" : "secondary"} className="text-xs">
+                            {prompt.source}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm text-gray-600">
                           {new Date(prompt.timestamp).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="ghost" size="sm">
-                            <Copy className="w-4 h-4" />
-                          </Button>
                         </TableCell>
                       </TableRow>
                       
                       {/* Expandable row content */}
                       {expandedPrompt === prompt.id && (
                         <TableRow>
-                          <TableCell colSpan={6} className="bg-gray-50 p-0">
+                          <TableCell colSpan={5} className="bg-gray-50 p-0">
                             <div className="p-4 space-y-4">
                               <div>
                                 <h4 className="font-medium text-gray-900 mb-2">Full Prompt:</h4>
