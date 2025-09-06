@@ -152,12 +152,12 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         });
       });
 
-  // Vibrant color palette for donut segments
+  // Vibrant color palette for donut segments with better contrast
   const DONUT_COLORS = [
-    '#65CAD2', // Light teal
-    '#FFB366', // Light orange
-    '#FF6633', // Darker orange
-    '#33CCB3'  // Bright teal
+    '#3B82F6', // Bright blue for ChatGPT
+    '#EF4444', // Red for Grok  
+    '#10B981', // Green for Gemini
+    '#F59E0B'  // Orange for Perplexity
   ];
 
   const COLORS = [
@@ -541,7 +541,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                           const circumference = 2 * Math.PI * radius;
                           const segmentLength = (platform.percentage / 100) * circumference;
                           const offset = platformMentionsData.slice(0, index).reduce((acc, p) => acc + (p.percentage / 100) * circumference, 0);
-                          const gap = 4; // Smaller gap between segments
+                          const gap = 6; // Increased gap between segments
                           
                           return (
                             <circle
@@ -553,7 +553,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                               stroke={DONUT_COLORS[index]}
                               strokeWidth={strokeWidth}
                               strokeLinecap="round"
-                              strokeDasharray={`${segmentLength - gap} ${circumference - segmentLength + gap}`}
+                              strokeDasharray={`${segmentLength - gap} ${gap + 2}`}
                               strokeDashoffset={-(offset + (index * gap))}
                               className="transition-all duration-300 cursor-pointer"
                               style={{
