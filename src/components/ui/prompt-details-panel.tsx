@@ -188,10 +188,11 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
               })}
             </div>
           </div>
+
           {/* Selected Platform Output */}
           {currentResult && (
-            <Card className={cn("border-2", currentStyles.border)}>
-              <CardContent className={cn("p-6", currentStyles.bg)}>
+            <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+              <div className="p-6">
                 {/* Platform Header */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center space-x-3">
@@ -222,111 +223,103 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                 </div>
 
                 {/* Response Content */}
-                <div className={cn(
-                  "rounded-lg border p-6 bg-white min-h-[200px]",
-                  currentResult.platform.toLowerCase() === "chatgpt" ? "ml-4" : "",
-                  currentResult.platform.toLowerCase() === "gemini" ? "space-y-2" : "",
-                  currentResult.platform.toLowerCase() === "grok" ? "font-mono text-sm" : "",
-                  currentStyles.bubble
-                )}>
-                  {currentResult.platform.toLowerCase() === "gemini" ? (
-                    // Gemini structured format
-                    <div className="space-y-4">
-                      <h5 className="font-semibold text-blue-700 text-lg mb-3">Analysis Results</h5>
-                      {currentResult.response.split('. ').map((sentence, i) => (
-                        <div key={i} className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
-                          <p className="text-gray-700 leading-relaxed">{sentence}{i < currentResult.response.split('. ').length - 1 ? '.' : ''}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : currentResult.platform.toLowerCase() === "chatgpt" ? (
-                    // ChatGPT interface format
-                    <div className="bg-white space-y-6">
-                      {/* User Message */}
-                      <div className="flex justify-end">
-                        <div className="bg-gray-800 text-white px-4 py-3 rounded-2xl max-w-lg">
-                          <p className="text-sm">{promptData.prompt}</p>
-                        </div>
+                {currentResult.platform.toLowerCase() === "chatgpt" ? (
+                  // ChatGPT interface format
+                  <div className="bg-gray-50 p-6 space-y-6 rounded-lg">
+                    {/* User Message */}
+                    <div className="flex justify-end">
+                      <div className="bg-gray-800 text-white px-4 py-3 rounded-2xl max-w-lg">
+                        <p className="text-sm">{promptData.prompt}</p>
                       </div>
-                      
-                      {/* ChatGPT Response */}
-                      <div className="flex items-start space-x-3">
-                        <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                          <img 
-                            src="/lovable-uploads/21661e0f-75fe-4662-8b83-54120e1f0e7c.png" 
-                            alt="ChatGPT" 
-                            className="w-5 h-5 brightness-0 invert"
-                          />
+                    </div>
+                    
+                    {/* ChatGPT Response */}
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <img 
+                          src="/lovable-uploads/21661e0f-75fe-4662-8b83-54120e1f0e7c.png" 
+                          alt="ChatGPT" 
+                          className="w-5 h-5 brightness-0 invert"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-gray-900 text-sm leading-relaxed mb-3">
+                          {currentResult.response}
                         </div>
-                        <div className="flex-1">
-                          <div className="text-gray-900 text-sm leading-relaxed mb-3">
-                            {currentResult.response}
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <button className="text-gray-400 hover:text-gray-600 p-1">
-                              <Copy className="w-4 h-4" />
-                            </button>
-                            <button className="text-gray-400 hover:text-gray-600 p-1">
-                              <ThumbsUp className="w-4 h-4" />
-                            </button>
-                            <button className="text-gray-400 hover:text-gray-600 p-1">
-                              <ThumbsDown className="w-4 h-4" />
-                            </button>
-                          </div>
+                        <div className="flex items-center space-x-2">
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <ThumbsUp className="w-4 h-4" />
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600 p-1">
+                            <ThumbsDown className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
                     </div>
-                  ) : currentResult.platform.toLowerCase() === "grok" ? (
-                    // Grok informal format
-                    <div className="space-y-4">
-                      <div className="text-center mb-4">
-                        <span className="text-2xl">🤖</span>
-                        <h5 className="font-bold text-pink-700 text-lg">Grok's Hot Take</h5>
+                  </div>
+                ) : currentResult.platform.toLowerCase() === "gemini" ? (
+                  // Gemini structured format
+                  <div className="space-y-4">
+                    <h5 className="font-semibold text-blue-700 text-lg mb-3">Analysis Results</h5>
+                    {currentResult.response.split('. ').map((sentence, i) => (
+                      <div key={i} className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                        <p className="text-gray-700 leading-relaxed">{sentence}{i < currentResult.response.split('. ').length - 1 ? '.' : ''}</p>
                       </div>
-                      <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
-                        <p className="text-gray-700 italic text-base leading-relaxed">"{currentResult.response}"</p>
-                      </div>
-                      <p className="text-xs text-pink-600 font-normal text-right">- Your friendly neighborhood AI</p>
+                    ))}
+                  </div>
+                ) : currentResult.platform.toLowerCase() === "grok" ? (
+                  // Grok informal format
+                  <div className="space-y-4">
+                    <div className="text-center mb-4">
+                      <span className="text-2xl">🤖</span>
+                      <h5 className="font-bold text-pink-700 text-lg">Grok's Hot Take</h5>
                     </div>
-                  ) : (
-                    // Perplexity formal format with sources
-                    <div className="space-y-6">
-                      <div>
-                        <h5 className="font-semibold text-purple-700 text-lg mb-3 flex items-center">
-                          <span className="mr-2">📚</span>
-                          Research Summary
+                    <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
+                      <p className="text-gray-700 italic text-base leading-relaxed">"{currentResult.response}"</p>
+                    </div>
+                    <p className="text-xs text-pink-600 font-normal text-right">- Your friendly neighborhood AI</p>
+                  </div>
+                ) : (
+                  // Perplexity formal format with sources
+                  <div className="space-y-6">
+                    <div>
+                      <h5 className="font-semibold text-purple-700 text-lg mb-3 flex items-center">
+                        <span className="mr-2">📚</span>
+                        Research Summary
+                      </h5>
+                      <p className="text-gray-700 leading-relaxed text-base bg-purple-50 p-4 rounded-lg">{currentResult.response}</p>
+                    </div>
+                    {currentResult.sources && currentResult.sources.length > 0 && (
+                      <div className="border-t pt-4">
+                        <h5 className="text-sm font-semibold text-purple-700 mb-3 flex items-center">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Sources & References:
                         </h5>
-                        <p className="text-gray-700 leading-relaxed text-base bg-purple-50 p-4 rounded-lg">{currentResult.response}</p>
-                      </div>
-                      {currentResult.sources && currentResult.sources.length > 0 && (
-                        <div className="border-t pt-4">
-                          <h5 className="text-sm font-semibold text-purple-700 mb-3 flex items-center">
-                            <ExternalLink className="w-4 h-4 mr-2" />
-                            Sources & References:
-                          </h5>
-                          <div className="space-y-2 bg-purple-50 p-4 rounded-lg">
-                            {currentResult.sources.map((source, sourceIndex) => (
-                              <a
-                                key={sourceIndex}
-                                href={source.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center space-x-2 text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
-                              >
-                                <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                                <span className="font-medium">{source.title}</span>
-                                <span className="text-purple-400">• {source.domain}</span>
-                              </a>
-                            ))}
-                          </div>
+                        <div className="space-y-2 bg-purple-50 p-4 rounded-lg">
+                          {currentResult.sources.map((source, sourceIndex) => (
+                            <a
+                              key={sourceIndex}
+                              href={source.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center space-x-2 text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
+                            >
+                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                              <span className="font-medium">{source.title}</span>
+                              <span className="text-purple-400">• {source.domain}</span>
+                            </a>
+                          ))}
                         </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </div>
