@@ -116,6 +116,16 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     { month: "Dec", mentions: 1247 },
   ];
 
+  // Sample data for wavy line graph
+  const wavyTrendData = [
+    { date: 'Jul', value: 890, timestamp: 'Mon, 15 Jul 2024' },
+    { date: 'Aug', value: 1020, timestamp: 'Thu, 15 Aug 2024' },
+    { date: 'Sep', value: 1156, timestamp: 'Sun, 15 Sep 2024' },
+    { date: 'Oct', value: 1089, timestamp: 'Tue, 15 Oct 2024' },
+    { date: 'Nov', value: 1203, timestamp: 'Fri, 15 Nov 2024' },
+    { date: 'Dec', value: 1247, timestamp: 'Fri, 27 Dec 2024' },
+  ];
+
   const coreQueries = [
     { query: "Best running shoes for marathon training", relevanceScore: 92, brand: "Nike", mentions: 145 },
     { query: "Nike Air Max vs Adidas Ultraboost", relevanceScore: 88, brand: "Nike", mentions: 203 },
@@ -355,12 +365,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         {/* Visibility Chart */}
         <WavyLineGraphCard
           title="Overall AI Visibility Trend"
-          description="Your brand's mention volume across the AI ecosystem over time"
-          data={visibilityTrendData}
-          icon="/lovable-uploads/c450af84-c4bc-4808-9aef-caf1ef5fb80c.png"
-          onTooltipToggle={() => setShowTooltips({...showTooltips, visibilityTrend: !showTooltips.visibilityTrend})}
-          showTooltip={showTooltips.visibilityTrend}
-          tooltipContent="Track your brand's mention volume across the AI ecosystem over time to identify trends and measure progress."
+          subtitle="Your brand's mention volume across the AI ecosystem over time"
+          data={wavyTrendData}
+          className="col-span-2"
         />
 
         {/* Industry Ranking */}
