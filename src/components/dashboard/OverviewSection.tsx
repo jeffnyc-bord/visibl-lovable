@@ -539,9 +539,11 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                           const strokeWidth = isHovered ? 8 : 6;
                           const radius = 45;
                           const circumference = 2 * Math.PI * radius;
-                          const segmentLength = (platform.percentage / 100) * circumference;
-                          const offset = platformMentionsData.slice(0, index).reduce((acc, p) => acc + (p.percentage / 100) * circumference, 0);
-                          const gap = 4; // Smaller gap between segments
+                          const gap = 8; // Increased gap between segments
+                          const segmentLength = (platform.percentage / 100) * circumference - gap;
+                          const offset = platformMentionsData.slice(0, index).reduce((acc, p, i) => {
+                            return acc + (p.percentage / 100) * circumference + gap;
+                          }, 0);
                           
                           return (
                             <circle
@@ -553,8 +555,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                               stroke={DONUT_COLORS[index]}
                               strokeWidth={strokeWidth}
                               strokeLinecap="round"
-                              strokeDasharray={`${segmentLength - gap} ${circumference - segmentLength + gap}`}
-                              strokeDashoffset={-(offset + (index * gap))}
+                              strokeDasharray={`${segmentLength} ${circumference - segmentLength}`}
+                              strokeDashoffset={-offset}
                               className="transition-all duration-300 cursor-pointer"
                               style={{
                                 filter: isHovered ? 'brightness(1.2)' : 'brightness(1)',
