@@ -286,10 +286,10 @@ export const ProductDetail = () => {
                 {isPinned ? <Pin className="w-4 h-4 mr-2" /> : <PinOff className="w-4 h-4 mr-2" />}
                 {isPinned ? 'Pinned' : 'Pin to Watchlist'}
               </Button>
-              <Button 
+               <Button 
                 onClick={handleReanalyze}
                 disabled={isReanalyzing}
-                className="text-white shadow-sm rounded-3xl"
+                className="text-white shadow-sm rounded-3xl grid-pattern-button"
                 style={{ backgroundColor: '#2F7EFE' }}
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isReanalyzing ? 'animate-spin' : ''}`} />
@@ -304,7 +304,7 @@ export const ProductDetail = () => {
         {/* AI Readiness Hero Section */}
         <div className="space-y-8 mb-8">
           {/* Main Score Card */}
-          <div className="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-blue-100 hover:border-blue-200 cursor-pointer transform hover:scale-[1.02] relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent">
+          <div className="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-blue-100 hover:border-blue-200 cursor-pointer transform hover:scale-[1.02] relative overflow-hidden grid-pattern-overlay before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent">
             <div className="flex items-end justify-between mb-6">
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
@@ -338,7 +338,7 @@ export const ProductDetail = () => {
           {/* Interactive Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* AI Mentions Card */}
-            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
+            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1 grid-pattern-overlay">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                   <Eye className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
@@ -357,7 +357,7 @@ export const ProductDetail = () => {
             </div>
 
             {/* Average Rank Card */}
-            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
+            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1 grid-pattern-overlay">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                   <Search className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
@@ -376,7 +376,7 @@ export const ProductDetail = () => {
             </div>
 
             {/* Technical Health Card */}
-            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
+            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1 grid-pattern-overlay">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-violet-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                   <Code className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
@@ -395,7 +395,7 @@ export const ProductDetail = () => {
             </div>
 
             {/* Pages Analyzed Card */}
-            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-amber-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
+            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-amber-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1 grid-pattern-overlay">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                   <Activity className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
