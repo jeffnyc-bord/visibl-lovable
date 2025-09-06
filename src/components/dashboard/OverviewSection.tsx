@@ -636,21 +636,48 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-3">Platform Breakdown</h4>
               <div className="space-y-3">
-                {pieChartData.map((platform, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: pieChartColors[index % pieChartColors.length] }}
-                      ></div>
-                      <span className="text-sm font-medium">{platform.platform}</span>
+                {pieChartData.map((platform, index) => {
+                  // Function to get the platform logo
+                  const getPlatformLogo = (platformName: string) => {
+                    switch (platformName) {
+                      case "ChatGPT":
+                        return "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png";
+                      case "Grok":
+                        return "/lovable-uploads/771fa115-94bb-4581-ae07-0733d1e93498.png";
+                      case "Gemini":
+                        return "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png";
+                      case "Perplexity":
+                        return "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png";
+                      default:
+                        return null;
+                    }
+                  };
+
+                  const logo = getPlatformLogo(platform.platform);
+
+                  return (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: pieChartColors[index % pieChartColors.length] }}
+                        ></div>
+                        {logo && (
+                          <img 
+                            src={logo} 
+                            alt={`${platform.platform} logo`} 
+                            className="w-4 h-4 object-contain"
+                          />
+                        )}
+                        <span className="text-sm font-medium">{platform.platform}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium">{platform.mentions}</span>
+                        <span className="text-xs text-gray-500">({platform.percentage}%)</span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium">{platform.mentions}</span>
-                      <span className="text-xs text-gray-500">({platform.percentage}%)</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
