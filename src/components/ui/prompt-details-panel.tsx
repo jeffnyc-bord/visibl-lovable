@@ -183,8 +183,8 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                       key={result.platform}
                       onClick={() => setSelectedPlatform(result.platform)}
                       className={cn(
-                        "relative transition-all duration-500 transform-gpu",
-                        isSelected ? "scale-150 z-10" : "scale-75 opacity-50 hover:scale-90 hover:opacity-70",
+                        "relative transition-all duration-300 ease-out transform-gpu will-change-transform",
+                        isSelected ? "scale-150 z-10" : "scale-75 opacity-60 hover:scale-85 hover:opacity-80",
                         marginClass
                       )}
                     >
@@ -192,7 +192,7 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                         src={styles.logo} 
                         alt={`${result.platform} logo`}
                         className={cn(
-                          "w-16 h-16 object-contain transition-all duration-500",
+                          "w-16 h-16 object-contain transition-all duration-300 ease-out",
                           isSelected ? "drop-shadow-lg" : ""
                         )}
                       />
