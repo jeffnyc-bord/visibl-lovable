@@ -244,7 +244,7 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                     
                     {/* ChatGPT Response */}
                     <div className="flex items-start space-x-3">
-                      <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center flex-shrink-0">
                         <img 
                           src="/lovable-uploads/21661e0f-75fe-4662-8b83-54120e1f0e7c.png" 
                           alt="ChatGPT" 
