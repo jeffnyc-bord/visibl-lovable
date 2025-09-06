@@ -269,6 +269,107 @@ export const ExternalAIVisibilitySection = () => {
         </CardContent>
       </Card>
 
+      {/* AI Platform Analytics */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <img src="/lovable-uploads/79e7d0e6-2ccc-40a4-a2c4-fa6f2406e0c6.png" alt="AI Platform Analytics" className="w-5 h-5" />
+            <span>AI Platform Analytics</span>
+          </CardTitle>
+          <CardDescription>
+            Comprehensive breakdown of brand mentions across AI platforms with distribution and detailed analytics.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {/* Visual Distribution */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Mentions by Platform</h4>
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={platformMentionsData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percentage }) => `${name} ${percentage}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="mentions"
+                    >
+                      {platformMentionsData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Platform Breakdown</h4>
+                <div className="space-y-3">
+                  {platformMentionsData.map((platform, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                        ></div>
+                        <span className="text-sm font-medium">{platform.platform}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium">{platform.mentions}</span>
+                        <span className="text-xs text-gray-500">({platform.percentage}%)</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Detailed Analytics Table */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Detailed Platform Analytics</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Platform</TableHead>
+                    <TableHead>Mentions</TableHead>
+                    <TableHead>Sentiment</TableHead>
+                    <TableHead>Coverage</TableHead>
+                    <TableHead>Trend</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {platformMentions.map((platform, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{platform.platform}</TableCell>
+                      <TableCell>{platform.mentions}</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className={getSentimentColor(platform.sentiment)}>
+                          {platform.sentiment}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <Progress value={platform.coverage} className="w-16 h-2" />
+                          <span className="text-sm text-gray-600">{platform.coverage}%</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                          {platform.trend}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Core Brand Queries */}
       <Card>
