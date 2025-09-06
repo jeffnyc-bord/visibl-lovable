@@ -267,66 +267,114 @@ export const ProductDetail = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* AI Readiness Hero Section */}
-        <div className="bg-white border-b border-gray-100 pb-8 mb-8 rounded-3xl p-8 shadow-sm">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">AI Readiness Score</h2>
-              <p className="text-gray-600">Overall performance and optimization status</p>
+        <div className="space-y-8 mb-8">
+          {/* Main Score Card */}
+          <div className="group bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-blue-100 hover:border-blue-200 cursor-pointer transform hover:scale-[1.02]">
+            <div className="flex items-end justify-between mb-6">
+              <div className="space-y-2">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                    <Award className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">AI Readiness Score</h2>
+                    <p className="text-gray-600">Overall performance and optimization status</p>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right transform group-hover:scale-110 transition-transform duration-300">
+                <div className="text-6xl font-bold mb-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
+                  {mockProduct.score}%
+                </div>
+                <div className="flex items-center justify-end text-green-600 bg-green-50 rounded-full px-3 py-1">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  <span className="font-medium text-sm">+{mockProduct.trend}% this week</span>
+                </div>
+              </div>
             </div>
-            <div className="text-right">
-              <div className="text-7xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                {mockProduct.score}%
-              </div>
-              <div className="flex items-center justify-end text-green-600">
-                <TrendingUp className="w-5 h-5 mr-2" />
-                <span className="font-medium">+{mockProduct.trend}% this week</span>
-              </div>
+            
+            <div className="relative">
+              <Progress value={mockProduct.score} className="h-4 bg-gray-200 rounded-full shadow-inner" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 rounded-full shadow-lg opacity-90" 
+                   style={{ width: `${mockProduct.score}%` }} />
             </div>
           </div>
-          
-          <div className="mb-8">
-            <Progress value={mockProduct.score} className="h-3 bg-gray-100 rounded-full" />
-          </div>
-          
-          {/* Inline Metrics */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
-                <Eye className="w-5 h-5 text-white" />
+
+          {/* Interactive Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* AI Mentions Card */}
+            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                  <Eye className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-300">
+                    {mockProduct.mentions}
+                  </div>
+                  <div className="w-2 h-2 rounded-full bg-green-400 mx-auto mt-1 group-hover:animate-pulse" />
+                </div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-gray-900">{mockProduct.mentions}</div>
-                <div className="text-sm text-gray-600">AI Mentions</div>
+                <div className="text-sm font-medium text-gray-900 mb-1">AI Mentions</div>
+                <div className="text-xs text-gray-600">Total mentions across AI platforms</div>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
-                <Search className="w-5 h-5 text-white" />
+
+            {/* Average Rank Card */}
+            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                  <Search className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
+                    #{mockProduct.avgRank}
+                  </div>
+                  <div className="w-2 h-2 rounded-full bg-blue-400 mx-auto mt-1 group-hover:animate-pulse" />
+                </div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-gray-900">#{mockProduct.avgRank}</div>
-                <div className="text-sm text-gray-600">Avg. Rank</div>
+                <div className="text-sm font-medium text-gray-900 mb-1">Avg. Rank</div>
+                <div className="text-xs text-gray-600">Average ranking position</div>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-violet-500 flex items-center justify-center">
-                <Code className="w-5 h-5 text-white" />
+
+            {/* Technical Health Card */}
+            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-violet-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                  <Code className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-green-600 group-hover:text-purple-600 transition-colors duration-300">
+                    Good
+                  </div>
+                  <div className="w-2 h-2 rounded-full bg-green-400 group-hover:bg-purple-400 mx-auto mt-1 transition-colors duration-300 group-hover:animate-pulse" />
+                </div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-green-600">Good</div>
-                <div className="text-sm text-gray-600">Technical Health</div>
+                <div className="text-sm font-medium text-gray-900 mb-1">Technical Health</div>
+                <div className="text-xs text-gray-600">Overall technical optimization</div>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center">
-                <Activity className="w-5 h-5 text-white" />
+
+            {/* Pages Analyzed Card */}
+            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-amber-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                  <Activity className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-gray-900 group-hover:text-amber-600 transition-colors duration-300">
+                    {mockProduct.pagesCrawled}
+                  </div>
+                  <div className="w-2 h-2 rounded-full bg-amber-400 mx-auto mt-1 group-hover:animate-pulse" />
+                </div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-gray-900">{mockProduct.pagesCrawled}</div>
-                <div className="text-sm text-gray-600">Pages Analyzed</div>
+                <div className="text-sm font-medium text-gray-900 mb-1">Pages Analyzed</div>
+                <div className="text-xs text-gray-600">Total pages crawled and analyzed</div>
               </div>
             </div>
           </div>
