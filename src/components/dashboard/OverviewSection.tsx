@@ -132,10 +132,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   ];
 
   const allPlatformMentionsData = [
-    { platform: "ChatGPT", mentions: 456, percentage: 28 },
-    { platform: "Grok", mentions: 324, percentage: 20 },
-    { platform: "Gemini", mentions: 287, percentage: 18 },
-    { platform: "Perplexity", mentions: 180, percentage: 11 },
+    { platform: "ChatGPT", mentions: 456, percentage: 36 },
+    { platform: "Grok", mentions: 324, percentage: 26 },
+    { platform: "Gemini", mentions: 287, percentage: 23 },
+    { platform: "Perplexity", mentions: 180, percentage: 15 },
     { platform: "Claude", mentions: 145, percentage: 9 },
     { platform: "Copilot", mentions: 123, percentage: 8 },
     { platform: "Google AI Mode", mentions: 98, percentage: 6 },
@@ -615,13 +615,20 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                           return (
                             <div
                               key={index}
-                            className="absolute text-gray-700 text-xs font-medium pointer-events-none"
-                            style={{
+                              className={`absolute text-xs font-medium cursor-pointer transition-all duration-300 ${
+                                hoveredSegment === index 
+                                  ? 'text-gray-900 font-bold transform scale-110' 
+                                  : 'text-gray-700 hover:text-gray-900'
+                              }`}
+                              style={{
                                 left: `${x}%`,
                                 top: `${y}%`,
-                                transform: 'translate(-50%, -50%)',
-                                opacity: hoveredSegment === index ? 1 : 0.7
+                                transform: `translate(-50%, -50%) ${hoveredSegment === index ? 'scale(1.1)' : 'scale(1)'}`,
+                                opacity: hoveredSegment === index ? 1 : 0.7,
+                                textShadow: hoveredSegment === index ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
                               }}
+                              onMouseEnter={() => setHoveredSegment(index)}
+                              onMouseLeave={() => setHoveredSegment(null)}
                             >
                               {platform.platform}
                             </div>
