@@ -152,12 +152,12 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         });
       });
 
-  // Vibrant color palette for donut segments
+  // Vibrant color palette for donut segments with better contrast
   const DONUT_COLORS = [
-    '#65CAD2', // Light teal
-    '#FFB366', // Light orange
-    '#FF6633', // Darker orange
-    '#33CCB3'  // Bright teal
+    '#3B82F6', // Bright blue for ChatGPT
+    '#EF4444', // Red for Grok  
+    '#10B981', // Green for Gemini
+    '#F59E0B'  // Orange for Perplexity
   ];
 
   const COLORS = [
@@ -539,11 +539,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                           const strokeWidth = isHovered ? 8 : 6;
                           const radius = 45;
                           const circumference = 2 * Math.PI * radius;
-                          const gap = 8; // Increased gap between segments
-                          const segmentLength = (platform.percentage / 100) * circumference - gap;
-                          const offset = platformMentionsData.slice(0, index).reduce((acc, p, i) => {
-                            return acc + (p.percentage / 100) * circumference + gap;
-                          }, 0);
+                          const segmentLength = (platform.percentage / 100) * circumference;
+                          const offset = platformMentionsData.slice(0, index).reduce((acc, p) => acc + (p.percentage / 100) * circumference, 0);
+                          const gap = 6; // Increased gap between segments
                           
                           return (
                             <circle
@@ -555,8 +553,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                               stroke={DONUT_COLORS[index]}
                               strokeWidth={strokeWidth}
                               strokeLinecap="round"
-                              strokeDasharray={`${segmentLength} ${circumference - segmentLength}`}
-                              strokeDashoffset={-offset}
+                              strokeDasharray={`${segmentLength - gap} ${gap + 2}`}
+                              strokeDashoffset={-(offset + (index * gap))}
                               className="transition-all duration-300 cursor-pointer"
                               style={{
                                 filter: isHovered ? 'brightness(1.2)' : 'brightness(1)',
