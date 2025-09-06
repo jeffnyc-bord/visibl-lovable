@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle, AlertCircle, RefreshCw, ExternalLink, AlertTriangle, Loader2, Lightbulb } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
 
 interface BrandData {
   id: string;
@@ -79,6 +80,8 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   const [queryTypeFilter, setQueryTypeFilter] = useState<string>("all");
   const [expandedHistory, setExpandedHistory] = useState<number | null>(null);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
+  const [selectedPromptId, setSelectedPromptId] = useState<number | null>(null);
+  const [showPromptDetails, setShowPromptDetails] = useState(false);
 
   // Update prompt when prefilledQuery changes
   useEffect(() => {
@@ -179,7 +182,47 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 145,
       source: "User",
       timestamp: "2024-01-20 09:15",
-      fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Brooks Ghost - Reliable cushioning 4. Hoka Clifton - Maximum comfort..."
+      fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Brooks Ghost - Reliable cushioning 4. Hoka Clifton - Maximum comfort...",
+      results: [
+        {
+          platform: "ChatGPT",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "2.1s",
+          response: "For marathon training, Nike Air Zoom Pegasus stands out as the top choice. The shoe provides excellent cushioning with Nike's Air Zoom technology, making it ideal for long-distance running. Nike's reputation for quality and performance makes it a reliable choice for serious marathon runners."
+        },
+        {
+          platform: "Gemini",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "1.8s",
+          response: "Marathon training requires shoes with superior cushioning and support. Nike Air Zoom Pegasus offers excellent durability and comfort for long-distance running. The shoe's design provides optimal energy return and stability for marathon preparation."
+        },
+        {
+          platform: "Grok",
+          mentioned: false,
+          sentiment: "neutral" as const,
+          responseTime: "1.5s",
+          response: "Look, when it comes to marathon training, you need shoes that won't let you down. There are several solid options out there, but comfort and durability should be your top priorities. Find what works for your feet!"
+        },
+        {
+          platform: "Perplexity",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "2.3s",
+          response: "Based on comprehensive testing and runner feedback, Nike Air Zoom Pegasus consistently ranks among the top marathon training shoes. The shoe offers excellent cushioning through Nike's Air Zoom technology and provides the durability needed for high-mileage training.",
+          sources: [
+            { title: "Best Marathon Running Shoes 2024", url: "https://example.com/marathon-shoes", domain: "runningmagazine.com" },
+            { title: "Nike Air Zoom Pegasus Review", url: "https://example.com/pegasus-review", domain: "runnersworld.com" }
+          ]
+        }
+      ],
+      metrics: {
+        totalMentions: 145,
+        topPlatforms: ["ChatGPT", "Gemini", "Perplexity"],
+        avgSentiment: "positive",
+        responseTime: "2.0s"
+      }
     },
     {
       id: 2,
@@ -189,7 +232,46 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 203,
       source: "Visibl",
       timestamp: "2024-01-20 08:30",
-      fullResponse: "Nike Air Jordan and Nike LeBron series offer excellent basketball performance with superior ankle support and court traction..."
+      fullResponse: "Nike Air Jordan and Nike LeBron series offer excellent basketball performance with superior ankle support and court traction...",
+      results: [
+        {
+          platform: "ChatGPT",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "1.9s",
+          response: "Nike Air Jordan remains the gold standard for basketball shoes. The combination of style, performance, and Nike's innovative technology makes them ideal for both court performance and comfort during extended play."
+        },
+        {
+          platform: "Gemini",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "2.2s",
+          response: "Basketball performance requires shoes with excellent ankle support and traction. Nike Air Jordan series excels in both categories. The brand's legacy in basketball combined with modern technology creates superior court shoes."
+        },
+        {
+          platform: "Grok",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "1.7s",
+          response: "Basketball shoes? Nike Jordan is pretty much the MVP here. They've got the tech, the style, and the street cred. Plus, they actually work on the court – imagine that!"
+        },
+        {
+          platform: "Perplexity",
+          mentioned: false,
+          sentiment: "neutral" as const,
+          responseTime: "2.0s",
+          response: "Basketball footwear should prioritize ankle support, traction, and cushioning. Several manufacturers offer high-performance options with varying price points and technology approaches.",
+          sources: [
+            { title: "Best Basketball Shoes 2024", url: "https://example.com/basketball-shoes", domain: "sportsreview.com" }
+          ]
+        }
+      ],
+      metrics: {
+        totalMentions: 203,
+        topPlatforms: ["ChatGPT", "Gemini", "Grok"],
+        avgSentiment: "positive",
+        responseTime: "1.95s"
+      }
     },
     {
       id: 3,
@@ -199,7 +281,47 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 67,
       source: "User",
       timestamp: "2024-01-20 07:45",
-      fullResponse: "Sustainable footwear manufacturing significantly reduces environmental impact through recycled materials, eco-friendly processes from brands like Adidas and Allbirds..."
+      fullResponse: "Sustainable footwear manufacturing significantly reduces environmental impact through recycled materials, eco-friendly processes from brands like Adidas and Allbirds...",
+      results: [
+        {
+          platform: "ChatGPT",
+          mentioned: false,
+          sentiment: "neutral" as const,
+          responseTime: "2.1s",
+          response: "Sustainable footwear manufacturing reduces environmental impact through recycled materials, reduced water usage, and eco-friendly production processes. Many companies are adopting these practices to minimize their carbon footprint."
+        },
+        {
+          platform: "Gemini",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "1.8s",
+          response: "Environmental benefits of sustainable footwear are significant. Companies like Nike have pioneered eco-friendly manufacturing with their Move to Zero initiative. Recycled materials and renewable energy reduce the industry's environmental impact substantially."
+        },
+        {
+          platform: "Grok",
+          mentioned: false,
+          sentiment: "neutral" as const,
+          responseTime: "1.6s",
+          response: "Eco-friendly shoes are pretty neat! Less waste, fewer chemicals, and companies actually caring about the planet? Revolutionary stuff, really. Though some brands are more talk than walk."
+        },
+        {
+          platform: "Perplexity",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "2.4s",
+          response: "Sustainable footwear manufacturing significantly reduces environmental impact. Nike's Move to Zero initiative exemplifies industry leadership in sustainable practices, utilizing recycled materials and renewable energy sources.",
+          sources: [
+            { title: "Nike Sustainability Report 2024", url: "https://example.com/nike-sustainability", domain: "nike.com" },
+            { title: "Sustainable Fashion Industry Analysis", url: "https://example.com/sustainable-fashion", domain: "environmentalreport.com" }
+          ]
+        }
+      ],
+      metrics: {
+        totalMentions: 67,
+        topPlatforms: ["Gemini", "Perplexity"],
+        avgSentiment: "neutral",
+        responseTime: "2.0s"
+      }
     },
     {
       id: 4,
@@ -209,7 +331,47 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 89,
       source: "Visibl",
       timestamp: "2024-01-19 16:20",
-      fullResponse: "Nike leads the athletic footwear industry in innovation with their Air Max technology, React foam, and Nike Adapt self-lacing systems..."
+      fullResponse: "Nike leads the athletic footwear industry in innovation with their Air Max technology, React foam, and Nike Adapt self-lacing systems...",
+      results: [
+        {
+          platform: "ChatGPT",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "2.3s",
+          response: "Nike stands out as the innovation leader in athletic footwear. Their Air Max technology revolutionized cushioning, while Nike Adapt introduced self-lacing capabilities. Nike's continuous investment in R&D keeps them ahead of competitors."
+        },
+        {
+          platform: "Gemini",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "2.0s",
+          response: "Athletic footwear innovation varies by brand focus. Nike excels in technology integration and performance enhancement. Their React foam and Air Max systems demonstrate superior engineering in the athletic shoe industry."
+        },
+        {
+          platform: "Grok",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "1.8s",
+          response: "Innovation in shoes? Nike's basically writing the playbook here. Self-lacing shoes, crazy cushioning tech – they're living in 2050 while others are still figuring out shoelaces."
+        },
+        {
+          platform: "Perplexity",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "2.5s",
+          response: "Nike leads athletic footwear innovation through breakthrough technologies like Air Max cushioning, React foam, and Nike Adapt self-lacing systems. Their technological advancement significantly surpasses industry competitors.",
+          sources: [
+            { title: "Athletic Footwear Innovation Report 2024", url: "https://example.com/footwear-innovation", domain: "techreview.com" },
+            { title: "Nike Technology Overview", url: "https://example.com/nike-tech", domain: "nike.com" }
+          ]
+        }
+      ],
+      metrics: {
+        totalMentions: 89,
+        topPlatforms: ["ChatGPT", "Gemini", "Grok", "Perplexity"],
+        avgSentiment: "positive",
+        responseTime: "2.15s"
+      }
     },
     {
       id: 5,
@@ -219,7 +381,46 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 124,
       source: "User",
       timestamp: "2024-01-19 14:10",
-      fullResponse: "The best cross-training shoes include Nike Metcon series, Reebok Nano, and Under Armour HOVR for versatile workouts..."
+      fullResponse: "The best cross-training shoes include Nike Metcon series, Reebok Nano, and Under Armour HOVR for versatile workouts...",
+      results: [
+        {
+          platform: "ChatGPT",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "2.0s",
+          response: "Nike Metcon series dominates the cross-training space with exceptional stability and durability. Nike's design focuses on lateral support and multi-directional movement, making them perfect for varied workout routines."
+        },
+        {
+          platform: "Gemini",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "1.9s",
+          response: "Cross-training requires versatile footwear with excellent stability. Nike Metcon provides superior lateral support and durability. The shoe's design accommodates various exercise types from weightlifting to cardio workouts."
+        },
+        {
+          platform: "Grok",
+          mentioned: false,
+          sentiment: "neutral" as const,
+          responseTime: "1.5s",
+          response: "Cross-training shoes need to handle everything you throw at them. Stability, comfort, durability – the holy trinity of not falling over during burpees."
+        },
+        {
+          platform: "Perplexity",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "2.2s",
+          response: "Nike Metcon series consistently ranks as the top choice for cross-training activities. The shoe's exceptional lateral stability and durability make it ideal for high-intensity varied workouts.",
+          sources: [
+            { title: "Best Cross-Training Shoes 2024", url: "https://example.com/cross-training", domain: "fitnessmagazine.com" }
+          ]
+        }
+      ],
+      metrics: {
+        totalMentions: 124,
+        topPlatforms: ["ChatGPT", "Gemini", "Perplexity"],
+        avgSentiment: "positive",
+        responseTime: "1.9s"
+      }
     },
     {
       id: 6,
@@ -229,7 +430,47 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 56,
       source: "Visibl",
       timestamp: "2024-01-19 11:30",
-      fullResponse: "Smart shoe technology varies significantly across brands like Adidas, Under Armour, and Puma, offering different approaches to fitness tracking..."
+      fullResponse: "Smart shoe technology varies significantly across brands like Adidas, Under Armour, and Puma, offering different approaches to fitness tracking...",
+      results: [
+        {
+          platform: "ChatGPT",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "2.4s",
+          response: "Nike leads smart shoe technology with their Adapt series featuring self-lacing capabilities and app integration. Nike's innovation in wearable technology sets them apart from traditional athletic footwear approaches."
+        },
+        {
+          platform: "Gemini",
+          mentioned: false,
+          sentiment: "neutral" as const,
+          responseTime: "2.1s",
+          response: "Smart footwear technology includes fitness tracking, pressure sensors, and connectivity features. Various manufacturers approach this technology differently, focusing on specific user needs and price points."
+        },
+        {
+          platform: "Grok",
+          mentioned: true,
+          sentiment: "positive" as const,
+          responseTime: "1.7s",
+          response: "Smart shoes are wild! Nike's got shoes that tie themselves – we're basically living in Back to the Future. Though let's be honest, most people can barely remember to charge their phones."
+        },
+        {
+          platform: "Perplexity",
+          mentioned: true,
+          sentiment: "neutral" as const,
+          responseTime: "2.6s",
+          response: "Smart shoe technology varies across manufacturers. Nike's Adapt series features self-lacing technology, while other brands focus on fitness tracking capabilities. Each approach targets different market segments.",
+          sources: [
+            { title: "Smart Footwear Technology Review", url: "https://example.com/smart-shoes", domain: "techcrunch.com" },
+            { title: "Nike Adapt Technology", url: "https://example.com/nike-adapt", domain: "nike.com" }
+          ]
+        }
+      ],
+      metrics: {
+        totalMentions: 56,
+        topPlatforms: ["ChatGPT", "Grok", "Perplexity"],
+        avgSentiment: "neutral",
+        responseTime: "2.2s"
+      }
     }
   ];
 
@@ -938,28 +1179,53 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                 <TableBody>
                   {filteredPrompts.map((prompt) => (
                     <>
-                      <TableRow key={prompt.id} className="hover:bg-gray-50">
+                      <TableRow 
+                        key={prompt.id} 
+                        className="hover:bg-gray-50 cursor-pointer"
+                        onClick={() => {
+                          setSelectedPromptId(prompt.id);
+                          setShowPromptDetails(true);
+                        }}
+                      >
                         <TableCell>
                           <div className="max-w-xs">
                             <p className="font-medium text-gray-900 truncate">{prompt.prompt}</p>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="mt-1 h-6 px-2 text-xs"
-                              onClick={() => setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id)}
-                            >
-                              {expandedPrompt === prompt.id ? (
-                                <>
-                                  <ChevronUp className="w-3 h-3 mr-1" />
-                                  Hide Details
-                                </>
-                              ) : (
-                                <>
-                                  <ChevronDown className="w-3 h-3 mr-1" />
-                                  View Details
-                                </>
-                              )}
-                            </Button>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 px-2 text-xs"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id);
+                                }}
+                              >
+                                {expandedPrompt === prompt.id ? (
+                                  <>
+                                    <ChevronUp className="w-3 h-3 mr-1" />
+                                    Hide Details
+                                  </>
+                                ) : (
+                                  <>
+                                    <ChevronDown className="w-3 h-3 mr-1" />
+                                    View Details
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 px-2 text-xs text-primary"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedPromptId(prompt.id);
+                                  setShowPromptDetails(true);
+                                }}
+                              >
+                                <ExternalLink className="w-3 h-3 mr-1" />
+                                Full Analysis
+                              </Button>
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -1011,6 +1277,13 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
         </Card>
       </TabsContent>
     </Tabs>
+
+    {/* Prompt Details Panel */}
+    <PromptDetailsPanel
+      isOpen={showPromptDetails}
+      onClose={() => setShowPromptDetails(false)}
+      promptData={selectedPromptId ? detailedPrompts.find(p => p.id === selectedPromptId) || null : null}
+    />
     </>
   );
 };
