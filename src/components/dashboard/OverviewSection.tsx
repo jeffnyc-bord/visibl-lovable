@@ -10,6 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { WavyLineGraphCard } from "@/components/ui/wavy-line-graph-card";
 
 interface BrandData {
   id: string;
@@ -352,47 +353,15 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Visibility Chart */}
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityTrend: false})}>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <img src="/lovable-uploads/c450af84-c4bc-4808-9aef-caf1ef5fb80c.png" alt="Overall AI Visibility Trend" className="w-5 h-5" />
-                <span>Overall AI Visibility Trend</span>
-              </div>
-              <div className="relative">
-                <HelpCircle 
-                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
-                  onClick={() => setShowTooltips({...showTooltips, visibilityTrend: !showTooltips.visibilityTrend})}
-                />
-                {showTooltips.visibilityTrend && (
-                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
-                    <p>Track your brand's mention volume across the AI ecosystem over time to identify trends and measure progress.</p>
-                  </div>
-                )}
-              </div>
-            </CardTitle>
-            <CardDescription>
-              Your brand's mention volume across the AI ecosystem over time
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={visibilityTrendData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="mentions" 
-                  stroke="hsl(var(--primary))" 
-                  strokeWidth={2}
-                  dot={{ fill: 'hsl(var(--primary))' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <WavyLineGraphCard
+          title="Overall AI Visibility Trend"
+          description="Your brand's mention volume across the AI ecosystem over time"
+          data={visibilityTrendData}
+          icon="/lovable-uploads/c450af84-c4bc-4808-9aef-caf1ef5fb80c.png"
+          onTooltipToggle={() => setShowTooltips({...showTooltips, visibilityTrend: !showTooltips.visibilityTrend})}
+          showTooltip={showTooltips.visibilityTrend}
+          tooltipContent="Track your brand's mention volume across the AI ecosystem over time to identify trends and measure progress."
+        />
 
         {/* Industry Ranking */}
         <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, industryRankingChart: false})}>
