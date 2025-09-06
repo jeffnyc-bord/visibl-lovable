@@ -291,13 +291,22 @@ export const ExternalAIVisibilitySection = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percentage }) => `${name} ${percentage}%`}
-                    outerRadius={80}
+                    label={({ name, percentage }) => `${percentage}%`}
+                    outerRadius={90}
+                    innerRadius={40}
                     fill="#8884d8"
                     dataKey="mentions"
+                    paddingAngle={4}
+                    strokeWidth={0}
                   >
                     {platformMentionsData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={index === 0 ? 'hsl(320, 40%, 50%)' : 'transparent'}
+                        stroke={COLORS[index % COLORS.length]}
+                        strokeWidth={8}
+                        strokeDasharray={index === 0 ? "0" : "8 4"}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
