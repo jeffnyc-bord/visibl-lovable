@@ -267,7 +267,7 @@ export const ProductDetail = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* AI Readiness Hero Section */}
-        <div className="bg-white border-b border-gray-100 pb-8 mb-8">
+        <div className="bg-white border-b border-gray-100 pb-8 mb-8 rounded-3xl p-8 shadow-sm">
           <div className="flex items-end justify-between mb-6">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-2">AI Readiness Score</h2>
@@ -285,7 +285,7 @@ export const ProductDetail = () => {
           </div>
           
           <div className="mb-8">
-            <Progress value={mockProduct.score} className="h-3 bg-gray-100" />
+            <Progress value={mockProduct.score} className="h-3 bg-gray-100 rounded-full" />
           </div>
           
           {/* Inline Metrics */}
@@ -437,7 +437,7 @@ export const ProductDetail = () => {
                 {gaps.map((gap) => (
                   <div 
                     key={gap.id} 
-                    className="border-l-4 border-blue-500 bg-white pl-6 pr-6 py-6 hover:bg-gray-50 transition-colors duration-200"
+                    className="border-l-4 border-blue-500 bg-white pl-6 pr-6 py-6 hover:bg-gray-50 transition-colors duration-200 rounded-r-3xl shadow-sm"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -468,10 +468,10 @@ export const ProductDetail = () => {
                         </div>
                       </div>
                       <div className="flex space-x-2 ml-6">
-                        <Button size="sm" variant="outline" className="text-xs">
+                        <Button size="sm" variant="outline" className="text-xs rounded-2xl">
                           Mark In Progress
                         </Button>
-                        <Button size="sm" className="text-xs bg-blue-600 hover:bg-blue-700">
+                        <Button size="sm" className="text-xs bg-blue-600 hover:bg-blue-700 rounded-2xl">
                           Get Guidance
                         </Button>
                       </div>
@@ -490,7 +490,7 @@ export const ProductDetail = () => {
                 {aiMentions.map((mention) => (
                   <div 
                     key={mention.id} 
-                    className="border-l-4 border-purple-500 bg-white pl-6 pr-6 py-6 hover:bg-gray-50 transition-colors duration-200"
+                    className="border-l-4 border-purple-500 bg-white pl-6 pr-6 py-6 hover:bg-gray-50 transition-colors duration-200 rounded-r-3xl shadow-sm"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
