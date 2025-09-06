@@ -74,7 +74,6 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   const [showNoSelectionWarning, setShowNoSelectionWarning] = useState(false);
   
   // Prompts tab state
-  const [expandedPrompt, setExpandedPrompt] = useState<number | null>(null);
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [mentionFilter, setMentionFilter] = useState<string>("all");
   const [queryTypeFilter, setQueryTypeFilter] = useState<string>("all");
@@ -1177,55 +1176,18 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                    </TableRow>
                  </TableHeader>
                 <TableBody>
-                  {filteredPrompts.map((prompt) => (
-                    <>
-                      <TableRow 
-                        key={prompt.id} 
-                        className="hover:bg-gray-50 cursor-pointer"
-                        onClick={() => {
-                          setSelectedPromptId(prompt.id);
-                          setShowPromptDetails(true);
-                        }}
-                      >
+                   {filteredPrompts.map((prompt) => (
+                     <TableRow 
+                       key={prompt.id} 
+                       className="hover:bg-gray-50 cursor-pointer"
+                       onClick={() => {
+                         setSelectedPromptId(prompt.id);
+                         setShowPromptDetails(true);
+                       }}
+                     >
                         <TableCell>
                           <div className="max-w-xs">
                             <p className="font-medium text-gray-900 truncate">{prompt.prompt}</p>
-                            <div className="flex items-center space-x-2 mt-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 px-2 text-xs"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setExpandedPrompt(expandedPrompt === prompt.id ? null : prompt.id);
-                                }}
-                              >
-                                {expandedPrompt === prompt.id ? (
-                                  <>
-                                    <ChevronUp className="w-3 h-3 mr-1" />
-                                    Hide Details
-                                  </>
-                                ) : (
-                                  <>
-                                    <ChevronDown className="w-3 h-3 mr-1" />
-                                    View Details
-                                  </>
-                                )}
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 px-2 text-xs text-primary"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedPromptId(prompt.id);
-                                  setShowPromptDetails(true);
-                                }}
-                              >
-                                <ExternalLink className="w-3 h-3 mr-1" />
-                                Full Analysis
-                              </Button>
-                            </div>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -1245,30 +1207,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                           {new Date(prompt.timestamp).toLocaleDateString()}
                         </TableCell>
                       </TableRow>
-                      
-                      {/* Expandable row content */}
-                      {expandedPrompt === prompt.id && (
-                        <TableRow>
-                          <TableCell colSpan={5} className="bg-gray-50 p-0">
-                            <div className="p-4 space-y-4">
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">Full Prompt:</h4>
-                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
-                                  {prompt.fullPrompt}
-                                </p>
-                              </div>
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">AI Response:</h4>
-                                <p className="text-sm text-gray-700 bg-white p-3 rounded border">
-                                  {prompt.fullResponse}
-                                </p>
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </>
-                  ))}
+                   ))}
                 </TableBody>
               </Table>
             </div>
