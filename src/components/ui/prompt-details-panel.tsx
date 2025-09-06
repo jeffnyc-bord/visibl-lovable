@@ -161,7 +161,7 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
             <h3 className="text-lg font-semibold text-gray-900">Platform Analysis</h3>
             
             {/* Enhanced Carousel Navigation */}
-            <div className="flex items-center justify-center space-x-6 py-8">
+            <div className="flex items-center justify-center space-x-12 py-8">
               {promptData.results.map((result) => {
                 const styles = getPlatformStyles(result.platform);
                 const isSelected = selectedPlatform === result.platform;
@@ -171,47 +171,18 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                     key={result.platform}
                     onClick={() => setSelectedPlatform(result.platform)}
                     className={cn(
-                      "relative flex flex-col items-center space-y-3 p-6 rounded-2xl transition-all duration-300",
-                      "hover:scale-110 hover:shadow-xl transform-gpu",
-                      isSelected 
-                        ? cn("shadow-2xl ring-4 ring-primary/20", styles.bg)
-                        : "bg-white/80 border border-gray-200/60 hover:border-gray-300/80 backdrop-blur-sm"
+                      "relative transition-all duration-300 hover:scale-110 transform-gpu",
+                      isSelected ? "scale-125" : "opacity-60 hover:opacity-80"
                     )}
                   >
-                    {isSelected && (
-                      <div className={cn("absolute inset-0 rounded-2xl bg-gradient-to-br opacity-10", `bg-gradient-to-br ${styles.gradient}`)} />
-                    )}
-                    <div className={cn(
-                      "relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300",
-                      isSelected 
-                        ? cn("bg-white shadow-lg ring-2", styles.border)
-                        : "bg-gray-50 border border-gray-200"
-                    )}>
-                      <img 
-                        src={styles.logo} 
-                        alt={`${result.platform} logo`}
-                        className="w-10 h-10 object-contain"
-                      />
-                    </div>
-                    <div className="relative text-center">
-                      <span className={cn(
-                        "text-sm font-semibold transition-colors duration-300", 
-                        isSelected ? styles.accent : "text-gray-600"
-                      )}>
-                        {result.platform}
-                      </span>
-                      <div className="mt-2">
-                        {result.mentioned ? (
-                          <Badge className="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full border border-green-200">
-                            ✓ Mentioned
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="bg-red-100 text-red-800 text-xs px-3 py-1 rounded-full border border-red-200">
-                            ✗ Not Mentioned
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
+                    <img 
+                      src={styles.logo} 
+                      alt={`${result.platform} logo`}
+                      className={cn(
+                        "w-20 h-20 object-contain transition-all duration-300",
+                        isSelected ? "drop-shadow-lg" : ""
+                      )}
+                    />
                   </button>
                 );
               })}
