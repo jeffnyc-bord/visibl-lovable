@@ -666,7 +666,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                           <img 
                             src={logo} 
                             alt={`${platform.platform} logo`} 
-                            className="w-4 h-4 object-contain"
+                            className="w-8 h-8 object-contain"
                           />
                         )}
                         <span className="text-sm font-medium">{platform.platform}</span>
