@@ -541,7 +541,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                           const circumference = 2 * Math.PI * radius;
                           const segmentLength = (platform.percentage / 100) * circumference;
                           const offset = platformMentionsData.slice(0, index).reduce((acc, p) => acc + (p.percentage / 100) * circumference, 0);
-                          const gap = 8; // Larger gap between segments
+                          const gap = 4; // Smaller gap between segments
                           
                           return (
                             <circle
@@ -553,7 +553,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                               stroke={DONUT_COLORS[index]}
                               strokeWidth={strokeWidth}
                               strokeLinecap="round"
-                              strokeDasharray={`${segmentLength - gap} ${circumference - (segmentLength - gap)}`}
+                              strokeDasharray={`${segmentLength - gap} ${circumference - segmentLength + gap}`}
                               strokeDashoffset={-(offset + (index * gap))}
                               className="transition-all duration-300 cursor-pointer"
                               style={{
