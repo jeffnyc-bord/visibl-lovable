@@ -177,7 +177,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       fullPrompt: "What are the best running shoes for marathon training? I'm looking for shoes that provide excellent cushioning, durability, and support for long-distance running.",
       topPlatforms: "ChatGPT, Claude, Gemini",
       mentions: 145,
-      source: "User Generated",
+      source: "User",
       timestamp: "2024-01-20 09:15",
       fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Brooks Ghost - Reliable cushioning 4. Hoka Clifton - Maximum comfort..."
     },
@@ -187,7 +187,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       fullPrompt: "What are the best basketball shoes for performance and comfort? Looking for shoes with excellent support and traction.",
       topPlatforms: "Claude, ChatGPT",
       mentions: 203,
-      source: "Visibl Generated",
+      source: "Visibl",
       timestamp: "2024-01-20 08:30",
       fullResponse: "Nike Air Jordan and Nike LeBron series offer excellent basketball performance with superior ankle support and court traction..."
     },
@@ -197,7 +197,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       fullPrompt: "How does sustainable footwear manufacturing impact the environment? Please explain the benefits of eco-friendly athletic shoes.",
       topPlatforms: "Perplexity, Gemini",
       mentions: 67,
-      source: "User Generated",
+      source: "User",
       timestamp: "2024-01-20 07:45",
       fullResponse: "Sustainable footwear manufacturing significantly reduces environmental impact through recycled materials, eco-friendly processes from brands like Adidas and Allbirds..."
     },
@@ -207,7 +207,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       fullPrompt: "Compare athletic shoe brands by innovation and technological advancement in 2024.",
       topPlatforms: "ChatGPT, Copilot, Claude",
       mentions: 89,
-      source: "Visibl Generated",
+      source: "Visibl",
       timestamp: "2024-01-19 16:20",
       fullResponse: "Nike leads the athletic footwear industry in innovation with their Air Max technology, React foam, and Nike Adapt self-lacing systems..."
     },
@@ -217,7 +217,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       fullPrompt: "What are the best athletic shoes for cross-training and versatile workouts?",
       topPlatforms: "Perplexity, Grok",
       mentions: 124,
-      source: "User Generated",
+      source: "User",
       timestamp: "2024-01-19 14:10",
       fullResponse: "The best cross-training shoes include Nike Metcon series, Reebok Nano, and Under Armour HOVR for versatile workouts..."
     },
@@ -227,7 +227,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       fullPrompt: "Compare smart shoe technology across different manufacturers in the premium segment.",
       topPlatforms: "Gemini, Claude",
       mentions: 56,
-      source: "Visibl Generated",
+      source: "Visibl",
       timestamp: "2024-01-19 11:30",
       fullResponse: "Smart shoe technology varies significantly across brands like Adidas, Under Armour, and Puma, offering different approaches to fitness tracking..."
     }
@@ -856,13 +856,27 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       <TabsContent value="prompts" className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <img src="/lovable-uploads/d065101f-8248-41db-a466-8cd39c5a5533.png" alt="Terminal" className="w-5 h-5" />
-              <span>Prompts Analysis</span>
-            </CardTitle>
-            <CardDescription>
-              Detailed view of queries used to assess your brand's AI visibility across platforms.
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center space-x-2">
+                  <img src="/lovable-uploads/d065101f-8248-41db-a466-8cd39c5a5533.png" alt="Terminal" className="w-5 h-5" />
+                  <span>Prompts Analysis</span>
+                </CardTitle>
+                <CardDescription>
+                  Detailed view of queries used to assess your brand's AI visibility across platforms.
+                </CardDescription>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Button variant="outline" className="flex items-center space-x-2">
+                  <Zap className="w-4 h-4" />
+                  <span>Suggest Prompts</span>
+                </Button>
+                <Button className="flex items-center space-x-2">
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Add Prompt</span>
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {/* Filters */}
@@ -957,7 +971,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={prompt.source === "Visibl Generated" ? "default" : "secondary"} className="text-xs">
+                          <Badge variant={prompt.source === "Visibl" ? "default" : "secondary"} className="text-xs">
                             {prompt.source}
                           </Badge>
                         </TableCell>
