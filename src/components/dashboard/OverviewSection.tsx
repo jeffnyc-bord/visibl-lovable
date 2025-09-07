@@ -493,7 +493,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                     className="flex-1 min-w-0"
                   >
                     <Upload className="w-4 h-4 mr-2" />
-                    Auto Populate from Watchlist
+                    Auto Populate
                   </Button>
                   
                   <Button
