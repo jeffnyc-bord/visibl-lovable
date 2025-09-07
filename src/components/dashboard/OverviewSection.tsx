@@ -357,7 +357,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       <img 
                         src="/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" 
                         alt="Perplexity" 
-                        className="absolute left-0 top-0 w-8 h-8 object-contain group-hover:transform group-hover:scale-110" 
+                        className="absolute left-0 top-0 w-8 h-8 object-contain group-hover:transform group-hover:scale-110 hover:!scale-125 hover:z-50 cursor-pointer" 
                         style={{ 
                           zIndex: 14,
                           transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -367,7 +367,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       <img 
                         src="/lovable-uploads/771fa115-94bb-4581-ae07-0733d1e93498.png" 
                         alt="Grok" 
-                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-10 group-hover:transform group-hover:scale-110" 
+                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-10 group-hover:transform group-hover:scale-110 hover:!scale-125 hover:z-50 cursor-pointer" 
                         style={{ 
                           left: '14px', 
                           zIndex: 13,
@@ -378,7 +378,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       <img 
                         src="/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png" 
                         alt="Gemini" 
-                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-20 group-hover:transform group-hover:scale-110" 
+                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-20 group-hover:transform group-hover:scale-110 hover:!scale-125 hover:z-50 cursor-pointer" 
                         style={{ 
                           left: '28px', 
                           zIndex: 12,
@@ -389,7 +389,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       <img 
                         src="/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png" 
                         alt="ChatGPT" 
-                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-30 group-hover:transform group-hover:scale-110" 
+                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-30 group-hover:transform group-hover:scale-110 hover:!scale-125 hover:z-50 cursor-pointer" 
                         style={{ 
                           left: '42px', 
                           zIndex: 11,
