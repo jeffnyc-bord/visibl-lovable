@@ -776,10 +776,7 @@ const Index = () => {
         <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden">
           <div className="bg-gradient-to-br from-primary/5 to-primary/10 p-6 border-b">
             <DialogHeader className="space-y-3">
-              <DialogTitle className="text-2xl font-bold text-foreground flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Building className="h-6 w-6 text-primary" />
-                </div>
+              <DialogTitle className="text-2xl font-bold text-foreground">
                 Add New Brand
               </DialogTitle>
               <DialogDescription className="text-base text-muted-foreground">
@@ -879,7 +876,7 @@ const Index = () => {
             </div>
           </div>
           
-          <div className="p-6 pt-0 border-t bg-muted/30">
+          <div className="px-6 py-4 border-t bg-muted/30">
             <DialogFooter className="gap-3">
               <Button 
                 variant="outline" 
@@ -887,14 +884,16 @@ const Index = () => {
                   setShowAddBrandDialog(false);
                   setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "" });
                 }}
-                className="transition-all duration-200 hover:bg-muted"
+                className="transition-all duration-200 hover:bg-muted h-9 px-4"
+                size="sm"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleAddNewBrand}
                 disabled={!newBrandData.name.trim() || !newBrandData.url.trim()}
-                className="bg-primary hover:bg-primary/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none disabled:shadow-none"
+                className="bg-primary hover:bg-primary/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none disabled:shadow-none h-9 px-4"
+                size="sm"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Brand
