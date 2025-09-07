@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link, Settings, ExternalLink, HelpCircle } from "lucide-react";
+import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link, Settings, ExternalLink, HelpCircle, Upload, Plus, X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
@@ -55,10 +56,12 @@ interface OverviewSectionProps {
 }
 
 export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick }: OverviewSectionProps) => {
+  const { toast } = useToast();
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
+  const [showManualAddDialog, setShowManualAddDialog] = useState(false);
 
   const visibilityData = [
     { month: "Jul", score: 75 },
@@ -456,6 +459,46 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Brand Management Workflow */}
+            <div className="mb-4 p-4 bg-muted/30 rounded-lg border">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-medium text-foreground">Manage Ranking Brands</h4>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      // Auto-populate from tracked brands
+                      // This would update the industryRanking data with tracked brands
+                      toast({
+                        title: "Brands Auto-Populated",
+                        description: "Ranking updated with your tracked brands data.",
+                      });
+                    }}
+                    className="text-xs h-7"
+                  >
+                    <Upload className="w-3 h-3 mr-1" />
+                    Auto Populate
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      // Open manual add brand dialog
+                      setShowManualAddDialog(true);
+                    }}
+                    className="text-xs h-7"
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    Add Manually
+                  </Button>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Add competitors to compare rankings or auto-populate from your tracked brands in the Watchlist.
+              </p>
+            </div>
+
             <Table>
               <TableHeader>
                 <TableRow>
@@ -463,6 +506,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   <TableHead>Brand</TableHead>
                   <TableHead>Score</TableHead>
                   <TableHead>Change</TableHead>
+                  <TableHead className="w-10"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -501,6 +545,24 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       }>
                         {brand.change}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {brand.brand !== "Nike" && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 opacity-60 hover:opacity-100 hover:text-destructive"
+                          onClick={() => {
+                            // Remove brand from ranking
+                            toast({
+                              title: "Brand Removed",
+                              description: `${brand.brand} has been removed from the ranking.`,
+                            });
+                          }}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
