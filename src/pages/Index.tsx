@@ -191,7 +191,8 @@ const Index = () => {
   const [newBrandData, setNewBrandData] = useState({
     name: "",
     url: "",
-    logo: ""
+    logoFile: null as File | null,
+    logoPreview: ""
   });
   
   // Brand switching state
@@ -299,13 +300,27 @@ const Index = () => {
   };
 
   // Handle adding new brand
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setNewBrandData(prev => ({ ...prev, logoFile: file }));
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewBrandData(prev => ({ ...prev, logoPreview: e.target?.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAddNewBrand = () => {
     if (!newBrandData.name.trim() || !newBrandData.url.trim()) return;
     
     const newBrand: BrandData = {
       id: newBrandData.name.toLowerCase().replace(/\s+/g, ''),
       name: newBrandData.name,
-      logo: newBrandData.logo || "/lovable-uploads/d296743b-ff18-4da8-8546-d789de582706.png",
+      logo: newBrandData.logoPreview || "/lovable-uploads/d296743b-ff18-4da8-8546-d789de582706.png",
       url: newBrandData.url,
       visibilityScore: Math.floor(Math.random() * 30) + 70, // Random score 70-100
       totalMentions: Math.floor(Math.random() * 5000) + 1000,
@@ -331,7 +346,7 @@ const Index = () => {
       description: `${newBrand.name} has been added to your portfolio.`,
     });
     setShowAddBrandDialog(false);
-    setNewBrandData({ name: "", url: "", logo: "" });
+    setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "" });
   };
 
   const sidebarItems = getNavigationItems();
@@ -777,19 +792,35 @@ const Index = () => {
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="brand-logo" className="text-right">
-                Logo URL
+                Logo
               </Label>
-              <Input
-                id="brand-logo"
-                value={newBrandData.logo}
-                onChange={(e) => setNewBrandData(prev => ({ ...prev, logo: e.target.value }))}
-                className="col-span-3"
-                placeholder="https://example.com/logo.png (optional)"
-              />
+              <div className="col-span-3 space-y-2">
+                <Input
+                  id="brand-logo"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-gray-500">Optional: Upload a logo image</p>
+                {newBrandData.logoPreview && (
+                  <div className="flex items-center space-x-2">
+                    <img 
+                      src={newBrandData.logoPreview} 
+                      alt="Logo preview" 
+                      className="w-10 h-10 object-contain border rounded"
+                    />
+                    <span className="text-sm text-gray-600">Preview</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddBrandDialog(false)}>
+            <Button variant="outline" onClick={() => {
+              setShowAddBrandDialog(false);
+              setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "" });
+            }}>
               Cancel
             </Button>
             <Button 
