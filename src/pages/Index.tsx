@@ -896,7 +896,7 @@ const Index = () => {
                 size="sm"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Start Monitoring
+                Add & Start Monitoring
               </Button>
             </DialogFooter>
           </div>
