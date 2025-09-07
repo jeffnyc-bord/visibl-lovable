@@ -537,7 +537,7 @@ export const ExternalAIVisibilitySection = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Globe className="w-5 h-5 text-orange-500" />
+            <img src="/lovable-uploads/210deded-106c-459a-8f28-05761a09348c.png" alt="Source Quality" className="w-5 h-5" />
             <span>Source Quality & Authority</span>
           </CardTitle>
           <CardDescription>
