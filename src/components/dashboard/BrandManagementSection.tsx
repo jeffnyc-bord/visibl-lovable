@@ -257,12 +257,14 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                <SelectTrigger className="h-9">
                  <SelectValue placeholder="Report Frequency" />
                </SelectTrigger>
-               <SelectContent>
-                 <SelectItem value="daily">Daily</SelectItem>
-                 <SelectItem value="weekly">Weekly</SelectItem>
-                 <SelectItem value="biweekly">Bi-weekly</SelectItem>
-                 <SelectItem value="monthly">Monthly</SelectItem>
-               </SelectContent>
+                <SelectContent className="bg-white border shadow-lg z-50">
+                  <SelectItem value="daily">Once daily</SelectItem>
+                  <SelectItem value="twiceweekly">Twice a week</SelectItem>
+                  <SelectItem value="weekly">Once a week</SelectItem>
+                  <SelectItem value="biweekly">Once every two weeks</SelectItem>
+                  <SelectItem value="biweekly2">Bi-weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
              </Select>
              
              <div className="md:col-span-2">
