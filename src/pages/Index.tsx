@@ -28,6 +28,41 @@ import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from
 import { DeveloperControls } from "@/components/ui/developer-controls";
 import { StatusIndicators } from "@/components/ui/status-indicators";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Bell,
+  Search,
+  ChevronDown,
+  TrendingUp,
+  TrendingDown,
+  Eye,
+  MessageSquare,
+  Users,
+  Globe,
+  Calendar,
+  Download,
+  Filter,
+  MoreHorizontal,
+  Plus,
+  Settings,
+  BarChart3,
+  Target,
+  Zap,
+  Shield,
+  Building,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Image as ImageIcon,
+  Upload,
+  X,
+  HelpCircle,
+  Menu,
+  Code,
+  Brain,
+  Lightbulb,
+  FileText
+} from "lucide-react";
 
 // Mock brand data structure
 interface BrandData {
@@ -156,26 +191,6 @@ const mockTrackedBrands: BrandData[] = [
     ]
   }
 ];
-import { 
-  Search, 
-  TrendingUp, 
-  Brain, 
-  Target, 
-  Lightbulb, 
-  Globe,
-  BarChart3,
-  Users,
-  FileText,
-  Settings,
-  HelpCircle,
-  Menu,
-  ChevronDown,
-  Building,
-  Code,
-  Zap,
-  Eye,
-  Plus
-} from "lucide-react";
 
 const Index = () => {
   const { toast } = useToast();
@@ -758,78 +773,134 @@ const Index = () => {
 
       {/* Add New Brand Dialog */}
       <Dialog open={showAddBrandDialog} onOpenChange={setShowAddBrandDialog}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add New Brand</DialogTitle>
-            <DialogDescription>
-              Add a new brand to your portfolio to start tracking its AI visibility.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="brand-name" className="text-right">
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-primary/5 to-primary/10 p-6 border-b">
+            <DialogHeader className="space-y-3">
+              <DialogTitle className="text-2xl font-bold text-foreground flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Building className="h-6 w-6 text-primary" />
+                </div>
+                Add New Brand
+              </DialogTitle>
+              <DialogDescription className="text-base text-muted-foreground">
+                Start tracking a new brand's AI visibility and performance insights.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          
+          <div className="p-6 space-y-6">
+            {/* Brand Name Field */}
+            <div className="space-y-2">
+              <Label htmlFor="brand-name" className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Building className="h-4 w-4 text-primary" />
                 Brand Name
               </Label>
               <Input
                 id="brand-name"
                 value={newBrandData.name}
                 onChange={(e) => setNewBrandData(prev => ({ ...prev, name: e.target.value }))}
-                className="col-span-3"
-                placeholder="Enter brand name"
+                className="transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                placeholder="Enter your brand name"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="brand-url" className="text-right">
+
+            {/* Website URL Field */}
+            <div className="space-y-2">
+              <Label htmlFor="brand-url" className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Globe className="h-4 w-4 text-primary" />
                 Website URL
               </Label>
               <Input
                 id="brand-url"
                 value={newBrandData.url}
                 onChange={(e) => setNewBrandData(prev => ({ ...prev, url: e.target.value }))}
-                className="col-span-3"
-                placeholder="https://example.com"
+                className="transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                placeholder="https://yourbrand.com"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="brand-logo" className="text-right">
-                Logo
+
+            {/* Logo Upload Field */}
+            <div className="space-y-3">
+              <Label htmlFor="brand-logo" className="text-sm font-medium text-foreground flex items-center gap-2">
+                <ImageIcon className="h-4 w-4 text-primary" />
+                Brand Logo
               </Label>
-              <div className="col-span-3 space-y-2">
-                <Input
-                  id="brand-logo"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload}
-                  className="cursor-pointer"
-                />
-                <p className="text-xs text-gray-500">Optional: Upload a logo image</p>
-                {newBrandData.logoPreview && (
-                  <div className="flex items-center space-x-2">
-                    <img 
-                      src={newBrandData.logoPreview} 
-                      alt="Logo preview" 
-                      className="w-10 h-10 object-contain border rounded"
+              
+              <div className="space-y-3">
+                {!newBrandData.logoPreview ? (
+                  <div className="relative">
+                    <Input
+                      id="brand-logo"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
-                    <span className="text-sm text-gray-600">Preview</span>
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-primary/50 transition-colors duration-200 hover:bg-primary/5">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="p-3 bg-muted rounded-full">
+                          <Upload className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">Drop your logo here or click to browse</p>
+                          <p className="text-xs text-muted-foreground">Optional • PNG, JPG, or SVG up to 5MB</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="border rounded-lg p-4 bg-muted/30">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-lg border bg-background p-1 flex items-center justify-center overflow-hidden">
+                          <img 
+                            src={newBrandData.logoPreview} 
+                            alt="Logo preview" 
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">Logo uploaded</p>
+                          <p className="text-xs text-muted-foreground">Looks great!</p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setNewBrandData(prev => ({ ...prev, logoFile: null, logoPreview: "" }))}
+                        className="h-8 w-8 p-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setShowAddBrandDialog(false);
-              setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "" });
-            }}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleAddNewBrand}
-              disabled={!newBrandData.name.trim() || !newBrandData.url.trim()}
-            >
-              Add Brand
-            </Button>
-          </DialogFooter>
+          
+          <div className="p-6 pt-0 border-t bg-muted/30">
+            <DialogFooter className="gap-3">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowAddBrandDialog(false);
+                  setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "" });
+                }}
+                className="transition-all duration-200 hover:bg-muted"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleAddNewBrand}
+                disabled={!newBrandData.name.trim() || !newBrandData.url.trim()}
+                className="bg-primary hover:bg-primary/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none disabled:shadow-none"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Brand
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
