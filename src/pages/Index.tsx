@@ -282,7 +282,7 @@ const Index = () => {
     } else {
       return [
         ...baseItems,
-        { label: "Agency Admin", icon: Users, active: activeView === "agency", view: "agency" },
+        { label: "Client Portal", icon: Users, active: activeView === "agency", view: "agency" },
       ];
     }
   };
