@@ -357,22 +357,26 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       <img 
                         src="/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" 
                         alt="Perplexity" 
-                        className="absolute left-0 top-0 w-8 h-8 object-contain transition-all duration-500 group-hover:left-0 group-hover:transform group-hover:scale-110 z-40" 
+                        className="absolute left-0 top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-0 group-hover:transform group-hover:scale-110" 
+                        style={{ zIndex: 40 }}
                       />
                       <img 
                         src="/lovable-uploads/771fa115-94bb-4581-ae07-0733d1e93498.png" 
                         alt="Grok" 
-                        className="absolute left-3.5 top-0 w-8 h-8 object-contain transition-all duration-500 group-hover:left-8 group-hover:transform group-hover:scale-110 z-30" 
+                        className="absolute left-3.5 top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-8 group-hover:transform group-hover:scale-110" 
+                        style={{ zIndex: 30 }}
                       />
                       <img 
                         src="/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png" 
                         alt="Gemini" 
-                        className="absolute left-7 top-0 w-8 h-8 object-contain transition-all duration-500 group-hover:left-16 group-hover:transform group-hover:scale-110 z-20" 
+                        className="absolute left-7 top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-16 group-hover:transform group-hover:scale-110" 
+                        style={{ zIndex: 20 }}
                       />
                       <img 
                         src="/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png" 
                         alt="ChatGPT" 
-                        className="absolute left-10.5 top-0 w-8 h-8 object-contain transition-all duration-500 group-hover:left-24 group-hover:transform group-hover:scale-110 z-10" 
+                        className="absolute left-10.5 top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-24 group-hover:transform group-hover:scale-110" 
+                        style={{ zIndex: 10 }}
                       />
                     </div>
                   </div>
