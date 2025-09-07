@@ -170,7 +170,8 @@ import {
   Building,
   Code,
   Zap,
-  Eye
+  Eye,
+  Plus
 } from "lucide-react";
 
 const Index = () => {
@@ -469,7 +470,7 @@ const Index = () => {
                             <span className="font-medium text-gray-900 text-sm">{selectedBrand.name}</span>
                           </div>
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white border shadow-lg z-50">
                           {trackedBrands.map((brand) => (
                             <SelectItem key={brand.id} value={brand.id}>
                               <div className="flex items-center space-x-2">
@@ -478,6 +479,12 @@ const Index = () => {
                               </div>
                             </SelectItem>
                           ))}
+                          <div className="border-t border-gray-200 mt-2 pt-2">
+                            <div className="flex items-center space-x-2 px-2 py-1.5 text-sm text-blue-600 hover:bg-blue-50 cursor-pointer rounded-md">
+                              <Plus className="w-4 h-4" />
+                              <span>New Brand</span>
+                            </div>
+                          </div>
                         </SelectContent>
                       </Select>
                     </div>
