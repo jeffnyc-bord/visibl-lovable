@@ -593,7 +593,7 @@ const Index = () => {
                       <PopoverContent className="w-64 p-3" align="start">
                         <div className="space-y-2">
                           <div className="text-sm font-medium text-gray-900 mb-2">Select AI Models</div>
-                          {["All models", "ChatGPT", "Microsoft Copilot", "Gemini", "Claude", "Perplexity", "Grok"].map((model) => (
+                          {["All models", "ChatGPT", "Gemini", "Grok", "Perplexity"].map((model) => (
                             <div key={model} className="flex items-center space-x-2">
                               <Checkbox
                                 id={model}
