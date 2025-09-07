@@ -353,47 +353,47 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   <span className="text-xs text-gray-500">platforms</span>
                   <div className="relative group w-16 h-8">
                     {/* AI Platform Logos Carousel - Overlapping Layout */}
-                    <div className="relative h-8 w-16 transition-all duration-700 ease-out group-hover:w-80">
+                    <div className="relative h-12 w-16 transition-all duration-700 ease-out group-hover:w-96 group-hover:h-12">
                       <img 
                         src="/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" 
                         alt="Perplexity" 
-                        className="absolute left-0 top-0 w-8 h-8 object-contain group-hover:transform group-hover:scale-110 hover:!scale-125 hover:z-50 cursor-pointer" 
+                        className="absolute left-0 top-0 w-8 h-8 object-contain group-hover:left-4 group-hover:transform group-hover:scale-150 hover:!scale-[1.8] hover:z-50 cursor-pointer" 
                         style={{ 
                           zIndex: 14,
-                          transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                          transition: 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                           transitionDelay: '0ms'
                         }}
                       />
                       <img 
                         src="/lovable-uploads/771fa115-94bb-4581-ae07-0733d1e93498.png" 
                         alt="Grok" 
-                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-24 group-hover:transform group-hover:scale-110 hover:!scale-125 hover:z-50 cursor-pointer" 
+                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-32 group-hover:transform group-hover:scale-150 hover:!scale-[1.8] hover:z-50 cursor-pointer" 
                         style={{ 
                           left: '14px', 
                           zIndex: 13,
-                          transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                          transition: 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                           transitionDelay: '100ms'
                         }}
                       />
                       <img 
                         src="/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png" 
                         alt="Gemini" 
-                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-48 group-hover:transform group-hover:scale-110 hover:!scale-125 hover:z-50 cursor-pointer" 
+                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-60 group-hover:transform group-hover:scale-150 hover:!scale-[1.8] hover:z-50 cursor-pointer" 
                         style={{ 
                           left: '28px', 
                           zIndex: 12,
-                          transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                          transition: 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                           transitionDelay: '200ms'
                         }}
                       />
                       <img 
                         src="/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png" 
                         alt="ChatGPT" 
-                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-72 group-hover:transform group-hover:scale-110 hover:!scale-125 hover:z-50 cursor-pointer" 
+                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-88 group-hover:transform group-hover:scale-150 hover:!scale-[1.8] hover:z-50 cursor-pointer" 
                         style={{ 
                           left: '42px', 
                           zIndex: 11,
-                          transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                          transition: 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                           transitionDelay: '300ms'
                         }}
                       />
