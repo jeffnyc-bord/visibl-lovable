@@ -75,6 +75,19 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   const [brandType, setBrandType] = useState("");
   const [reportFrequency, setReportFrequency] = useState("twiceweekly");
   
+  // Brand limits based on tier
+  const TIER_LIMITS = {
+    standard: 5,
+    premium: 15,
+    enterprise: 50
+  };
+  
+  const currentTier = "standard"; // This would come from user subscription data
+  const maxBrands = TIER_LIMITS[currentTier];
+  const currentBrandCount = trackedBrands.length; // Actual count from tracked brands
+  const brandsRemaining = Math.max(0, maxBrands - currentBrandCount);
+  const isAtLimit = currentBrandCount >= maxBrands;
+  
   // Use selected brand as the primary brand
   const myBrand = {
     id: 1,
@@ -150,6 +163,16 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
 
   const handleAddBrand = () => {
     if (!websiteUrl.trim() || !reportFrequency) return;
+    
+    // Check brand limit
+    if (isAtLimit) {
+      toast({
+        title: "Brand Limit Reached",
+        description: `You've reached the maximum of ${maxBrands} brands for the ${currentTier} tier. Upgrade to add more competitors.`,
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsAddingBrand(true);
     setAddBrandProgress(0);
@@ -236,12 +259,86 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       )}
 
     <div className="space-y-6">
+      {/* Brand Limit Tracking */}
+      <Card className="shadow-sm border-border">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-base text-foreground flex items-center justify-between">
+            <span>Brand Tracking Overview</span>
+            <div className="text-sm font-normal text-muted-foreground">
+              {currentTier.charAt(0).toUpperCase() + currentTier.slice(1)} Tier
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium text-foreground">Tracked Brands</span>
+              <span className="text-muted-foreground">
+                {currentBrandCount} / {maxBrands} brands
+              </span>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="w-full bg-muted rounded-full h-2">
+                <div 
+                  className={`h-2 rounded-full transition-all ${
+                    isAtLimit ? 'bg-destructive' : currentBrandCount >= maxBrands * 0.8 ? 'bg-orange-500' : 'bg-primary'
+                  }`}
+                  style={{ width: `${Math.min((currentBrandCount / maxBrands) * 100, 100)}%` }}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">
+                  {isAtLimit ? (
+                    <span className="text-destructive font-medium">Limit reached</span>
+                  ) : (
+                    <span>
+                      {brandsRemaining} brand{brandsRemaining !== 1 ? 's' : ''} remaining
+                    </span>
+                  )}
+                </span>
+                {!isAtLimit && currentBrandCount >= maxBrands * 0.8 && (
+                  <span className="text-orange-600 font-medium">
+                    Approaching limit
+                  </span>
+                )}
+              </div>
+            </div>
+            
+            {isAtLimit && (
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
+                <div className="flex items-start gap-2">
+                  <Target className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-destructive mb-1">
+                      Brand limit reached
+                    </p>
+                    <p className="text-xs text-destructive/80 mb-2">
+                      Upgrade to Premium for 15 brands or Enterprise for 50 brands.
+                    </p>
+                    <Button size="sm" variant="destructive" className="h-7 text-xs">
+                      Upgrade Plan
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Add Competitor */}
       <Card className="shadow-sm border-border">
         <CardHeader className="pb-4">
           <CardTitle className="text-base text-foreground">Add Competitor</CardTitle>
           <CardDescription className="text-muted-foreground">
             Add a competitor to your watchlist to monitor their AI visibility
+            {isAtLimit && (
+              <span className="block text-destructive text-sm mt-1 font-medium">
+                Upgrade your plan to add more competitors
+              </span>
+            )}
           </CardDescription>
         </CardHeader>
          <CardContent>
@@ -268,16 +365,16 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                  </SelectContent>
              </Select>
              
-             <div className="md:col-span-2">
-               <Button 
-                 className="w-full h-9"
-                 onClick={handleAddBrand}
-                 disabled={!websiteUrl.trim() || !reportFrequency || isAddingBrand}
-               >
-                 <Plus className="w-4 h-4 mr-2" />
-                 {isAddingBrand ? "Adding..." : "Add to Watchlist"}
-               </Button>
-             </div>
+              <div className="md:col-span-2">
+                <Button 
+                  className="w-full h-9"
+                  onClick={handleAddBrand}
+                  disabled={!websiteUrl.trim() || !reportFrequency || isAddingBrand || isAtLimit}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  {isAtLimit ? "Upgrade to Add More" : isAddingBrand ? "Adding..." : "Add to Watchlist"}
+                </Button>
+              </div>
            </div>
          </CardContent>
       </Card>
