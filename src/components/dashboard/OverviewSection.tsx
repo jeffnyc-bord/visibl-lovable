@@ -67,6 +67,17 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [showManualAddDialog, setShowManualAddDialog] = useState(false);
   const [industryRankingBrands, setIndustryRankingBrands] = useState<any[]>([]);
   const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "" });
+  
+  // Brand limits based on tier
+  const TIER_LIMITS = {
+    standard: 5,
+    premium: 15,
+    enterprise: 50
+  };
+  
+  const currentTier = "standard"; // This would come from user subscription data
+  const maxBrands = TIER_LIMITS[currentTier];
+  const currentBrandCount = 3; // This would come from actual tracked brands count
 
   const visibilityData = [
     { month: "Jul", score: 75 },
@@ -598,66 +609,122 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
         {/* Manual Add Brand Dialog */}
         <Dialog open={showManualAddDialog} onOpenChange={setShowManualAddDialog}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>Add Competitor Manually</DialogTitle>
               <DialogDescription>
                 Add a competitor brand to track in your industry ranking.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="brand-name">Brand Name</Label>
-                <Input
-                  id="brand-name"
-                  value={manualBrandForm.name}
-                  onChange={(e) => setManualBrandForm(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Enter competitor name"
+            
+            {/* Brand Limit Info */}
+            <div className="bg-muted/50 border rounded-lg p-3 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-foreground">Tracked Brands</span>
+                <span className="text-sm text-muted-foreground">
+                  {currentBrandCount} / {maxBrands} (Standard Tier)
+                </span>
+              </div>
+              <div className="w-full bg-muted rounded-full h-2">
+                <div 
+                  className={`h-2 rounded-full transition-all ${
+                    currentBrandCount >= maxBrands ? 'bg-destructive' : 'bg-primary'
+                  }`}
+                  style={{ width: `${Math.min((currentBrandCount / maxBrands) * 100, 100)}%` }}
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="website">Website (Optional)</Label>
-                <Input
-                  id="website"
-                  value={manualBrandForm.website}
-                  onChange={(e) => setManualBrandForm(prev => ({ ...prev, website: e.target.value }))}
-                  placeholder="https://competitor.com"
-                />
-              </div>
+              {currentBrandCount >= maxBrands && (
+                <p className="text-xs text-destructive mt-2">
+                  You've reached your brand limit. Upgrade to Premium for 15 brands or Enterprise for 50 brands.
+                </p>
+              )}
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setShowManualAddDialog(false);
-                setManualBrandForm({ name: "", website: "" });
-              }}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (!manualBrandForm.name.trim()) return;
-                  
-                  const newBrand = {
-                    rank: industryRankingBrands.length + 1,
-                    brand: manualBrandForm.name,
-                    score: Math.floor(Math.random() * 30) + 70, // Random score 70-100
-                    change: Math.random() > 0.5 ? "+1" : "0",
-                    insight: `Growing presence in AI mentions`,
-                    link: `/competitors?brand=${manualBrandForm.name.toLowerCase()}`
-                  };
-                  
-                  setIndustryRankingBrands(prev => [...prev, newBrand]);
-                  toast({
-                    title: "Competitor Added",
-                    description: `${manualBrandForm.name} has been added to your ranking.`,
-                  });
-                  setShowManualAddDialog(false);
-                  setManualBrandForm({ name: "", website: "" });
-                }}
-                disabled={!manualBrandForm.name.trim()}
-              >
-                Add Competitor
-              </Button>
-            </DialogFooter>
+
+            {currentBrandCount >= maxBrands ? (
+              // Show upgrade prompt when at limit
+              <div className="text-center py-6">
+                <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Target className="w-6 h-6 text-destructive" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-2">Brand Limit Reached</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  You're currently tracking {currentBrandCount} brands on the Standard Tier. 
+                  Upgrade to add more competitors to your ranking.
+                </p>
+                <div className="flex gap-2 justify-center">
+                  <Button variant="outline" onClick={() => setShowManualAddDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button>
+                    Upgrade Plan
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              // Show form when under limit
+              <>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="brand-name">
+                      Brand Name <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="brand-name"
+                      value={manualBrandForm.name}
+                      onChange={(e) => setManualBrandForm(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Enter competitor name"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="website">
+                      Website URL <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="website"
+                      value={manualBrandForm.website}
+                      onChange={(e) => setManualBrandForm(prev => ({ ...prev, website: e.target.value }))}
+                      placeholder="https://competitor.com"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      We'll use this to analyze their AI visibility and gather insights.
+                    </p>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => {
+                    setShowManualAddDialog(false);
+                    setManualBrandForm({ name: "", website: "" });
+                  }}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      if (!manualBrandForm.name.trim() || !manualBrandForm.website.trim()) return;
+                      
+                      const newBrand = {
+                        rank: industryRankingBrands.length + 1,
+                        brand: manualBrandForm.name,
+                        score: Math.floor(Math.random() * 30) + 70, // Random score 70-100
+                        change: Math.random() > 0.5 ? "+1" : "0",
+                        insight: `Growing presence in AI mentions`,
+                        link: `/competitors?brand=${manualBrandForm.name.toLowerCase()}`
+                      };
+                      
+                      setIndustryRankingBrands(prev => [...prev, newBrand]);
+                      toast({
+                        title: "Competitor Added",
+                        description: `${manualBrandForm.name} has been added to your ranking.`,
+                      });
+                      setShowManualAddDialog(false);
+                      setManualBrandForm({ name: "", website: "" });
+                    }}
+                    disabled={!manualBrandForm.name.trim() || !manualBrandForm.website.trim()}
+                  >
+                    Add Competitor
+                  </Button>
+                </DialogFooter>
+              </>
+            )}
           </DialogContent>
         </Dialog>
       </div>
