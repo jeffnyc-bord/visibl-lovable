@@ -944,7 +944,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <img src="/lovable-uploads/0fe89acd-e0a5-4388-8a50-3f25de035732.png" alt="Core Brand Queries" className="w-5 h-5" />
+              <MessageSquare className="w-5 h-5" />
               <span>Top Prompts</span>
             </div>
             <div className="relative">
