@@ -136,10 +136,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   ];
 
   const coreQueries = [
-    { query: "Best running shoes for marathon training", relevanceScore: 92, brand: "Nike", mentions: 145 },
-    { query: "Nike Air Max vs Adidas Ultraboost", relevanceScore: 88, brand: "Nike", mentions: 203 },
-    { query: "Most comfortable athletic shoes for daily wear", relevanceScore: 75, brand: "Nike", mentions: 67 },
-    { query: "Best basketball shoes for performance", relevanceScore: 82, brand: "Nike", mentions: 89 },
+    { query: "Best running shoes for marathon training", brand: "Nike", mentions: 145 },
+    { query: "Nike Air Max vs Adidas Ultraboost", brand: "Nike", mentions: 203 },
+    { query: "Most comfortable athletic shoes for daily wear", brand: "Nike", mentions: 67 },
+    { query: "Best basketball shoes for performance", brand: "Nike", mentions: 89 },
   ];
 
   const sourceQuality = [
@@ -975,12 +975,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   <p className="font-medium text-gray-900">{query.query}</p>
                 </div>
                 <div className="flex items-center space-x-6">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">Relevance:</span>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                      {query.relevanceScore}%
-                    </Badge>
-                  </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-600">AI Mentions:</span>
                     <span className="font-medium">{query.mentions}</span>

@@ -92,10 +92,10 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
 
   // Mock data for generated queries
   const coreQueries = [
-    { query: "Best running shoes for marathon training", relevanceScore: 92, brand: "Nike", mentions: 145 },
-    { query: "Nike Air Max vs Adidas Ultraboost", relevanceScore: 88, brand: "Nike", mentions: 203 },
-    { query: "Most comfortable athletic shoes for daily wear", relevanceScore: 75, brand: "Nike", mentions: 67 },
-    { query: "Best basketball shoes for performance", relevanceScore: 82, brand: "Nike", mentions: 89 },
+    { query: "Best running shoes for marathon training", brand: "Nike", mentions: 145 },
+    { query: "Nike Air Max vs Adidas Ultraboost", brand: "Nike", mentions: 203 },
+    { query: "Most comfortable athletic shoes for daily wear", brand: "Nike", mentions: 67 },
+    { query: "Best basketball shoes for performance", brand: "Nike", mentions: 89 },
   ];
 
   // Mock data for prompt blast history with comprehensive results

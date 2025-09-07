@@ -75,10 +75,10 @@ export const ExternalAIVisibilitySection = () => {
 
   // Core Brand Queries data
   const coreQueries = [
-    { query: "Best electric vehicle for families", relevanceScore: 92, brand: "Tesla", mentions: 145 },
-    { query: "Tesla Model 3 vs competitors", relevanceScore: 88, brand: "Tesla", mentions: 203 },
-    { query: "Electric car charging infrastructure", relevanceScore: 75, brand: "Tesla", mentions: 67 },
-    { query: "Sustainable transportation options", relevanceScore: 82, brand: "Tesla", mentions: 89 },
+    { query: "Best electric vehicle for families", brand: "Tesla", mentions: 145 },
+    { query: "Tesla Model 3 vs competitors", brand: "Tesla", mentions: 203 },
+    { query: "Electric car charging infrastructure", brand: "Tesla", mentions: 67 },
+    { query: "Sustainable transportation options", brand: "Tesla", mentions: 89 },
   ];
 
   // AI Platform Mention Distribution data - Top 4 platforms for donut chart
@@ -521,19 +521,10 @@ export const ExternalAIVisibilitySection = () => {
                   <p className="font-medium text-gray-900">{query.query}</p>
                   <div className="flex items-center space-x-4 mt-2">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600">Relevance:</span>
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                        {query.relevanceScore}%
-                      </Badge>
-                    </div>
-                    <div className="flex items-center space-x-2">
                       <span className="text-sm text-gray-600">AI Mentions:</span>
                       <span className="font-medium">{query.mentions}</span>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Progress value={query.relevanceScore} className="w-20 h-2" />
                 </div>
               </div>
             ))}
