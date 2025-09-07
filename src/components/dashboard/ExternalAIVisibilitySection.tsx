@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, TrendingUp, MessageSquare, Link, Calendar, Star, BarChart3, Target, HelpCircle } from "lucide-react";
+import { Eye, TrendingUp, MessageSquare, Link, Calendar, Star, BarChart3, Target, HelpCircle, Globe } from "lucide-react";
 import { useState } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 
@@ -537,7 +537,7 @@ export const ExternalAIVisibilitySection = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Link className="w-5 h-5 text-orange-500" />
+            <Globe className="w-5 h-5 text-orange-500" />
             <span>Source Quality & Authority</span>
           </CardTitle>
           <CardDescription>
