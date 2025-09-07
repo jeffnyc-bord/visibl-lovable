@@ -272,7 +272,7 @@ const Index = () => {
   // Role-based navigation items
   const getNavigationItems = () => {
     const baseItems = [
-      { label: "Monitoring", icon: BarChart3, active: activeView === "dashboard", view: "dashboard" },
+      { label: "Dashboard", icon: BarChart3, active: activeView === "dashboard", view: "dashboard" },
     ];
 
     if (userRole === "business_user") {
