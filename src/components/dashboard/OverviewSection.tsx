@@ -353,30 +353,49 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   <span className="text-xs text-gray-500">platforms</span>
                   <div className="relative group w-16 h-8">
                     {/* AI Platform Logos Carousel - Overlapping Layout */}
-                    <div className="relative h-8 w-16 transition-all duration-500 ease-in-out group-hover:w-40">
+                    <div className="relative h-8 w-16 transition-all duration-700 ease-out group-hover:w-40">
                       <img 
                         src="/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" 
                         alt="Perplexity" 
-                        className="absolute left-0 top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-0 group-hover:transform group-hover:scale-110" 
-                        style={{ zIndex: 14 }}
+                        className="absolute left-0 top-0 w-8 h-8 object-contain group-hover:transform group-hover:scale-110" 
+                        style={{ 
+                          zIndex: 14,
+                          transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                          transitionDelay: '0ms'
+                        }}
                       />
                       <img 
                         src="/lovable-uploads/771fa115-94bb-4581-ae07-0733d1e93498.png" 
                         alt="Grok" 
-                        className="absolute top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-10 group-hover:transform group-hover:scale-110" 
-                        style={{ left: '14px', zIndex: 13 }}
+                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-10 group-hover:transform group-hover:scale-110" 
+                        style={{ 
+                          left: '14px', 
+                          zIndex: 13,
+                          transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                          transitionDelay: '100ms'
+                        }}
                       />
                       <img 
                         src="/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png" 
                         alt="Gemini" 
-                        className="absolute top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-20 group-hover:transform group-hover:scale-110" 
-                        style={{ left: '28px', zIndex: 12 }}
+                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-20 group-hover:transform group-hover:scale-110" 
+                        style={{ 
+                          left: '28px', 
+                          zIndex: 12,
+                          transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                          transitionDelay: '200ms'
+                        }}
                       />
                       <img 
                         src="/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png" 
                         alt="ChatGPT" 
-                        className="absolute top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-30 group-hover:transform group-hover:scale-110" 
-                        style={{ left: '42px', zIndex: 11 }}
+                        className="absolute top-0 w-8 h-8 object-contain group-hover:left-30 group-hover:transform group-hover:scale-110" 
+                        style={{ 
+                          left: '42px', 
+                          zIndex: 11,
+                          transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                          transitionDelay: '300ms'
+                        }}
                       />
                     </div>
                   </div>
