@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -25,6 +27,7 @@ import { DashboardSkeleton, ChartWidgetSkeleton, ScorecardSkeleton, TableSkeleto
 import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from "@/components/ui/error-states";
 import { DeveloperControls } from "@/components/ui/developer-controls";
 import { StatusIndicators } from "@/components/ui/status-indicators";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock brand data structure
 interface BrandData {
@@ -175,6 +178,7 @@ import {
 } from "lucide-react";
 
 const Index = () => {
+  const { toast } = useToast();
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [hasAnalysis, setHasAnalysis] = useState(true);
@@ -183,9 +187,15 @@ const Index = () => {
   // Simulating role-based logic - in real app this would come from auth/context
   const [userRole, setUserRole] = useState<"business_user" | "agency_admin">("business_user");
   const [loadingDuration, setLoadingDuration] = useState(6);
+  const [showAddBrandDialog, setShowAddBrandDialog] = useState(false);
+  const [newBrandData, setNewBrandData] = useState({
+    name: "",
+    url: "",
+    logo: ""
+  });
   
   // Brand switching state
-  const [trackedBrands] = useState<BrandData[]>(mockTrackedBrands);
+  const [trackedBrands, setTrackedBrands] = useState<BrandData[]>(mockTrackedBrands);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("nike");
   
   // Filter states
@@ -286,6 +296,42 @@ const Index = () => {
         { label: "Client Portal", icon: Users, active: activeView === "agency", view: "agency" },
       ];
     }
+  };
+
+  // Handle adding new brand
+  const handleAddNewBrand = () => {
+    if (!newBrandData.name.trim() || !newBrandData.url.trim()) return;
+    
+    const newBrand: BrandData = {
+      id: newBrandData.name.toLowerCase().replace(/\s+/g, ''),
+      name: newBrandData.name,
+      logo: newBrandData.logo || "/lovable-uploads/d296743b-ff18-4da8-8546-d789de582706.png",
+      url: newBrandData.url,
+      visibilityScore: Math.floor(Math.random() * 30) + 70, // Random score 70-100
+      totalMentions: Math.floor(Math.random() * 5000) + 1000,
+      platformCoverage: Math.floor(Math.random() * 20) + 80,
+      industryRanking: Math.floor(Math.random() * 10) + 1,
+      mentionTrend: Math.random() > 0.5 ? "up" : "stable",
+      sentimentScore: Math.floor(Math.random() * 20) + 70,
+      lastUpdated: new Date().toISOString().split('T')[0],
+      platforms: [
+        { name: "ChatGPT", mentions: Math.floor(Math.random() * 2000) + 1000, sentiment: "positive", coverage: 90, trend: "up" },
+        { name: "Claude", mentions: Math.floor(Math.random() * 1500) + 800, sentiment: "neutral", coverage: 85, trend: "stable" },
+        { name: "Gemini", mentions: Math.floor(Math.random() * 1000) + 500, sentiment: "positive", coverage: 82, trend: "up" },
+        { name: "Perplexity", mentions: Math.floor(Math.random() * 800) + 400, sentiment: "positive", coverage: 88, trend: "up" }
+      ],
+      products: [],
+      competitors: []
+    };
+    
+    setTrackedBrands(prev => [...prev, newBrand]);
+    setSelectedBrandId(newBrand.id);
+    toast({
+      title: "Brand Added Successfully",
+      description: `${newBrand.name} has been added to your portfolio.`,
+    });
+    setShowAddBrandDialog(false);
+    setNewBrandData({ name: "", url: "", logo: "" });
   };
 
   const sidebarItems = getNavigationItems();
@@ -480,7 +526,10 @@ const Index = () => {
                             </SelectItem>
                           ))}
                           <div className="border-t border-gray-200 mt-2 pt-2">
-                            <div className="flex items-center space-x-2 px-2 py-1.5 text-sm text-blue-600 hover:bg-blue-50 cursor-pointer rounded-md">
+                            <div 
+                              className="flex items-center space-x-2 px-2 py-1.5 text-sm text-blue-600 hover:bg-blue-50 cursor-pointer rounded-md"
+                              onClick={() => setShowAddBrandDialog(true)}
+                            >
                               <Plus className="w-4 h-4" />
                               <span>New Brand</span>
                             </div>
@@ -691,6 +740,67 @@ const Index = () => {
           {activeView === "settings" && <SettingsPage userRole={userRole} />}
         </main>
       </div>
+
+      {/* Add New Brand Dialog */}
+      <Dialog open={showAddBrandDialog} onOpenChange={setShowAddBrandDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add New Brand</DialogTitle>
+            <DialogDescription>
+              Add a new brand to your portfolio to start tracking its AI visibility.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="brand-name" className="text-right">
+                Brand Name
+              </Label>
+              <Input
+                id="brand-name"
+                value={newBrandData.name}
+                onChange={(e) => setNewBrandData(prev => ({ ...prev, name: e.target.value }))}
+                className="col-span-3"
+                placeholder="Enter brand name"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="brand-url" className="text-right">
+                Website URL
+              </Label>
+              <Input
+                id="brand-url"
+                value={newBrandData.url}
+                onChange={(e) => setNewBrandData(prev => ({ ...prev, url: e.target.value }))}
+                className="col-span-3"
+                placeholder="https://example.com"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="brand-logo" className="text-right">
+                Logo URL
+              </Label>
+              <Input
+                id="brand-logo"
+                value={newBrandData.logo}
+                onChange={(e) => setNewBrandData(prev => ({ ...prev, logo: e.target.value }))}
+                className="col-span-3"
+                placeholder="https://example.com/logo.png (optional)"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddBrandDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAddNewBrand}
+              disabled={!newBrandData.name.trim() || !newBrandData.url.trim()}
+            >
+              Add Brand
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
