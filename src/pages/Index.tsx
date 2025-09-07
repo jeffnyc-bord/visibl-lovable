@@ -328,7 +328,7 @@ const Index = () => {
         <nav className="flex-1 p-3">
           <div className="space-y-1">
             <div className={`${sidebarCollapsed ? 'hidden' : 'block'} text-xs font-medium text-gray-500 uppercase tracking-wider mb-2`}>
-              Client Portal
+              General
             </div>
             {sidebarItems.map((item, index) => (
               <div 
