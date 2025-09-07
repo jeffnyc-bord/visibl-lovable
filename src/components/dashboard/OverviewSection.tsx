@@ -351,39 +351,29 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                     platforms={platformMentions}
                   />
                   <span className="text-xs text-gray-500">platforms</span>
-                  <div className="relative group w-16 h-8 overflow-hidden">
-                    {/* AI Platform Logos Carousel */}
-                    <div className="flex transition-all duration-500 ease-in-out group-hover:space-x-2">
+                  <div className="relative group w-16 h-8">
+                    {/* AI Platform Logos Carousel - Overlapping Layout */}
+                    <div className="relative h-8 transition-all duration-500 ease-in-out group-hover:w-20">
                       <img 
                         src="/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png" 
                         alt="ChatGPT" 
-                        className="w-8 h-8 object-contain flex-shrink-0 transition-all duration-500 group-hover:transform group-hover:scale-110 z-30" 
-                        style={{ marginRight: '-50%' }}
+                        className="absolute left-0 top-0 w-8 h-8 object-contain transition-all duration-500 group-hover:left-0 group-hover:transform group-hover:scale-110 z-40" 
                       />
                       <img 
                         src="/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png" 
                         alt="Gemini" 
-                        className="w-8 h-8 object-contain flex-shrink-0 transition-all duration-500 group-hover:transform group-hover:scale-110 z-20" 
-                        style={{ marginRight: '-50%' }}
+                        className="absolute left-4 top-0 w-8 h-8 object-contain transition-all duration-500 group-hover:left-5 group-hover:transform group-hover:scale-110 z-30" 
                       />
                       <img 
                         src="/lovable-uploads/771fa115-94bb-4581-ae07-0733d1e93498.png" 
                         alt="Grok" 
-                        className="w-8 h-8 object-contain flex-shrink-0 transition-all duration-500 group-hover:transform group-hover:scale-110 z-10" 
-                        style={{ marginRight: '-50%' }}
+                        className="absolute left-8 top-0 w-8 h-8 object-contain transition-all duration-500 group-hover:left-10 group-hover:transform group-hover:scale-110 z-20" 
                       />
                       <img 
                         src="/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" 
                         alt="Perplexity" 
-                        className="w-8 h-8 object-contain flex-shrink-0 transition-all duration-500 group-hover:transform group-hover:scale-110" 
+                        className="absolute left-12 top-0 w-8 h-8 object-contain transition-all duration-500 group-hover:left-15 group-hover:transform group-hover:scale-110 z-10" 
                       />
-                    </div>
-                    {/* Hover state - expanded logos */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex space-x-1 items-center justify-center bg-white/90 rounded-md backdrop-blur-sm">
-                      <img src="/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png" alt="ChatGPT" className="w-6 h-6 object-contain" />
-                      <img src="/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png" alt="Gemini" className="w-6 h-6 object-contain" />
-                      <img src="/lovable-uploads/771fa115-94bb-4581-ae07-0733d1e93498.png" alt="Grok" className="w-6 h-6 object-contain" />
-                      <img src="/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" alt="Perplexity" className="w-6 h-6 object-contain" />
                     </div>
                   </div>
                 </div>
