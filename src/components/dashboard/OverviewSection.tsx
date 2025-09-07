@@ -353,32 +353,32 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   <span className="text-xs text-gray-500">platforms</span>
                   <div className="relative group w-16 h-8">
                     {/* AI Platform Logos Carousel - Overlapping Layout */}
-                    <div className="relative h-8 transition-all duration-500 ease-in-out group-hover:w-32">
+                    <div className="relative h-8 w-16 transition-all duration-500 ease-in-out group-hover:w-32">
                       <img 
                         src="/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" 
                         alt="Perplexity" 
                         className="absolute left-0 top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-0 group-hover:transform group-hover:scale-110" 
-                        style={{ zIndex: 40 }}
+                        style={{ zIndex: 14 }}
                       />
                       <img 
                         src="/lovable-uploads/771fa115-94bb-4581-ae07-0733d1e93498.png" 
                         alt="Grok" 
-                        className="absolute left-3.5 top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-8 group-hover:transform group-hover:scale-110" 
-                        style={{ zIndex: 30 }}
+                        className="absolute top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-8 group-hover:transform group-hover:scale-110" 
+                        style={{ left: '14px', zIndex: 13 }}
                       />
                       <img 
                         src="/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png" 
                         alt="Gemini" 
-                        className="absolute left-7 top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-16 group-hover:transform group-hover:scale-110" 
-                        style={{ zIndex: 20 }}
+                        className="absolute top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-16 group-hover:transform group-hover:scale-110" 
+                        style={{ left: '28px', zIndex: 12 }}
                       />
                       <img 
                         src="/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png" 
                         alt="ChatGPT" 
-                        className="absolute left-10.5 top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-24 group-hover:transform group-hover:scale-110" 
-                        style={{ zIndex: 10 }}
+                        className="absolute top-0 w-8 h-8 object-contain transition-all duration-500 ease-in-out group-hover:left-24 group-hover:transform group-hover:scale-110" 
+                        style={{ left: '42px', zIndex: 11 }}
                       />
-                    </div>
+                     </div>
                   </div>
                 </div>
             </div>
