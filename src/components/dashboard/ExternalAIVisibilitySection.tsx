@@ -56,11 +56,11 @@ export const ExternalAIVisibilitySection = () => {
   ];
 
   const sourceQuality = [
-    { source: "Official Tesla Website", mentions: 245, authority: "high", freshness: "current" },
-    { source: "Reuters (Tesla news)", mentions: 189, authority: "high", freshness: "current" },
-    { source: "TechCrunch", mentions: 167, authority: "medium", freshness: "current" },
-    { source: "Wikipedia", mentions: 134, authority: "medium", freshness: "outdated" },
-    { source: "Tesla Forums", mentions: 98, authority: "low", freshness: "current" },
+    { source: "Nike.com (Official)", mentions: 342, authority: "high", freshness: "current" },
+    { source: "ESPN Sports", mentions: 278, authority: "high", freshness: "current" },
+    { source: "Footwear News", mentions: 195, authority: "medium", freshness: "current" },
+    { source: "Complex Sneakers", mentions: 156, authority: "medium", freshness: "current" },
+    { source: "Sneaker Forums", mentions: 112, authority: "low", freshness: "current" },
   ];
 
   // Data for overall AI visibility trend
