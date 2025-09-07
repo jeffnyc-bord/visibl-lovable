@@ -486,13 +486,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
 
   const aiPlatforms = [
     { id: "chatgpt", name: "ChatGPT", color: "bg-green-500" },
-    { id: "claude", name: "Claude", color: "bg-orange-500" },
     { id: "gemini", name: "Gemini", color: "bg-blue-500" },
     { id: "perplexity", name: "Perplexity", color: "bg-purple-500" },
-    { id: "grok", name: "Grok", color: "bg-pink-500" },
-    { id: "copilot", name: "Copilot", color: "bg-indigo-500" },
-    { id: "google-ai", name: "Google AI Mode", color: "bg-red-500" },
-    { id: "overviews", name: "Google Overviews", color: "bg-yellow-500" }
+    { id: "grok", name: "Grok", color: "bg-pink-500" }
   ];
 
   // Mock data for AI platform mentions from generated queries
