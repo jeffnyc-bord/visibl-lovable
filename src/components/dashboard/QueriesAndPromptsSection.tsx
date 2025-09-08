@@ -12,6 +12,8 @@ import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, F
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
+import { AddPromptDialog } from "@/components/ui/add-prompt-dialog";
+import { SuggestPromptsDialog } from "@/components/ui/suggest-prompts-dialog";
 
 interface BrandData {
   id: string;
@@ -1103,14 +1105,23 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                 </CardDescription>
               </div>
               <div className="flex items-center space-x-3">
-                <Button variant="outline" className="flex items-center space-x-2">
-                  <Lightbulb className="w-4 h-4" />
-                  <span>Suggest Prompts</span>
-                </Button>
-                <Button className="flex items-center space-x-2">
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Add Prompt</span>
-                </Button>
+                <SuggestPromptsDialog 
+                  brandName={brandData.name}
+                  onPromptsSelected={(prompts) => {
+                    toast({
+                      title: "Prompts Added",
+                      description: `${prompts.length} suggested prompts have been added to your library.`,
+                    });
+                  }}
+                />
+                <AddPromptDialog 
+                  onPromptAdded={(prompt) => {
+                    toast({
+                      title: "Prompt Added",
+                      description: "Your custom prompt has been added to your library.",
+                    });
+                  }}
+                />
               </div>
             </div>
           </CardHeader>
