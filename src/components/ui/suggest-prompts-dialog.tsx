@@ -1,15 +1,14 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { Lightbulb, Sparkles, TrendingUp, Target, Star, Zap } from "lucide-react";
+import { Lightbulb, Sparkles } from "lucide-react";
 
 interface SuggestPromptsDialogProps {
   brandName?: string;
-  onPromptsSelected?: (prompts: Array<{ prompt: string; category: string; priority: string }>) => void;
+  onPromptsSelected?: (prompts: Array<{ prompt: string }>) => void;
 }
 
 export const SuggestPromptsDialog = ({ brandName = "Nike", onPromptsSelected }: SuggestPromptsDialogProps) => {
@@ -21,66 +20,50 @@ export const SuggestPromptsDialog = ({ brandName = "Nike", onPromptsSelected }: 
     {
       id: "1",
       prompt: `What are the best ${brandName} shoes for running?`,
-      category: "Product Recommendation",
-      priority: "high",
-      icon: <TrendingUp className="w-4 h-4" />,
-      description: "Tests brand visibility in product recommendation queries"
+      description: "Tests brand visibility in product recommendation queries",
+      color: "bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-blue-200"
     },
     {
       id: "2", 
       prompt: `Compare ${brandName} vs Adidas running shoes`,
-      category: "Brand Comparison",
-      priority: "high",
-      icon: <Target className="w-4 h-4" />,
-      description: "Evaluates competitive positioning against main rivals"
+      description: "Evaluates competitive positioning against main rivals",
+      color: "bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-200"
     },
     {
       id: "3",
       prompt: `What makes ${brandName} innovative in athletic footwear?`,
-      category: "Brand Innovation",
-      priority: "medium",
-      icon: <Zap className="w-4 h-4" />,
-      description: "Assesses brand perception around innovation and technology"
+      description: "Assesses brand perception around innovation and technology",
+      color: "bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border-emerald-200"
     },
     {
       id: "4",
       prompt: `Best sustainable athletic shoes from ${brandName}`,
-      category: "Sustainability",
-      priority: "medium", 
-      icon: <Star className="w-4 h-4" />,
-      description: "Tests visibility around sustainability initiatives"
+      description: "Tests visibility around sustainability initiatives",
+      color: "bg-gradient-to-r from-orange-500/10 to-amber-500/10 border-orange-200"
     },
     {
       id: "5",
       prompt: `${brandName} Air Max technology benefits`,
-      category: "Product Features",
-      priority: "high",
-      icon: <Sparkles className="w-4 h-4" />,
-      description: "Evaluates product-specific technology recognition"
+      description: "Evaluates product-specific technology recognition",
+      color: "bg-gradient-to-r from-red-500/10 to-rose-500/10 border-red-200"
     },
     {
       id: "6",
       prompt: `Most popular ${brandName} basketball shoes 2024`,
-      category: "Product Trends",
-      priority: "medium",
-      icon: <TrendingUp className="w-4 h-4" />,
-      description: "Tests current product trend awareness"
+      description: "Tests current product trend awareness",
+      color: "bg-gradient-to-r from-indigo-500/10 to-blue-500/10 border-indigo-200"
     },
     {
       id: "7",
       prompt: `${brandName} shoes for wide feet comfort`,
-      category: "Product Fit",
-      priority: "low",
-      icon: <Target className="w-4 h-4" />,
-      description: "Assesses brand mention in specific user needs"
+      description: "Assesses brand mention in specific user needs",
+      color: "bg-gradient-to-r from-green-500/10 to-lime-500/10 border-green-200"
     },
     {
       id: "8",
       prompt: `Where to buy authentic ${brandName} shoes online`,
-      category: "Purchase Intent",
-      priority: "high",
-      icon: <Star className="w-4 h-4" />,
-      description: "Tests visibility in purchase-related queries"
+      description: "Tests visibility in purchase-related queries",
+      color: "bg-gradient-to-r from-violet-500/10 to-purple-500/10 border-violet-200"
     }
   ];
 
@@ -113,9 +96,7 @@ export const SuggestPromptsDialog = ({ brandName = "Nike", onPromptsSelected }: 
     const selectedPromptData = suggestedPrompts
       .filter(p => selectedPrompts.includes(p.id))
       .map(p => ({
-        prompt: p.prompt,
-        category: p.category,
-        priority: p.priority
+        prompt: p.prompt
       }));
 
     onPromptsSelected?.(selectedPromptData);
@@ -129,14 +110,6 @@ export const SuggestPromptsDialog = ({ brandName = "Nike", onPromptsSelected }: 
     setOpen(false);
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high": return "bg-red-100 text-red-800";
-      case "medium": return "bg-yellow-100 text-yellow-800";
-      case "low": return "bg-green-100 text-green-800";
-      default: return "bg-gray-100 text-gray-800";
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -175,33 +148,29 @@ export const SuggestPromptsDialog = ({ brandName = "Nike", onPromptsSelected }: 
             {suggestedPrompts.map((prompt) => (
               <div
                 key={prompt.id}
-                className={`p-4 border rounded-lg transition-all cursor-pointer hover:shadow-sm ${
+                className={`relative p-4 border rounded-lg transition-all cursor-pointer hover:shadow-sm ${
                   selectedPrompts.includes(prompt.id) 
-                    ? 'border-primary/50 bg-primary/5' 
+                    ? `${prompt.color} border-primary` 
                     : 'border-border hover:border-border/60'
                 }`}
                 onClick={() => handlePromptToggle(prompt.id)}
               >
+                {/* Colorful accent dot */}
+                <div className={`absolute top-3 right-3 w-3 h-3 rounded-full ${
+                  selectedPrompts.includes(prompt.id) ? 'bg-primary' : 'bg-muted-foreground/30'
+                }`} />
+                
                 <div className="flex items-start space-x-3">
                   <Checkbox
                     checked={selectedPrompts.includes(prompt.id)}
                     onChange={() => handlePromptToggle(prompt.id)}
                     className="mt-1"
                   />
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center space-x-2">
-                      {prompt.icon}
-                      <p className="font-medium text-sm">{prompt.prompt}</p>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{prompt.description}</p>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="outline" className="text-xs">
-                        {prompt.category}
-                      </Badge>
-                      <Badge className={`text-xs ${getPriorityColor(prompt.priority)}`}>
-                        {prompt.priority} priority
-                      </Badge>
-                    </div>
+                  <div className="flex-1 space-y-2 pr-6">
+                    {/* Gradient line above prompt */}
+                    <div className="h-0.5 w-12 bg-gradient-to-r from-primary to-primary/50 rounded-full" />
+                    <p className="font-medium text-sm leading-relaxed">{prompt.prompt}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{prompt.description}</p>
                   </div>
                 </div>
               </div>
