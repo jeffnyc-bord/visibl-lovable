@@ -189,18 +189,14 @@ export const SuggestPromptsDialog = ({ brandName = "Nike", onPromptsSelected }: 
                     className="mt-1"
                   />
                   <div className="flex-1 space-y-2">
-                    <div className="flex items-center space-x-2">
-                      {prompt.icon}
-                      <p className="font-medium text-sm">{prompt.prompt}</p>
+                    <div className="relative">
+                      <div className="absolute -left-2 top-0 w-1 h-full bg-gradient-to-b from-primary/80 to-primary/20 rounded-full"></div>
+                      <p className="font-medium text-sm pl-4">{prompt.prompt}</p>
                     </div>
-                    <p className="text-xs text-muted-foreground">{prompt.description}</p>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="outline" className="text-xs">
-                        {prompt.category}
-                      </Badge>
-                      <Badge className={`text-xs ${getPriorityColor(prompt.priority)}`}>
-                        {prompt.priority} priority
-                      </Badge>
+                    <p className="text-xs text-muted-foreground pl-4">{prompt.description}</p>
+                    <div className="flex items-center pl-4">
+                      <div className="w-2 h-2 rounded-full bg-accent mr-2"></div>
+                      <div className="text-xs text-muted-foreground">AI-curated suggestion</div>
                     </div>
                   </div>
                 </div>
