@@ -167,8 +167,6 @@ export const SuggestPromptsDialog = ({ brandName = "Nike", onPromptsSelected }: 
                     className="mt-1"
                   />
                   <div className="flex-1 space-y-2 pr-6">
-                    {/* Gradient line above prompt */}
-                    <div className="h-0.5 w-12 bg-gradient-to-r from-primary to-primary/50 rounded-full" />
                     <p className="font-medium text-sm leading-relaxed">{prompt.prompt}</p>
                     <p className="text-xs text-muted-foreground leading-relaxed">{prompt.description}</p>
                   </div>
