@@ -220,7 +220,7 @@ const Index = () => {
   
   // Section visibility state
   const [visibleSections, setVisibleSections] = useState<string[]>([
-    "overview", "brand", "queries", "competitors", "trends", "technical", "recommendations"
+    "overview", "brand", "queries", "recommendations"
   ]);
   
   // Query prompt state
