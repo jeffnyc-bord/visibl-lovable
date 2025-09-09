@@ -922,7 +922,28 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
                   const logo = getPlatformLogo(platform.platform);
 
-                  return null;
+                  return (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: pieChartColors[index % pieChartColors.length] }}
+                        ></div>
+                        {logo && (
+                          <img 
+                            src={logo} 
+                            alt={`${platform.platform} logo`} 
+                            className="w-12 h-12 object-contain"
+                          />
+                        )}
+                        <span className="text-sm font-medium">{platform.platform}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium">{platform.mentions}</span>
+                        <span className="text-xs text-gray-500">({platform.percentage}%)</span>
+                      </div>
+                    </div>
+                  );
                 })}
               </div>
             </div>
