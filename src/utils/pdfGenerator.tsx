@@ -346,6 +346,41 @@ const ReportPDFDocument = ({ reportData }: { reportData: ReportData }) => (
         </View>
       )}
 
+      {/* AI Readiness Score Distribution */}
+      {reportData.sections.find(s => s.id === 'product-analysis')?.enabled && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Overall Product AI Readiness Score Distribution</Text>
+          <Text style={styles.content}>
+            Detailed breakdown of product AI readiness scores across your entire product portfolio:
+          </Text>
+          
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>90-100% (Excellent)</Text>
+            <Text style={styles.metricValue}>156 products (12.5%)</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>80-89% (Good)</Text>
+            <Text style={styles.metricValue}>423 products (33.9%)</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>70-79% (Fair)</Text>
+            <Text style={styles.metricValue}>579 products (46.4%)</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>60-69% (Needs Improvement)</Text>
+            <Text style={styles.metricValue}>67 products (5.4%)</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>Below 60% (Critical)</Text>
+            <Text style={styles.metricValue}>22 products (1.8%)</Text>
+          </View>
+          
+          <Text style={styles.content}>
+            The majority of your products (92.8%) score above 70%, indicating strong AI readiness. Focus optimization efforts on the 89 products scoring below 70% to maximize AI platform visibility.
+          </Text>
+        </View>
+      )}
+
       {/* Competitor Analysis */}
       {reportData.sections.find(s => s.id === 'competitor-analysis')?.enabled && (
         <View style={styles.section}>
