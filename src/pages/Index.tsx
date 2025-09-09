@@ -675,6 +675,7 @@ const Index = () => {
                               brandData={selectedBrand} 
                               selectedModels={selectedModels}
                               selectedDateRange={selectedDateRange}
+                              userRole={userRole}
                               onQueryClick={(query) => {
                                 setPrefilledQuery(query);
                                 setActiveTab("queries");

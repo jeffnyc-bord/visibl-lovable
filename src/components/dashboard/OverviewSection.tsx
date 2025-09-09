@@ -56,9 +56,10 @@ interface OverviewSectionProps {
   selectedModels: string[];
   selectedDateRange: string;
   onQueryClick?: (query: string) => void;
+  userRole?: "business_user" | "agency_admin";
 }
 
-export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick }: OverviewSectionProps) => {
+export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, userRole = "business_user" }: OverviewSectionProps) => {
   const { toast } = useToast();
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
@@ -249,6 +250,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           }
           brandName={brandData.name}
           reportType="full"
+          userRole={userRole}
         />
       </div>
 
