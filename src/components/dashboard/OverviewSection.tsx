@@ -251,6 +251,17 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           brandName={brandData.name}
           reportType="full"
           userRole={userRole}
+          brandData={{
+            visibilityScore: brandData.visibilityScore,
+            totalMentions: brandData.totalMentions,
+            platformCoverage: brandData.platformCoverage,
+            industryRanking: brandData.industryRanking,
+            mentionTrend: brandData.mentionTrend,
+            sentimentScore: brandData.sentimentScore,
+            platforms: brandData.platforms,
+            products: brandData.products,
+            competitors: brandData.competitors
+          }}
         />
       </div>
 

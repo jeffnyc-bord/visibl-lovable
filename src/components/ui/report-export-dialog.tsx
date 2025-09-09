@@ -20,6 +20,34 @@ interface ReportExportDialogProps {
   brandName?: string;
   reportType?: "full" | "ai-mentions" | "visibility";
   userRole?: "business_user" | "agency_admin";
+  brandData?: {
+    visibilityScore: number;
+    totalMentions: number;
+    platformCoverage: number;
+    industryRanking: number;
+    mentionTrend: string;
+    sentimentScore: number;
+    platforms: Array<{
+      name: string;
+      mentions: number;
+      sentiment: string;
+      coverage: number;
+      trend: string;
+    }>;
+    products: Array<{
+      name: string;
+      category: string;
+      visibilityScore: number;
+      mentions: number;
+      sentiment: string;
+    }>;
+    competitors: Array<{
+      name: string;
+      visibilityScore: number;
+      mentions: number;
+      trend: string;
+    }>;
+  };
 }
 
 interface ReportSection {
@@ -29,7 +57,7 @@ interface ReportSection {
   enabled: boolean;
 }
 
-export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = "full", userRole = "business_user" }: ReportExportDialogProps) => {
+export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = "full", userRole = "business_user", brandData }: ReportExportDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
@@ -58,13 +86,12 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
 
   const [reportSections, setReportSections] = useState<ReportSection[]>([
     { id: "executive-summary", label: "Executive Summary", description: "AI-generated overview of key findings", enabled: true },
-    { id: "ai-visibility-score", label: "AI Visibility Score", description: "Overall performance metrics and trends", enabled: true },
-    { id: "ai-mentions", label: "AI Mentions Analysis", description: "Platform-by-platform mention breakdown", enabled: reportType === "full" || reportType === "ai-mentions" },
-    { id: "product-performance", label: "Product Performance", description: "Top and bottom performing products", enabled: reportType === "full" || reportType === "visibility" },
-    { id: "competitor-analysis", label: "Competitor Analysis", description: "Brand positioning vs competitors", enabled: reportType === "full" },
-    { id: "recommendations", label: "Strategic Recommendations", description: "Actionable optimization opportunities", enabled: true },
-    { id: "technical-analysis", label: "Technical Crawlability", description: "SEO and technical performance insights", enabled: reportType === "full" },
-    { id: "trends", label: "Trend Analysis", description: "Market trends and emerging opportunities", enabled: reportType === "full" }
+    { id: "ai-visibility-score", label: "AI Visibility Overview", description: "Overall performance metrics and trends", enabled: true },
+    { id: "platform-analysis", label: "AI Platform Breakdown", description: "Detailed analysis across ChatGPT, Claude, Gemini, Perplexity", enabled: true },
+    { id: "product-analysis", label: "Product & Brand Analysis", description: "AI readiness and visibility of products/services", enabled: reportType === "full" || reportType === "visibility" },
+    { id: "competitor-analysis", label: "Competitive Landscape", description: "Brand positioning vs competitors in AI platforms", enabled: reportType === "full" },
+    { id: "technical-health", label: "Technical AI Optimization", description: "Schema, crawlability and technical performance", enabled: reportType === "full" },
+    { id: "recommendations", label: "Strategic Recommendations", description: "Platform-specific and technical optimization recommendations", enabled: true },
   ]);
 
   const handleSectionToggle = (sectionId: string, enabled: boolean) => {
@@ -121,6 +148,7 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
       sections: enabledSections,
       executiveSummary,
       agencyName,
+      brandData, // Pass the comprehensive brand data
     };
 
     const filename = `${brandName.replace(/\s+/g, '_')}_AI_Visibility_Report_${format(new Date(), 'yyyy-MM-dd')}`;
