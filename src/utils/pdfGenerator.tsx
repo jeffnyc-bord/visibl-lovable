@@ -242,16 +242,6 @@ const ReportPDFDocument = ({ reportData }: { reportData: ReportData }) => (
               <Text style={styles.tableCell}>+12%</Text>
             </View>
             
-            <View style={styles.tableRow}>
-              <View style={styles.platformRow}>
-                <Image style={styles.platformLogo} src="/lovable-uploads/386be939-ecf0-4dbd-9319-0aa9efd55547.png" />
-                <Text style={styles.tableCell}>Claude</Text>
-              </View>
-              <Text style={styles.tableCell}>3,456</Text>
-              <Text style={styles.tableCell}>Positive</Text>
-              <Text style={styles.tableCell}>87%</Text>
-              <Text style={styles.tableCell}>+8%</Text>
-            </View>
             
             <View style={styles.tableRow}>
               <View style={styles.platformRow}>
@@ -287,25 +277,6 @@ const ReportPDFDocument = ({ reportData }: { reportData: ReportData }) => (
             </View>
           </View>
 
-          {/* Platform Distribution Analysis */}
-          <Text style={[styles.content, { fontWeight: 'bold', marginTop: 16, marginBottom: 8 }]}>
-            Platform Distribution Analysis:
-          </Text>
-          <Text style={styles.content}>
-            • ChatGPT leads with 32% of total mentions, showing strong positive sentiment and excellent coverage
-          </Text>
-          <Text style={styles.content}>
-            • Claude maintains 26% share with consistently positive sentiment and growing trend
-          </Text>
-          <Text style={styles.content}>
-            • Gemini accounts for 22% with neutral sentiment but highest growth trajectory (+18%)
-          </Text>
-          <Text style={styles.content}>
-            • Perplexity delivers 18% with excellent coverage (91%) and strong positive momentum
-          </Text>
-          <Text style={styles.content}>
-            • Grok represents emerging opportunity with 14% share and positive growth trend
-          </Text>
 
           {/* Fallback to dynamic data if available */}
           {reportData.brandData?.platforms?.map((platform, index) => (
