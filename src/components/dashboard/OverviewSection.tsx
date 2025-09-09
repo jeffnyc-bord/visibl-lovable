@@ -68,7 +68,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
   const [showManualAddDialog, setShowManualAddDialog] = useState(false);
   const [industryRankingBrands, setIndustryRankingBrands] = useState<any[]>([]);
-  const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "" });
+  const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "", logoFile: null as File | null, logoPreview: "" });
   
   // Brand limits based on tier
   const TIER_LIMITS = {
@@ -718,11 +718,82 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {/* Logo Upload Field */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="competitor-logo">
+                      Brand Logo
+                    </Label>
+                    
+                    <div className="space-y-3">
+                      {!manualBrandForm.logoPreview ? (
+                        <div className="relative">
+                          <Input
+                            id="competitor-logo"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  setManualBrandForm(prev => ({
+                                    ...prev,
+                                    logoFile: file,
+                                    logoPreview: event.target?.result as string
+                                  }));
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          />
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-primary/50 transition-colors duration-200 hover:bg-primary/5">
+                            <div className="flex flex-col items-center gap-2">
+                              <div className="p-2 bg-muted rounded-full">
+                                <Upload className="h-4 w-4 text-muted-foreground" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-foreground">Drop logo here or click to browse</p>
+                                <p className="text-xs text-muted-foreground">Optional • PNG, JPG, or SVG up to 5MB</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="border rounded-lg p-3 bg-muted/30">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-lg border bg-background p-1 flex items-center justify-center overflow-hidden">
+                                <img 
+                                  src={manualBrandForm.logoPreview} 
+                                  alt="Logo preview" 
+                                  className="w-full h-full object-contain"
+                                />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-foreground">Logo uploaded</p>
+                                <p className="text-xs text-muted-foreground">Ready to use</p>
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setManualBrandForm(prev => ({ ...prev, logoFile: null, logoPreview: "" }))}
+                              className="h-6 w-6 p-0"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => {
                     setShowManualAddDialog(false);
-                    setManualBrandForm({ name: "", website: "", reportFrequency: "" });
+                    setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
                   }}>
                     Cancel
                   </Button>
@@ -745,7 +816,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                         description: `${manualBrandForm.name} has been added to your ranking.`,
                       });
                       setShowManualAddDialog(false);
-                      setManualBrandForm({ name: "", website: "", reportFrequency: "" });
+                      setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
                     }}
                     disabled={!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency}
                   >
