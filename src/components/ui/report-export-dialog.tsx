@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Download, FileText, CheckCircle, CalendarIcon, Upload, Building2, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { downloadPDF } from "@/utils/pdfGenerator";
+import { downloadWordDocument } from "@/utils/wordGenerator";
 
 interface ReportExportDialogProps {
   trigger: React.ReactNode;
@@ -44,9 +46,11 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
   const [clientLogo, setClientLogo] = useState<File | null>(null);
   const [agencyLogo, setAgencyLogo] = useState<File | null>(null);
   const [agencyName, setAgencyName] = useState("");
-  const [selectedFormats, setSelectedFormats] = useState<string[]>(["excel"]);
+  const [selectedFormats, setSelectedFormats] = useState<string[]>(["pdf"]);
 
   const exportFormats = [
+    { id: "pdf", label: "PDF Report", description: "Professional formatted report document" },
+    { id: "word", label: "Word Document", description: "Editable document with tables and formatting" },
     { id: "excel", label: "Excel Spreadsheet", description: "Data tables and charts" },
     { id: "powerpoint", label: "PowerPoint Presentation", description: "Slide deck for presentations" },
     { id: "csv", label: "CSV Data", description: "Raw data export" },
@@ -87,7 +91,7 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
     }
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     const enabledSections = reportSections.filter(section => section.enabled);
     if (enabledSections.length === 0) {
       toast({
@@ -109,21 +113,42 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
 
     setIsExporting(true);
     setExportProgress(0);
-    
-    // Simulate export progress
-    const progressInterval = setInterval(() => {
-      setExportProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
+
+    const reportData = {
+      brandName,
+      reportTitle,
+      dateRange,
+      sections: enabledSections,
+      executiveSummary,
+      agencyName,
+    };
+
+    const filename = `${brandName.replace(/\s+/g, '_')}_AI_Visibility_Report_${format(new Date(), 'yyyy-MM-dd')}`;
+
+    try {
+      // Generate selected formats
+      const formatPromises = selectedFormats.map(async (formatId) => {
+        switch (formatId) {
+          case 'pdf':
+            setExportProgress(25);
+            downloadPDF(reportData, filename);
+            break;
+          case 'word':
+            setExportProgress(50);
+            downloadWordDocument(reportData, filename);
+            break;
+          case 'excel':
+          case 'powerpoint':
+          case 'csv':
+            // Simulate legacy format generation
+            setExportProgress(prev => prev + 20);
+            break;
         }
-        return prev + Math.random() * 15;
       });
-    }, 400);
-    
-    setTimeout(() => {
-      clearInterval(progressInterval);
+
+      await Promise.all(formatPromises);
       setExportProgress(100);
+
       setTimeout(() => {
         setIsExporting(false);
         setExportProgress(0);
@@ -134,7 +159,16 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
           description: `Your ${reportType === 'full' ? 'comprehensive' : 'focused'} ${brandName} report has been downloaded in ${selectedFormats.length} format${selectedFormats.length > 1 ? 's' : ''}.`,
         });
       }, 1500);
-    }, 6000);
+    } catch (error) {
+      console.error('Export error:', error);
+      setIsExporting(false);
+      setExportProgress(0);
+      toast({
+        title: "Export Failed",
+        description: "There was an error generating your report. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const resetForm = () => {
@@ -144,7 +178,7 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
     setClientLogo(null);
     setAgencyLogo(null);
     setAgencyName("");
-    setSelectedFormats(["excel"]);
+    setSelectedFormats(["pdf"]);
   };
 
   return (
