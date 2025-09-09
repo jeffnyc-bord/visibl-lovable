@@ -721,7 +721,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
         </div>
       )}
 
-    <Tabs defaultValue="blast" className="space-y-6">
+    <Tabs defaultValue="prompts" className="space-y-6">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="prompts">Prompts</TabsTrigger>
         <TabsTrigger value="blast">Prompt Blast Lab</TabsTrigger>
