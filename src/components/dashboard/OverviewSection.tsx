@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link, Settings, ExternalLink, HelpCircle, Upload, Plus, X, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -67,7 +68,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
   const [showManualAddDialog, setShowManualAddDialog] = useState(false);
   const [industryRankingBrands, setIndustryRankingBrands] = useState<any[]>([]);
-  const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "" });
+  const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "" });
   
   // Brand limits based on tier
   const TIER_LIMITS = {
@@ -695,17 +696,39 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       We'll use this to analyze their AI visibility and gather insights.
                     </p>
                   </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="report-frequency">
+                      Report Frequency <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={manualBrandForm.reportFrequency}
+                      onValueChange={(value) => setManualBrandForm(prev => ({ ...prev, reportFrequency: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select monitoring frequency" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border shadow-lg z-50">
+                        <SelectItem value="daily" disabled className="text-gray-400">
+                          Once daily (Enterprise only)
+                        </SelectItem>
+                        <SelectItem value="weekly">Once a week</SelectItem>
+                        <SelectItem value="twiceweekly">Twice a week</SelectItem>
+                        <SelectItem value="biweekly">Biweekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => {
                     setShowManualAddDialog(false);
-                    setManualBrandForm({ name: "", website: "" });
+                    setManualBrandForm({ name: "", website: "", reportFrequency: "" });
                   }}>
                     Cancel
                   </Button>
                   <Button 
                     onClick={() => {
-                      if (!manualBrandForm.name.trim() || !manualBrandForm.website.trim()) return;
+                      if (!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency) return;
                       
                       const newBrand = {
                         rank: industryRankingBrands.length + 1,
@@ -722,9 +745,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                         description: `${manualBrandForm.name} has been added to your ranking.`,
                       });
                       setShowManualAddDialog(false);
-                      setManualBrandForm({ name: "", website: "" });
+                      setManualBrandForm({ name: "", website: "", reportFrequency: "" });
                     }}
-                    disabled={!manualBrandForm.name.trim() || !manualBrandForm.website.trim()}
+                    disabled={!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency}
                   >
                     Add Competitor
                   </Button>
