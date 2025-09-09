@@ -91,6 +91,8 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
     { id: "product-analysis", label: "Product & Brand Analysis", description: "AI readiness and visibility of products/services", enabled: reportType === "full" || reportType === "visibility" },
     { id: "competitor-analysis", label: "Competitive Landscape", description: "Brand positioning vs competitors in AI platforms", enabled: reportType === "full" },
     { id: "technical-health", label: "Technical AI Optimization", description: "Schema, crawlability and technical performance", enabled: reportType === "full" },
+    { id: "top-prompts", label: "Top AI Prompts & Queries", description: "Most frequent prompts mentioning your brand", enabled: true },
+    { id: "financial-projections", label: "Financial Impact Projections", description: "Revenue estimates based on AI search volume", enabled: true },
     { id: "recommendations", label: "Strategic Recommendations", description: "Platform-specific and technical optimization recommendations", enabled: true },
   ]);
 

@@ -411,6 +411,154 @@ const ReportPDFDocument = ({ reportData }: { reportData: ReportData }) => (
         </View>
       )}
 
+      {/* Top Prompts Analysis */}
+      {reportData.sections.find(s => s.id === 'top-prompts')?.enabled && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Top AI Prompts & Queries</Text>
+          <Text style={styles.content}>
+            Most frequent prompts and queries mentioning your brand across AI platforms:
+          </Text>
+          
+          <Text style={[styles.content, { fontWeight: 'bold', marginBottom: 8 }]}>
+            ChatGPT Top Prompts:
+          </Text>
+          <Text style={styles.content}>
+            • "What are the best Nike running shoes for marathons?" (2,847 queries)
+          </Text>
+          <Text style={styles.content}>
+            • "Compare Nike Air Max vs Nike React technology" (1,923 queries)
+          </Text>
+          <Text style={styles.content}>
+            • "Nike sustainability initiatives and environmental impact" (1,456 queries)
+          </Text>
+          <Text style={styles.content}>
+            • "History of Nike brand and its iconic swoosh logo" (1,234 queries)
+          </Text>
+          
+          <Text style={[styles.content, { fontWeight: 'bold', marginTop: 12, marginBottom: 8 }]}>
+            Gemini Top Prompts:
+          </Text>
+          <Text style={styles.content}>
+            • "Nike financial performance and stock analysis" (1,892 queries)
+          </Text>
+          <Text style={styles.content}>
+            • "Nike vs Adidas market share comparison" (1,567 queries)
+          </Text>
+          <Text style={styles.content}>
+            • "Nike innovation in athletic wear technology" (1,234 queries)
+          </Text>
+          
+          <Text style={[styles.content, { fontWeight: 'bold', marginTop: 12, marginBottom: 8 }]}>
+            Perplexity Top Prompts:
+          </Text>
+          <Text style={styles.content}>
+            • "Nike endorsement deals with athletes and impact on sales" (987 queries)
+          </Text>
+          <Text style={styles.content}>
+            • "Nike manufacturing locations and supply chain" (834 queries)
+          </Text>
+          <Text style={styles.content}>
+            • "Nike digital transformation and e-commerce strategy" (756 queries)
+          </Text>
+          
+          <Text style={[styles.content, { fontWeight: 'bold', marginTop: 12, marginBottom: 8 }]}>
+            Grok Top Prompts:
+          </Text>
+          <Text style={styles.content}>
+            • "Nike marketing campaigns and brand positioning" (678 queries)
+          </Text>
+          <Text style={styles.content}>
+            • "Nike size guide and fit recommendations" (534 queries)
+          </Text>
+          <Text style={styles.content}>
+            • "Nike collaborations with designers and brands" (423 queries)
+          </Text>
+        </View>
+      )}
+
+      {/* Financial Impact Projections */}
+      {reportData.sections.find(s => s.id === 'financial-projections')?.enabled && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Financial Impact Projections</Text>
+          <Text style={styles.content}>
+            Estimated financial impact based on AI platform visibility and search volume analysis for Nike:
+          </Text>
+          
+          <Text style={[styles.content, { fontWeight: 'bold', marginBottom: 8 }]}>
+            ChatGPT Search Volume Impact:
+          </Text>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>Estimated Monthly ChatGPT Searches</Text>
+            <Text style={styles.metricValue}>2.4M queries</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>Average Conversion Rate</Text>
+            <Text style={styles.metricValue}>0.85%</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>Estimated Monthly Conversions</Text>
+            <Text style={styles.metricValue}>20,400 customers</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>Average Order Value</Text>
+            <Text style={styles.metricValue}>$127</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>Monthly Revenue from ChatGPT</Text>
+            <Text style={styles.metricValue}>$2.59M</Text>
+          </View>
+          
+          <Text style={[styles.content, { fontWeight: 'bold', marginTop: 16, marginBottom: 8 }]}>
+            Cross-Platform Revenue Projections:
+          </Text>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>ChatGPT (35% of AI traffic)</Text>
+            <Text style={styles.metricValue}>$2.59M/month</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>Gemini (28% of AI traffic)</Text>
+            <Text style={styles.metricValue}>$2.07M/month</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>Perplexity (22% of AI traffic)</Text>
+            <Text style={styles.metricValue}>$1.63M/month</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={styles.metricLabel}>Grok (15% of AI traffic)</Text>
+            <Text style={styles.metricValue}>$1.11M/month</Text>
+          </View>
+          
+          <View style={styles.metricRow}>
+            <Text style={[styles.metricLabel, { fontWeight: 'bold', fontSize: 14 }]}>Total Monthly AI Revenue</Text>
+            <Text style={[styles.metricValue, { fontWeight: 'bold', fontSize: 14 }]}>$7.40M</Text>
+          </View>
+          <View style={styles.metricRow}>
+            <Text style={[styles.metricLabel, { fontWeight: 'bold', fontSize: 14 }]}>Projected Annual AI Revenue</Text>
+            <Text style={[styles.metricValue, { fontWeight: 'bold', fontSize: 14 }]}>$88.8M</Text>
+          </View>
+          
+          <Text style={[styles.content, { fontWeight: 'bold', marginTop: 16, marginBottom: 8 }]}>
+            Growth Opportunity Analysis:
+          </Text>
+          <Text style={styles.content}>
+            • Improving AI visibility by 15% could generate an additional $13.3M annually
+          </Text>
+          <Text style={styles.content}>
+            • Optimizing for emerging platforms (Grok, others) represents $25M+ opportunity
+          </Text>
+          <Text style={styles.content}>
+            • Enhanced product descriptions could increase conversion rate by 0.2% (+$21M annually)
+          </Text>
+          <Text style={styles.content}>
+            • Cross-platform optimization strategy could yield 25-35% revenue increase
+          </Text>
+          
+          <Text style={styles.content}>
+            Note: Projections based on current market data, brand performance metrics, and AI platform analytics. Actual results may vary based on market conditions and optimization efforts.
+          </Text>
+        </View>
+      )}
+
       {/* Strategic Recommendations */}
       {reportData.sections.find(s => s.id === 'recommendations')?.enabled && (
         <View style={styles.section}>

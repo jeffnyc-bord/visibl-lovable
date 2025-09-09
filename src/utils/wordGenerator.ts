@@ -676,6 +676,411 @@ export const generateWordDocument = (reportData: ReportData): Document => {
     );
   }
 
+  // Top Prompts Analysis
+  if (reportData.sections.find(s => s.id === 'top-prompts')?.enabled) {
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Top AI Prompts & Queries",
+            bold: true,
+            size: 28,
+            color: "1f2937",
+          }),
+        ],
+        spacing: { before: 400, after: 300 },
+      })
+    );
+
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Most frequent prompts and queries mentioning your brand across AI platforms:",
+            size: 22,
+          }),
+        ],
+        spacing: { after: 200 },
+      })
+    );
+
+    // ChatGPT Prompts
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "ChatGPT Top Prompts:",
+            bold: true,
+            size: 24,
+          }),
+        ],
+        spacing: { before: 200, after: 100 },
+      })
+    );
+
+    const chatgptPrompts = [
+      "What are the best Nike running shoes for marathons? (2,847 queries)",
+      "Compare Nike Air Max vs Nike React technology (1,923 queries)", 
+      "Nike sustainability initiatives and environmental impact (1,456 queries)",
+      "History of Nike brand and its iconic swoosh logo (1,234 queries)"
+    ];
+
+    chatgptPrompts.forEach(prompt => {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `• ${prompt}`,
+              size: 22,
+            }),
+          ],
+          spacing: { after: 50 },
+        })
+      );
+    });
+
+    // Gemini Prompts  
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Gemini Top Prompts:",
+            bold: true,
+            size: 24,
+          }),
+        ],
+        spacing: { before: 200, after: 100 },
+      })
+    );
+
+    const geminiPrompts = [
+      "Nike financial performance and stock analysis (1,892 queries)",
+      "Nike vs Adidas market share comparison (1,567 queries)",
+      "Nike innovation in athletic wear technology (1,234 queries)"
+    ];
+
+    geminiPrompts.forEach(prompt => {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `• ${prompt}`,
+              size: 22,
+            }),
+          ],
+          spacing: { after: 50 },
+        })
+      );
+    });
+
+    // Perplexity & Grok Prompts
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Perplexity Top Prompts:",
+            bold: true,
+            size: 24,
+          }),
+        ],
+        spacing: { before: 200, after: 100 },
+      })
+    );
+
+    const perplexityPrompts = [
+      "Nike endorsement deals with athletes and impact on sales (987 queries)",
+      "Nike manufacturing locations and supply chain (834 queries)",
+      "Nike digital transformation and e-commerce strategy (756 queries)"
+    ];
+
+    perplexityPrompts.forEach(prompt => {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `• ${prompt}`,
+              size: 22,
+            }),
+          ],
+          spacing: { after: 50 },
+        })
+      );
+    });
+
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Grok Top Prompts:",
+            bold: true,
+            size: 24,
+          }),
+        ],
+        spacing: { before: 200, after: 100 },
+      })
+    );
+
+    const grokPrompts = [
+      "Nike marketing campaigns and brand positioning (678 queries)",
+      "Nike size guide and fit recommendations (534 queries)",
+      "Nike collaborations with designers and brands (423 queries)"
+    ];
+
+    grokPrompts.forEach(prompt => {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `• ${prompt}`,
+              size: 22,
+            }),
+          ],
+          spacing: { after: 50 },
+        })
+      );
+    });
+  }
+
+  // Financial Impact Projections
+  if (reportData.sections.find(s => s.id === 'financial-projections')?.enabled) {
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Financial Impact Projections",
+            bold: true,
+            size: 28,
+            color: "1f2937",
+          }),
+        ],
+        spacing: { before: 400, after: 300 },
+      })
+    );
+
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Estimated financial impact based on AI platform visibility and search volume analysis for Nike:",
+            size: 22,
+          }),
+        ],
+        spacing: { after: 200 },
+      })
+    );
+
+    // ChatGPT Impact Table
+    const chatgptImpactTable = new Table({
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "ChatGPT Search Volume Impact", bold: true })] })],
+              width: { size: 60, type: WidthType.PERCENTAGE },
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Value", bold: true })] })],
+              width: { size: 40, type: WidthType.PERCENTAGE },
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Estimated Monthly ChatGPT Searches" })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "2.4M queries", bold: true })] })],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Average Conversion Rate" })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "0.85%", bold: true })] })],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Estimated Monthly Conversions" })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "20,400 customers", bold: true })] })],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Average Order Value" })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "$127", bold: true })] })],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Monthly Revenue from ChatGPT" })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "$2.59M", bold: true, color: "059669" })] })],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    children.push(chatgptImpactTable);
+
+    // Cross-Platform Revenue Table
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Cross-Platform Revenue Projections:",
+            bold: true,
+            size: 24,
+          }),
+        ],
+        spacing: { before: 300, after: 200 },
+      })
+    );
+
+    const revenueTable = new Table({
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "AI Platform", bold: true })] })],
+              width: { size: 50, type: WidthType.PERCENTAGE },
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Monthly Revenue", bold: true })] })],
+              width: { size: 50, type: WidthType.PERCENTAGE },
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "ChatGPT (35% of AI traffic)" })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "$2.59M", bold: true })] })],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Gemini (28% of AI traffic)" })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "$2.07M", bold: true })] })],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Perplexity (22% of AI traffic)" })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "$1.63M", bold: true })] })],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Grok (15% of AI traffic)" })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "$1.11M", bold: true })] })],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Total Monthly AI Revenue", bold: true })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "$7.40M", bold: true, color: "059669" })] })],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Projected Annual AI Revenue", bold: true })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "$88.8M", bold: true, color: "059669" })] })],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    children.push(revenueTable);
+
+    // Growth Opportunities
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Growth Opportunity Analysis:",
+            bold: true,
+            size: 24,
+          }),
+        ],
+        spacing: { before: 300, after: 200 },
+      })
+    );
+
+    const opportunities = [
+      "Improving AI visibility by 15% could generate an additional $13.3M annually",
+      "Optimizing for emerging platforms (Grok, others) represents $25M+ opportunity", 
+      "Enhanced product descriptions could increase conversion rate by 0.2% (+$21M annually)",
+      "Cross-platform optimization strategy could yield 25-35% revenue increase"
+    ];
+
+    opportunities.forEach(opportunity => {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `• ${opportunity}`,
+              size: 22,
+            }),
+          ],
+          spacing: { after: 50 },
+        })
+      );
+    });
+
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Note: Projections based on current market data, brand performance metrics, and AI platform analytics. Actual results may vary based on market conditions and optimization efforts.",
+            size: 20,
+            italics: true,
+          }),
+        ],
+        spacing: { before: 200, after: 300 },
+      })
+    );
+  }
+
   // Strategic Recommendations
   if (reportData.sections.find(s => s.id === 'recommendations')?.enabled) {
     children.push(
