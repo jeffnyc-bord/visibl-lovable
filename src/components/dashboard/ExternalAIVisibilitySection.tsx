@@ -57,10 +57,13 @@ export const ExternalAIVisibilitySection = () => {
 
   const sourceQuality = [
     { source: "Nike.com (Official)", mentions: 342, authority: "high", freshness: "current" },
-    { source: "ESPN Sports", mentions: 278, authority: "high", freshness: "current" },
-    { source: "Footwear News", mentions: 195, authority: "medium", freshness: "current" },
-    { source: "Complex Sneakers", mentions: 156, authority: "medium", freshness: "current" },
-    { source: "Sneaker Forums", mentions: 112, authority: "low", freshness: "current" },
+    { source: "ESPN Sports Analysis", mentions: 298, authority: "high", freshness: "current" },
+    { source: "Footwear News Industry", mentions: 215, authority: "high", freshness: "current" },
+    { source: "Complex Sneakers Reviews", mentions: 187, authority: "medium", freshness: "current" },
+    { source: "Runner's World Gear Tests", mentions: 156, authority: "medium", freshness: "current" },
+    { source: "Adidas.com Comparisons", mentions: 134, authority: "medium", freshness: "current" },
+    { source: "Under Armour Product Pages", mentions: 98, authority: "medium", freshness: "current" },
+    { source: "Sneaker Community Forums", mentions: 89, authority: "low", freshness: "current" },
   ];
 
   // Data for overall AI visibility trend
@@ -541,7 +544,7 @@ export const ExternalAIVisibilitySection = () => {
             <span>Source Quality & Authority</span>
           </CardTitle>
           <CardDescription>
-            Analysis of the sources AI platforms reference when mentioning your brand.
+            Analysis of the sources AI platforms reference when mentioning Nike vs competitors like Adidas, Under Armour, and Puma.
           </CardDescription>
         </CardHeader>
         <CardContent>

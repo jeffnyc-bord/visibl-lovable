@@ -144,11 +144,12 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   ];
 
   const sourceQuality = [
-    { source: "Official Tesla Website", mentions: 245, authority: "high", freshness: "current" },
-    { source: "Reuters (Tesla news)", mentions: 189, authority: "high", freshness: "current" },
-    { source: "TechCrunch", mentions: 167, authority: "medium", freshness: "current" },
-    { source: "Wikipedia", mentions: 134, authority: "medium", freshness: "outdated" },
-    { source: "Tesla Forums", mentions: 98, authority: "low", freshness: "current" },
+    { source: "Nike.com (Official)", mentions: 342, authority: "high", freshness: "current" },
+    { source: "ESPN Sports Analysis", mentions: 298, authority: "high", freshness: "current" },
+    { source: "Footwear News Industry", mentions: 215, authority: "high", freshness: "current" },
+    { source: "Complex Sneakers Reviews", mentions: 187, authority: "medium", freshness: "current" },
+    { source: "Runner's World Gear Tests", mentions: 156, authority: "medium", freshness: "current" },
+    { source: "Sneaker Community Forums", mentions: 123, authority: "low", freshness: "current" },
   ];
 
   const allPlatformMentionsData = [
@@ -1005,14 +1006,14 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 onClick={() => setShowTooltips({...showTooltips, sourceQuality: !showTooltips.sourceQuality})}
               />
               {showTooltips.sourceQuality && (
-                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
-                  <p>Analysis of the sources AI platforms reference when mentioning your brand, including authority level and content freshness.</p>
+                 <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <p>Analysis of the sources AI platforms reference when mentioning Nike vs competitors, including authority level and content freshness from sports industry publications.</p>
                 </div>
               )}
             </div>
           </CardTitle>
-          <CardDescription>
-            Analysis of the sources AI platforms reference when mentioning your brand.
+            <CardDescription>
+            Analysis of the sources AI platforms reference when mentioning Nike vs competitors like Adidas, Under Armour, and Puma.
           </CardDescription>
         </CardHeader>
         <CardContent>
