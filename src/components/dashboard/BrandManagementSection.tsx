@@ -350,20 +350,20 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                onChange={(e) => setWebsiteUrl(e.target.value)}
              />
              
-             <Select value={reportFrequency} onValueChange={setReportFrequency}>
-               <SelectTrigger className="h-9">
-                 <SelectValue placeholder="Report Frequency" />
-               </SelectTrigger>
-                 <SelectContent className="bg-white border shadow-lg z-50">
-                   <SelectItem value="daily" disabled className="text-gray-400">
-                     Once daily (Enterprise only)
-                   </SelectItem>
-                   <SelectItem value="twiceweekly">Twice a week</SelectItem>
-                   <SelectItem value="weekly">Once a week</SelectItem>
-                   <SelectItem value="biweekly2">Bi-weekly</SelectItem>
-                   <SelectItem value="monthly">Monthly</SelectItem>
-                 </SelectContent>
-             </Select>
+              <Select value={reportFrequency} onValueChange={setReportFrequency}>
+                <SelectTrigger className="h-9">
+                  <SelectValue placeholder="Report Frequency" />
+                </SelectTrigger>
+                  <SelectContent className="bg-white border shadow-lg z-50">
+                    <SelectItem value="daily" disabled className="text-gray-400">
+                      Once daily (Enterprise only)
+                    </SelectItem>
+                    <SelectItem value="weekly">Once a week</SelectItem>
+                    <SelectItem value="twiceweekly">Twice a week</SelectItem>
+                    <SelectItem value="biweekly">Biweekly</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                  </SelectContent>
+              </Select>
              
               <div className="md:col-span-2">
                 <Button 

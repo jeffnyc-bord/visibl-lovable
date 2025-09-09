@@ -207,7 +207,8 @@ const Index = () => {
     name: "",
     url: "",
     logoFile: null as File | null,
-    logoPreview: ""
+    logoPreview: "",
+    reportFrequency: ""
   });
   
   // Brand switching state
@@ -372,7 +373,7 @@ const Index = () => {
       description: `${newBrand.name} has been added to your portfolio.`,
     });
     setShowAddBrandDialog(false);
-    setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "" });
+    setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "", reportFrequency: "" });
   };
 
   const sidebarItems = getNavigationItems();
@@ -828,6 +829,31 @@ const Index = () => {
               />
             </div>
 
+            {/* Report Frequency Field */}
+            <div className="space-y-2">
+              <Label htmlFor="report-frequency" className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-primary" />
+                Report Frequency
+              </Label>
+              <Select
+                value={newBrandData.reportFrequency || ""}
+                onValueChange={(value) => setNewBrandData(prev => ({ ...prev, reportFrequency: value }))}
+              >
+                <SelectTrigger className="transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                  <SelectValue placeholder="Select monitoring frequency" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border shadow-lg z-50">
+                  <SelectItem value="daily" disabled className="text-gray-400">
+                    Once daily (Enterprise only)
+                  </SelectItem>
+                  <SelectItem value="weekly">Once a week</SelectItem>
+                  <SelectItem value="twiceweekly">Twice a week</SelectItem>
+                  <SelectItem value="biweekly">Biweekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Logo Upload Field */}
             <div className="space-y-3">
               <Label htmlFor="brand-logo" className="text-sm font-medium text-foreground flex items-center gap-2">
@@ -894,7 +920,7 @@ const Index = () => {
                 variant="outline" 
                 onClick={() => {
                   setShowAddBrandDialog(false);
-                  setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "" });
+                  setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "", reportFrequency: "" });
                 }}
                 className="transition-all duration-200 hover:bg-muted h-9 px-4"
                 size="sm"
@@ -903,7 +929,7 @@ const Index = () => {
               </Button>
               <Button 
                 onClick={handleAddNewBrand}
-                disabled={!newBrandData.name.trim() || !newBrandData.url.trim()}
+                disabled={!newBrandData.name.trim() || !newBrandData.url.trim() || !newBrandData.reportFrequency}
                 className="bg-primary hover:bg-primary/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none disabled:shadow-none h-9 px-4"
                 size="sm"
               >
