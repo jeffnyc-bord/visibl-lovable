@@ -936,7 +936,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                             className="w-12 h-12 object-contain"
                           />
                         )}
-                        <span className="text-sm font-medium">{platform.platform}</span>
+                        
                       </div>
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium">{platform.mentions}</span>
