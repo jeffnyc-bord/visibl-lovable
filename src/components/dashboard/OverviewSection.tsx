@@ -159,7 +159,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     { platform: "Claude", mentions: 145, percentage: 9 },
     { platform: "Copilot", mentions: 123, percentage: 8 },
     { platform: "Google AI Mode", mentions: 98, percentage: 6 },
-    { platform: "Others", mentions: 0, percentage: 0 },
   ];
 
   // Filter platform mentions data for pie chart based on selected models
@@ -218,18 +217,11 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const pieChartData = selectedModels.includes("All models") 
     ? (showAllPlatforms 
         ? platformMentionsData 
-        : [
-            ...platformMentionsData.slice(0, 4),
-            {
-              platform: "Others",
-              mentions: platformMentionsData.slice(4).reduce((sum, p) => sum + p.mentions, 0),
-              percentage: platformMentionsData.slice(4).reduce((sum, p) => sum + p.percentage, 0)
-            }
-          ])
+        : platformMentionsData.slice(0, 4))
     : platformMentionsData; // For multiple specific models, show all available data
 
   const pieChartColors = selectedModels.includes("All models") 
-    ? (showAllPlatforms ? COLORS : [...COLORS.slice(0, 4), '#6B7280'])
+    ? (showAllPlatforms ? COLORS : COLORS.slice(0, 4))
     : COLORS;
 
   return (
