@@ -266,7 +266,7 @@ export const ProductDetail = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/?tab=brand')}
                 className="text-gray-500 hover:text-gray-900"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />

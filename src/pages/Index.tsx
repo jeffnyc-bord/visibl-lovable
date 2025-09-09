@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -226,6 +226,17 @@ const Index = () => {
   // Query prompt state
   const [prefilledQuery, setPrefilledQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("overview");
+
+  // Check for tab parameter in URL on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && allSections.some(section => section.key === tabParam)) {
+      setActiveTab(tabParam);
+      // Clear the URL parameter after setting the tab
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   // Dashboard state management
   const [dashboardStates, setDashboardStates] = useState({
