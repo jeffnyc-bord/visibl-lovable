@@ -377,16 +377,16 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
           </CardDescription>
         </CardHeader>
          <CardContent>
-           <div className="space-y-4">
-             {/* Brand Name and Logo Upload */}
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+           <div className="space-y-6">
+             {/* Basic Information */}
+             <div className="space-y-4">
                <div>
                  <label className="block text-sm font-medium text-foreground mb-2">
                    Brand Name
                  </label>
                  <Input 
-                   placeholder="Enter brand name" 
-                   className="h-9" 
+                   placeholder="e.g. Competitor Inc" 
+                   className="h-10" 
                    value={brandName}
                    onChange={(e) => setBrandName(e.target.value)}
                  />
@@ -394,88 +394,91 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                
                <div>
                  <label className="block text-sm font-medium text-foreground mb-2">
-                   Brand Logo (Optional)
-                 </label>
-                 <div 
-                   className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors"
-                   onDrop={handleLogoDrop}
-                   onDragOver={handleLogoDragOver}
-                   onClick={() => document.getElementById('logo-upload')?.click()}
-                 >
-                   <input
-                     id="logo-upload"
-                     type="file"
-                     accept="image/*"
-                     onChange={handleLogoChange}
-                     className="hidden"
-                   />
-                   {logoPreview ? (
-                     <div className="flex flex-col items-center space-y-2">
-                       <img 
-                         src={logoPreview} 
-                         alt="Logo preview" 
-                         className="w-12 h-12 object-cover rounded"
-                       />
-                       <p className="text-xs text-muted-foreground">Click to change</p>
-                     </div>
-                   ) : (
-                     <div className="flex flex-col items-center space-y-2">
-                       <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                         <Plus className="w-4 h-4 text-muted-foreground" />
-                       </div>
-                       <p className="text-xs text-muted-foreground">Upload logo</p>
-                     </div>
-                   )}
-                 </div>
-               </div>
-             </div>
-             
-             {/* Website URL and Report Frequency */}
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               <div>
-                 <label className="block text-sm font-medium text-foreground mb-2">
                    Website URL
                  </label>
                  <Input 
-                   placeholder="Enter competitor website URL" 
-                   className="h-9" 
+                   placeholder="https://competitor.com" 
+                   className="h-10" 
                    value={websiteUrl}
                    onChange={(e) => setWebsiteUrl(e.target.value)}
                  />
                </div>
-               
-               <div>
-                 <label className="block text-sm font-medium text-foreground mb-2">
-                   Report Frequency
-                 </label>
-                 <Select value={reportFrequency} onValueChange={setReportFrequency}>
-                   <SelectTrigger className="h-9">
-                     <SelectValue placeholder="Select frequency" />
-                   </SelectTrigger>
-                   <SelectContent className="bg-white border shadow-lg z-50">
-                     <SelectItem value="daily" disabled className="text-gray-400">
-                       Once daily (Enterprise only)
-                     </SelectItem>
-                     <SelectItem value="weekly">Once a week</SelectItem>
-                     <SelectItem value="twiceweekly">Twice a week</SelectItem>
-                     <SelectItem value="biweekly">Biweekly</SelectItem>
-                     <SelectItem value="monthly">Monthly</SelectItem>
-                   </SelectContent>
-                 </Select>
+             </div>
+
+             {/* Logo Upload Section */}
+             <div className="space-y-2">
+               <label className="block text-sm font-medium text-foreground">
+                 Brand Logo <span className="text-muted-foreground text-xs">(Optional)</span>
+               </label>
+               <div 
+                 className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors h-24 flex items-center justify-center"
+                 onDrop={handleLogoDrop}
+                 onDragOver={handleLogoDragOver}
+                 onClick={() => document.getElementById('logo-upload')?.click()}
+               >
+                 <input
+                   id="logo-upload"
+                   type="file"
+                   accept="image/*"
+                   onChange={handleLogoChange}
+                   className="hidden"
+                 />
+                 {logoPreview ? (
+                   <div className="flex items-center space-x-3">
+                     <img 
+                       src={logoPreview} 
+                       alt="Logo preview" 
+                       className="w-10 h-10 object-cover rounded"
+                     />
+                     <div>
+                       <p className="text-sm font-medium text-foreground">Logo uploaded</p>
+                       <p className="text-xs text-muted-foreground">Click to change</p>
+                     </div>
+                   </div>
+                 ) : (
+                   <div className="flex items-center space-x-3">
+                     <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                       <Plus className="w-5 h-5 text-muted-foreground" />
+                     </div>
+                     <div>
+                       <p className="text-sm font-medium text-foreground">Upload brand logo</p>
+                       <p className="text-xs text-muted-foreground">Drag & drop or click to browse</p>
+                     </div>
+                   </div>
+                 )}
                </div>
              </div>
-             
-             {/* Add Button */}
-             <div className="pt-2">
-               <Button 
-                 className="w-full h-9"
-                 onClick={handleAddBrand}
-                 disabled={!websiteUrl.trim() || !brandName.trim() || !reportFrequency || isAddingBrand || isAtLimit}
-               >
-                 <Plus className="w-4 h-4 mr-2" />
-                 {isAtLimit ? "Upgrade to Add More" : isAddingBrand ? "Adding..." : "Add to Watchlist"}
-               </Button>
+
+             {/* Settings */}
+             <div className="space-y-2">
+               <label className="block text-sm font-medium text-foreground">
+                 Report Frequency
+               </label>
+               <Select value={reportFrequency} onValueChange={setReportFrequency}>
+                 <SelectTrigger className="h-10">
+                   <SelectValue placeholder="Select report frequency" />
+                 </SelectTrigger>
+                 <SelectContent className="bg-background border shadow-lg z-50">
+                   <SelectItem value="daily" disabled className="text-muted-foreground">
+                     Once daily (Enterprise only)
+                   </SelectItem>
+                   <SelectItem value="weekly">Once a week</SelectItem>
+                   <SelectItem value="twiceweekly">Twice a week</SelectItem>
+                   <SelectItem value="biweekly">Biweekly</SelectItem>
+                   <SelectItem value="monthly">Monthly</SelectItem>
+                 </SelectContent>
+               </Select>
              </div>
+
+             {/* Action Button */}
+             <Button 
+               className="w-full h-10"
+               onClick={handleAddBrand}
+               disabled={!websiteUrl.trim() || !brandName.trim() || !reportFrequency || isAddingBrand || isAtLimit}
+             >
+               <Plus className="w-4 h-4 mr-2" />
+               {isAtLimit ? "Upgrade to Add More" : isAddingBrand ? "Adding..." : "Add to Watchlist"}
+             </Button>
            </div>
          </CardContent>
       </Card>
