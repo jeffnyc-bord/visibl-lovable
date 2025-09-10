@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Building2, Database, CheckCircle2 } from "lucide-react";
+import { Building2, Database, CheckCircle2, Search } from "lucide-react";
 
 interface Brand {
   id: string;
@@ -24,6 +24,7 @@ interface BrandSelectionDialogProps {
 
 export const BrandSelectionDialog = ({ open, onOpenChange, onConfirm }: BrandSelectionDialogProps) => {
   const [selectedBrandIds, setSelectedBrandIds] = useState<Set<string>>(new Set());
+  const [showAllDatabaseBrands, setShowAllDatabaseBrands] = useState(false);
 
   // Mock tracked brands (would come from actual data)
   const trackedBrands: Brand[] = [
@@ -33,7 +34,7 @@ export const BrandSelectionDialog = ({ open, onOpenChange, onConfirm }: BrandSel
   ];
 
   // Mock database brands (would come from API)
-  const databaseBrands: Brand[] = [
+  const allDatabaseBrands: Brand[] = [
     { id: "4", name: "Nike", url: "https://nike.com", score: 87 },
     { id: "5", name: "Adidas", url: "https://adidas.com", score: 85 },
     { id: "6", name: "Under Armour", url: "https://underarmour.com", score: 82 },
@@ -42,7 +43,18 @@ export const BrandSelectionDialog = ({ open, onOpenChange, onConfirm }: BrandSel
     { id: "9", name: "Reebok", url: "https://reebok.com", score: 74 },
     { id: "10", name: "Converse", url: "https://converse.com", score: 72 },
     { id: "11", name: "Vans", url: "https://vans.com", score: 70 },
+    // Additional brands shown when "Find More" is clicked
+    { id: "12", name: "ASICS", url: "https://asics.com", score: 68 },
+    { id: "13", name: "Brooks", url: "https://brooksrunning.com", score: 66 },
+    { id: "14", name: "Saucony", url: "https://saucony.com", score: 64 },
+    { id: "15", name: "Hoka", url: "https://hoka.com", score: 72 },
+    { id: "16", name: "On Running", url: "https://on-running.com", score: 69 },
+    { id: "17", name: "Salomon", url: "https://salomon.com", score: 67 },
+    { id: "18", name: "Merrell", url: "https://merrell.com", score: 63 },
+    { id: "19", name: "Allbirds", url: "https://allbirds.com", score: 65 },
   ];
+
+  const databaseBrands = showAllDatabaseBrands ? allDatabaseBrands : allDatabaseBrands.slice(0, 8);
 
   const handleBrandToggle = (brandId: string) => {
     const newSelected = new Set(selectedBrandIds);
@@ -55,11 +67,12 @@ export const BrandSelectionDialog = ({ open, onOpenChange, onConfirm }: BrandSel
   };
 
   const handleConfirm = () => {
-    const allBrands = [...trackedBrands, ...databaseBrands];
+    const allBrands = [...trackedBrands, ...allDatabaseBrands];
     const selectedBrands = allBrands.filter(brand => selectedBrandIds.has(brand.id));
     onConfirm(selectedBrands);
     onOpenChange(false);
     setSelectedBrandIds(new Set());
+    setShowAllDatabaseBrands(false);
   };
 
   const selectedCount = selectedBrandIds.size;
@@ -128,12 +141,25 @@ export const BrandSelectionDialog = ({ open, onOpenChange, onConfirm }: BrandSel
 
             {/* Database Brands Section */}
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Database className="w-4 h-4 text-primary" />
-                <h3 className="font-semibold text-foreground">Available Brands</h3>
-                <Badge variant="secondary" className="text-xs">
-                  {databaseBrands.length} brands
-                </Badge>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Database className="w-4 h-4 text-primary" />
+                  <h3 className="font-semibold text-foreground">Available Brands</h3>
+                  <Badge variant="secondary" className="text-xs">
+                    {showAllDatabaseBrands ? allDatabaseBrands.length : `${databaseBrands.length} of ${allDatabaseBrands.length}`} brands
+                  </Badge>
+                </div>
+                {!showAllDatabaseBrands && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAllDatabaseBrands(true)}
+                    className="text-xs h-7"
+                  >
+                    <Search className="w-3 h-3 mr-1" />
+                    Find More Industry Brands
+                  </Button>
+                )}
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
