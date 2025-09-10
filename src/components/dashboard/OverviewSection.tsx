@@ -15,6 +15,8 @@ import { Label } from "@/components/ui/label";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { BrandSelectionDialog } from "@/components/ui/brand-selection-dialog";
+import { BrandVerificationDialog } from "@/components/ui/brand-verification-dialog";
 
 interface BrandData {
   id: string;
@@ -67,6 +69,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
   const [showManualAddDialog, setShowManualAddDialog] = useState(false);
+  const [showBrandSelectionDialog, setShowBrandSelectionDialog] = useState(false);
+  const [showBrandVerificationDialog, setShowBrandVerificationDialog] = useState(false);
+  const [selectedBrandsForVerification, setSelectedBrandsForVerification] = useState<any[]>([]);
   const [industryRankingBrands, setIndustryRankingBrands] = useState<any[]>([]);
   const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "", logoFile: null as File | null, logoPreview: "" });
   
@@ -225,6 +230,34 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const pieChartColors = selectedModels.includes("All models") 
     ? (showAllPlatforms ? COLORS : COLORS.slice(0, 4))
     : COLORS;
+
+  // Handlers for the new dialog flow
+  const handleBrandSelection = (selectedBrands: any[]) => {
+    setSelectedBrandsForVerification(selectedBrands);
+    setShowBrandVerificationDialog(true);
+  };
+
+  const handleBrandVerification = (verifiedBrands: any[]) => {
+    const newRankingBrands = verifiedBrands.map((brand, index) => ({
+      rank: industryRankingBrands.length + index + 1,
+      brand: brand.name,
+      score: brand.score || Math.floor(Math.random() * 30) + 70,
+      change: Math.random() > 0.5 ? "+1" : "0",
+      insight: `${brand.isTracked ? 'Tracked brand with' : 'Growing presence in'} AI mentions`,
+      link: `/competitors?brand=${brand.name.toLowerCase()}`,
+      logo: brand.logo,
+      url: brand.url
+    }));
+    
+    setIndustryRankingBrands(prev => [...prev, ...newRankingBrands]);
+    setShowBrandVerificationDialog(false);
+    setSelectedBrandsForVerification([]);
+    
+    toast({
+      title: "Brands Added Successfully",
+      description: `Added ${verifiedBrands.length} brand${verifiedBrands.length !== 1 ? 's' : ''} to your ranking.`,
+    });
+  };
 
   return (
     <TooltipProvider>
@@ -495,19 +528,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
                   <Button
-                    onClick={() => {
-                      // Auto-populate from tracked brands (using mock data for now)
-                      const trackedBrandsRanking = [
-                        { rank: 1, brand: "Apple", score: 95, change: "+3", insight: "Leading in tech innovation queries", link: "/competitors?brand=apple" },
-                        { rank: 2, brand: "Nike", score: 87, change: "+2", insight: "Strong in performance & sports queries", link: "/competitors?brand=nike" },
-                        { rank: 3, brand: "Adidas", score: 84, change: "-1", insight: "Growing in sustainable product mentions", link: "/competitors?brand=adidas" },
-                      ];
-                      setIndustryRankingBrands(trackedBrandsRanking);
-                      toast({
-                        title: "Ranking Auto-Populated",
-                        description: "Successfully populated ranking with your tracked brands.",
-                      });
-                    }}
+                    onClick={() => setShowBrandSelectionDialog(true)}
                     className="flex-1 min-w-0"
                   >
                     <Upload className="w-4 h-4 mr-2" />
@@ -828,6 +849,21 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Brand Selection Dialog */}
+      <BrandSelectionDialog
+        open={showBrandSelectionDialog}
+        onOpenChange={setShowBrandSelectionDialog}
+        onConfirm={handleBrandSelection}
+      />
+
+      {/* Brand Verification Dialog */}
+      <BrandVerificationDialog
+        open={showBrandVerificationDialog}
+        onOpenChange={setShowBrandVerificationDialog}
+        brands={selectedBrandsForVerification}
+        onConfirm={handleBrandVerification}
+      />
 
       {/* AI Platform Mention Distribution */}
       <Card className="mb-6 group relative" onMouseLeave={() => setShowTooltips({...showTooltips, platformDistribution: false})}>
