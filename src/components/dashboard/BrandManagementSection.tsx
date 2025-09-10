@@ -72,6 +72,9 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   const [isAddingBrand, setIsAddingBrand] = useState(false);
   const [addBrandProgress, setAddBrandProgress] = useState(0);
   const [websiteUrl, setWebsiteUrl] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [brandType, setBrandType] = useState("");
   const [reportFrequency, setReportFrequency] = useState("twiceweekly");
   
@@ -162,7 +165,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   };
 
   const handleAddBrand = () => {
-    if (!websiteUrl.trim() || !reportFrequency) return;
+    if (!websiteUrl.trim() || !brandName.trim() || !reportFrequency) return;
     
     // Check brand limit
     if (isAtLimit) {
@@ -195,7 +198,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
         // Create new competitor from form data
         const newCompetitor = {
           id: Math.max(...competitors.map(c => c.id), 1) + 1,
-          name: websiteUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').split('.')[0],
+          name: brandName.trim(),
           url: websiteUrl,
           status: "Active" as "Active" | "Paused",
           visibilityScore: Math.floor(Math.random() * 40) + 60, // Random score between 60-100
@@ -211,6 +214,9 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
         setIsAddingBrand(false);
         setAddBrandProgress(0);
         setWebsiteUrl("");
+        setBrandName("");
+        setLogoFile(null);
+        setLogoPreview(null);
         setReportFrequency("");
         toast({
           title: "Competitor Added Successfully",
@@ -218,6 +224,35 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
         });
       }, 1000);
     }, loadingDuration * 1000);
+  };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
   };
 
   return (
@@ -342,39 +377,105 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
           </CardDescription>
         </CardHeader>
          <CardContent>
-           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-             <Input 
-               placeholder="Enter competitor website URL" 
-               className="h-9" 
-               value={websiteUrl}
-               onChange={(e) => setWebsiteUrl(e.target.value)}
-             />
+           <div className="space-y-4">
+             {/* Brand Name and Logo Upload */}
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+                 <label className="block text-sm font-medium text-foreground mb-2">
+                   Brand Name
+                 </label>
+                 <Input 
+                   placeholder="Enter brand name" 
+                   className="h-9" 
+                   value={brandName}
+                   onChange={(e) => setBrandName(e.target.value)}
+                 />
+               </div>
+               
+               <div>
+                 <label className="block text-sm font-medium text-foreground mb-2">
+                   Brand Logo (Optional)
+                 </label>
+                 <div 
+                   className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                   onDrop={handleLogoDrop}
+                   onDragOver={handleLogoDragOver}
+                   onClick={() => document.getElementById('logo-upload')?.click()}
+                 >
+                   <input
+                     id="logo-upload"
+                     type="file"
+                     accept="image/*"
+                     onChange={handleLogoChange}
+                     className="hidden"
+                   />
+                   {logoPreview ? (
+                     <div className="flex flex-col items-center space-y-2">
+                       <img 
+                         src={logoPreview} 
+                         alt="Logo preview" 
+                         className="w-12 h-12 object-cover rounded"
+                       />
+                       <p className="text-xs text-muted-foreground">Click to change</p>
+                     </div>
+                   ) : (
+                     <div className="flex flex-col items-center space-y-2">
+                       <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                         <Plus className="w-4 h-4 text-muted-foreground" />
+                       </div>
+                       <p className="text-xs text-muted-foreground">Upload logo</p>
+                     </div>
+                   )}
+                 </div>
+               </div>
+             </div>
              
-              <Select value={reportFrequency} onValueChange={setReportFrequency}>
-                <SelectTrigger className="h-9">
-                  <SelectValue placeholder="Report Frequency" />
-                </SelectTrigger>
-                  <SelectContent className="bg-white border shadow-lg z-50">
-                    <SelectItem value="daily" disabled className="text-gray-400">
-                      Once daily (Enterprise only)
-                    </SelectItem>
-                    <SelectItem value="weekly">Once a week</SelectItem>
-                    <SelectItem value="twiceweekly">Twice a week</SelectItem>
-                    <SelectItem value="biweekly">Biweekly</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                  </SelectContent>
-              </Select>
+             {/* Website URL and Report Frequency */}
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+                 <label className="block text-sm font-medium text-foreground mb-2">
+                   Website URL
+                 </label>
+                 <Input 
+                   placeholder="Enter competitor website URL" 
+                   className="h-9" 
+                   value={websiteUrl}
+                   onChange={(e) => setWebsiteUrl(e.target.value)}
+                 />
+               </div>
+               
+               <div>
+                 <label className="block text-sm font-medium text-foreground mb-2">
+                   Report Frequency
+                 </label>
+                 <Select value={reportFrequency} onValueChange={setReportFrequency}>
+                   <SelectTrigger className="h-9">
+                     <SelectValue placeholder="Select frequency" />
+                   </SelectTrigger>
+                   <SelectContent className="bg-white border shadow-lg z-50">
+                     <SelectItem value="daily" disabled className="text-gray-400">
+                       Once daily (Enterprise only)
+                     </SelectItem>
+                     <SelectItem value="weekly">Once a week</SelectItem>
+                     <SelectItem value="twiceweekly">Twice a week</SelectItem>
+                     <SelectItem value="biweekly">Biweekly</SelectItem>
+                     <SelectItem value="monthly">Monthly</SelectItem>
+                   </SelectContent>
+                 </Select>
+               </div>
+             </div>
              
-              <div className="md:col-span-2">
-                <Button 
-                  className="w-full h-9"
-                  onClick={handleAddBrand}
-                  disabled={!websiteUrl.trim() || !reportFrequency || isAddingBrand || isAtLimit}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  {isAtLimit ? "Upgrade to Add More" : isAddingBrand ? "Adding..." : "Add to Watchlist"}
-                </Button>
-              </div>
+             {/* Add Button */}
+             <div className="pt-2">
+               <Button 
+                 className="w-full h-9"
+                 onClick={handleAddBrand}
+                 disabled={!websiteUrl.trim() || !brandName.trim() || !reportFrequency || isAddingBrand || isAtLimit}
+               >
+                 <Plus className="w-4 h-4 mr-2" />
+                 {isAtLimit ? "Upgrade to Add More" : isAddingBrand ? "Adding..." : "Add to Watchlist"}
+               </Button>
+             </div>
            </div>
          </CardContent>
       </Card>
