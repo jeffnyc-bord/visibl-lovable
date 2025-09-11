@@ -248,7 +248,7 @@ export const AIChatbotModal = ({ isOpen, onClose, generatedContent, recommendati
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            Press Enter to send • Ask for modifications, implementation help, or SEO advice
+            Press Enter to send • Ask for modifications, implementation help, or AEO/SEO advice
           </p>
         </div>
       </DialogContent>
