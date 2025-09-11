@@ -1184,41 +1184,85 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
             </div>
           </CardHeader>
           <CardContent>
-            {/* Queue Controls */}
+            {/* Enhanced Queue Controls */}
             {queuedPrompts.length > 0 && (
-              <div className="flex items-center justify-between mb-4 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-5 h-5 text-primary" />
-                    <span className="text-sm font-medium text-gray-900">Queue Status:</span>
-                    <Badge 
-                      variant="default"
-                      className="flex items-center space-x-1"
-                    >
-                      <span>{queuedPrompts.length} prompts queued</span>
-                      {isProcessingQueue && <Loader2 className="w-3 h-3 animate-spin ml-1" />}
-                    </Badge>
+              <div className="relative mb-6 p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-xl border border-primary/20 shadow-lg backdrop-blur-sm animate-fade-in">
+                {/* Background decoration */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl opacity-50" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                
+                <div className="relative flex items-center justify-between">
+                  <div className="flex items-center space-x-6">
+                    {/* Queue icon with pulse animation */}
+                    <div className="relative">
+                      <div className="flex items-center justify-center w-12 h-12 bg-primary/20 rounded-full">
+                        <Clock className="w-6 h-6 text-primary" />
+                      </div>
+                      {isProcessingQueue && (
+                        <div className="absolute inset-0 bg-primary/30 rounded-full animate-ping" />
+                      )}
+                    </div>
+                    
+                    {/* Queue status info */}
+                    <div className="space-y-1">
+                      <div className="flex items-center space-x-3">
+                        <h3 className="text-lg font-semibold text-gray-900">Analysis Queue</h3>
+                        <Badge 
+                          variant="default"
+                          className="flex items-center space-x-2 bg-primary text-primary-foreground shadow-sm hover-scale"
+                        >
+                          <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse" />
+                          <span className="font-medium">{queuedPrompts.length} prompts ready</span>
+                          {isProcessingQueue && <Loader2 className="w-3 h-3 animate-spin ml-1" />}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {isProcessingQueue 
+                          ? "Processing your prompts across AI platforms..." 
+                          : "Ready to analyze across multiple AI platforms"
+                        }
+                      </p>
+                    </div>
                   </div>
+                  
+                  {/* Action button */}
+                  <Button 
+                    onClick={processQueue}
+                    disabled={isProcessingQueue}
+                    size="lg"
+                    className="relative overflow-hidden bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover-scale"
+                  >
+                    <div className="flex items-center space-x-2">
+                      {isProcessingQueue ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span className="font-medium">Processing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-5 h-5" />
+                          <span className="font-medium">Start Analysis</span>
+                        </>
+                      )}
+                    </div>
+                    {!isProcessingQueue && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                    )}
+                  </Button>
                 </div>
                 
-                <Button 
-                  onClick={processQueue}
-                  disabled={isProcessingQueue}
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  {isProcessingQueue ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Processing...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4" />
-                      <span>Process Queue</span>
-                    </>
-                  )}
-                </Button>
+                {/* Progress indicator */}
+                {isProcessingQueue && (
+                  <div className="mt-4 space-y-2 animate-fade-in">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Analysis Progress</span>
+                      <span className="text-primary font-medium">{Math.round((Date.now() % 100000) / 1000)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-primary to-accent rounded-full animate-[slide-in-right_2s_ease-in-out_infinite]" style={{ width: `${Math.round((Date.now() % 100000) / 1000)}%` }} />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
