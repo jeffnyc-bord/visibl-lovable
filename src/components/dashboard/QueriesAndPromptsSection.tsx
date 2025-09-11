@@ -1214,8 +1214,8 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                     </>
                   ) : (
                     <>
-                      <Play className="w-4 h-4" />
-                      <span>Process Queue</span>
+                      <X className="w-4 h-4" />
+                      <span>Clear Queue</span>
                     </>
                   )}
                 </Button>
