@@ -8,12 +8,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle, AlertCircle, RefreshCw, ExternalLink, AlertTriangle, Loader2, Lightbulb } from "lucide-react";
+import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle, AlertCircle, RefreshCw, ExternalLink, AlertTriangle, Loader2, Lightbulb, Settings, Plus } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
 import { AddPromptDialog } from "@/components/ui/add-prompt-dialog";
 import { SuggestPromptsDialog } from "@/components/ui/suggest-prompts-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface BrandData {
   id: string;
@@ -1184,22 +1185,22 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
           </CardHeader>
           <CardContent>
             {/* Queue Controls */}
-            <div className="flex items-center justify-between mb-4 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-5 h-5 text-primary" />
-                  <span className="text-sm font-medium text-gray-900">Queue Status:</span>
-                  <Badge 
-                    variant={queuedPrompts.length > 0 ? "default" : "secondary"}
-                    className="flex items-center space-x-1"
-                  >
-                    <span>{queuedPrompts.length} prompts queued</span>
-                    {isProcessingQueue && <Loader2 className="w-3 h-3 animate-spin ml-1" />}
-                  </Badge>
+            {queuedPrompts.length > 0 && (
+              <div className="flex items-center justify-between mb-4 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-5 h-5 text-primary" />
+                    <span className="text-sm font-medium text-gray-900">Queue Status:</span>
+                    <Badge 
+                      variant="default"
+                      className="flex items-center space-x-1"
+                    >
+                      <span>{queuedPrompts.length} prompts queued</span>
+                      {isProcessingQueue && <Loader2 className="w-3 h-3 animate-spin ml-1" />}
+                    </Badge>
+                  </div>
                 </div>
-              </div>
-              
-              {queuedPrompts.length > 0 && (
+                
                 <Button 
                   onClick={processQueue}
                   disabled={isProcessingQueue}
@@ -1218,8 +1219,8 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                     </>
                   )}
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Filters */}
             <div className="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
@@ -1270,12 +1271,12 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
               <Table>
                   <TableHeader>
                    <TableRow className="bg-gray-50">
-                     <TableHead className="font-semibold w-12">Queue</TableHead>
                      <TableHead className="font-semibold">Prompt</TableHead>
                      <TableHead className="font-semibold">Top Platform</TableHead>
                      <TableHead className="font-semibold">Mentions</TableHead>
                      <TableHead className="font-semibold">Source</TableHead>
                      <TableHead className="font-semibold">Date</TableHead>
+                     <TableHead className="font-semibold w-16">Actions</TableHead>
                    </TableRow>
                  </TableHeader>
                 <TableBody>
@@ -1284,22 +1285,8 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                      return (
                        <TableRow 
                          key={prompt.id} 
-                         className={`hover:bg-gray-50 ${isQueued ? 'bg-primary/5 border-l-2 border-l-primary' : ''}`}
+                         className={`hover:bg-gray-50 ${isQueued ? 'bg-primary/5 border-l-4 border-l-primary' : ''}`}
                        >
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => togglePromptQueue(prompt.id)}
-                            className={`p-1 h-8 w-8 ${isQueued ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'hover:bg-gray-100'}`}
-                          >
-                            {isQueued ? (
-                              <CheckCircle className="w-4 h-4" />
-                            ) : (
-                              <Clock className="w-4 h-4" />
-                            )}
-                          </Button>
-                        </TableCell>
                         <TableCell
                           className="cursor-pointer"
                           onClick={() => {
@@ -1355,6 +1342,47 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                           }}
                         >
                           {new Date(prompt.timestamp).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Settings className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => togglePromptQueue(prompt.id)}>
+                                {isQueued ? (
+                                  <>
+                                    <X className="mr-2 h-4 w-4" />
+                                    Remove from Queue
+                                  </>
+                                ) : (
+                                  <>
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Add to Queue
+                                  </>
+                                )}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => {
+                                setSelectedPromptId(prompt.id);
+                                setShowPromptDetails(true);
+                              }}>
+                                <BarChart3 className="mr-2 h-4 w-4" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => {
+                                navigator.clipboard.writeText(prompt.prompt);
+                                toast({
+                                  title: "Copied",
+                                  description: "Prompt copied to clipboard.",
+                                });
+                              }}>
+                                <Copy className="mr-2 h-4 w-4" />
+                                Copy Prompt
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                      );
