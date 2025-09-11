@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,6 +43,7 @@ export const BrandVerificationDialog = ({ open, onOpenChange, brands, onConfirm 
       }
     }), {})
   );
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const handleInputChange = (brandId: string, field: keyof BrandFormData, value: string) => {
     setBrandForms(prev => ({
@@ -80,6 +82,29 @@ export const BrandVerificationDialog = ({ open, onOpenChange, brands, onConfirm 
   };
 
   const handleConfirm = () => {
+    // Check if any changes were made
+    const hasChanges = brands.some(brand => {
+      const form = brandForms[brand.id];
+      const originalName = brand.name;
+      const originalUrl = brand.url || "";
+      const originalLogo = brand.logo || "";
+      
+      return form?.name !== originalName || 
+             form?.url !== originalUrl || 
+             form?.logoPreview !== originalLogo;
+    });
+
+    // If no changes were made, show confirmation dialog
+    if (!hasChanges) {
+      setShowConfirmDialog(true);
+      return;
+    }
+
+    // Otherwise, proceed directly
+    proceedWithConfirmation();
+  };
+
+  const proceedWithConfirmation = () => {
     const verifiedBrands = brands.map(brand => ({
       ...brand,
       name: brandForms[brand.id]?.name || brand.name,
@@ -87,11 +112,12 @@ export const BrandVerificationDialog = ({ open, onOpenChange, brands, onConfirm 
       logo: brandForms[brand.id]?.logoPreview || brand.logo
     }));
     onConfirm(verifiedBrands);
+    setShowConfirmDialog(false);
   };
 
   const isFormValid = brands.every(brand => {
     const form = brandForms[brand.id];
-    return form?.name?.trim() && form?.url?.trim();
+    return (form?.name?.trim() || brand.name?.trim()) && (form?.url?.trim() || brand.url?.trim());
   });
 
   return (
@@ -243,6 +269,24 @@ export const BrandVerificationDialog = ({ open, onOpenChange, brands, onConfirm 
           </div>
         </DialogFooter>
       </DialogContent>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Brand Information</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure all the brand information is correct? You haven't made any changes to the pre-filled data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go Back to Edit</AlertDialogCancel>
+            <AlertDialogAction onClick={proceedWithConfirmation}>
+              Yes, Information is Correct
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
