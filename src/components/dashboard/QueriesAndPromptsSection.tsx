@@ -540,7 +540,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
     if (queuedPrompts.length === 0) {
       toast({
         title: "Queue Empty",
-        description: "No prompts are currently queued for processing.",
+        description: "No prompts are currently queued.",
         variant: "destructive",
       });
       return;
@@ -549,20 +549,20 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
     setIsProcessingQueue(true);
     
     toast({
-      title: "Processing Queue",
-      description: `Starting analysis for ${queuedPrompts.length} queued prompts...`,
+      title: "Clearing Queue",
+      description: `Removing ${queuedPrompts.length} prompts from queue...`,
     });
 
-    // Simulate queue processing
+    // Simulate clearing
     setTimeout(() => {
       setIsProcessingQueue(false);
       setQueuedPrompts([]);
       
       toast({
-        title: "Queue Processed",
-        description: "All queued prompts have been analyzed successfully.",
+        title: "Queue Cleared",
+        description: "All prompts have been removed from the queue.",
       });
-    }, 3000);
+    }, 1000);
   };
 
   const handlePromptBlast = () => {
@@ -1210,7 +1210,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                   {isProcessingQueue ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Processing...</span>
+                      <span>Clearing...</span>
                     </>
                   ) : (
                     <>
