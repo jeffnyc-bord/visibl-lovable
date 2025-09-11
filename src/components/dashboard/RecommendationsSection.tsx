@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { ExportDialog } from "@/components/ui/export-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AIChatbotModal } from "@/components/ui/ai-chatbot-modal";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -21,6 +22,11 @@ export const RecommendationsSection = () => {
   const [generatedContent, setGeneratedContent] = useState<Record<number, any>>({});
   const [expandedCards, setExpandedCards] = useState<number[]>([]);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
+  const [chatbotModal, setChatbotModal] = useState<{isOpen: boolean, content: any, title: string}>({
+    isOpen: false,
+    content: null,
+    title: ""
+  });
 
   const handleActionComplete = (actionId: number) => {
     setCompletedActions(prev => 
@@ -547,34 +553,19 @@ export const RecommendationsSection = () => {
                         </Button>
                         
                         {generatedContent[rec.id] && (
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button size="sm" variant="ghost" className="h-7 text-xs text-success">
-                                <CheckCircle className="w-3 h-3 mr-1" />
-                                View Generated
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                              <DialogHeader>
-                                <DialogTitle className="text-sm">Generated {generatedContent[rec.id].type}</DialogTitle>
-                                <DialogDescription className="text-xs">
-                                  AI-generated content for: {rec.title}
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="space-y-3">
-                                {Object.entries(generatedContent[rec.id].content).map(([key, value]) => (
-                                  <div key={key} className="space-y-2">
-                                    <h4 className="text-sm font-medium capitalize">{key.replace(/([A-Z])/g, ' $1')}</h4>
-                                    <Textarea
-                                      value={Array.isArray(value) ? value.join('\n') : String(value)}
-                                      readOnly
-                                      className="text-xs h-32"
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            </DialogContent>
-                          </Dialog>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-7 text-xs text-success"
+                            onClick={() => setChatbotModal({
+                              isOpen: true,
+                              content: generatedContent[rec.id],
+                              title: rec.title
+                            })}
+                          >
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            View Generated
+                          </Button>
                         )}
                       </div>
                     )}
@@ -613,6 +604,14 @@ export const RecommendationsSection = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* AI Chatbot Modal */}
+      <AIChatbotModal
+        isOpen={chatbotModal.isOpen}
+        onClose={() => setChatbotModal({isOpen: false, content: null, title: ""})}
+        generatedContent={chatbotModal.content}
+        recommendationTitle={chatbotModal.title}
+      />
     </div>
   );
 };
