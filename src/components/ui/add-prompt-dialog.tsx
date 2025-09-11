@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Plus } from "lucide-react";
 
 interface AddPromptDialogProps {
-  onPromptAdded?: (prompt: { prompt: string; category: string; priority: string }) => void;
+  onPromptAdded?: (prompt: { prompt: string; category: string; priority: string; queued: boolean }) => void;
 }
 
 export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
@@ -35,13 +35,14 @@ export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
       prompt: prompt.trim(),
       category,
       priority,
+      queued: true, // New prompts are automatically queued
     };
 
     onPromptAdded?.(newPrompt);
     
     toast({
-      title: "Prompt Added",
-      description: "Your custom prompt has been added successfully.",
+      title: "Prompt Added to Queue",
+      description: "Your custom prompt has been queued for the next analysis run.",
     });
 
     // Reset form and close dialog

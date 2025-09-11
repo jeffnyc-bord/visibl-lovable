@@ -83,6 +83,10 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [selectedPromptId, setSelectedPromptId] = useState<number | null>(null);
   const [showPromptDetails, setShowPromptDetails] = useState(false);
+  
+  // Queue state
+  const [queuedPrompts, setQueuedPrompts] = useState<number[]>([]);
+  const [isProcessingQueue, setIsProcessingQueue] = useState(false);
 
   // Update prompt when prefilledQuery changes
   useEffect(() => {
@@ -183,6 +187,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 145,
       source: "User",
       timestamp: "2024-01-20 09:15",
+      queued: false,
       fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Brooks Ghost - Reliable cushioning 4. Hoka Clifton - Maximum comfort...",
       results: [
         {
@@ -233,6 +238,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 203,
       source: "Visibl",
       timestamp: "2024-01-20 08:30",
+      queued: false,
       fullResponse: "Nike Air Jordan and Nike LeBron series offer excellent basketball performance with superior ankle support and court traction...",
       results: [
         {
@@ -282,6 +288,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 67,
       source: "User",
       timestamp: "2024-01-20 07:45",
+      queued: false,
       fullResponse: "Sustainable footwear manufacturing significantly reduces environmental impact through recycled materials, eco-friendly processes from brands like Adidas and Allbirds...",
       results: [
         {
@@ -332,6 +339,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 89,
       source: "Visibl",
       timestamp: "2024-01-19 16:20",
+      queued: false,
       fullResponse: "Nike leads the athletic footwear industry in innovation with their Air Max technology, React foam, and Nike Adapt self-lacing systems...",
       results: [
         {
@@ -431,6 +439,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       mentions: 56,
       source: "Visibl",
       timestamp: "2024-01-19 11:30",
+      queued: false,
       fullResponse: "Smart shoe technology varies significantly across brands like Adidas, Under Armour, and Puma, offering different approaches to fitness tracking...",
       results: [
         {
@@ -506,6 +515,54 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   ];
 
   const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(220, 14%, 69%)', 'hsl(220, 14%, 83%)'];
+
+  // Queue helper functions
+  const togglePromptQueue = (promptId: number) => {
+    setQueuedPrompts(prev => {
+      if (prev.includes(promptId)) {
+        return prev.filter(id => id !== promptId);
+      } else {
+        return [...prev, promptId];
+      }
+    });
+    
+    const isAdding = !queuedPrompts.includes(promptId);
+    toast({
+      title: isAdding ? "Added to Queue" : "Removed from Queue",
+      description: isAdding 
+        ? "Prompt will be included in the next analysis run." 
+        : "Prompt removed from queue.",
+    });
+  };
+
+  const processQueue = () => {
+    if (queuedPrompts.length === 0) {
+      toast({
+        title: "Queue Empty",
+        description: "No prompts are currently queued for processing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessingQueue(true);
+    
+    toast({
+      title: "Processing Queue",
+      description: `Starting analysis for ${queuedPrompts.length} queued prompts...`,
+    });
+
+    // Simulate queue processing
+    setTimeout(() => {
+      setIsProcessingQueue(false);
+      setQueuedPrompts([]);
+      
+      toast({
+        title: "Queue Processed",
+        description: "All queued prompts have been analyzed successfully.",
+      });
+    }, 3000);
+  };
 
   const handlePromptBlast = () => {
     if (!customPrompt.trim()) {
@@ -1126,6 +1183,44 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
             </div>
           </CardHeader>
           <CardContent>
+            {/* Queue Controls */}
+            <div className="flex items-center justify-between mb-4 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-5 h-5 text-primary" />
+                  <span className="text-sm font-medium text-gray-900">Queue Status:</span>
+                  <Badge 
+                    variant={queuedPrompts.length > 0 ? "default" : "secondary"}
+                    className="flex items-center space-x-1"
+                  >
+                    <span>{queuedPrompts.length} prompts queued</span>
+                    {isProcessingQueue && <Loader2 className="w-3 h-3 animate-spin ml-1" />}
+                  </Badge>
+                </div>
+              </div>
+              
+              {queuedPrompts.length > 0 && (
+                <Button 
+                  onClick={processQueue}
+                  disabled={isProcessingQueue}
+                  size="sm"
+                  className="flex items-center space-x-2"
+                >
+                  {isProcessingQueue ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4" />
+                      <span>Process Queue</span>
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+
             {/* Filters */}
             <div className="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
               <div className="flex items-center space-x-2">
@@ -1173,8 +1268,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
             {/* Prompts Table */}
             <div className="border border-gray-200 rounded-lg overflow-hidden">
               <Table>
-                 <TableHeader>
+                  <TableHeader>
                    <TableRow className="bg-gray-50">
+                     <TableHead className="font-semibold w-12">Queue</TableHead>
                      <TableHead className="font-semibold">Prompt</TableHead>
                      <TableHead className="font-semibold">Top Platform</TableHead>
                      <TableHead className="font-semibold">Mentions</TableHead>
@@ -1183,38 +1279,86 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                    </TableRow>
                  </TableHeader>
                 <TableBody>
-                   {filteredPrompts.map((prompt) => (
-                     <TableRow 
-                       key={prompt.id} 
-                       className="hover:bg-gray-50 cursor-pointer"
-                       onClick={() => {
-                         setSelectedPromptId(prompt.id);
-                         setShowPromptDetails(true);
-                       }}
-                     >
-                        <TableCell>
-                          <div className="max-w-xs">
+                   {filteredPrompts.map((prompt) => {
+                     const isQueued = queuedPrompts.includes(prompt.id) || prompt.queued;
+                     return (
+                       <TableRow 
+                         key={prompt.id} 
+                         className={`hover:bg-gray-50 ${isQueued ? 'bg-primary/5 border-l-2 border-l-primary' : ''}`}
+                       >
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => togglePromptQueue(prompt.id)}
+                            className={`p-1 h-8 w-8 ${isQueued ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'hover:bg-gray-100'}`}
+                          >
+                            {isQueued ? (
+                              <CheckCircle className="w-4 h-4" />
+                            ) : (
+                              <Clock className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setSelectedPromptId(prompt.id);
+                            setShowPromptDetails(true);
+                          }}
+                        >
+                          <div className="max-w-xs flex items-center space-x-2">
                             <p className="font-medium text-gray-900 truncate">{prompt.prompt}</p>
+                            {isQueued && (
+                              <Badge variant="outline" className="text-xs border-primary text-primary bg-primary/5">
+                                Queued
+                              </Badge>
+                            )}
                           </div>
                         </TableCell>
-                        <TableCell>
+                         <TableCell
+                           className="cursor-pointer"
+                           onClick={() => {
+                             setSelectedPromptId(prompt.id);
+                             setShowPromptDetails(true);
+                           }}
+                         >
                           <div className="flex items-center">{prompt.topPlatforms}</div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setSelectedPromptId(prompt.id);
+                            setShowPromptDetails(true);
+                          }}
+                        >
                           <div className="flex items-center space-x-2">
                             <span className="font-medium text-gray-900">{prompt.mentions}</span>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setSelectedPromptId(prompt.id);
+                            setShowPromptDetails(true);
+                          }}
+                        >
                           <Badge variant={prompt.source === "Visibl" ? "default" : "secondary"} className="text-xs">
                             {prompt.source}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-sm text-gray-600">
+                        <TableCell 
+                          className="text-sm text-gray-600 cursor-pointer"
+                          onClick={() => {
+                            setSelectedPromptId(prompt.id);
+                            setShowPromptDetails(true);
+                          }}
+                        >
                           {new Date(prompt.timestamp).toLocaleDateString()}
                         </TableCell>
                       </TableRow>
-                   ))}
+                     );
+                   })}
                 </TableBody>
               </Table>
             </div>
