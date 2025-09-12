@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link, Settings, ExternalLink, HelpCircle, Upload, Plus, X, Globe } from "lucide-react";
+import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link, Settings, ExternalLink, HelpCircle, Upload, Plus, X, Globe, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -74,6 +74,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [selectedBrandsForVerification, setSelectedBrandsForVerification] = useState<any[]>([]);
   const [industryRankingBrands, setIndustryRankingBrands] = useState<any[]>([]);
   const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "", logoFile: null as File | null, logoPreview: "" });
+  const [isAddingBrand, setIsAddingBrand] = useState(false);
   
   // Brand limits based on tier
   const TIER_LIMITS = {
@@ -819,8 +820,19 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                     Cancel
                   </Button>
                   <Button 
-                    onClick={() => {
+                    onClick={async () => {
                       if (!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency) return;
+                      
+                      setIsAddingBrand(true);
+                      
+                      // Show loading toast
+                      toast({
+                        title: "Adding Competitor",
+                        description: `Running AI scan for ${manualBrandForm.name}...`,
+                      });
+                      
+                      // Simulate API call delay
+                      await new Promise(resolve => setTimeout(resolve, 3000));
                       
                       const newBrand = {
                         rank: industryRankingBrands.length + 1,
@@ -832,16 +844,25 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       };
                       
                       setIndustryRankingBrands(prev => [...prev, newBrand]);
+                      setIsAddingBrand(false);
+                      
                       toast({
                         title: "Competitor Added",
-                        description: `${manualBrandForm.name} has been added to your ranking.`,
+                        description: `${manualBrandForm.name} has been successfully analyzed and added to your ranking.`,
                       });
                       setShowManualAddDialog(false);
                       setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
                     }}
-                    disabled={!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency}
+                    disabled={!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency || isAddingBrand}
                   >
-                    Add Competitor
+                    {isAddingBrand ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Scanning Brand...
+                      </>
+                    ) : (
+                      "Add Competitor"
+                    )}
                   </Button>
                 </DialogFooter>
               </>
