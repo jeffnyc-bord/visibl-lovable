@@ -9,23 +9,21 @@ import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Plus } from "lucide-react";
 
 interface AddPromptDialogProps {
-  onPromptAdded?: (prompt: { prompt: string; category: string; priority: string; queued: boolean }) => void;
+  onPromptAdded?: (prompt: { prompt: string; queued: boolean }) => void;
 }
 
 export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
   const { toast } = useToast();
   const [open, setOpen] = React.useState(false);
   const [prompt, setPrompt] = React.useState("");
-  const [category, setCategory] = React.useState("");
-  const [priority, setPriority] = React.useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!prompt.trim() || !category || !priority) {
+    if (!prompt.trim()) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields.",
+        description: "Please enter a prompt.",
         variant: "destructive",
       });
       return;
@@ -33,8 +31,6 @@ export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
 
     const newPrompt = {
       prompt: prompt.trim(),
-      category,
-      priority,
       queued: true, // New prompts are automatically queued
     };
 
@@ -47,8 +43,6 @@ export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
 
     // Reset form and close dialog
     setPrompt("");
-    setCategory("");
-    setPriority("");
     setOpen(false);
   };
 
@@ -86,38 +80,6 @@ export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
             </p>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="category">Category *</Label>
-              <Select value={category} onValueChange={setCategory} required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="product">Product Comparison</SelectItem>
-                  <SelectItem value="brand">Brand Awareness</SelectItem>
-                  <SelectItem value="feature">Feature Inquiry</SelectItem>
-                  <SelectItem value="recommendation">Recommendation</SelectItem>
-                  <SelectItem value="review">Reviews & Ratings</SelectItem>
-                  <SelectItem value="general">General Query</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="priority">Priority *</Label>
-              <Select value={priority} onValueChange={setPriority} required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Set priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
         </form>
         <DialogFooter>
           <Button 
@@ -130,7 +92,7 @@ export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
           <Button 
             type="submit" 
             onClick={handleSubmit}
-            disabled={!prompt.trim() || !category || !priority}
+            disabled={!prompt.trim()}
           >
             Add Prompt
           </Button>
