@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link, Settings, ExternalLink, HelpCircle, Upload, Plus, X, Globe } from "lucide-react";
+import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link, Settings, ExternalLink, HelpCircle, Upload, Plus, X, Globe, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -17,6 +17,7 @@ import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { BrandSelectionDialog } from "@/components/ui/brand-selection-dialog";
 import { BrandVerificationDialog } from "@/components/ui/brand-verification-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface BrandData {
   id: string;
@@ -73,6 +74,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [showBrandVerificationDialog, setShowBrandVerificationDialog] = useState(false);
   const [selectedBrandsForVerification, setSelectedBrandsForVerification] = useState<any[]>([]);
   const [industryRankingBrands, setIndustryRankingBrands] = useState<any[]>([]);
+  const [loadingBrands, setLoadingBrands] = useState<string[]>([]);
   const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "", logoFile: null as File | null, logoPreview: "" });
   
   // Brand limits based on tier
@@ -238,24 +240,56 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   };
 
   const handleBrandVerification = (verifiedBrands: any[]) => {
-    const newRankingBrands = verifiedBrands.map((brand, index) => ({
+    // Add placeholder brands with loading state
+    const placeholderBrands = verifiedBrands.map((brand, index) => ({
       rank: industryRankingBrands.length + index + 1,
       brand: brand.name,
-      score: brand.score || Math.floor(Math.random() * 30) + 70,
-      change: Math.random() > 0.5 ? "+1" : "0",
-      insight: `${brand.isTracked ? 'Tracked brand with' : 'Growing presence in'} AI mentions`,
+      score: 0,
+      change: "0",
+      insight: "Analyzing brand data...",
       link: `/competitors?brand=${brand.name.toLowerCase()}`,
       logo: brand.logo,
-      url: brand.url
+      url: brand.url,
+      isLoading: true
     }));
     
-    setIndustryRankingBrands(prev => [...prev, ...newRankingBrands]);
+    setIndustryRankingBrands(prev => [...prev, ...placeholderBrands]);
+    setLoadingBrands(verifiedBrands.map(brand => brand.name));
     setShowBrandVerificationDialog(false);
     setSelectedBrandsForVerification([]);
     
     toast({
-      title: "Brands Added Successfully",
-      description: `Added ${verifiedBrands.length} brand${verifiedBrands.length !== 1 ? 's' : ''} to your ranking.`,
+      title: "Scanning Brands",
+      description: `Collecting data for ${verifiedBrands.length} brand${verifiedBrands.length !== 1 ? 's' : ''}...`,
+    });
+
+    // Simulate data collection process
+    verifiedBrands.forEach((brand, index) => {
+      setTimeout(() => {
+        setIndustryRankingBrands(prev => 
+          prev.map(b => 
+            b.brand === brand.name && b.isLoading
+              ? {
+                  ...b,
+                  score: brand.score || Math.floor(Math.random() * 30) + 70,
+                  change: Math.random() > 0.5 ? "+1" : "0",
+                  insight: `${brand.isTracked ? 'Tracked brand with' : 'Growing presence in'} AI mentions`,
+                  isLoading: false
+                }
+              : b
+          )
+        );
+        
+        setLoadingBrands(prev => prev.filter(name => name !== brand.name));
+        
+        // Show completion toast for the last brand
+        if (index === verifiedBrands.length - 1) {
+          toast({
+            title: "Data Collection Complete",
+            description: `Successfully analyzed ${verifiedBrands.length} brand${verifiedBrands.length !== 1 ? 's' : ''}.`,
+          });
+        }
+      }, (index + 1) * 2000); // Stagger the completion by 2 seconds each
     });
   };
 
@@ -577,46 +611,68 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   </TableHeader>
                   <TableBody>
                     {industryRankingBrands.map((brand) => (
-                      <TableRow key={brand.rank}>
+                      <TableRow key={brand.rank} className={brand.isLoading ? "opacity-70" : ""}>
                         <TableCell className="font-medium">#{brand.rank}</TableCell>
                         <TableCell className="font-medium">
                           <div className="flex items-center space-x-2">
+                            {brand.isLoading && (
+                              <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
+                            )}
                             <span>{brand.brand}</span>
-                            <UITooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-4 w-4 p-0 opacity-60 hover:opacity-100"
-                                  onClick={() => window.open(brand.link, '_blank')}
-                                >
-                                  <HelpCircle className="w-3 h-3" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="max-w-xs">
-                                <p className="text-xs">{brand.insight}</p>
-                                <p className="text-xs text-muted-foreground mt-1">Click to compare in Competitors tab</p>
-                              </TooltipContent>
-                            </UITooltip>
+                            {brand.isLoading && (
+                              <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                                Scanning...
+                              </Badge>
+                            )}
+                            {!brand.isLoading && (
+                              <UITooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-4 w-4 p-0 opacity-60 hover:opacity-100"
+                                    onClick={() => window.open(brand.link, '_blank')}
+                                  >
+                                    <HelpCircle className="w-3 h-3" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-xs">
+                                  <p className="text-xs">{brand.insight}</p>
+                                  <p className="text-xs text-muted-foreground mt-1">Click to compare in Competitors tab</p>
+                                </TooltipContent>
+                              </UITooltip>
+                            )}
                           </div>
                         </TableCell>
-                        <TableCell>{brand.score}</TableCell>
                         <TableCell>
-                          <Badge variant="secondary" className={
-                            brand.change.startsWith('+') ? 'bg-green-100 text-green-800' :
-                            brand.change.startsWith('-') ? 'bg-red-100 text-red-800' :
-                            'bg-gray-100 text-gray-800'
-                          }>
-                            {brand.change}
-                          </Badge>
+                          {brand.isLoading ? (
+                            <Skeleton className="h-4 w-8" />
+                          ) : (
+                            brand.score
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {brand.isLoading ? (
+                            <Skeleton className="h-4 w-8" />
+                          ) : (
+                            <Badge variant="secondary" className={
+                              brand.change.startsWith('+') ? 'bg-green-100 text-green-800' :
+                              brand.change.startsWith('-') ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }>
+                              {brand.change}
+                            </Badge>
+                          )}
                         </TableCell>
                         <TableCell>
                           <Button
                             variant="ghost"
                             size="sm"
                             className="h-6 w-6 p-0 opacity-60 hover:opacity-100 hover:text-destructive"
+                            disabled={brand.isLoading}
                             onClick={() => {
                               setIndustryRankingBrands(prev => prev.filter(b => b.rank !== brand.rank));
+                              setLoadingBrands(prev => prev.filter(name => name !== brand.brand));
                               toast({
                                 title: "Brand Removed",
                                 description: `${brand.brand} has been removed from the ranking.`,
@@ -822,22 +878,51 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                     onClick={() => {
                       if (!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency) return;
                       
-                      const newBrand = {
+                      const placeholderBrand = {
                         rank: industryRankingBrands.length + 1,
                         brand: manualBrandForm.name,
-                        score: Math.floor(Math.random() * 30) + 70, // Random score 70-100
-                        change: Math.random() > 0.5 ? "+1" : "0",
-                        insight: `Growing presence in AI mentions`,
-                        link: `/competitors?brand=${manualBrandForm.name.toLowerCase()}`
+                        score: 0,
+                        change: "0",
+                        insight: "Analyzing brand data...",
+                        link: `/competitors?brand=${manualBrandForm.name.toLowerCase()}`,
+                        isLoading: true
                       };
                       
-                      setIndustryRankingBrands(prev => [...prev, newBrand]);
+                      setIndustryRankingBrands(prev => [...prev, placeholderBrand]);
+                      setLoadingBrands(prev => [...prev, manualBrandForm.name]);
+                      
                       toast({
-                        title: "Competitor Added",
-                        description: `${manualBrandForm.name} has been added to your ranking.`,
+                        title: "Scanning Brand",
+                        description: `Collecting data for ${manualBrandForm.name}...`,
                       });
+                      
+                      const brandName = manualBrandForm.name;
                       setShowManualAddDialog(false);
                       setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
+                      
+                      // Simulate data collection process
+                      setTimeout(() => {
+                        setIndustryRankingBrands(prev => 
+                          prev.map(b => 
+                            b.brand === brandName && b.isLoading
+                              ? {
+                                  ...b,
+                                  score: Math.floor(Math.random() * 30) + 70,
+                                  change: Math.random() > 0.5 ? "+1" : "0",
+                                  insight: "Growing presence in AI mentions",
+                                  isLoading: false
+                                }
+                              : b
+                          )
+                        );
+                        
+                        setLoadingBrands(prev => prev.filter(name => name !== brandName));
+                        
+                        toast({
+                          title: "Data Collection Complete",
+                          description: `Successfully analyzed ${brandName}.`,
+                        });
+                      }, 3000);
                     }}
                     disabled={!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency}
                   >
