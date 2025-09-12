@@ -79,7 +79,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   // Prompts tab state
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [mentionFilter, setMentionFilter] = useState<string>("all");
-  const [queryTypeFilter, setQueryTypeFilter] = useState<string>("all");
+  const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [expandedHistory, setExpandedHistory] = useState<number | null>(null);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [selectedPromptId, setSelectedPromptId] = useState<number | null>(null);
@@ -491,7 +491,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
     const mentionMatch = mentionFilter === "all" || 
       (mentionFilter === "mentioned" && prompt.mentions > 0) ||
       (mentionFilter === "not-mentioned" && prompt.mentions === 0);
-    const sourceMatch = queryTypeFilter === "all" || prompt.source === queryTypeFilter;
+    const sourceMatch = sourceFilter === "all" || prompt.source === sourceFilter;
     
     return platformMatch && mentionMatch && sourceMatch;
   });
@@ -1252,16 +1252,14 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                 </SelectContent>
               </Select>
 
-              <Select value={queryTypeFilter} onValueChange={setQueryTypeFilter}>
+              <Select value={sourceFilter} onValueChange={setSourceFilter}>
                 <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Query Type" />
+                  <SelectValue placeholder="Sources" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="Ranking">Ranking</SelectItem>
-                  <SelectItem value="Discovery">Discovery</SelectItem>
-                  <SelectItem value="Factual">Factual</SelectItem>
-                  <SelectItem value="Templated">Templated</SelectItem>
+                  <SelectItem value="all">All Sources</SelectItem>
+                  <SelectItem value="User">User</SelectItem>
+                  <SelectItem value="Visibl">Visibl</SelectItem>
                 </SelectContent>
               </Select>
             </div>
