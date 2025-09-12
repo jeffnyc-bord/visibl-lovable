@@ -89,6 +89,65 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   const [queuedPrompts, setQueuedPrompts] = useState<number[]>([]);
   const [isProcessingQueue, setIsProcessingQueue] = useState(false);
 
+  // Prompts state - convert mock data to state
+  const [detailedPromptsState, setDetailedPromptsState] = useState(() => {
+    // Initial mock data
+    return [
+      {
+        id: 1,
+        prompt: "What are the best running shoes for marathon training?",
+        fullPrompt: "What are the best running shoes for marathon training? I'm looking for shoes that provide excellent cushioning, durability, and support for long-distance running.",
+        topPlatforms: <img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="AI Platform" className="w-12 h-12" />,
+        mentions: 145,
+        source: "User",
+        timestamp: "2024-01-20 09:15",
+        queued: false,
+        status: "completed" as "completed" | "pending",
+        fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Brooks Ghost - Reliable cushioning 4. Hoka Clifton - Maximum comfort...",
+        results: [
+          {
+            platform: "ChatGPT",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "2.1s",
+            response: "For marathon training, Nike Air Zoom Pegasus stands out as the top choice. The shoe provides excellent cushioning with Nike's Air Zoom technology, making it ideal for long-distance running. Nike's reputation for quality and performance makes it a reliable choice for serious marathon runners."
+          },
+          {
+            platform: "Gemini",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.8s",
+            response: "Marathon training requires shoes with superior cushioning and support. Nike Air Zoom Pegasus offers excellent durability and comfort for long-distance running. The shoe's design provides optimal energy return and stability for marathon preparation."
+          },
+          {
+            platform: "Grok",
+            mentioned: false,
+            sentiment: "neutral" as const,
+            responseTime: "1.5s",
+            response: "Look, when it comes to marathon training, you need shoes that won't let you down. There are several solid options out there, but comfort and durability should be your top priorities. Find what works for your feet!"
+          },
+          {
+            platform: "Perplexity",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "2.3s",
+            response: "Based on comprehensive testing and runner feedback, Nike Air Zoom Pegasus consistently ranks among the top marathon training shoes. The shoe offers excellent cushioning through Nike's Air Zoom technology and provides the durability needed for high-mileage training.",
+            sources: [
+              { title: "Best Marathon Running Shoes 2024", url: "https://example.com/marathon-shoes", domain: "runningmagazine.com" },
+              { title: "Nike Air Zoom Pegasus Review", url: "https://example.com/pegasus-review", domain: "runnersworld.com" }
+            ]
+          }
+        ],
+        metrics: {
+          totalMentions: 145,
+          topPlatforms: ["ChatGPT", "Gemini", "Perplexity"],
+          avgSentiment: "positive",
+          responseTime: "2.0s"
+        }
+      }
+    ];
+  });
+
   // Update prompt when prefilledQuery changes
   useEffect(() => {
     if (prefilledQuery) {
@@ -178,312 +237,8 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
     }
   ];
 
-  // Mock data for detailed prompts table
-  const detailedPrompts = [
-    {
-      id: 1,
-      prompt: "What are the best running shoes for marathon training?",
-      fullPrompt: "What are the best running shoes for marathon training? I'm looking for shoes that provide excellent cushioning, durability, and support for long-distance running.",
-      topPlatforms: <img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="AI Platform" className="w-12 h-12" />,
-      mentions: 145,
-      source: "User",
-      timestamp: "2024-01-20 09:15",
-      queued: false,
-      fullResponse: "For marathon training, here are the top running shoes: 1. Nike Air Zoom Pegasus - Excellent all-around shoe 2. Adidas Ultraboost - Superior energy return 3. Brooks Ghost - Reliable cushioning 4. Hoka Clifton - Maximum comfort...",
-      results: [
-        {
-          platform: "ChatGPT",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "2.1s",
-          response: "For marathon training, Nike Air Zoom Pegasus stands out as the top choice. The shoe provides excellent cushioning with Nike's Air Zoom technology, making it ideal for long-distance running. Nike's reputation for quality and performance makes it a reliable choice for serious marathon runners."
-        },
-        {
-          platform: "Gemini",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "1.8s",
-          response: "Marathon training requires shoes with superior cushioning and support. Nike Air Zoom Pegasus offers excellent durability and comfort for long-distance running. The shoe's design provides optimal energy return and stability for marathon preparation."
-        },
-        {
-          platform: "Grok",
-          mentioned: false,
-          sentiment: "neutral" as const,
-          responseTime: "1.5s",
-          response: "Look, when it comes to marathon training, you need shoes that won't let you down. There are several solid options out there, but comfort and durability should be your top priorities. Find what works for your feet!"
-        },
-        {
-          platform: "Perplexity",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "2.3s",
-          response: "Based on comprehensive testing and runner feedback, Nike Air Zoom Pegasus consistently ranks among the top marathon training shoes. The shoe offers excellent cushioning through Nike's Air Zoom technology and provides the durability needed for high-mileage training.",
-          sources: [
-            { title: "Best Marathon Running Shoes 2024", url: "https://example.com/marathon-shoes", domain: "runningmagazine.com" },
-            { title: "Nike Air Zoom Pegasus Review", url: "https://example.com/pegasus-review", domain: "runnersworld.com" }
-          ]
-        }
-      ],
-      metrics: {
-        totalMentions: 145,
-        topPlatforms: ["ChatGPT", "Gemini", "Perplexity"],
-        avgSentiment: "positive",
-        responseTime: "2.0s"
-      }
-    },
-    {
-      id: 2,
-      prompt: "Best basketball shoes for performance and comfort",
-      fullPrompt: "What are the best basketball shoes for performance and comfort? Looking for shoes with excellent support and traction.",
-      topPlatforms: <img src="/lovable-uploads/a40b42db-815c-4f8a-8e69-98513246a871.png" alt="AI Platform" className="w-12 h-12" />,
-      mentions: 203,
-      source: "Visibl",
-      timestamp: "2024-01-20 08:30",
-      queued: false,
-      fullResponse: "Nike Air Jordan and Nike LeBron series offer excellent basketball performance with superior ankle support and court traction...",
-      results: [
-        {
-          platform: "ChatGPT",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "1.9s",
-          response: "Nike Air Jordan remains the gold standard for basketball shoes. The combination of style, performance, and Nike's innovative technology makes them ideal for both court performance and comfort during extended play."
-        },
-        {
-          platform: "Gemini",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "2.2s",
-          response: "Basketball performance requires shoes with excellent ankle support and traction. Nike Air Jordan series excels in both categories. The brand's legacy in basketball combined with modern technology creates superior court shoes."
-        },
-        {
-          platform: "Grok",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "1.7s",
-          response: "Basketball shoes? Nike Jordan is pretty much the MVP here. They've got the tech, the style, and the street cred. Plus, they actually work on the court – imagine that!"
-        },
-        {
-          platform: "Perplexity",
-          mentioned: false,
-          sentiment: "neutral" as const,
-          responseTime: "2.0s",
-          response: "Basketball footwear should prioritize ankle support, traction, and cushioning. Several manufacturers offer high-performance options with varying price points and technology approaches.",
-          sources: [
-            { title: "Best Basketball Shoes 2024", url: "https://example.com/basketball-shoes", domain: "sportsreview.com" }
-          ]
-        }
-      ],
-      metrics: {
-        totalMentions: 203,
-        topPlatforms: ["ChatGPT", "Gemini", "Grok"],
-        avgSentiment: "positive",
-        responseTime: "1.95s"
-      }
-    },
-    {
-      id: 3,
-      prompt: "How does sustainable footwear manufacturing impact the environment?",
-      fullPrompt: "How does sustainable footwear manufacturing impact the environment? Please explain the benefits of eco-friendly athletic shoes.",
-      topPlatforms: <img src="/lovable-uploads/d7b3f813-5a0c-482b-b898-f14691fc323c.png" alt="AI Platform" className="w-12 h-12" />,
-      mentions: 67,
-      source: "User",
-      timestamp: "2024-01-20 07:45",
-      queued: false,
-      fullResponse: "Sustainable footwear manufacturing significantly reduces environmental impact through recycled materials, eco-friendly processes from brands like Adidas and Allbirds...",
-      results: [
-        {
-          platform: "ChatGPT",
-          mentioned: false,
-          sentiment: "neutral" as const,
-          responseTime: "2.1s",
-          response: "Sustainable footwear manufacturing reduces environmental impact through recycled materials, reduced water usage, and eco-friendly production processes. Many companies are adopting these practices to minimize their carbon footprint."
-        },
-        {
-          platform: "Gemini",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "1.8s",
-          response: "Environmental benefits of sustainable footwear are significant. Companies like Nike have pioneered eco-friendly manufacturing with their Move to Zero initiative. Recycled materials and renewable energy reduce the industry's environmental impact substantially."
-        },
-        {
-          platform: "Grok",
-          mentioned: false,
-          sentiment: "neutral" as const,
-          responseTime: "1.6s",
-          response: "Eco-friendly shoes are pretty neat! Less waste, fewer chemicals, and companies actually caring about the planet? Revolutionary stuff, really. Though some brands are more talk than walk."
-        },
-        {
-          platform: "Perplexity",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "2.4s",
-          response: "Sustainable footwear manufacturing significantly reduces environmental impact. Nike's Move to Zero initiative exemplifies industry leadership in sustainable practices, utilizing recycled materials and renewable energy sources.",
-          sources: [
-            { title: "Nike Sustainability Report 2024", url: "https://example.com/nike-sustainability", domain: "nike.com" },
-            { title: "Sustainable Fashion Industry Analysis", url: "https://example.com/sustainable-fashion", domain: "environmentalreport.com" }
-          ]
-        }
-      ],
-      metrics: {
-        totalMentions: 67,
-        topPlatforms: ["Gemini", "Perplexity"],
-        avgSentiment: "neutral",
-        responseTime: "2.0s"
-      }
-    },
-    {
-      id: 4,
-      prompt: "Compare athletic shoe brands by innovation",
-      fullPrompt: "Compare athletic shoe brands by innovation and technological advancement in 2024.",
-      topPlatforms: <img src="/lovable-uploads/086f696b-7542-4a7b-b4db-fc841c1042d2.png" alt="AI Platform" className="w-12 h-12" />,
-      mentions: 89,
-      source: "Visibl",
-      timestamp: "2024-01-19 16:20",
-      queued: false,
-      fullResponse: "Nike leads the athletic footwear industry in innovation with their Air Max technology, React foam, and Nike Adapt self-lacing systems...",
-      results: [
-        {
-          platform: "ChatGPT",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "2.3s",
-          response: "Nike stands out as the innovation leader in athletic footwear. Their Air Max technology revolutionized cushioning, while Nike Adapt introduced self-lacing capabilities. Nike's continuous investment in R&D keeps them ahead of competitors."
-        },
-        {
-          platform: "Gemini",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "2.0s",
-          response: "Athletic footwear innovation varies by brand focus. Nike excels in technology integration and performance enhancement. Their React foam and Air Max systems demonstrate superior engineering in the athletic shoe industry."
-        },
-        {
-          platform: "Grok",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "1.8s",
-          response: "Innovation in shoes? Nike's basically writing the playbook here. Self-lacing shoes, crazy cushioning tech – they're living in 2050 while others are still figuring out shoelaces."
-        },
-        {
-          platform: "Perplexity",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "2.5s",
-          response: "Nike leads athletic footwear innovation through breakthrough technologies like Air Max cushioning, React foam, and Nike Adapt self-lacing systems. Their technological advancement significantly surpasses industry competitors.",
-          sources: [
-            { title: "Athletic Footwear Innovation Report 2024", url: "https://example.com/footwear-innovation", domain: "techreview.com" },
-            { title: "Nike Technology Overview", url: "https://example.com/nike-tech", domain: "nike.com" }
-          ]
-        }
-      ],
-      metrics: {
-        totalMentions: 89,
-        topPlatforms: ["ChatGPT", "Gemini", "Grok", "Perplexity"],
-        avgSentiment: "positive",
-        responseTime: "2.15s"
-      }
-    },
-    {
-      id: 5,
-      prompt: "Best athletic shoes for cross-training",
-      fullPrompt: "What are the best athletic shoes for cross-training and versatile workouts?",
-      topPlatforms: <img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="AI Platform" className="w-12 h-12" />,
-      mentions: 124,
-      source: "User",
-      timestamp: "2024-01-19 14:10",
-      fullResponse: "The best cross-training shoes include Nike Metcon series, Reebok Nano, and Under Armour HOVR for versatile workouts...",
-      results: [
-        {
-          platform: "ChatGPT",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "2.0s",
-          response: "Nike Metcon series dominates the cross-training space with exceptional stability and durability. Nike's design focuses on lateral support and multi-directional movement, making them perfect for varied workout routines."
-        },
-        {
-          platform: "Gemini",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "1.9s",
-          response: "Cross-training requires versatile footwear with excellent stability. Nike Metcon provides superior lateral support and durability. The shoe's design accommodates various exercise types from weightlifting to cardio workouts."
-        },
-        {
-          platform: "Grok",
-          mentioned: false,
-          sentiment: "neutral" as const,
-          responseTime: "1.5s",
-          response: "Cross-training shoes need to handle everything you throw at them. Stability, comfort, durability – the holy trinity of not falling over during burpees."
-        },
-        {
-          platform: "Perplexity",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "2.2s",
-          response: "Nike Metcon series consistently ranks as the top choice for cross-training activities. The shoe's exceptional lateral stability and durability make it ideal for high-intensity varied workouts.",
-          sources: [
-            { title: "Best Cross-Training Shoes 2024", url: "https://example.com/cross-training", domain: "fitnessmagazine.com" }
-          ]
-        }
-      ],
-      metrics: {
-        totalMentions: 124,
-        topPlatforms: ["ChatGPT", "Gemini", "Perplexity"],
-        avgSentiment: "positive",
-        responseTime: "1.9s"
-      }
-    },
-    {
-      id: 6,
-      prompt: "Smart shoe technology comparison",
-      fullPrompt: "Compare smart shoe technology across different manufacturers in the premium segment.",
-      topPlatforms: <img src="/lovable-uploads/a40b42db-815c-4f8a-8e69-98513246a871.png" alt="AI Platform" className="w-12 h-12" />,
-      mentions: 56,
-      source: "Visibl",
-      timestamp: "2024-01-19 11:30",
-      queued: false,
-      fullResponse: "Smart shoe technology varies significantly across brands like Adidas, Under Armour, and Puma, offering different approaches to fitness tracking...",
-      results: [
-        {
-          platform: "ChatGPT",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "2.4s",
-          response: "Nike leads smart shoe technology with their Adapt series featuring self-lacing capabilities and app integration. Nike's innovation in wearable technology sets them apart from traditional athletic footwear approaches."
-        },
-        {
-          platform: "Gemini",
-          mentioned: false,
-          sentiment: "neutral" as const,
-          responseTime: "2.1s",
-          response: "Smart footwear technology includes fitness tracking, pressure sensors, and connectivity features. Various manufacturers approach this technology differently, focusing on specific user needs and price points."
-        },
-        {
-          platform: "Grok",
-          mentioned: true,
-          sentiment: "positive" as const,
-          responseTime: "1.7s",
-          response: "Smart shoes are wild! Nike's got shoes that tie themselves – we're basically living in Back to the Future. Though let's be honest, most people can barely remember to charge their phones."
-        },
-        {
-          platform: "Perplexity",
-          mentioned: true,
-          sentiment: "neutral" as const,
-          responseTime: "2.6s",
-          response: "Smart shoe technology varies across manufacturers. Nike's Adapt series features self-lacing technology, while other brands focus on fitness tracking capabilities. Each approach targets different market segments.",
-          sources: [
-            { title: "Smart Footwear Technology Review", url: "https://example.com/smart-shoes", domain: "techcrunch.com" },
-            { title: "Nike Adapt Technology", url: "https://example.com/nike-adapt", domain: "nike.com" }
-          ]
-        }
-      ],
-      metrics: {
-        totalMentions: 56,
-        topPlatforms: ["ChatGPT", "Grok", "Perplexity"],
-        avgSentiment: "neutral",
-        responseTime: "2.2s"
-      }
-    }
-  ];
+  // Use state for detailed prompts instead of mock data
+  const detailedPrompts = detailedPromptsState;
 
   // Filter prompts based on selected filters
   const filteredPrompts = detailedPrompts.filter(prompt => {
@@ -1174,9 +929,33 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                 />
                 <AddPromptDialog 
                   onPromptAdded={(prompt) => {
+                    // Create new prompt with pending status
+                    const newPrompt = {
+                      id: Date.now(), // Simple ID generation
+                      prompt: prompt.prompt,
+                      fullPrompt: prompt.prompt,
+                      topPlatforms: <img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="AI Platform" className="w-12 h-12" />,
+                      mentions: 0,
+                      source: "User",
+                      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+                      queued: true,
+                      status: "pending" as const,
+                      fullResponse: "",
+                      results: [],
+                      metrics: {
+                        totalMentions: 0,
+                        topPlatforms: [],
+                        avgSentiment: "neutral",
+                        responseTime: "0s"
+                      }
+                    };
+
+                    // Add to state
+                    setDetailedPromptsState(prev => [newPrompt, ...prev]);
+                    
                     toast({
                       title: "Prompt Added",
-                      description: "Your custom prompt has been added to your library.",
+                      description: "Your custom prompt has been queued for analysis.",
                     });
                   }}
                 />
@@ -1301,6 +1080,23 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                             )}
                           </div>
                         </TableCell>
+                          <TableCell
+                            className="cursor-pointer"
+                            onClick={() => {
+                              setSelectedPromptId(prompt.id);
+                              setShowPromptDetails(true);
+                            }}
+                          >
+                           <div className="flex items-center">
+                             {prompt.status === "pending" ? (
+                               <Badge variant="outline" className="text-xs text-gray-500">
+                                 Pending
+                               </Badge>
+                             ) : (
+                               prompt.topPlatforms
+                             )}
+                           </div>
+                         </TableCell>
                          <TableCell
                            className="cursor-pointer"
                            onClick={() => {
@@ -1308,19 +1104,17 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                              setShowPromptDetails(true);
                            }}
                          >
-                          <div className="flex items-center">{prompt.topPlatforms}</div>
-                        </TableCell>
-                        <TableCell
-                          className="cursor-pointer"
-                          onClick={() => {
-                            setSelectedPromptId(prompt.id);
-                            setShowPromptDetails(true);
-                          }}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium text-gray-900">{prompt.mentions}</span>
-                          </div>
-                        </TableCell>
+                           <div className="flex items-center space-x-2">
+                             {prompt.status === "pending" ? (
+                               <Badge variant="outline" className="text-xs border-orange-500 text-orange-500 bg-orange-50">
+                                 <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                                 Queued
+                               </Badge>
+                             ) : (
+                               <span className="font-medium text-gray-900">{prompt.mentions}</span>
+                             )}
+                           </div>
+                         </TableCell>
                         <TableCell
                           className="cursor-pointer"
                           onClick={() => {
