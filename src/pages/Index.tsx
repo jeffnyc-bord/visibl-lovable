@@ -18,6 +18,7 @@ import { CompetitorSection } from "@/components/dashboard/CompetitorSection";
 import { TrendsSection } from "@/components/dashboard/TrendsSection";
 import { RecommendationsSection } from "@/components/dashboard/RecommendationsSection";
 import { TechnicalCrawlabilitySection } from "@/components/dashboard/TechnicalCrawlabilitySection";
+import boardLabsLogo from "@/assets/board-labs-logo.jpg";
 import { QueriesAndPromptsSection } from "@/components/dashboard/QueriesAndPromptsSection";
 import { ExternalAIVisibilitySection } from "@/components/dashboard/ExternalAIVisibilitySection";
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
@@ -400,7 +401,7 @@ const Index = () => {
         <div className="p-3 border-b border-gray-200">
           <div className="flex items-center space-x-2">
             <img 
-              src="/src/assets/board-labs-logo.png" 
+              src={boardLabsLogo} 
               alt="Board Labs logo" 
               className="w-6 h-6"
             />
