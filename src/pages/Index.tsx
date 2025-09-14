@@ -400,8 +400,8 @@ const Index = () => {
         <div className="p-3 border-b border-gray-200">
           <div className="flex items-center space-x-2">
             <img 
-              src="/lovable-uploads/8b019b65-cf22-4d96-bc74-711b20ff6457.png" 
-              alt="visibl logo" 
+              src="/src/assets/board-labs-logo.png" 
+              alt="Board Labs logo" 
               className="w-6 h-6"
             />
             {!sidebarCollapsed && (
