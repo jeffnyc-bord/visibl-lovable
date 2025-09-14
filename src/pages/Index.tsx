@@ -403,7 +403,7 @@ const Index = () => {
             <img 
               src={boardLabsLogo} 
               alt="Board Labs logo" 
-              className="w-8 h-8"
+              className="w-12 h-12"
             />
             {!sidebarCollapsed && (
               <div>
