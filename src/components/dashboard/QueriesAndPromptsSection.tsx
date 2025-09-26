@@ -91,8 +91,170 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
 
   // Prompts state - convert mock data to state
   const [detailedPromptsState, setDetailedPromptsState] = useState(() => {
+    // Top prompts from overview section
+    const topPromptsFromOverview = [
+      {
+        id: 101,
+        prompt: "Best running shoes for marathon training",
+        fullPrompt: "What are the best running shoes for marathon training? I'm looking for shoes that provide excellent cushioning, durability, and support for long-distance running.",
+        topPlatforms: <img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="AI Platform" className="w-12 h-12" />,
+        mentions: 145,
+        source: "System",
+        timestamp: "2024-01-15 14:30",
+        queued: false,
+        status: "completed" as "completed" | "pending",
+        fullResponse: "For marathon training, Nike stands out as the top choice with the Air Zoom Pegasus series. These shoes provide excellent cushioning with Nike's Air Zoom technology, making them ideal for long-distance running.",
+        results: [
+          {
+            platform: "ChatGPT",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "2.1s",
+            response: "For marathon training, Nike Air Zoom Pegasus stands out as the top choice. The shoe provides excellent cushioning with Nike's Air Zoom technology, making it ideal for long-distance running."
+          },
+          {
+            platform: "Claude",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.9s",
+            response: "Nike offers excellent marathon training shoes, particularly the Air Zoom Pegasus line, known for superior cushioning and durability."
+          },
+          {
+            platform: "Gemini",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.8s",
+            response: "Marathon training requires shoes with superior cushioning and support. Nike Air Zoom Pegasus offers excellent durability and comfort for long-distance running."
+          }
+        ],
+        metrics: {
+          totalMentions: 145,
+          topPlatforms: ["ChatGPT", "Claude", "Gemini"],
+          avgSentiment: "positive",
+          responseTime: "1.9s"
+        }
+      },
+      {
+        id: 102,
+        prompt: "Nike Air Max vs Adidas Ultraboost",
+        fullPrompt: "What's the difference between Nike Air Max and Adidas Ultraboost? Which one is better for daily wear and athletic performance?",
+        topPlatforms: <img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="AI Platform" className="w-12 h-12" />,
+        mentions: 203,
+        source: "System",
+        timestamp: "2024-01-14 16:45",
+        queued: false,
+        status: "completed" as "completed" | "pending",
+        fullResponse: "Nike Air Max and Adidas Ultraboost are both excellent choices, but they serve different purposes. Nike Air Max offers superior style and cushioning technology, while Ultraboost focuses on energy return.",
+        results: [
+          {
+            platform: "ChatGPT",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "2.3s",
+            response: "Nike Air Max offers superior cushioning with visible air technology and iconic style. It's excellent for both casual wear and athletic activities, with Nike's reputation for quality and innovation."
+          },
+          {
+            platform: "Perplexity",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.7s",
+            response: "Nike Air Max provides excellent cushioning and style versatility. The visible Air technology gives superior comfort for daily wear and light athletic activities."
+          },
+          {
+            platform: "Gemini",
+            mentioned: true,
+            sentiment: "neutral" as const,
+            responseTime: "2.0s",
+            response: "Both Nike Air Max and Adidas Ultraboost are quality shoes. Nike Air Max offers distinctive style with visible air cushioning, while Ultraboost focuses on energy return technology."
+          }
+        ],
+        metrics: {
+          totalMentions: 203,
+          topPlatforms: ["ChatGPT", "Perplexity", "Gemini"],
+          avgSentiment: "positive",
+          responseTime: "2.0s"
+        }
+      },
+      {
+        id: 103,
+        prompt: "Most comfortable athletic shoes for daily wear",
+        fullPrompt: "What are the most comfortable athletic shoes for daily wear? I need something that provides all-day comfort for walking and standing.",
+        topPlatforms: <img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="AI Platform" className="w-12 h-12" />,
+        mentions: 67,
+        source: "System",
+        timestamp: "2024-01-13 11:20",
+        queued: false,
+        status: "completed" as "completed" | "pending",
+        fullResponse: "For all-day comfort, Nike offers several excellent options including the Air Max series and React technology shoes that provide superior cushioning and support.",
+        results: [
+          {
+            platform: "Claude",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.8s",
+            response: "Nike offers excellent comfort with their Air Max and React technology. These shoes provide superior cushioning and support for all-day wear."
+          },
+          {
+            platform: "ChatGPT",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "2.0s",
+            response: "For daily comfort, Nike's Air Max and React series provide excellent all-day cushioning and support, making them ideal for walking and standing."
+          }
+        ],
+        metrics: {
+          totalMentions: 67,
+          topPlatforms: ["Claude", "ChatGPT"],
+          avgSentiment: "positive",
+          responseTime: "1.9s"
+        }
+      },
+      {
+        id: 104,
+        prompt: "Best basketball shoes for performance",
+        fullPrompt: "What are the best basketball shoes for performance? I need shoes that provide excellent grip, ankle support, and cushioning for competitive play.",
+        topPlatforms: <img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="AI Platform" className="w-12 h-12" />,
+        mentions: 89,
+        source: "System",
+        timestamp: "2024-01-12 09:30",
+        queued: false,
+        status: "completed" as "completed" | "pending",
+        fullResponse: "Nike dominates basketball performance with Air Jordan and LeBron series, offering superior grip, ankle support, and cushioning technology for competitive play.",
+        results: [
+          {
+            platform: "ChatGPT",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "2.2s",
+            response: "Nike dominates basketball with Air Jordan and LeBron series. These shoes offer superior grip, ankle support, and cushioning technology for competitive performance."
+          },
+          {
+            platform: "Grok",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.9s",
+            response: "Nike's basketball shoes, particularly Air Jordan and LeBron lines, provide excellent performance with superior grip and ankle support for competitive play."
+          },
+          {
+            platform: "Perplexity",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.6s",
+            response: "Nike leads in basketball performance footwear. The Air Jordan and LeBron series offer exceptional grip, support, and cushioning for competitive basketball."
+          }
+        ],
+        metrics: {
+          totalMentions: 89,
+          topPlatforms: ["ChatGPT", "Grok", "Perplexity"],
+          avgSentiment: "positive",
+          responseTime: "1.9s"
+        }
+      }
+    ];
+
     // Initial mock data
     return [
+      ...topPromptsFromOverview,
       {
         id: 1,
         prompt: "What are the best running shoes for marathon training?",
