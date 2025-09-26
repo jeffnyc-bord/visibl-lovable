@@ -145,7 +145,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   ];
 
   const coreQueries = [
-    { query: "Best running shoes for marathon training", brand: "Nike", mentions: 145 },
     { query: "Nike Air Max vs Adidas Ultraboost", brand: "Nike", mentions: 203 },
     { query: "Most comfortable athletic shoes for daily wear", brand: "Nike", mentions: 67 },
     { query: "Best basketball shoes for performance", brand: "Nike", mentions: 89 },
