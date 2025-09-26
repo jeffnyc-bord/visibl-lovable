@@ -227,7 +227,9 @@ const Index = () => {
   
   // Query prompt state
   const [prefilledQuery, setPrefilledQuery] = useState<string>("");
+  const [autoOpenPrompt, setAutoOpenPrompt] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [previousScrollPosition, setPreviousScrollPosition] = useState<number>(0);
 
   // Check for tab parameter in URL on component mount
   useEffect(() => {
@@ -239,6 +241,17 @@ const Index = () => {
       window.history.replaceState({}, '', window.location.pathname);
     }
   }, []);
+
+  // Restore scroll position when returning to overview tab
+  useEffect(() => {
+    if (activeTab === "overview" && previousScrollPosition > 0) {
+      // Small delay to ensure content is rendered
+      setTimeout(() => {
+        window.scrollTo(0, previousScrollPosition);
+        setPreviousScrollPosition(0); // Reset after use
+      }, 100);
+    }
+  }, [activeTab, previousScrollPosition]);
 
   // Dashboard state management
   const [dashboardStates, setDashboardStates] = useState({
@@ -679,7 +692,9 @@ const Index = () => {
                               selectedDateRange={selectedDateRange}
                               userRole={userRole}
                               onQueryClick={(query) => {
-                                setPrefilledQuery(query);
+                                // Store current scroll position
+                                setPreviousScrollPosition(window.scrollY);
+                                setAutoOpenPrompt(query);
                                 setActiveTab("queries");
                               }}
                             />
@@ -709,7 +724,11 @@ const Index = () => {
                             <QueriesAndPromptsSection 
                               brandData={selectedBrand} 
                               prefilledQuery={prefilledQuery}
-                              onQueryUsed={() => setPrefilledQuery("")}
+                              autoOpenPrompt={autoOpenPrompt}
+                              onQueryUsed={() => {
+                                setPrefilledQuery("");
+                                setAutoOpenPrompt("");
+                              }}
                             />
                           )}
                         </TabsContent>

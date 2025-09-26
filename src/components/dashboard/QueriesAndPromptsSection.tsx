@@ -56,9 +56,10 @@ interface QueriesAndPromptsSectionProps {
   brandData: BrandData;
   prefilledQuery?: string;
   onQueryUsed?: () => void;
+  autoOpenPrompt?: string; // Query text to automatically open
 }
 
-export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUsed }: QueriesAndPromptsSectionProps) => {
+export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUsed, autoOpenPrompt }: QueriesAndPromptsSectionProps) => {
   const { toast } = useToast();
   const [customPrompt, setCustomPrompt] = useState(prefilledQuery || "");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -276,6 +277,21 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       onQueryUsed?.();
     }
   }, [prefilledQuery, onQueryUsed]);
+
+  // Auto-open prompt details when autoOpenPrompt is provided
+  useEffect(() => {
+    if (autoOpenPrompt) {
+      // Find the prompt that matches the autoOpenPrompt query
+      const matchingPrompt = detailedPromptsState.find(prompt => 
+        prompt.prompt === autoOpenPrompt || prompt.fullPrompt.includes(autoOpenPrompt)
+      );
+      
+      if (matchingPrompt) {
+        setSelectedPromptId(matchingPrompt.id);
+        setShowPromptDetails(true);
+      }
+    }
+  }, [autoOpenPrompt, detailedPromptsState]);
 
   // Mock data for generated queries
   const coreQueries = [
