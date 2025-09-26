@@ -94,47 +94,6 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
     // Top prompts from overview section
     const topPromptsFromOverview = [
       {
-        id: 101,
-        prompt: "Best running shoes for marathon training",
-        fullPrompt: "What are the best running shoes for marathon training? I'm looking for shoes that provide excellent cushioning, durability, and support for long-distance running.",
-        topPlatforms: <img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="AI Platform" className="w-12 h-12" />,
-        mentions: 145,
-        source: "System",
-        timestamp: "2024-01-15 14:30",
-        queued: false,
-        status: "completed" as "completed" | "pending",
-        fullResponse: "For marathon training, Nike stands out as the top choice with the Air Zoom Pegasus series. These shoes provide excellent cushioning with Nike's Air Zoom technology, making them ideal for long-distance running.",
-        results: [
-          {
-            platform: "ChatGPT",
-            mentioned: true,
-            sentiment: "positive" as const,
-            responseTime: "2.1s",
-            response: "For marathon training, Nike Air Zoom Pegasus stands out as the top choice. The shoe provides excellent cushioning with Nike's Air Zoom technology, making it ideal for long-distance running."
-          },
-          {
-            platform: "Claude",
-            mentioned: true,
-            sentiment: "positive" as const,
-            responseTime: "1.9s",
-            response: "Nike offers excellent marathon training shoes, particularly the Air Zoom Pegasus line, known for superior cushioning and durability."
-          },
-          {
-            platform: "Gemini",
-            mentioned: true,
-            sentiment: "positive" as const,
-            responseTime: "1.8s",
-            response: "Marathon training requires shoes with superior cushioning and support. Nike Air Zoom Pegasus offers excellent durability and comfort for long-distance running."
-          }
-        ],
-        metrics: {
-          totalMentions: 145,
-          topPlatforms: ["ChatGPT", "Claude", "Gemini"],
-          avgSentiment: "positive",
-          responseTime: "1.9s"
-        }
-      },
-      {
         id: 102,
         prompt: "Nike Air Max vs Adidas Ultraboost",
         fullPrompt: "What's the difference between Nike Air Max and Adidas Ultraboost? Which one is better for daily wear and athletic performance?",
