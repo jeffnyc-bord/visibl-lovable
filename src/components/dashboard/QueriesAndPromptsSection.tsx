@@ -476,6 +476,12 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
     setGlobalError(null);
     setPlatformErrors({});
     
+    // Show immediate feedback
+    toast({
+      title: "Prompt Blast Started",
+      description: `Testing your prompt across ${selectedPlatforms.length} AI platforms. You can continue exploring while we work.`,
+    });
+    
     // Initialize platform states to loading
     const initialStates: {[key: string]: 'loading'} = {};
     selectedPlatforms.forEach(platform => {
@@ -618,40 +624,6 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
 
   return (
     <>
-      {/* Loading Overlay */}
-      {isBlasting && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
-            <div className="text-center space-y-6">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-                <Zap className="w-8 h-8 text-purple-600 animate-pulse" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Blasting Prompt...
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Testing your prompt across {selectedPlatforms.length} AI platforms...
-                </p>
-              </div>
-              <div className="space-y-3">
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div 
-                    className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-300 ease-out"
-                    style={{ width: `${Math.min(blastProgress, 100)}%` }}
-                  />
-                </div>
-                <p className="text-sm text-gray-500">
-                  {blastProgress < 25 ? "Preparing queries..." :
-                   blastProgress < 50 ? "Sending to AI platforms..." :
-                   blastProgress < 75 ? "Collecting responses..." :
-                   "Analyzing results..."}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Error banner */}
       {globalError && (
@@ -708,6 +680,37 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                 Write a detailed prompt to get comprehensive responses from AI platforms.
               </p>
             </div>
+            
+            {/* Inline Blast Progress */}
+            {isBlasting && (
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 animate-fade-in">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                    <Zap className="w-4 h-4 text-purple-600 animate-pulse" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-purple-900">Testing in Progress</h4>
+                    <p className="text-sm text-purple-700">
+                      Blasting across {selectedPlatforms.length} AI platforms...
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="w-full bg-purple-200 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-300 ease-out" 
+                      style={{ width: `${Math.min(blastProgress, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-purple-600">
+                    {blastProgress < 25 ? "Preparing queries..." :
+                     blastProgress < 50 ? "Sending to AI platforms..." :
+                     blastProgress < 75 ? "Collecting responses..." :
+                     "Analyzing results..."}
+                  </p>
+                </div>
+              </div>
+            )}
             
             {/* Platform Selection Cards */}
             <div className="space-y-3">
@@ -873,10 +876,23 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
             <Button 
               onClick={handlePromptBlast}
               disabled={!customPrompt.trim() || selectedPlatforms.length === 0 || isBlasting}
-              className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200"
+              className={`w-full h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 ${
+                isBlasting 
+                  ? 'bg-gradient-to-r from-purple-400 to-blue-400 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
+              }`}
             >
-              <Play className="w-5 h-5 mr-3" />
-              {isBlasting ? "Testing in Progress..." : `Blast to ${selectedPlatforms.length} Platforms`}
+              {isBlasting ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+                  Testing in Progress...
+                </>
+              ) : (
+                <>
+                  <Play className="w-5 h-5 mr-3" />
+                  {selectedPlatforms.length > 0 ? `Blast to ${selectedPlatforms.length} Platforms` : 'Select Platforms to Blast'}
+                </>
+              )}
             </Button>
           </CardContent>
         </Card>
