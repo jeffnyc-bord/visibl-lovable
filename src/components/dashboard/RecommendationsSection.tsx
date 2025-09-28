@@ -10,7 +10,7 @@ import { AIChatbotModal } from "@/components/ui/ai-chatbot-modal";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Lightbulb, CheckCircle, Clock, AlertTriangle, TrendingUp, Star, Timer, Users, Target, Filter, BarChart3, Gauge, Brain, Sparkles, FileText, Code, Wand2, Bot, ChevronDown, ChevronUp, PlayCircle, Undo2, Calendar, PieChart, HelpCircle } from "lucide-react";
+import { Lightbulb, CheckCircle, Clock, AlertTriangle, TrendingUp, Star, Timer, Users, Target, Filter, BarChart3, Gauge, Brain, Sparkles, FileText, Code, Wand2, Bot, ChevronDown, ChevronUp, PlayCircle, Undo2, Calendar, PieChart, HelpCircle, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export const RecommendationsSection = () => {
@@ -27,6 +27,8 @@ export const RecommendationsSection = () => {
     content: null,
     title: ""
   });
+  const [lastGenerated, setLastGenerated] = useState<Date>(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleActionComplete = (actionId: number) => {
     setCompletedActions(prev => 
@@ -42,6 +44,14 @@ export const RecommendationsSection = () => {
         ? prev.filter(id => id !== actionId)
         : [...prev, actionId]
     );
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    // Simulate API call to refresh recommendations
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setLastGenerated(new Date());
+    setIsRefreshing(false);
   };
 
   // AI-driven recommendation prioritization
@@ -369,30 +379,40 @@ export const RecommendationsSection = () => {
   return (
     <div className="space-y-3">
       {/* Minimal Overview */}
-      <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
+      <Card className="bg-gradient-primary border-primary/20">
         <CardContent className="p-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img src="/lovable-uploads/e81540f9-53d7-49d2-a3d4-e3eaf04efcb1.png" alt="AI Optimization Plan" className="w-5 h-5" />
               <div>
-                <h3 className="text-sm font-semibold text-foreground">AI-Powered Optimization Plan</h3>
-                <p className="text-xs text-muted-foreground">
+                <h3 className="text-sm font-semibold text-primary-foreground">AI-Powered Optimization Plan</h3>
+                <p className="text-xs text-primary-foreground/80">
                   {completedActions.length === 0 
                     ? `${recommendations.length} strategic actions to boost AI visibility by +${totalImpact}%`
                     : `${completedActions.length}/${recommendations.length} completed • +${completedImpact}% gained so far`
                   }
                 </p>
+                <p className="text-xs text-primary-foreground/60 mt-1">
+                  <Calendar className="w-3 h-3 inline mr-1" />
+                  Last updated: {lastGenerated.toLocaleDateString()}
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs">
-                <Sparkles className="w-3 h-3 mr-1" />
-                AI Enhanced
-              </Badge>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="h-8 text-xs bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/20"
+              >
+                <RefreshCw className={`w-3 h-3 mr-1 ${isRefreshing ? 'animate-spin' : ''}`} />
+                {isRefreshing ? 'Updating...' : 'Refresh'}
+              </Button>
               {completedActions.length > 0 && (
                 <div className="text-right">
-                  <div className="text-lg font-bold text-primary">+{completedImpact}%</div>
-                  <div className="text-xs text-muted-foreground">Impact Gained</div>
+                  <div className="text-lg font-bold text-success">+{completedImpact}%</div>
+                  <div className="text-xs text-primary-foreground/60">Impact Gained</div>
                 </div>
               )}
             </div>
