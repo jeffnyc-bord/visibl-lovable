@@ -4,6 +4,7 @@ import perplexityLogo from "@/assets/perplexity_logo.png"
 import geminiLogo from "@/assets/gemini_logo.png"
 import grokLogo from "@/assets/grok_logo.png"
 import chatGPTLogo from "@/assets/chatGPT_logo.png"
+import boardLabsIcon from "@/assets/board_labs_icon.png"
 
 const loadingMessages = [
   "Analyzing your brand presence across AI platforms...",
@@ -137,12 +138,12 @@ export function BrandLoadingCard() {
             )
           })}
           
-          {/* Center Brain Icon */}
+          {/* Center Board Labs Logo */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div className="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center shadow-lg animate-pulse backdrop-blur-sm p-3">
               <img 
-                src={chatGPTLogo} 
-                alt="AI Intelligence"
+                src={boardLabsIcon} 
+                alt="Board Labs"
                 className="w-full h-full object-contain"
               />
             </div>
