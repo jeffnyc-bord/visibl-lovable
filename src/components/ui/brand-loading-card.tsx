@@ -184,7 +184,7 @@ export function BrandLoadingCard() {
                 className="absolute inset-y-0 left-0 rounded-full transition-all duration-1000 ease-out"
                 style={{ 
                   width: `${progress}%`,
-                  background: 'linear-gradient(to right, #10131d, #0e2d3b)',
+                  background: 'linear-gradient(to right, #10131d, #0e2d3b, rgba(14, 45, 59, 0.3))',
                   backgroundSize: '200% 100%',
                   animation: 'shimmer 2s ease-in-out infinite'
                 }}
