@@ -91,8 +91,7 @@ export function BrandLoadingCard() {
           <img 
             src={logo}
             alt={name}
-            className="w-8 h-8 animate-pulse filter grayscale hover:grayscale-0 transition-all duration-300"
-            style={{ animationDelay: `${delay + 1}s` }}
+            className="w-8 h-8 filter grayscale hover:grayscale-0 transition-all duration-300"
           />
         </div>
       ))}
