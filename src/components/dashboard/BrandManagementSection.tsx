@@ -112,12 +112,14 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       id: index + 2,
       name: competitor.name,
       url: `${competitor.name.toLowerCase().replace(/\s+/g, '')}.com`,
-      status: "Active" as "Active" | "Paused",
+      status: "Active" as "Active" | "Paused" | "Loading",
       visibilityScore: competitor.visibilityScore,
       trend: competitor.trend === "up" ? "+1.8%" : competitor.trend === "down" ? "-0.5%" : "0%",
       reportFrequency: "Weekly" as "Daily" | "Weekly" | "Bi-weekly" | "Monthly",
       lastReport: "3 days ago",
-      totalMentions: `${(competitor.mentions / 1000).toFixed(1)}K`
+      totalMentions: `${(competitor.mentions / 1000).toFixed(1)}K`,
+      isLoading: false,
+      loadingProgress: 0
      }))
   );
 
@@ -132,6 +134,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       case "Active": return "bg-green-100 text-green-700 border-green-200";
       case "Pending": return "bg-yellow-100 text-yellow-700 border-yellow-200";
       case "Paused": return "bg-gray-100 text-gray-700 border-gray-200";
+      case "Loading": return "bg-blue-100 text-blue-700 border-blue-200";
       default: return "bg-gray-100 text-gray-700 border-gray-200";
     }
   };
@@ -140,7 +143,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
 
   const handleToggleMonitoring = (competitorId: number) => {
     setCompetitors(prev => prev.map(competitor => 
-      competitor.id === competitorId 
+      competitor.id === competitorId && competitor.status !== "Loading"
         ? { ...competitor, status: competitor.status === "Active" ? "Paused" : "Active" }
         : competitor
     ));
@@ -177,52 +180,68 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       return;
     }
     
-    setIsAddingBrand(true);
-    setAddBrandProgress(0);
+    // Create new competitor immediately with loading state
+    const newCompetitor = {
+      id: Math.max(...competitors.map(c => c.id), 1) + 1,
+      name: brandName.trim(),
+      url: websiteUrl,
+      status: "Loading" as "Active" | "Paused" | "Loading",
+      visibilityScore: 0,
+      trend: "0%",
+      reportFrequency: reportFrequency === "biweekly" ? "Bi-weekly" : reportFrequency.charAt(0).toUpperCase() + reportFrequency.slice(1) as "Daily" | "Weekly" | "Bi-weekly" | "Monthly",
+      lastReport: "Setting up...",
+      totalMentions: "0K",
+      isLoading: true,
+      loadingProgress: 0
+    };
     
-    // Simulate progress updates
+    // Add to competitors list immediately
+    setCompetitors(prev => [...prev, newCompetitor]);
+    
+    // Clear form
+    setWebsiteUrl("");
+    setBrandName("");
+    setLogoFile(null);
+    setLogoPreview(null);
+    setReportFrequency("");
+    
+    // Show success toast
+    toast({
+      title: "Brand Added to Watchlist",
+      description: `${newCompetitor.name} is being set up. You can continue exploring while we process the data.`,
+    });
+    
+    // Simulate progress updates for the specific competitor
     const progressInterval = setInterval(() => {
-      setAddBrandProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return prev + Math.random() * 12;
-      });
-    }, 500);
+      setCompetitors(prev => prev.map(comp => 
+        comp.id === newCompetitor.id 
+          ? { ...comp, loadingProgress: Math.min((comp.loadingProgress || 0) + Math.random() * 15, 100) }
+          : comp
+      ));
+    }, 800);
     
+    // Complete the loading after specified duration
     setTimeout(() => {
       clearInterval(progressInterval);
-      setAddBrandProgress(100);
-      setTimeout(() => {
-        // Create new competitor from form data
-        const newCompetitor = {
-          id: Math.max(...competitors.map(c => c.id), 1) + 1,
-          name: brandName.trim(),
-          url: websiteUrl,
-          status: "Active" as "Active" | "Paused",
-          visibilityScore: Math.floor(Math.random() * 40) + 60, // Random score between 60-100
-          trend: Math.random() > 0.5 ? "+1.2%" : "-0.8%",
-          reportFrequency: reportFrequency === "biweekly" ? "Bi-weekly" : reportFrequency.charAt(0).toUpperCase() + reportFrequency.slice(1) as "Daily" | "Weekly" | "Bi-weekly" | "Monthly",
-          lastReport: "Just added",
-          totalMentions: `${(Math.random() * 5 + 1).toFixed(1)}K`
-        };
-        
-        // Add to competitors list
-        setCompetitors(prev => [...prev, newCompetitor]);
-        
-        setIsAddingBrand(false);
-        setAddBrandProgress(0);
-        setWebsiteUrl("");
-        setBrandName("");
-        setLogoFile(null);
-        setLogoPreview(null);
-        setReportFrequency("");
-        toast({
-          title: "Competitor Added Successfully",
-          description: `${newCompetitor.name} has been added to your watchlist.`,
-        });
-      }, 1000);
+      setCompetitors(prev => prev.map(comp => 
+        comp.id === newCompetitor.id 
+          ? {
+              ...comp,
+              status: "Active" as "Active" | "Paused",
+              visibilityScore: Math.floor(Math.random() * 40) + 60,
+              trend: Math.random() > 0.5 ? "+1.2%" : "-0.8%",
+              lastReport: "Just completed",
+              totalMentions: `${(Math.random() * 5 + 1).toFixed(1)}K`,
+              isLoading: false,
+              loadingProgress: 100
+            }
+          : comp
+      ));
+      
+      toast({
+        title: "Setup Complete",
+        description: `${newCompetitor.name} analysis is ready and being monitored.`,
+      });
     }, loadingDuration * 1000);
   };
 
@@ -257,41 +276,6 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
 
   return (
     <>
-      {/* Loading Overlay */}
-      {isAddingBrand && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
-            <div className="text-center space-y-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                <Globe className="w-8 h-8 text-blue-600 animate-pulse" />
-              </div>
-               <div>
-                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                   Adding Competitor...
-                 </h3>
-                 <p className="text-gray-600 text-sm">
-                   Setting up competitor tracking and analysis...
-                 </p>
-               </div>
-              <div className="space-y-3">
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300 ease-out"
-                    style={{ width: `${Math.min(addBrandProgress, 100)}%` }}
-                  />
-                </div>
-                <p className="text-sm text-gray-500">
-                  {addBrandProgress < 20 ? "Validating website..." :
-                   addBrandProgress < 40 ? "Discovering pages..." :
-                   addBrandProgress < 60 ? "Setting up tracking..." :
-                   addBrandProgress < 80 ? "Configuring reports..." :
-                   "Finalizing setup..."}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
     <div className="space-y-6">
       {/* Brand Limit Tracking */}
@@ -493,69 +477,119 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {competitors.map((competitor) => (
-              <div key={competitor.id} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-secondary/20 to-secondary/40 rounded-lg flex items-center justify-center border">
-                    <Target className="w-5 h-5 text-secondary-foreground" />
-                  </div>
-                  
-                  <div>
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-foreground text-sm">{competitor.name}</h3>
-                      <ExternalLink className="w-3 h-3 text-muted-foreground" />
-                    </div>
-                    <p className="text-xs text-muted-foreground">{competitor.url}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-6">
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-foreground">{competitor.visibilityScore}%</p>
-                    <p className="text-xs text-muted-foreground">AI Visibility</p>
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className="flex items-center justify-center">
-                      <span className="text-lg font-bold text-foreground">{competitor.totalMentions}</span>
-                      <span className={`text-xs ml-1 ${competitor.trend.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                        {competitor.trend}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Mentions</p>
-                  </div>
-                  
-                   <div className="text-center">
-                     <Badge 
-                       variant="secondary" 
-                       className={`text-xs ${getStatusColor(competitor.status)}`}
-                     >
-                       {competitor.status}
-                     </Badge>
-                     <p className="text-xs text-muted-foreground mt-1">{competitor.reportFrequency}</p>
+             {competitors.map((competitor) => (
+               <div key={competitor.id} className={`flex items-center justify-between p-4 rounded-lg border border-border transition-colors ${competitor.isLoading ? 'bg-blue-50/50' : 'hover:bg-accent/50'}`}>
+                 <div className="flex items-center space-x-4">
+                   <div className={`w-10 h-10 bg-gradient-to-br from-secondary/20 to-secondary/40 rounded-lg flex items-center justify-center border ${competitor.isLoading ? 'animate-pulse' : ''}`}>
+                     {competitor.isLoading ? (
+                       <Globe className="w-5 h-5 text-blue-600 animate-spin" />
+                     ) : (
+                       <Target className="w-5 h-5 text-secondary-foreground" />
+                     )}
                    </div>
+                   
+                   <div>
+                     <div className="flex items-center space-x-2 mb-1">
+                       <h3 className="font-medium text-foreground text-sm">{competitor.name}</h3>
+                       {!competitor.isLoading && <ExternalLink className="w-3 h-3 text-muted-foreground" />}
+                       {competitor.isLoading && (
+                         <div className="flex items-center space-x-1">
+                           <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"></div>
+                           <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                           <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                         </div>
+                       )}
+                     </div>
+                     <p className="text-xs text-muted-foreground">{competitor.url}</p>
+                     {competitor.isLoading && (
+                       <div className="mt-2">
+                         <div className="w-24 bg-blue-200 rounded-full h-1">
+                           <div 
+                             className="bg-blue-500 h-1 rounded-full transition-all duration-500" 
+                             style={{ width: `${competitor.loadingProgress || 0}%` }}
+                           />
+                         </div>
+                         <p className="text-xs text-blue-600 mt-1">
+                           {(competitor.loadingProgress || 0) < 25 ? "Analyzing website..." :
+                            (competitor.loadingProgress || 0) < 50 ? "Discovering content..." :
+                            (competitor.loadingProgress || 0) < 75 ? "Setting up monitoring..." :
+                            "Almost ready..."}
+                         </p>
+                       </div>
+                     )}
+                   </div>
+                 </div>
+                 
+                 <div className="flex items-center space-x-6">
+                   <div className="text-center">
+                     {competitor.isLoading ? (
+                       <div className="animate-pulse">
+                         <div className="w-8 h-6 bg-gray-200 rounded mb-1"></div>
+                         <p className="text-xs text-muted-foreground">Loading...</p>
+                       </div>
+                     ) : (
+                       <>
+                         <p className="text-lg font-bold text-foreground">{competitor.visibilityScore}%</p>
+                         <p className="text-xs text-muted-foreground">AI Visibility</p>
+                       </>
+                     )}
+                   </div>
+                   
+                   <div className="text-center">
+                     {competitor.isLoading ? (
+                       <div className="animate-pulse">
+                         <div className="w-10 h-6 bg-gray-200 rounded mb-1"></div>
+                         <p className="text-xs text-muted-foreground">Loading...</p>
+                       </div>
+                     ) : (
+                       <>
+                         <div className="flex items-center justify-center">
+                           <span className="text-lg font-bold text-foreground">{competitor.totalMentions}</span>
+                           <span className={`text-xs ml-1 ${competitor.trend.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                             {competitor.trend}
+                           </span>
+                         </div>
+                         <p className="text-xs text-muted-foreground">Mentions</p>
+                       </>
+                     )}
+                   </div>
+                   
+                    <div className="text-center">
+                      <Badge 
+                        variant="secondary" 
+                        className={`text-xs ${getStatusColor(competitor.status)}`}
+                      >
+                        {competitor.status}
+                      </Badge>
+                      <p className="text-xs text-muted-foreground mt-1">{competitor.reportFrequency}</p>
+                    </div>
                   
-                   <div className="flex items-center space-x-1">
-                     <DropdownMenu>
-                       <DropdownMenuTrigger asChild>
-                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                           <MoreHorizontal className="w-4 h-4" />
-                         </Button>
-                       </DropdownMenuTrigger>
-                       <DropdownMenuContent align="end" className="w-48">
-                         <DropdownMenuItem onClick={() => handleToggleMonitoring(competitor.id)}>
-                           {competitor.status === "Active" ? (
-                             <>
-                               <Pause className="w-4 h-4 mr-2" />
-                               Pause Monitoring
-                             </>
-                           ) : (
-                             <>
-                               <Play className="w-4 h-4 mr-2" />
-                               Activate Monitoring
-                             </>
-                           )}
-                         </DropdownMenuItem>
+                    <div className="flex items-center space-x-1">
+                      {competitor.isLoading ? (
+                        <div className="text-center px-2">
+                          <p className="text-xs text-blue-600 font-medium">Setting up...</p>
+                        </div>
+                      ) : (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem onClick={() => handleToggleMonitoring(competitor.id)}>
+                              {competitor.status === "Active" ? (
+                                <>
+                                  <Pause className="w-4 h-4 mr-2" />
+                                  Pause Monitoring
+                                </>
+                              ) : (
+                                <>
+                                  <Play className="w-4 h-4 mr-2" />
+                                  Activate Monitoring
+                                </>
+                              )}
+                            </DropdownMenuItem>
                          <AlertDialog>
                            <AlertDialogTrigger asChild>
                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -578,9 +612,10 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                              </AlertDialogFooter>
                            </AlertDialogContent>
                          </AlertDialog>
-                       </DropdownMenuContent>
-                     </DropdownMenu>
-                   </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      )}
+                    </div>
                 </div>
               </div>
             ))}
