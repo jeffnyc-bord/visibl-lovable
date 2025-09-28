@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react"
-import { Brain, Sparkles, TrendingUp, BarChart3, Eye, Zap, Globe, Search, Target, Activity, Layers, Radar } from "lucide-react"
+import { Brain, TrendingUp, BarChart3, Eye, Zap, Search, Target, Activity, Layers, Radar } from "lucide-react"
+import perplexityLogo from "@/assets/perplexity_logo.png"
+import geminiLogo from "@/assets/gemini_logo.png"
+import grokLogo from "@/assets/grok_logo.png"
+import chatGPTLogo from "@/assets/chatGPT_logo.png"
 
 const loadingMessages = [
   "Analyzing your brand presence across AI platforms...",
@@ -12,14 +16,14 @@ const loadingMessages = [
 ]
 
 const floatingElements = [
-  { Icon: Brain, position: { top: '10%', left: '15%' }, delay: 0, color: 'text-blue-500' },
-  { Icon: Sparkles, position: { top: '20%', right: '10%' }, delay: 0.3, color: 'text-purple-500' },
-  { Icon: Globe, position: { top: '60%', left: '8%' }, delay: 0.6, color: 'text-green-500' },
-  { Icon: TrendingUp, position: { bottom: '25%', right: '15%' }, delay: 0.9, color: 'text-orange-500' },
-  { Icon: Target, position: { top: '45%', left: '85%' }, delay: 1.2, color: 'text-red-500' },
-  { Icon: Zap, position: { bottom: '15%', left: '25%' }, delay: 1.5, color: 'text-yellow-500' },
-  { Icon: Search, position: { top: '75%', right: '25%' }, delay: 1.8, color: 'text-indigo-500' },
-  { Icon: Activity, position: { top: '35%', left: '5%' }, delay: 2.1, color: 'text-pink-500' },
+  { logo: chatGPTLogo, name: 'ChatGPT', position: { top: '10%', left: '15%' }, delay: 0 },
+  { logo: geminiLogo, name: 'Gemini', position: { top: '20%', right: '10%' }, delay: 0.3 },
+  { logo: perplexityLogo, name: 'Perplexity', position: { top: '60%', left: '8%' }, delay: 0.6 },
+  { logo: grokLogo, name: 'Grok', position: { bottom: '25%', right: '15%' }, delay: 0.9 },
+  { logo: chatGPTLogo, name: 'ChatGPT', position: { top: '45%', left: '85%' }, delay: 1.2 },
+  { logo: geminiLogo, name: 'Gemini', position: { bottom: '15%', left: '25%' }, delay: 1.5 },
+  { logo: perplexityLogo, name: 'Perplexity', position: { top: '75%', right: '25%' }, delay: 1.8 },
+  { logo: grokLogo, name: 'Grok', position: { top: '35%', left: '5%' }, delay: 2.1 },
 ]
 
 const centralIcons = [
@@ -27,6 +31,13 @@ const centralIcons = [
   { Icon: Eye, delay: 0.4 },
   { Icon: Layers, delay: 0.8 },
   { Icon: Radar, delay: 1.2 },
+]
+
+const aiPlatforms = [
+  { name: 'ChatGPT', logo: chatGPTLogo },
+  { name: 'Gemini', logo: geminiLogo },
+  { name: 'Perplexity', logo: perplexityLogo },
+  { name: 'Grok', logo: grokLogo },
 ]
 
 export function BrandLoadingCard() {
@@ -66,19 +77,20 @@ export function BrandLoadingCard() {
       </div>
 
       {/* Floating Background Elements */}
-      {floatingElements.map(({ Icon, position, delay, color }, index) => (
+      {floatingElements.map(({ logo, name, position, delay }, index) => (
         <div
           key={index}
-          className={`absolute opacity-20 ${color} animate-bounce`}
+          className="absolute opacity-30 animate-bounce"
           style={{
             ...position,
             animationDelay: `${delay}s`,
             animationDuration: '3s',
           }}
         >
-          <Icon 
-            size={24} 
-            className="animate-pulse"
+          <img 
+            src={logo}
+            alt={name}
+            className="w-8 h-8 animate-pulse filter grayscale hover:grayscale-0 transition-all duration-300"
             style={{ animationDelay: `${delay + 1}s` }}
           />
         </div>
@@ -131,7 +143,7 @@ export function BrandLoadingCard() {
 
         {/* Loading Content */}
         <div className="space-y-6 max-w-2xl">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold" style={{ color: '#162239' }}>
             Fetching Your Brand Intelligence
           </h2>
           
@@ -167,14 +179,20 @@ export function BrandLoadingCard() {
 
         {/* AI Platform Indicators */}
         <div className="mt-12 grid grid-cols-4 gap-4 w-full max-w-md opacity-60">
-          {['ChatGPT', 'Claude', 'Gemini', 'Perplexity'].map((platform, index) => (
+          {aiPlatforms.map((platform, index) => (
             <div 
-              key={platform}
+              key={platform.name}
               className="flex flex-col items-center space-y-2 animate-fade-in"
               style={{ animationDelay: `${index * 0.2}s` }}
             >
-              <div className="w-3 h-3 bg-primary rounded-full animate-pulse" style={{ animationDelay: `${index * 0.3}s` }} />
-              <span className="text-xs text-muted-foreground">{platform}</span>
+              <div className="w-8 h-8 p-1 bg-white/10 rounded-full backdrop-blur-sm animate-pulse" style={{ animationDelay: `${index * 0.3}s` }}>
+                <img 
+                  src={platform.logo} 
+                  alt={platform.name}
+                  className="w-full h-full object-contain filter brightness-75"
+                />
+              </div>
+              <span className="text-xs text-muted-foreground">{platform.name}</span>
             </div>
           ))}
         </div>
