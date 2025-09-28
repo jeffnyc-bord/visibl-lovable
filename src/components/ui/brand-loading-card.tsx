@@ -16,16 +16,6 @@ const loadingMessages = [
   "Identifying trending topics and conversations...",
 ]
 
-const floatingElements = [
-  { logo: chatGPTLogo, name: 'ChatGPT', position: { top: '10%', left: '15%' }, delay: 0 },
-  { logo: geminiLogo, name: 'Gemini', position: { top: '20%', right: '10%' }, delay: 0.3 },
-  { logo: perplexityLogo, name: 'Perplexity', position: { top: '60%', left: '8%' }, delay: 0.6 },
-  { logo: grokLogo, name: 'Grok', position: { bottom: '25%', right: '15%' }, delay: 0.9 },
-  { logo: chatGPTLogo, name: 'ChatGPT', position: { top: '45%', left: '85%' }, delay: 1.2 },
-  { logo: geminiLogo, name: 'Gemini', position: { bottom: '15%', left: '25%' }, delay: 1.5 },
-  { logo: perplexityLogo, name: 'Perplexity', position: { top: '75%', right: '25%' }, delay: 1.8 },
-  { logo: grokLogo, name: 'Grok', position: { top: '35%', left: '5%' }, delay: 2.1 },
-]
 
 const centralIcons = [
   { logo: chatGPTLogo, name: 'ChatGPT', delay: 0 },
@@ -77,25 +67,6 @@ export function BrandLoadingCard() {
         />
       </div>
 
-      {/* Floating Background Elements */}
-      {floatingElements.map(({ logo, name, position, delay }, index) => (
-        <div
-          key={index}
-          className="absolute opacity-30 animate-bounce"
-          style={{
-            ...position,
-            animationDelay: `${delay}s`,
-            animationDuration: '3s',
-          }}
-        >
-          <img 
-            src={logo}
-            alt={name}
-            className="w-8 h-8 animate-pulse filter grayscale hover:grayscale-0 transition-all duration-300"
-            style={{ animationDelay: `${delay + 1}s` }}
-          />
-        </div>
-      ))}
 
       {/* Main Content Container */}
       <div className="relative h-full flex flex-col items-center justify-center p-8 text-center">
