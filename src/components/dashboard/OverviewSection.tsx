@@ -939,6 +939,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         open={showBrandSelectionDialog}
         onOpenChange={setShowBrandSelectionDialog}
         onConfirm={handleBrandSelection}
+        preSelectTrackedBrands={true}
       />
 
       {/* Brand Verification Dialog */}

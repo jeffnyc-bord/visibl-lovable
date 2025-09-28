@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as React from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -20,9 +21,10 @@ interface BrandSelectionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: (selectedBrands: Brand[]) => void;
+  preSelectTrackedBrands?: boolean;
 }
 
-export const BrandSelectionDialog = ({ open, onOpenChange, onConfirm }: BrandSelectionDialogProps) => {
+export const BrandSelectionDialog = ({ open, onOpenChange, onConfirm, preSelectTrackedBrands = false }: BrandSelectionDialogProps) => {
   const [selectedBrandIds, setSelectedBrandIds] = useState<Set<string>>(new Set());
 
   // Mock tracked brands (would come from actual data)
@@ -61,6 +63,16 @@ export const BrandSelectionDialog = ({ open, onOpenChange, onConfirm }: BrandSel
     onOpenChange(false);
     setSelectedBrandIds(new Set());
   };
+
+  // Pre-select tracked brands when dialog opens if requested
+  React.useEffect(() => {
+    if (open && preSelectTrackedBrands) {
+      const trackedBrandIds = new Set(trackedBrands.map(brand => brand.id));
+      setSelectedBrandIds(trackedBrandIds);
+    } else if (open && !preSelectTrackedBrands) {
+      setSelectedBrandIds(new Set());
+    }
+  }, [open, preSelectTrackedBrands]);
 
   const selectedCount = selectedBrandIds.size;
 
