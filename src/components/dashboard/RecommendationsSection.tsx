@@ -236,8 +236,8 @@ export const RecommendationsSection = () => {
     }
   };
 
-  // Content generation function
-  const generateContent = async (recommendationId: number) => {
+  // Content generation function that directly opens chat
+  const generateAndOpenChat = async (recommendationId: number) => {
     setContentGenerationLoading(recommendationId);
     
     const recommendation = recommendations.find(r => r.id === recommendationId);
@@ -319,15 +319,24 @@ export const RecommendationsSection = () => {
       }
     };
     
+    const content = contentTypes[recommendationId] || {
+      type: "Content Blueprint",
+      content: { outline: "Generated content blueprint for " + recommendation.title }
+    };
+    
     setGeneratedContent(prev => ({
       ...prev,
-      [recommendationId]: contentTypes[recommendationId] || {
-        type: "Content Blueprint",
-        content: { outline: "Generated content blueprint for " + recommendation.title }
-      }
+      [recommendationId]: content
     }));
     
     setContentGenerationLoading(null);
+    
+    // Directly open chat modal
+    setChatbotModal({
+      isOpen: true,
+      content: content,
+      title: recommendation.title
+    });
   };
 
   const getSortedAndFilteredRecommendations = () => {
@@ -556,37 +565,33 @@ export const RecommendationsSection = () => {
                           size="sm"
                           variant="outline"
                           className="h-7 text-xs"
-                          onClick={() => generateContent(rec.id)}
+                          onClick={() => {
+                            if (generatedContent[rec.id]) {
+                              // If content already exists, directly open chat
+                              setChatbotModal({
+                                isOpen: true,
+                                content: generatedContent[rec.id],
+                                title: rec.title
+                              });
+                            } else {
+                              // Generate content and open chat
+                              generateAndOpenChat(rec.id);
+                            }
+                          }}
                           disabled={contentGenerationLoading === rec.id}
                         >
                           {contentGenerationLoading === rec.id ? (
                             <>
                               <Bot className="w-3 h-3 mr-1 animate-spin" />
-                              Generating...
+                              Loading...
                             </>
                           ) : (
                             <>
-                              <Wand2 className="w-3 h-3 mr-1" />
-                              Generate Content
+                              <Bot className="w-3 h-3 mr-1" />
+                              {generatedContent[rec.id] ? 'Chat AI Assistant' : 'Get AI Help'}
                             </>
                           )}
                         </Button>
-                        
-                        {generatedContent[rec.id] && (
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="h-7 text-xs text-success"
-                            onClick={() => setChatbotModal({
-                              isOpen: true,
-                              content: generatedContent[rec.id],
-                              title: rec.title
-                            })}
-                          >
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            View Generated
-                          </Button>
-                        )}
                       </div>
                     )}
                   </div>
