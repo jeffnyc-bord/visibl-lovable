@@ -5,6 +5,11 @@ import geminiLogo from "@/assets/gemini_logo.png"
 import grokLogo from "@/assets/grok_logo.png"
 import chatGPTLogo from "@/assets/chatGPT_logo.png"
 import boardLabsIcon from "@/assets/board_labs_icon.png"
+import assistantLogo from "@/assets/assistant_logo.png"
+import deepseekLogo from "@/assets/deepseek_logo.png"
+import myshellLogo from "@/assets/myshell_logo.png"
+import platformLogo from "@/assets/platform_logo.png"
+import claudeLogo from "@/assets/claude_logo.png"
 
 const loadingMessages = [
   "Analyzing your brand presence across AI platforms...",
@@ -21,10 +26,14 @@ const floatingElements = [
   { logo: geminiLogo, name: 'Gemini', position: { top: '20%', right: '10%' }, delay: 0.3 },
   { logo: perplexityLogo, name: 'Perplexity', position: { top: '60%', left: '8%' }, delay: 0.6 },
   { logo: grokLogo, name: 'Grok', position: { bottom: '25%', right: '15%' }, delay: 0.9 },
-  { logo: chatGPTLogo, name: 'ChatGPT', position: { top: '45%', left: '85%' }, delay: 1.2 },
-  { logo: geminiLogo, name: 'Gemini', position: { bottom: '15%', left: '25%' }, delay: 1.5 },
-  { logo: perplexityLogo, name: 'Perplexity', position: { top: '75%', right: '25%' }, delay: 1.8 },
-  { logo: grokLogo, name: 'Grok', position: { top: '35%', left: '5%' }, delay: 2.1 },
+  { logo: assistantLogo, name: 'Assistant', position: { top: '45%', left: '85%' }, delay: 1.2 },
+  { logo: deepseekLogo, name: 'DeepSeek', position: { bottom: '15%', left: '25%' }, delay: 1.5 },
+  { logo: claudeLogo, name: 'Claude', position: { top: '75%', right: '25%' }, delay: 1.8 },
+  { logo: myshellLogo, name: 'MyShell', position: { top: '35%', left: '5%' }, delay: 2.1 },
+  { logo: platformLogo, name: 'Platform', position: { top: '15%', left: '50%' }, delay: 2.4 },
+  { logo: chatGPTLogo, name: 'ChatGPT', position: { bottom: '40%', right: '8%' }, delay: 2.7 },
+  { logo: geminiLogo, name: 'Gemini', position: { top: '85%', left: '12%' }, delay: 3.0 },
+  { logo: assistantLogo, name: 'Assistant', position: { bottom: '5%', right: '40%' }, delay: 3.3 },
 ]
 
 const centralIcons = [
@@ -32,6 +41,8 @@ const centralIcons = [
   { logo: geminiLogo, name: 'Gemini', delay: 0.4 },
   { logo: perplexityLogo, name: 'Perplexity', delay: 0.8 },
   { logo: grokLogo, name: 'Grok', delay: 1.2 },
+  { logo: claudeLogo, name: 'Claude', delay: 1.6 },
+  { logo: deepseekLogo, name: 'DeepSeek', delay: 2.0 },
 ]
 
 const aiPlatforms = [
@@ -39,6 +50,8 @@ const aiPlatforms = [
   { name: 'Gemini', logo: geminiLogo },
   { name: 'Perplexity', logo: perplexityLogo },
   { name: 'Grok', logo: grokLogo },
+  { name: 'Claude', logo: claudeLogo },
+  { name: 'DeepSeek', logo: deepseekLogo },
 ]
 
 export function BrandLoadingCard() {
@@ -111,7 +124,7 @@ export function BrandLoadingCard() {
           
           {/* Central Icons Orbit */}
           {centralIcons.map(({ logo, name, delay }, index) => {
-            const angle = (index * 90) - 45
+            const angle = (index * 60) - 30
             const radius = 50
             const x = Math.cos((angle * Math.PI) / 180) * radius
             const y = Math.sin((angle * Math.PI) / 180) * radius
@@ -186,7 +199,7 @@ export function BrandLoadingCard() {
         </div>
 
         {/* AI Platform Indicators */}
-        <div className="mt-12 grid grid-cols-4 gap-4 w-full max-w-md opacity-60">
+        <div className="mt-12 grid grid-cols-6 gap-3 w-full max-w-2xl opacity-60">
           {aiPlatforms.map((platform, index) => (
             <div 
               key={platform.name}
