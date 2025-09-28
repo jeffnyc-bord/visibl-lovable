@@ -665,7 +665,7 @@ const Index = () => {
                             <TabsTrigger 
                               key={section.key}
                               value={section.key} 
-                              className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5"
+                              className="flex items-center space-x-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#10131d] data-[state=active]:to-[#0e2d3b] data-[state=active]:text-white text-sm px-3 py-1.5 transition-all duration-300"
                             >
                               {typeof section.icon === 'string' ? (
                                 <img src={section.icon} alt={section.label} className="w-5 h-5" />
