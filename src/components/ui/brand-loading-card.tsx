@@ -181,9 +181,10 @@ export function BrandLoadingCard() {
           <div className="w-full max-w-md mx-auto space-y-3">
             <div className="relative h-3 bg-muted/50 rounded-full overflow-hidden">
               <div 
-                className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary via-secondary to-primary rounded-full transition-all duration-1000 ease-out"
+                className="absolute inset-y-0 left-0 rounded-full transition-all duration-1000 ease-out"
                 style={{ 
                   width: `${progress}%`,
+                  background: 'linear-gradient(to right, #10131d, #0e2d3b)',
                   backgroundSize: '200% 100%',
                   animation: 'shimmer 2s ease-in-out infinite'
                 }}
