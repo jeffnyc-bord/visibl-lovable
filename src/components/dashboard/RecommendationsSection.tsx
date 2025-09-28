@@ -379,20 +379,20 @@ export const RecommendationsSection = () => {
   return (
     <div className="space-y-3">
       {/* Minimal Overview */}
-      <Card className="bg-gradient-primary border-primary/20">
+      <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
         <CardContent className="p-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img src="/lovable-uploads/e81540f9-53d7-49d2-a3d4-e3eaf04efcb1.png" alt="AI Optimization Plan" className="w-5 h-5" />
               <div>
-                <h3 className="text-sm font-semibold text-primary-foreground">AI-Powered Optimization Plan</h3>
-                <p className="text-xs text-primary-foreground/80">
+                <h3 className="text-sm font-semibold text-foreground">AI-Powered Optimization Plan</h3>
+                <p className="text-xs text-muted-foreground">
                   {completedActions.length === 0 
                     ? `${recommendations.length} strategic actions to boost AI visibility by +${totalImpact}%`
                     : `${completedActions.length}/${recommendations.length} completed • +${completedImpact}% gained so far`
                   }
                 </p>
-                <p className="text-xs text-primary-foreground/60 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   <Calendar className="w-3 h-3 inline mr-1" />
                   Last updated: {lastGenerated.toLocaleDateString()}
                 </p>
@@ -404,7 +404,7 @@ export const RecommendationsSection = () => {
                 size="sm" 
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="h-8 text-xs bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/20"
+                className="h-8 text-xs"
               >
                 <RefreshCw className={`w-3 h-3 mr-1 ${isRefreshing ? 'animate-spin' : ''}`} />
                 {isRefreshing ? 'Updating...' : 'Refresh'}
@@ -412,7 +412,7 @@ export const RecommendationsSection = () => {
               {completedActions.length > 0 && (
                 <div className="text-right">
                   <div className="text-lg font-bold text-success">+{completedImpact}%</div>
-                  <div className="text-xs text-primary-foreground/60">Impact Gained</div>
+                  <div className="text-xs text-muted-foreground">Impact Gained</div>
                 </div>
               )}
             </div>
