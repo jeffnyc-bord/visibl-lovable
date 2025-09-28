@@ -11,7 +11,15 @@ import myshellLogo from "@/assets/myshell_logo.png"
 import platformLogo from "@/assets/platform_logo.png"
 import claudeLogo from "@/assets/claude_logo.png"
 
-const loadingMessages = [
+const getLoadingMessages = (isAgency: boolean) => isAgency ? [
+  "Analyzing your client's brand presence across AI platforms...",
+  "Scanning ChatGPT, Claude, Gemini for client brand mentions...",
+  "Gathering visibility insights from over 20,000+ sources...",
+  "Processing client brand performance data in real-time...",
+  "Calculating engagement metrics and sentiment...",
+  "Mapping competitive landscape and opportunities...",
+  "Identifying trending topics and conversations...",
+] : [
   "Analyzing your brand presence across AI platforms...",
   "Scanning ChatGPT, Claude, Gemini for brand mentions...",
   "Gathering visibility insights from over 20,000+ sources...",
@@ -54,9 +62,15 @@ const aiPlatforms = [
   { name: 'DeepSeek', logo: deepseekLogo },
 ]
 
-export function BrandLoadingCard() {
+interface BrandLoadingCardProps {
+  userRole?: "business_user" | "agency_admin";
+}
+
+export function BrandLoadingCard({ userRole = "business_user" }: BrandLoadingCardProps) {
   const [currentMessage, setCurrentMessage] = useState(0)
   const [progress, setProgress] = useState(0)
+  const isAgency = userRole === "agency_admin"
+  const loadingMessages = getLoadingMessages(isAgency)
 
   useEffect(() => {
     const messageInterval = setInterval(() => {
@@ -165,7 +179,7 @@ export function BrandLoadingCard() {
         {/* Loading Content */}
         <div className="space-y-6 max-w-2xl">
           <h2 className="text-3xl font-bold" style={{ color: '#162239' }}>
-            Fetching Your Brand Intelligence
+            {isAgency ? "Fetching Your Client's Brand Intelligence" : "Fetching Your Brand Intelligence"}
           </h2>
           
           <div className="relative h-8">

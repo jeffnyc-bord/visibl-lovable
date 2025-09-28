@@ -685,7 +685,7 @@ const Index = () => {
                           ) : dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
-                            <BrandLoadingCard />
+                            <BrandLoadingCard userRole={userRole} />
                           ) : (
                             <OverviewSection 
                               brandData={selectedBrand} 
@@ -708,7 +708,7 @@ const Index = () => {
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
-                            <BrandLoadingCard />
+                            <BrandLoadingCard userRole={userRole} />
                           ) : (
                             <BrandAnalysisSection brandData={selectedBrand} />
                           )}
@@ -720,7 +720,7 @@ const Index = () => {
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
-                            <BrandLoadingCard />
+                            <BrandLoadingCard userRole={userRole} />
                           ) : (
                             <QueriesAndPromptsSection 
                               brandData={selectedBrand} 
@@ -786,7 +786,7 @@ const Index = () => {
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
-                            <BrandLoadingCard />
+                            <BrandLoadingCard userRole={userRole} />
                           ) : (
                             <RecommendationsSection />
                           )}
