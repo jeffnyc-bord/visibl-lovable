@@ -26,6 +26,7 @@ import { BrandManagementSection } from "@/components/dashboard/BrandManagementSe
 import { Settings as SettingsPage } from "@/pages/Settings";
 import { DashboardSkeleton, ChartWidgetSkeleton, ScorecardSkeleton, TableSkeleton, WidgetSkeleton } from "@/components/ui/dashboard-skeleton";
 import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from "@/components/ui/error-states";
+import { BrandLoadingCard } from "@/components/ui/brand-loading-card";
 import { DeveloperControls } from "@/components/ui/developer-controls";
 import { StatusIndicators } from "@/components/ui/status-indicators";
 import { useToast } from "@/hooks/use-toast";
@@ -707,7 +708,7 @@ const Index = () => {
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
-                            <WidgetSkeleton />
+                            <BrandLoadingCard />
                           ) : (
                             <BrandAnalysisSection brandData={selectedBrand} />
                           )}
