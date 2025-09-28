@@ -681,37 +681,6 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
               </p>
             </div>
             
-            {/* Inline Blast Progress */}
-            {isBlasting && (
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 animate-fade-in">
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-purple-600 animate-pulse" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-purple-900">Testing in Progress</h4>
-                    <p className="text-sm text-purple-700">
-                      Blasting across {selectedPlatforms.length} AI platforms...
-                    </p>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="w-full bg-purple-200 rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-300 ease-out" 
-                      style={{ width: `${Math.min(blastProgress, 100)}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-purple-600">
-                    {blastProgress < 25 ? "Preparing queries..." :
-                     blastProgress < 50 ? "Sending to AI platforms..." :
-                     blastProgress < 75 ? "Collecting responses..." :
-                     "Analyzing results..."}
-                  </p>
-                </div>
-              </div>
-            )}
-            
             {/* Platform Selection Cards */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
