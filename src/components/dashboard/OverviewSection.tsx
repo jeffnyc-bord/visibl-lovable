@@ -77,6 +77,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [loadingBrands, setLoadingBrands] = useState<string[]>([]);
   const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "", logoFile: null as File | null, logoPreview: "" });
   
+  // State for Top Prompts section
+  const [showAllPrompts, setShowAllPrompts] = useState(false);
+  const [listMoreClicked, setListMoreClicked] = useState(false);
+  
   // Brand limits based on tier
   const TIER_LIMITS = {
     standard: 5,
@@ -1186,7 +1190,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {coreQueries.map((query, index) => (
+            {(showAllPrompts ? coreQueries : coreQueries.slice(0, showAllPrompts ? coreQueries.length : 4)).map((query, index) => (
               <div 
                 key={index} 
                 className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-primary/30 hover:bg-primary/5 cursor-pointer transition-all"
@@ -1203,6 +1207,34 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 </div>
               </div>
             ))}
+            
+            {/* Action Buttons */}
+            {coreQueries.length > 4 && (
+              <div className="flex items-center justify-between pt-4 border-t">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setShowAllPrompts(true);
+                    setListMoreClicked(true);
+                  }}
+                  disabled={listMoreClicked}
+                >
+                  {listMoreClicked ? "Showing More" : "List more"}
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    // Navigate to prompt analysis page
+                    window.location.href = '/prompts';
+                  }}
+                >
+                  View full list
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
