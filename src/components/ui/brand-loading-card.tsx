@@ -27,10 +27,10 @@ const floatingElements = [
 ]
 
 const centralIcons = [
-  { Icon: BarChart3, delay: 0 },
-  { Icon: Eye, delay: 0.4 },
-  { Icon: Layers, delay: 0.8 },
-  { Icon: Radar, delay: 1.2 },
+  { logo: chatGPTLogo, name: 'ChatGPT', delay: 0 },
+  { logo: geminiLogo, name: 'Gemini', delay: 0.4 },
+  { logo: perplexityLogo, name: 'Perplexity', delay: 0.8 },
+  { logo: grokLogo, name: 'Grok', delay: 1.2 },
 ]
 
 const aiPlatforms = [
@@ -110,7 +110,7 @@ export function BrandLoadingCard() {
           </div>
           
           {/* Central Icons Orbit */}
-          {centralIcons.map(({ Icon, delay }, index) => {
+          {centralIcons.map(({ logo, name, delay }, index) => {
             const angle = (index * 90) - 45
             const radius = 50
             const x = Math.cos((angle * Math.PI) / 180) * radius
@@ -126,8 +126,12 @@ export function BrandLoadingCard() {
                   animationDelay: `${delay}s`
                 }}
               >
-                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center backdrop-blur-sm animate-pulse">
-                  <Icon size={20} className="text-primary" />
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm animate-pulse p-2">
+                  <img 
+                    src={logo} 
+                    alt={name}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
               </div>
             )
@@ -135,8 +139,12 @@ export function BrandLoadingCard() {
           
           {/* Center Brain Icon */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center shadow-lg animate-pulse">
-              <Brain size={28} className="text-white" />
+            <div className="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center shadow-lg animate-pulse backdrop-blur-sm p-3">
+              <img 
+                src={chatGPTLogo} 
+                alt="AI Intelligence"
+                className="w-full h-full object-contain"
+              />
             </div>
           </div>
         </div>
