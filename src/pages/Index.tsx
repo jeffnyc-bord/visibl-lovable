@@ -436,9 +436,9 @@ const Index = () => {
             {sidebarItems.map((item, index) => (
               <div 
                 key={index} 
-                className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors text-sm ${
+                className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] transform-gpu text-sm ${
                   item.active 
-                    ? 'bg-gray-100 text-gray-900' 
+                    ? 'bg-gray-100 text-gray-900 shadow-sm scale-[1.02]' 
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
                 onClick={() => setActiveView(item.view)}
@@ -455,9 +455,9 @@ const Index = () => {
             </div>
             <div className="space-y-1">
               <div 
-                className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors text-sm ${
+                className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] transform-gpu text-sm ${
                   activeView === "settings" 
-                    ? 'bg-gray-100 text-gray-900' 
+                    ? 'bg-gray-100 text-gray-900 shadow-sm scale-[1.02]' 
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
                 onClick={() => setActiveView("settings")}
