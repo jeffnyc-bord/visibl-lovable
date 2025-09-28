@@ -14,7 +14,7 @@ import claudeLogo from "@/assets/claude_logo.png"
 const loadingMessages = [
   "Analyzing your brand presence across AI platforms...",
   "Scanning ChatGPT, Claude, Gemini for brand mentions...",
-  "Gathering visibility insights from 50+ AI sources...",
+  "Gathering visibility insights from over 20,000+ sources...",
   "Processing brand performance data in real-time...",
   "Calculating engagement metrics and sentiment...",
   "Mapping competitive landscape and opportunities...",
@@ -221,7 +221,7 @@ export function BrandLoadingCard() {
         {/* Fun Fact */}
         <div className="mt-8 p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 max-w-lg animate-fade-in" style={{ animationDelay: '1s' }}>
           <p className="text-sm text-muted-foreground">
-            🚀 <strong>Pro Tip:</strong> We're analyzing over 50+ AI platforms and processing millions of data points to give you the most comprehensive brand visibility insights!
+            🚀 <strong>Pro Tip:</strong> We're analyzing and processing millions of data points to give you the most comprehensive brand visibility insights!
           </p>
         </div>
       </div>
