@@ -366,9 +366,9 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       {/* Add Competitor */}
       <Card className="shadow-sm border-border">
         <CardHeader className="pb-4">
-          <CardTitle className="text-base text-foreground">Add Competitor</CardTitle>
+          <CardTitle className="text-base text-foreground">Add New Brand</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Add a competitor to your watchlist to monitor their AI visibility
+            Add a new brand to your watchlist to monitor their AI visibility
             {isAtLimit && (
               <span className="block text-destructive text-sm mt-1 font-medium">
                 Upgrade your plan to add more competitors
@@ -486,7 +486,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       {/* Competitor Watchlist */}
       <Card className="shadow-sm border-border">
         <CardHeader className="pb-4">
-          <CardTitle className="text-base text-foreground">Competitor Watchlist</CardTitle>
+          <CardTitle className="text-base text-foreground">Watchlist</CardTitle>
           <CardDescription className="text-muted-foreground">
             Monitor your competitors' AI visibility performance ({competitorCount}/10 slots used)
           </CardDescription>
