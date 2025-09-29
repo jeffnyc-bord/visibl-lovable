@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -26,6 +26,24 @@ interface DeveloperControlsProps {
 
 export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isOpen && containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const controlItems = [
     {
@@ -56,7 +74,7 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
   ];
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div ref={containerRef} className="fixed bottom-4 right-4 z-50">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
           <Button
