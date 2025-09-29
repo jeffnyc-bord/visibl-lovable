@@ -88,8 +88,8 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
           </Button>
         </CollapsibleTrigger>
         
-        <CollapsibleContent>
-          <Card className="mt-2 w-80 bg-background/95 backdrop-blur-sm border-2 shadow-lg">
+        <CollapsibleContent className="animate-in slide-in-from-bottom-2 duration-300 ease-out data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-2 data-[state=closed]:duration-200">
+          <Card className="mt-2 w-80 bg-background/95 backdrop-blur-sm border-2 shadow-lg transform transition-all duration-300 ease-out scale-100 animate-in fade-in-0 zoom-in-95">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
                 Dashboard State Controls
