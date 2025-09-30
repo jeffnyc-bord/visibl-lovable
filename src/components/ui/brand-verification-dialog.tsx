@@ -160,11 +160,11 @@ export const BrandVerificationDialog = ({ open, onOpenChange, brands, onConfirm 
                               <Upload className="w-6 h-6 text-muted-foreground" />
                             </div>
                           ) : (
-                            <div className="relative w-16 h-16 border rounded-lg bg-background overflow-hidden">
+                            <div className="relative w-16 h-16 border rounded-lg bg-background">
                               <img 
                                 src={form.logoPreview} 
                                 alt="Brand logo" 
-                                className="w-full h-full object-contain p-1"
+                                className="w-full h-full object-contain p-1 rounded-lg"
                               />
                               <Button
                                 variant="ghost"
