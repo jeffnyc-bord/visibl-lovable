@@ -410,7 +410,7 @@ const Index = () => {
         onLoadingDurationChange={setLoadingDuration}
       />
       {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
+      <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
         {/* Logo/Brand */}
         <div className="p-3 border-b border-gray-200">
           <div className="flex items-center space-x-2">
