@@ -494,7 +494,7 @@ export const RecommendationsSection = () => {
       <div className="space-y-2">
         {filteredRecommendations.map((rec) => (
           <Collapsible key={rec.id} open={expandedCards.includes(rec.id)} onOpenChange={() => toggleCardExpansion(rec.id)}>
-            <Card className={`transition-all duration-200 hover:shadow-sm ${completedActions.includes(rec.id) ? 'bg-success/5 border-success/20' : ''}`}>
+            <Card className={`transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:border-primary/30 ${completedActions.includes(rec.id) ? 'bg-success/5 border-success/20' : ''}`}>
               <CollapsibleTrigger className="w-full">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between w-full">
