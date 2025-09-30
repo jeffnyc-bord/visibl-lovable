@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle, AlertCircle, RefreshCw, ExternalLink, AlertTriangle, Loader2, Lightbulb, Settings, Plus, Trash2 } from "lucide-react";
+import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle, AlertCircle, RefreshCw, ExternalLink, AlertTriangle, Loader2, Lightbulb, Settings, Plus, Trash2, Circle } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
@@ -1239,12 +1239,21 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                   <TableHeader>
                    <TableRow className="bg-gray-50">
                      <TableHead className="w-12">
-                       <input
-                         type="checkbox"
-                         checked={selectedPrompts.length === filteredPrompts.length && filteredPrompts.length > 0}
-                         onChange={toggleSelectAll}
-                         className="rounded border-gray-300 cursor-pointer"
-                       />
+                       <button
+                         onClick={toggleSelectAll}
+                         className="group relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background"
+                       >
+                         <div className={`absolute inset-0 rounded-md transition-all duration-200 ${
+                           selectedPrompts.length === filteredPrompts.length && filteredPrompts.length > 0
+                             ? 'bg-primary scale-100 opacity-100' 
+                             : 'bg-transparent scale-0 opacity-0'
+                         }`} />
+                         <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
+                           selectedPrompts.length === filteredPrompts.length && filteredPrompts.length > 0
+                             ? 'text-primary-foreground scale-100 opacity-100' 
+                             : 'text-transparent scale-0 opacity-0'
+                         }`} />
+                       </button>
                      </TableHead>
                      <TableHead className="font-semibold">Prompt</TableHead>
                      <TableHead className="font-semibold">Top Platform</TableHead>
@@ -1263,12 +1272,21 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                          className={`hover:bg-gray-50 ${isQueued ? 'bg-primary/5 border-l-4 border-l-primary' : ''}`}
                        >
                         <TableCell onClick={(e) => e.stopPropagation()}>
-                          <input
-                            type="checkbox"
-                            checked={selectedPrompts.includes(prompt.id)}
-                            onChange={() => toggleSelectPrompt(prompt.id)}
-                            className="rounded border-gray-300 cursor-pointer"
-                          />
+                          <button
+                            onClick={() => toggleSelectPrompt(prompt.id)}
+                            className="group relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background"
+                          >
+                            <div className={`absolute inset-0 rounded-md transition-all duration-200 ${
+                              selectedPrompts.includes(prompt.id)
+                                ? 'bg-primary scale-100 opacity-100' 
+                                : 'bg-transparent scale-0 opacity-0'
+                            }`} />
+                            <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
+                              selectedPrompts.includes(prompt.id)
+                                ? 'text-primary-foreground scale-100 opacity-100' 
+                                : 'text-transparent scale-0 opacity-0'
+                            }`} />
+                          </button>
                         </TableCell>
                         <TableCell
                           className="cursor-pointer"
