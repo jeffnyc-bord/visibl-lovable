@@ -1206,7 +1206,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
 
             {/* Bulk Actions Bar */}
             {selectedPrompts.length > 0 && (
-              <div className="flex items-center justify-between p-4 bg-accent/50 border border-border rounded-lg backdrop-blur-sm">
+              <div className="flex items-center justify-between p-4 bg-accent/50 border border-border rounded-lg backdrop-blur-sm animate-in slide-in-from-top-2 fade-in-0 duration-300">
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="w-5 h-5 text-primary" />
                   <span className="text-sm font-medium">
