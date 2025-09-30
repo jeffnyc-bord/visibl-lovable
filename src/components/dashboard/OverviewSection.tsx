@@ -1198,14 +1198,15 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             {(listMoreClicked ? coreQueries.slice(0, 8) : coreQueries.slice(0, 4)).map((query, index) => (
               <div 
                 key={index} 
-                className="group/card relative p-[2px] rounded-lg overflow-hidden cursor-pointer"
+                className="group/card relative p-[3px] rounded-lg overflow-hidden cursor-pointer"
                 onClick={() => onQueryClick?.(query.query)}
               >
                 {/* Animated rainbow border */}
-                <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-cyan-500 via-blue-500 via-purple-500 to-red-500 opacity-60 group-hover/card:opacity-100 transition-opacity animate-[spin_3s_linear_infinite]" 
+                <div className="absolute inset-0 opacity-90 group-hover/card:opacity-100 transition-opacity" 
                   style={{ 
-                    backgroundSize: '200% 200%',
-                    animation: 'rainbow-border 3s linear infinite'
+                    background: 'linear-gradient(90deg, #ff0000, #ff7700, #ffdd00, #00ff00, #0088ff, #8800ff, #ff0099, #ff0000)',
+                    backgroundSize: '400% 100%',
+                    animation: 'rainbow-border 2s linear infinite'
                   }}
                 />
                 
