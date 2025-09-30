@@ -1170,11 +1170,16 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
 
       {/* Core Brand Queries */}
-      <Card className="mb-6 group relative" onMouseLeave={() => setShowTooltips({...showTooltips, coreQueries: false})}>
-        <CardHeader>
+      <Card className="mb-6 group relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5" onMouseLeave={() => setShowTooltips({...showTooltips, coreQueries: false})}>
+        {/* Subtle shimmer overlay */}
+        <div className="absolute inset-0 -translate-x-full animate-[shimmer_3s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        
+        <CardHeader className="relative z-10">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <MessageSquare className="w-5 h-5" />
+              <div className="p-2 rounded-lg bg-primary/10">
+                <MessageSquare className="w-5 h-5 text-primary" />
+              </div>
               <span>Top Prompts</span>
             </div>
             <div className="relative">
@@ -1193,21 +1198,24 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             System-generated queries that are most relevant to your brand, based on AI understanding and market analysis.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative z-10">
           <div className="space-y-4">
             {(listMoreClicked ? coreQueries.slice(0, 8) : coreQueries.slice(0, 4)).map((query, index) => (
               <div 
                 key={index} 
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-primary/30 hover:bg-primary/5 cursor-pointer transition-all"
+                className="group/item relative flex items-center justify-between p-4 border border-border rounded-lg hover:border-primary/50 hover:shadow-md cursor-pointer transition-all duration-300 bg-background/80 backdrop-blur-sm overflow-hidden hover:scale-[1.02]"
                 onClick={() => onQueryClick?.(query.query)}
               >
-                <div className="flex-1">
-                  <p className="font-medium text-gray-900">{query.query}</p>
+                {/* Gradient accent on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300" />
+                
+                <div className="flex-1 relative z-10">
+                  <p className="font-medium text-foreground">{query.query}</p>
                 </div>
-                <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-6 relative z-10">
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">AI Mentions:</span>
-                    <span className="font-medium">{query.mentions}</span>
+                    <span className="text-sm text-muted-foreground">AI Mentions:</span>
+                    <span className="font-semibold text-primary px-2 py-1 rounded-md bg-primary/10">{query.mentions}</span>
                   </div>
                 </div>
               </div>
