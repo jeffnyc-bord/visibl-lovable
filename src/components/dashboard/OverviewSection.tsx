@@ -78,7 +78,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "", logoFile: null as File | null, logoPreview: "" });
   
   // State for Top Prompts section
-  const [showAllPrompts, setShowAllPrompts] = useState(false);
   const [listMoreClicked, setListMoreClicked] = useState(false);
   
   // Brand limits based on tier
@@ -1190,7 +1189,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {(showAllPrompts ? coreQueries : coreQueries.slice(0, showAllPrompts ? coreQueries.length : 4)).map((query, index) => (
+            {(listMoreClicked ? coreQueries.slice(0, 8) : coreQueries.slice(0, 4)).map((query, index) => (
               <div 
                 key={index} 
                 className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-primary/30 hover:bg-primary/5 cursor-pointer transition-all"
@@ -1211,17 +1210,16 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             {/* Action Buttons */}
             {coreQueries.length > 4 && (
               <div className="flex items-center justify-between pt-4 border-t">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setShowAllPrompts(true);
-                    setListMoreClicked(true);
-                  }}
-                  disabled={listMoreClicked}
-                >
-                  {listMoreClicked ? "Showing More" : "List more"}
-                </Button>
+                {!listMoreClicked && coreQueries.length > 4 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setListMoreClicked(true)}
+                  >
+                    View more
+                  </Button>
+                )}
+                {listMoreClicked && <div />}
                 
                 <Button
                   variant="outline"
@@ -1231,7 +1229,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                     window.location.href = '/prompts';
                   }}
                 >
-                  View full list
+                  View all
                 </Button>
               </div>
             )}
