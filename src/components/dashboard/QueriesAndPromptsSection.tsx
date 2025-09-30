@@ -89,6 +89,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   // Queue state
   const [queuedPrompts, setQueuedPrompts] = useState<number[]>([]);
   const [isProcessingQueue, setIsProcessingQueue] = useState(false);
+  
+  // Bulk selection state
+  const [selectedPrompts, setSelectedPrompts] = useState<number[]>([]);
 
   // Prompts state - convert mock data to state
   const [detailedPromptsState, setDetailedPromptsState] = useState(() => {
@@ -431,10 +434,37 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   const handleDeletePrompt = (promptId: number) => {
     setDetailedPromptsState(prev => prev.filter(p => p.id !== promptId));
     setQueuedPrompts(prev => prev.filter(id => id !== promptId));
+    setSelectedPrompts(prev => prev.filter(id => id !== promptId));
     toast({
       title: "Prompt Deleted",
       description: "The prompt has been removed from your library.",
     });
+  };
+
+  const handleBulkDelete = () => {
+    setDetailedPromptsState(prev => prev.filter(p => !selectedPrompts.includes(p.id)));
+    setQueuedPrompts(prev => prev.filter(id => !selectedPrompts.includes(id)));
+    toast({
+      title: "Prompts Deleted",
+      description: `${selectedPrompts.length} prompts have been removed from your library.`,
+    });
+    setSelectedPrompts([]);
+  };
+
+  const toggleSelectPrompt = (promptId: number) => {
+    setSelectedPrompts(prev => 
+      prev.includes(promptId) 
+        ? prev.filter(id => id !== promptId)
+        : [...prev, promptId]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedPrompts.length === filteredPrompts.length) {
+      setSelectedPrompts([]);
+    } else {
+      setSelectedPrompts(filteredPrompts.map(p => p.id));
+    }
   };
 
   const processQueue = () => {
@@ -1174,11 +1204,48 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
               </Select>
             </div>
 
+            {/* Bulk Actions Bar */}
+            {selectedPrompts.length > 0 && (
+              <div className="flex items-center justify-between p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5 text-primary" />
+                  <span className="text-sm font-medium text-gray-900">
+                    {selectedPrompts.length} prompt{selectedPrompts.length > 1 ? 's' : ''} selected
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setSelectedPrompts([])}
+                  >
+                    Clear Selection
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    onClick={handleBulkDelete}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Selected
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* Prompts Table */}
             <div className="border border-gray-200 rounded-lg overflow-hidden">
               <Table>
                   <TableHeader>
                    <TableRow className="bg-gray-50">
+                     <TableHead className="w-12">
+                       <input
+                         type="checkbox"
+                         checked={selectedPrompts.length === filteredPrompts.length && filteredPrompts.length > 0}
+                         onChange={toggleSelectAll}
+                         className="rounded border-gray-300 cursor-pointer"
+                       />
+                     </TableHead>
                      <TableHead className="font-semibold">Prompt</TableHead>
                      <TableHead className="font-semibold">Top Platform</TableHead>
                      <TableHead className="font-semibold">Mentions</TableHead>
@@ -1195,6 +1262,14 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                          key={prompt.id} 
                          className={`hover:bg-gray-50 ${isQueued ? 'bg-primary/5 border-l-4 border-l-primary' : ''}`}
                        >
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={selectedPrompts.includes(prompt.id)}
+                            onChange={() => toggleSelectPrompt(prompt.id)}
+                            className="rounded border-gray-300 cursor-pointer"
+                          />
+                        </TableCell>
                         <TableCell
                           className="cursor-pointer"
                           onClick={() => {
