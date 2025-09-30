@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle, AlertCircle, RefreshCw, ExternalLink, AlertTriangle, Loader2, Lightbulb, Settings, Plus } from "lucide-react";
+import { Search, Zap, Clock, Bot, Play, History, Copy, BarChart3, CheckCircle, Filter, ChevronDown, ChevronUp, X, Check, Timer, MessageSquare, ThumbsUp, ThumbsDown, Minus, HelpCircle, AlertCircle, RefreshCw, ExternalLink, AlertTriangle, Loader2, Lightbulb, Settings, Plus, Trash2 } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
@@ -425,6 +425,15 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       description: isAdding 
         ? "Prompt will be included in the next analysis run." 
         : "Prompt removed from queue.",
+    });
+  };
+
+  const handleDeletePrompt = (promptId: number) => {
+    setDetailedPromptsState(prev => prev.filter(p => p.id !== promptId));
+    setQueuedPrompts(prev => prev.filter(id => id !== promptId));
+    toast({
+      title: "Prompt Deleted",
+      description: "The prompt has been removed from your library.",
     });
   };
 
@@ -1294,6 +1303,13 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                               }}>
                                 <Copy className="mr-2 h-4 w-4" />
                                 Copy Prompt
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleDeletePrompt(prompt.id)}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete Prompt
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
