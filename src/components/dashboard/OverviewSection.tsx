@@ -151,6 +151,11 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     { query: "Nike Air Max vs Adidas Ultraboost", brand: "Nike", mentions: 203 },
     { query: "Most comfortable athletic shoes for daily wear", brand: "Nike", mentions: 67 },
     { query: "Best basketball shoes for performance", brand: "Nike", mentions: 89 },
+    { query: "Running shoes for marathon training", brand: "Nike", mentions: 145 },
+    { query: "Sustainable athletic footwear options", brand: "Nike", mentions: 112 },
+    { query: "Best cross-training shoes for gym workouts", brand: "Nike", mentions: 98 },
+    { query: "Lightweight running shoes comparison", brand: "Nike", mentions: 156 },
+    { query: "Nike React vs Nike ZoomX technology", brand: "Nike", mentions: 134 },
   ];
 
   const sourceQuality = [
