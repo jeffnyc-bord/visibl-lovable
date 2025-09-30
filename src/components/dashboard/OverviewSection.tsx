@@ -1201,14 +1201,18 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 className="group/card relative p-[0.5px] rounded-lg overflow-hidden cursor-pointer"
                 onClick={() => onQueryClick?.(query.query)}
               >
-                {/* Animated rainbow border - only visible on hover */}
-                <div className="absolute inset-0 opacity-0 group-hover/card:opacity-90 transition-opacity" 
-                  style={{ 
-                    background: 'linear-gradient(90deg, #ff0000, #ff7700, #ffdd00, #00ff00, #0088ff, #8800ff, #ff0099, #ff0000)',
-                    backgroundSize: '400% 100%',
-                    animation: 'rainbow-border 6s linear infinite'
-                  }}
-                />
+                {/* Animated shimmer - only visible on hover */}
+                <div className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity overflow-hidden">
+                  <div 
+                    className="absolute inset-0"
+                    style={{ 
+                      background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.8) 50%, transparent 100%)',
+                      width: '30%',
+                      animation: 'shimmer 3s ease-in-out infinite',
+                      filter: 'blur(10px)'
+                    }}
+                  />
+                </div>
                 
                 {/* Card content */}
                 <div className="relative flex items-center justify-between p-4 bg-background border rounded-lg group-hover/card:border-primary/20 transition-all">
