@@ -1234,7 +1234,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
             )}
 
             {/* Prompts Table */}
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <div className="border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 ease-out">
               <Table>
                   <TableHeader>
                    <TableRow className="bg-gray-50">
