@@ -1198,16 +1198,27 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             {(listMoreClicked ? coreQueries.slice(0, 8) : coreQueries.slice(0, 4)).map((query, index) => (
               <div 
                 key={index} 
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-primary/30 hover:bg-primary/5 cursor-pointer transition-all"
+                className="group/card relative p-[2px] rounded-lg overflow-hidden cursor-pointer"
                 onClick={() => onQueryClick?.(query.query)}
               >
-                <div className="flex-1">
-                  <p className="font-medium text-gray-900">{query.query}</p>
-                </div>
-                <div className="flex items-center space-x-6">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">AI Mentions:</span>
-                    <span className="font-medium">{query.mentions}</span>
+                {/* Animated rainbow border */}
+                <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-cyan-500 via-blue-500 via-purple-500 to-red-500 opacity-60 group-hover/card:opacity-100 transition-opacity animate-[spin_3s_linear_infinite]" 
+                  style={{ 
+                    backgroundSize: '200% 200%',
+                    animation: 'rainbow-border 3s linear infinite'
+                  }}
+                />
+                
+                {/* Card content */}
+                <div className="relative flex items-center justify-between p-4 bg-background rounded-lg group-hover/card:bg-primary/5 transition-all">
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground">{query.query}</p>
+                  </div>
+                  <div className="flex items-center space-x-6">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-muted-foreground">AI Mentions:</span>
+                      <span className="font-medium text-foreground">{query.mentions}</span>
+                    </div>
                   </div>
                 </div>
               </div>
