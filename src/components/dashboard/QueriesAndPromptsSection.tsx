@@ -1241,9 +1241,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                      <TableHead className="w-12">
                        <button
                          onClick={toggleSelectAll}
-                         className="group relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background"
+                         className="group relative flex items-center justify-center w-5 h-5 rounded-full border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background"
                        >
-                         <div className={`absolute inset-0 rounded-md transition-all duration-200 ${
+                         <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
                            selectedPrompts.length === filteredPrompts.length && filteredPrompts.length > 0
                              ? 'bg-primary scale-100 opacity-100' 
                              : 'bg-transparent scale-0 opacity-0'
@@ -1274,9 +1274,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                         <TableCell onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => toggleSelectPrompt(prompt.id)}
-                            className="group relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background"
+                            className="group relative flex items-center justify-center w-5 h-5 rounded-full border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background"
                           >
-                            <div className={`absolute inset-0 rounded-md transition-all duration-200 ${
+                            <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
                               selectedPrompts.includes(prompt.id)
                                 ? 'bg-primary scale-100 opacity-100' 
                                 : 'bg-transparent scale-0 opacity-0'
