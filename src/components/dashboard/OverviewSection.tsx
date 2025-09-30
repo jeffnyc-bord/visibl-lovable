@@ -1214,25 +1214,26 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             
             {/* Action Buttons */}
             {coreQueries.length > 4 && (
-              <div className="flex items-center justify-between pt-4 border-t">
-                {!listMoreClicked && coreQueries.length > 4 && (
+              <div className="flex items-center justify-center gap-3 pt-4 border-t">
+                {!listMoreClicked && (
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setListMoreClicked(true)}
+                    className="min-w-[120px]"
                   >
                     View more
                   </Button>
                 )}
-                {listMoreClicked && <div />}
                 
                 <Button
-                  variant="outline"
+                  variant="default"
                   size="sm"
                   onClick={() => {
                     // Navigate to prompt analysis page
                     window.location.href = '/prompts';
                   }}
+                  className="min-w-[120px]"
                 >
                   View all
                 </Button>
