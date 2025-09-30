@@ -1206,7 +1206,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   style={{ 
                     background: 'linear-gradient(90deg, #ff0000, #ff7700, #ffdd00, #00ff00, #0088ff, #8800ff, #ff0099, #ff0000)',
                     backgroundSize: '400% 100%',
-                    animation: 'rainbow-border 2s linear infinite'
+                    animation: 'rainbow-border 6s linear infinite'
                   }}
                 />
                 
