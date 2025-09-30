@@ -1198,7 +1198,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             {(listMoreClicked ? coreQueries.slice(0, 8) : coreQueries.slice(0, 4)).map((query, index) => (
               <div 
                 key={index} 
-                className="group/card relative p-[3px] rounded-lg overflow-hidden cursor-pointer"
+                className="group/card relative p-[0.5px] rounded-lg overflow-hidden cursor-pointer"
                 onClick={() => onQueryClick?.(query.query)}
               >
                 {/* Animated rainbow border */}
