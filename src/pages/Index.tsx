@@ -449,26 +449,27 @@ const Index = () => {
               </div>
             ))}
           </div>
+        </nav>
 
-          <div className="mt-6">
-            <div className={`${sidebarCollapsed ? 'hidden' : 'block'} text-xs font-medium text-gray-500 uppercase tracking-wider mb-2`}>
-              Settings
-            </div>
-            <div className="space-y-1">
-              <div 
-                className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] transform-gpu text-sm ${
-                  activeView === "settings" 
-                    ? 'bg-gray-100 text-gray-900 shadow-sm scale-[1.02]' 
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-                onClick={() => setActiveView("settings")}
-              >
-                <Settings className="w-4 h-4" />
-                {!sidebarCollapsed && <span className="font-medium">Settings</span>}
-              </div>
+        {/* Settings - Pinned to Bottom */}
+        <div className="p-3 border-t border-gray-200">
+          <div className={`${sidebarCollapsed ? 'hidden' : 'block'} text-xs font-medium text-gray-500 uppercase tracking-wider mb-2`}>
+            Settings
+          </div>
+          <div className="space-y-1">
+            <div 
+              className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] transform-gpu text-sm ${
+                activeView === "settings" 
+                  ? 'bg-gray-100 text-gray-900 shadow-sm scale-[1.02]' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`}
+              onClick={() => setActiveView("settings")}
+            >
+              <Settings className="w-4 h-4" />
+              {!sidebarCollapsed && <span className="font-medium">Settings</span>}
             </div>
           </div>
-        </nav>
+        </div>
       </div>
 
       {/* Main Content */}
