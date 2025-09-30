@@ -494,7 +494,7 @@ export const RecommendationsSection = () => {
       <div className="space-y-2">
         {filteredRecommendations.map((rec) => (
           <Collapsible key={rec.id} open={expandedCards.includes(rec.id)} onOpenChange={() => toggleCardExpansion(rec.id)}>
-            <Card className={`transition-all duration-200 hover:shadow-sm ${completedActions.includes(rec.id) ? 'bg-success/5 border-success/20' : ''}`}>
+            <Card className={`group transition-all duration-300 hover:shadow-md ${completedActions.includes(rec.id) ? 'bg-success/5 border-success/20' : ''}`}>
               <CollapsibleTrigger className="w-full">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between w-full">
@@ -529,6 +529,29 @@ export const RecommendationsSection = () => {
                   </div>
                 </CardHeader>
               </CollapsibleTrigger>
+
+              {/* Hover Preview */}
+              {!expandedCards.includes(rec.id) && (
+                <div className="overflow-hidden max-h-0 opacity-0 group-hover:max-h-20 group-hover:opacity-100 transition-all duration-500 ease-in-out">
+                  <CardContent className="pt-0 pb-3">
+                    <div className="ml-6 space-y-2">
+                      <div className="flex items-center space-x-4 text-xs">
+                        <div className="flex items-center space-x-1">
+                          {getCategoryIcon(rec.category)}
+                          <span className="text-muted-foreground">{rec.category}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          {getImpactStars(rec.impact)}
+                          <span className="text-muted-foreground ml-1">{rec.impact} Impact</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {rec.details[0]}
+                      </p>
+                    </div>
+                  </CardContent>
+                </div>
+              )}
 
               <CollapsibleContent>
                 <CardContent className="pt-0 pb-3">
