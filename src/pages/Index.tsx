@@ -698,6 +698,11 @@ const Index = () => {
                                 setAutoOpenPrompt(query);
                                 setActiveTab("queries");
                               }}
+                              onNavigateToPrompts={() => {
+                                // Store current scroll position
+                                setPreviousScrollPosition(window.scrollY);
+                                setActiveTab("queries");
+                              }}
                             />
                           )}
                         </TabsContent>

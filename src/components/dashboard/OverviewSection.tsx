@@ -60,10 +60,11 @@ interface OverviewSectionProps {
   selectedModels: string[];
   selectedDateRange: string;
   onQueryClick?: (query: string) => void;
+  onNavigateToPrompts?: () => void;
   userRole?: "business_user" | "agency_admin";
 }
 
-export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, userRole = "business_user" }: OverviewSectionProps) => {
+export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user" }: OverviewSectionProps) => {
   const { toast } = useToast();
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
@@ -1229,10 +1230,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 <Button
                   variant="default"
                   size="sm"
-                  onClick={() => {
-                    // Navigate to prompt analysis page
-                    window.location.href = '/prompts';
-                  }}
+                  onClick={() => onNavigateToPrompts?.()}
                   className="min-w-[120px]"
                 >
                   View all
