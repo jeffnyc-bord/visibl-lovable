@@ -1198,18 +1198,17 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             {(listMoreClicked ? coreQueries.slice(0, 8) : coreQueries.slice(0, 4)).map((query, index) => (
               <div 
                 key={index} 
-                className="group/card relative p-[0.5px] rounded-lg overflow-hidden cursor-pointer"
+                className="group/card relative rounded-lg cursor-pointer"
                 onClick={() => onQueryClick?.(query.query)}
               >
-                {/* Animated shimmer - only visible on hover */}
-                <div className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity overflow-hidden">
+                {/* Tracing shimmer effect - only visible on hover */}
+                <div className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity rounded-lg overflow-hidden pointer-events-none">
                   <div 
-                    className="absolute inset-0"
+                    className="absolute w-20 h-1 rounded-full"
                     style={{ 
-                      background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.8) 50%, transparent 100%)',
-                      width: '30%',
-                      animation: 'shimmer 3s ease-in-out infinite',
-                      filter: 'blur(10px)'
+                      background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.8), transparent)',
+                      boxShadow: '0 0 20px rgba(59, 130, 246, 0.6)',
+                      animation: 'trace-border 3s linear infinite'
                     }}
                   />
                 </div>
