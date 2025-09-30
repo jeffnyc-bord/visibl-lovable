@@ -1198,20 +1198,21 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             {(listMoreClicked ? coreQueries.slice(0, 8) : coreQueries.slice(0, 4)).map((query, index) => (
               <div 
                 key={index} 
-                className="group/card relative p-[3px] rounded-lg overflow-hidden cursor-pointer"
+                className="group/card relative p-1 rounded-lg overflow-hidden cursor-pointer"
                 onClick={() => onQueryClick?.(query.query)}
               >
-                {/* Animated rainbow border */}
-                <div className="absolute inset-0 opacity-90 group-hover/card:opacity-100 transition-opacity" 
+                {/* Animated rainbow border with glow */}
+                <div className="absolute inset-0 opacity-100 blur-[1px]" 
                   style={{ 
                     background: 'linear-gradient(90deg, #ff0000, #ff7700, #ffdd00, #00ff00, #0088ff, #8800ff, #ff0099, #ff0000)',
                     backgroundSize: '400% 100%',
-                    animation: 'rainbow-border 2s linear infinite'
+                    animation: 'rainbow-border 2s linear infinite',
+                    boxShadow: '0 0 20px rgba(255, 0, 255, 0.5)'
                   }}
                 />
                 
                 {/* Card content */}
-                <div className="relative flex items-center justify-between p-4 bg-background rounded-lg group-hover/card:bg-primary/5 transition-all">
+                <div className="relative flex items-center justify-between p-4 bg-background rounded-[6px] group-hover/card:bg-primary/5 transition-all">
                   <div className="flex-1">
                     <p className="font-medium text-foreground">{query.query}</p>
                   </div>
