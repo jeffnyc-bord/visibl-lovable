@@ -841,7 +841,7 @@ const Index = () => {
               <div className="flex justify-center items-center mb-6">
                 <div className="flex items-center gap-6">
                   {/* Board Labs Logo */}
-                  <div className="w-16 h-16 rounded-full border-2 border-primary/20 bg-white shadow-lg flex items-center justify-center p-2">
+                  <div className="w-16 h-16 rounded-full border border-gray-200/60 bg-white shadow-sm flex items-center justify-center p-2">
                     <img 
                       src={boardLabsIcon} 
                       alt="Board Labs" 
@@ -850,15 +850,13 @@ const Index = () => {
                   </div>
                   
                   {/* Connecting Line */}
-                  <div className="h-0.5 w-16 bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40 relative">
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary/60 rotate-45 translate-x-1" />
+                  <div className="h-px w-16 bg-gradient-to-r from-gray-300/40 via-gray-400/60 to-gray-300/40 relative">
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-gray-400/60 rotate-45 translate-x-1" />
                   </div>
                   
                   {/* Plus Icon */}
-                  <div className="w-16 h-16 rounded-full border-2 border-primary/30 bg-white shadow-lg flex items-center justify-center">
-                    <div className="p-2 rounded-full bg-gradient-to-br from-primary/10 to-primary/20">
-                      <Plus className="h-8 w-8 text-primary" />
-                    </div>
+                  <div className="w-16 h-16 rounded-full border border-gray-200/60 bg-white shadow-sm flex items-center justify-center">
+                    <Plus className="h-7 w-7 text-gray-700 stroke-[1.5]" />
                   </div>
                 </div>
               </div>
