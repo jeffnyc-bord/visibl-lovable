@@ -424,10 +424,6 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Coverage</span>
-                  <span className="text-base font-semibold text-foreground">{myBrand.platformCoverage}%</span>
-                </div>
               </div>
 
               <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
