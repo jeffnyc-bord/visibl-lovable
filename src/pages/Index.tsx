@@ -19,6 +19,7 @@ import { TrendsSection } from "@/components/dashboard/TrendsSection";
 import { RecommendationsSection } from "@/components/dashboard/RecommendationsSection";
 import { TechnicalCrawlabilitySection } from "@/components/dashboard/TechnicalCrawlabilitySection";
 import boardLabsLogo from "@/assets/board-labs-logo.jpg";
+import boardLabsIcon from "@/assets/board-labs-icon-hex.png";
 import { QueriesAndPromptsSection } from "@/components/dashboard/QueriesAndPromptsSection";
 import { ExternalAIVisibilitySection } from "@/components/dashboard/ExternalAIVisibilitySection";
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
@@ -820,38 +821,128 @@ const Index = () => {
           setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "", reportFrequency: "" });
         }
       }}>
-        <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden">
-          {/* Header with gradient background */}
-          <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 p-8 border-b overflow-hidden">
-            <div className="absolute inset-0 bg-grid-white/10 [mask-image:radial-gradient(white,transparent_85%)]" />
+        <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden">
+          {/* Header with honeycomb design */}
+          <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50/50 px-8 py-12 border-b overflow-hidden">
+            {/* Decorative background pattern */}
+            <div className="absolute inset-0 opacity-[0.03]">
+              <div className="absolute inset-0" style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill='%23000000' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+                backgroundSize: '60px 60px'
+              }} />
+            </div>
+            
             <div className="relative z-10">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm mb-4 shadow-lg">
-                <Building className="h-6 w-6 text-white" />
+              {/* Honeycomb pattern with logos */}
+              <div className="flex justify-center items-center mb-6">
+                <div className="relative" style={{ width: '280px', height: '200px' }}>
+                  {/* Define hexagon positions in a honeycomb pattern */}
+                  {/* Top row - 3 hexagons */}
+                  <div className="absolute" style={{ left: '35px', top: '0px' }}>
+                    <div className="hexagon-container w-16 h-16 opacity-40">
+                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
+                    </div>
+                  </div>
+                  <div className="absolute" style={{ left: '110px', top: '0px' }}>
+                    <div className="hexagon-container w-20 h-20">
+                      <div className="hexagon bg-white shadow-lg border border-gray-200/50 flex items-center justify-center">
+                        <div className="p-3 rounded-full bg-gradient-to-br from-primary/5 to-primary/10">
+                          <Plus className="h-5 w-5 text-primary" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="absolute" style={{ left: '185px', top: '0px' }}>
+                    <div className="hexagon-container w-16 h-16 opacity-40">
+                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
+                    </div>
+                  </div>
+                  
+                  {/* Middle row - 4 hexagons with center being Board Labs */}
+                  <div className="absolute" style={{ left: '0px', top: '70px' }}>
+                    <div className="hexagon-container w-18 h-18 opacity-30">
+                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
+                    </div>
+                  </div>
+                  <div className="absolute" style={{ left: '72px', top: '70px' }}>
+                    <div className="hexagon-container w-20 h-20">
+                      <div className="hexagon bg-white shadow-lg border border-gray-200/50 flex items-center justify-center">
+                        <div className="p-3 rounded-full bg-gradient-to-br from-primary/5 to-primary/10">
+                          <Building className="h-5 w-5 text-primary" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* CENTER - Board Labs Logo */}
+                  <div className="absolute" style={{ left: '148px', top: '70px' }}>
+                    <div className="hexagon-container w-24 h-24 animate-pulse-subtle">
+                      <div className="hexagon bg-gradient-to-br from-white to-gray-50 shadow-2xl border-2 border-primary/20 flex items-center justify-center">
+                        <img 
+                          src={boardLabsIcon} 
+                          alt="Board Labs" 
+                          className="w-12 h-12 object-contain filter drop-shadow-md"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="absolute" style={{ left: '224px', top: '70px' }}>
+                    <div className="hexagon-container w-18 h-18 opacity-30">
+                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
+                    </div>
+                  </div>
+                  
+                  {/* Bottom row - 2 hexagons */}
+                  <div className="absolute" style={{ left: '72px', top: '140px' }}>
+                    <div className="hexagon-container w-16 h-16 opacity-40">
+                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
+                    </div>
+                  </div>
+                  <div className="absolute" style={{ left: '148px', top: '140px' }}>
+                    <div className="hexagon-container w-16 h-16 opacity-40">
+                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <DialogHeader className="space-y-2">
-                <DialogTitle className="text-2xl font-bold text-white">
-                  Add New Brand to Track
+
+              {/* Title and description */}
+              <DialogHeader className="space-y-3 text-center">
+                <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700">
+                  Add New Brand to Your Platform
                 </DialogTitle>
-                <DialogDescription className="text-white/90 text-base">
-                  Step {addBrandStep} of 3: {
-                    addBrandStep === 1 ? "Basic Brand Information" :
-                    addBrandStep === 2 ? "Monitoring Preferences" :
-                    "Brand Logo (Optional)"
-                  }
+                <DialogDescription className="text-base text-muted-foreground max-w-md mx-auto">
+                  Join brands already being monitored on visibl. Track AI visibility across all major platforms.
                 </DialogDescription>
               </DialogHeader>
               
-              {/* Progress indicator */}
-              <div className="mt-6 flex items-center gap-2">
-                {[1, 2, 3].map((step) => (
-                  <div
-                    key={step}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      step <= addBrandStep 
-                        ? 'bg-white flex-1' 
-                        : 'bg-white/30 flex-1'
-                    }`}
-                  />
+              {/* Step indicator */}
+              <div className="mt-6 flex items-center justify-center gap-6">
+                {[
+                  { num: 1, label: "Info" },
+                  { num: 2, label: "Settings" },
+                  { num: 3, label: "Logo" }
+                ].map((step, idx) => (
+                  <div key={step.num} className="flex items-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
+                        step.num <= addBrandStep 
+                          ? 'bg-primary text-white shadow-lg shadow-primary/30' 
+                          : 'bg-gray-200 text-gray-500'
+                      }`}>
+                        {step.num}
+                      </div>
+                      <span className={`text-xs font-medium transition-colors ${
+                        step.num <= addBrandStep ? 'text-primary' : 'text-gray-400'
+                      }`}>
+                        {step.label}
+                      </span>
+                    </div>
+                    {idx < 2 && (
+                      <div className={`w-12 h-0.5 mx-2 mb-6 transition-colors ${
+                        step.num < addBrandStep ? 'bg-primary' : 'bg-gray-200'
+                      }`} />
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
