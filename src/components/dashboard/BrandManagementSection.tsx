@@ -350,161 +350,203 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
         </CardContent>
       </Card>
 
-      {/* Competitor Watchlist */}
-      <Card className="shadow-sm border-border">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-base text-foreground">Watchlist</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Monitor your competitors' AI visibility performance ({competitorCount}/10 slots used)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-             {competitors.map((competitor) => (
-               <div key={competitor.id} className={`flex items-center justify-between p-4 rounded-lg border border-border transition-colors ${competitor.isLoading ? 'bg-blue-50/50' : 'hover:bg-accent/50'}`}>
-                 <div className="flex items-center space-x-4">
-                   <div className={`w-10 h-10 bg-gradient-to-br from-secondary/20 to-secondary/40 rounded-lg flex items-center justify-center border ${competitor.isLoading ? 'animate-pulse' : ''}`}>
-                     {competitor.isLoading ? (
-                       <Globe className="w-5 h-5 text-blue-600 animate-spin" />
-                     ) : (
-                       <Target className="w-5 h-5 text-secondary-foreground" />
-                     )}
-                   </div>
-                   
-                   <div>
-                     <div className="flex items-center space-x-2 mb-1">
-                       <h3 className="font-medium text-foreground text-sm">{competitor.name}</h3>
-                       {!competitor.isLoading && <ExternalLink className="w-3 h-3 text-muted-foreground" />}
-                       {competitor.isLoading && (
-                         <div className="flex items-center space-x-1">
-                           <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"></div>
-                           <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                           <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                         </div>
-                       )}
-                     </div>
-                     <p className="text-xs text-muted-foreground">{competitor.url}</p>
-                     {competitor.isLoading && (
-                       <div className="mt-2">
-                         <div className="w-24 bg-blue-200 rounded-full h-1">
-                           <div 
-                             className="bg-blue-500 h-1 rounded-full transition-all duration-500" 
-                             style={{ width: `${competitor.loadingProgress || 0}%` }}
-                           />
-                         </div>
-                         <p className="text-xs text-blue-600 mt-1">
-                           {(competitor.loadingProgress || 0) < 25 ? "Analyzing website..." :
-                            (competitor.loadingProgress || 0) < 50 ? "Discovering content..." :
-                            (competitor.loadingProgress || 0) < 75 ? "Setting up monitoring..." :
-                            "Almost ready..."}
-                         </p>
-                       </div>
-                     )}
-                   </div>
-                 </div>
-                 
-                 <div className="flex items-center space-x-6">
-                   <div className="text-center">
-                     {competitor.isLoading ? (
-                       <div className="animate-pulse">
-                         <div className="w-8 h-6 bg-gray-200 rounded mb-1"></div>
-                         <p className="text-xs text-muted-foreground">Loading...</p>
-                       </div>
-                     ) : (
-                       <>
-                         <p className="text-lg font-bold text-foreground">{competitor.visibilityScore}%</p>
-                         <p className="text-xs text-muted-foreground">AI Visibility</p>
-                       </>
-                     )}
-                   </div>
-                   
-                   <div className="text-center">
-                     {competitor.isLoading ? (
-                       <div className="animate-pulse">
-                         <div className="w-10 h-6 bg-gray-200 rounded mb-1"></div>
-                         <p className="text-xs text-muted-foreground">Loading...</p>
-                       </div>
-                     ) : (
-                       <>
-                         <div className="flex items-center justify-center">
-                           <span className="text-lg font-bold text-foreground">{competitor.totalMentions}</span>
-                           <span className={`text-xs ml-1 ${competitor.trend.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                             {competitor.trend}
-                           </span>
-                         </div>
-                         <p className="text-xs text-muted-foreground">Mentions</p>
-                       </>
-                     )}
-                   </div>
-                   
-                    <div className="text-center">
-                      <Badge 
-                        variant="secondary" 
-                        className={`text-xs ${getStatusColor(competitor.status)}`}
-                      >
-                        {competitor.status}
-                      </Badge>
-                      <p className="text-xs text-muted-foreground mt-1">{competitor.reportFrequency}</p>
-                    </div>
+      {/* Tracked Brands - Card Layout */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-lg font-semibold text-foreground">Your Watchlist</h3>
+          <p className="text-sm text-muted-foreground">{currentBrandCount} brand{currentBrandCount !== 1 ? 's' : ''} tracked</p>
+        </div>
+
+        {/* Primary Brand (You) */}
+        <Card className="shadow-sm border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent relative overflow-hidden">
+          <div className="absolute top-3 right-3">
+            <Badge className="bg-primary text-white shadow-lg">
+              You
+            </Badge>
+          </div>
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-4 flex-1">
+                <div className="w-16 h-16 bg-white border-2 border-primary/20 rounded-lg flex items-center justify-center shadow-sm">
+                  {myBrand.name === "Nike" ? (
+                    <img src="/lovable-uploads/d296743b-ff18-4da8-8546-d789de582706.png" alt={myBrand.name} className="w-10 h-10 object-contain" />
+                  ) : myBrand.name === "Adidas" ? (
+                    <img src="/lovable-uploads/443dfdf9-57da-486d-9339-83c684d1c404.png" alt={myBrand.name} className="w-10 h-10 object-contain" />
+                  ) : myBrand.name === "Apple" ? (
+                    <img src="/lovable-uploads/f7211f59-be5b-4e58-9bfa-3b6653217350.png" alt={myBrand.name} className="w-10 h-10 object-contain" />
+                  ) : (
+                    <Building className="w-8 h-8 text-primary" />
+                  )}
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg text-foreground mb-1">{myBrand.name}</h3>
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Globe className="w-3 h-3 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">{myBrand.url}</p>
+                  </div>
                   
-                    <div className="flex items-center space-x-1">
-                      {competitor.isLoading ? (
-                        <div className="text-center px-2">
-                          <p className="text-xs text-blue-600 font-medium">Setting up...</p>
-                        </div>
-                      ) : (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem onClick={() => handleToggleMonitoring(competitor.id)}>
-                              {competitor.status === "Active" ? (
-                                <>
-                                  <Pause className="w-4 h-4 mr-2" />
-                                  Pause Monitoring
-                                </>
-                              ) : (
-                                <>
-                                  <Play className="w-4 h-4 mr-2" />
-                                  Activate Monitoring
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                         <AlertDialog>
-                           <AlertDialogTrigger asChild>
-                             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                               <Trash2 className="w-4 h-4 mr-2" />
-                               Remove from Watchlist
-                             </DropdownMenuItem>
-                           </AlertDialogTrigger>
-                           <AlertDialogContent>
-                             <AlertDialogHeader>
-                               <AlertDialogTitle>Remove Competitor</AlertDialogTitle>
-                               <AlertDialogDescription>
-                                 Are you sure you want to remove {competitor.name} from your watchlist? This action cannot be undone.
-                               </AlertDialogDescription>
-                             </AlertDialogHeader>
-                             <AlertDialogFooter>
-                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                               <AlertDialogAction onClick={() => handleRemoveCompetitor(competitor.id)}>
-                                 Remove
-                               </AlertDialogAction>
-                             </AlertDialogFooter>
-                           </AlertDialogContent>
-                         </AlertDialog>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                      )}
+                  <div className="grid grid-cols-3 gap-4 mt-4">
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{myBrand.visibilityScore}%</p>
+                      <p className="text-xs text-muted-foreground mt-1">AI Visibility Score</p>
                     </div>
+                    <div>
+                      <div className="flex items-center">
+                        <span className="text-2xl font-bold text-foreground">{myBrand.totalMentions}</span>
+                        <span className={`text-sm ml-2 ${myBrand.trend.startsWith('+') ? 'text-green-600' : myBrand.trend.startsWith('-') ? 'text-red-600' : 'text-gray-600'}`}>
+                          {myBrand.trend}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">Total Mentions</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{myBrand.platformCoverage}%</p>
+                      <p className="text-xs text-muted-foreground mt-1">Platform Coverage</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              
+              <div className="flex flex-col items-end space-y-2">
+                <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
+                  {myBrand.status}
+                </Badge>
+                <p className="text-xs text-muted-foreground">{myBrand.reportFrequency}</p>
+                <p className="text-xs text-muted-foreground">Updated {myBrand.lastReport}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Competitor Brands */}
+        {competitors.map((competitor) => (
+          <Card key={competitor.id} className={`shadow-sm border-border transition-all ${competitor.isLoading ? 'bg-blue-50/50 border-blue-200' : 'hover:shadow-md'}`}>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start space-x-4 flex-1">
+                  <div className={`w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/40 rounded-lg flex items-center justify-center border ${competitor.isLoading ? 'animate-pulse' : ''}`}>
+                    {competitor.isLoading ? (
+                      <Globe className="w-8 h-8 text-blue-600 animate-spin" />
+                    ) : (
+                      <Target className="w-8 h-8 text-secondary-foreground" />
+                    )}
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h3 className="font-semibold text-lg text-foreground">{competitor.name}</h3>
+                      {!competitor.isLoading && <ExternalLink className="w-4 h-4 text-muted-foreground" />}
+                      {competitor.isLoading && (
+                        <div className="flex items-center space-x-1">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <Globe className="w-3 h-3 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">{competitor.url}</p>
+                    </div>
+                    
+                    {competitor.isLoading ? (
+                      <div className="mt-3">
+                        <div className="w-full bg-blue-200 rounded-full h-2 mb-2">
+                          <div 
+                            className="bg-blue-500 h-2 rounded-full transition-all duration-500" 
+                            style={{ width: `${competitor.loadingProgress || 0}%` }}
+                          />
+                        </div>
+                        <p className="text-sm text-blue-600 font-medium">
+                          {(competitor.loadingProgress || 0) < 25 ? "Analyzing website..." :
+                           (competitor.loadingProgress || 0) < 50 ? "Discovering content..." :
+                           (competitor.loadingProgress || 0) < 75 ? "Setting up monitoring..." :
+                           "Almost ready..."}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-3 gap-4 mt-4">
+                        <div>
+                          <p className="text-2xl font-bold text-foreground">{competitor.visibilityScore}%</p>
+                          <p className="text-xs text-muted-foreground mt-1">AI Visibility Score</p>
+                        </div>
+                        <div>
+                          <div className="flex items-center">
+                            <span className="text-2xl font-bold text-foreground">{competitor.totalMentions}</span>
+                            <span className={`text-sm ml-2 ${competitor.trend.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                              {competitor.trend}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">Total Mentions</p>
+                        </div>
+                        <div>
+                          <Badge 
+                            variant="secondary" 
+                            className={`text-xs ${getStatusColor(competitor.status)}`}
+                          >
+                            {competitor.status}
+                          </Badge>
+                          <p className="text-xs text-muted-foreground mt-1">{competitor.reportFrequency}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  {!competitor.isLoading && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem onClick={() => handleToggleMonitoring(competitor.id)}>
+                          {competitor.status === "Active" ? (
+                            <>
+                              <Pause className="w-4 h-4 mr-2" />
+                              Pause Monitoring
+                            </>
+                          ) : (
+                            <>
+                              <Play className="w-4 h-4 mr-2" />
+                              Activate Monitoring
+                            </>
+                          )}
+                        </DropdownMenuItem>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Remove from Watchlist
+                            </DropdownMenuItem>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Remove Competitor</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to remove {competitor.name} from your watchlist? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleRemoveCompetitor(competitor.id)}>
+                                Remove
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
       
       {/* Add New Brand Dialog */}
       <Dialog open={showAddBrandDialog} onOpenChange={(open) => {
