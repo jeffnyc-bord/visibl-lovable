@@ -69,6 +69,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
   const [showManualAddDialog, setShowManualAddDialog] = useState(false);
+  const [addCompetitorStep, setAddCompetitorStep] = useState(1);
   const [industryRankingBrands, setIndustryRankingBrands] = useState<any[]>([]);
   const [loadingBrands, setLoadingBrands] = useState<string[]>([]);
   const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "", logoFile: null as File | null, logoPreview: "" });
@@ -600,306 +601,380 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </CardContent>
         </Card>
 
-        {/* Manual Add Brand Dialog */}
-        <Dialog open={showManualAddDialog} onOpenChange={setShowManualAddDialog}>
-          <DialogContent className="sm:max-w-[550px] overflow-hidden">
-            {/* Gradient Header Background */}
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent" />
+        {/* Manual Add Brand Dialog - Funnel Approach */}
+        <Dialog open={showManualAddDialog} onOpenChange={(open) => {
+          setShowManualAddDialog(open);
+          if (!open) {
+            setAddCompetitorStep(1);
+            setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
+          }
+        }}>
+          <DialogContent className="sm:max-w-[600px] overflow-hidden p-0">
+            {/* Animated Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
             
-            <DialogHeader className="relative space-y-3 pb-2">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
-                  <Plus className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <DialogTitle className="text-2xl font-bold">Add Competitor</DialogTitle>
-                  <DialogDescription className="text-base mt-1">
-                    Track a new competitor in your industry ranking
-                  </DialogDescription>
-                </div>
+            {/* Progress Steps */}
+            <div className="relative px-8 pt-8 pb-6 border-b bg-background/80 backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-6">
+                {[1, 2, 3].map((step) => (
+                  <div key={step} className="flex items-center flex-1">
+                    <div className="flex flex-col items-center">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
+                        addCompetitorStep === step 
+                          ? 'bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg scale-110' 
+                          : addCompetitorStep > step
+                          ? 'bg-green-500 text-white'
+                          : 'bg-muted text-muted-foreground'
+                      }`}>
+                        {addCompetitorStep > step ? <CheckCircle className="w-5 h-5" /> : step}
+                      </div>
+                      <span className={`text-xs mt-2 font-medium transition-colors ${
+                        addCompetitorStep >= step ? 'text-foreground' : 'text-muted-foreground'
+                      }`}>
+                        {step === 1 ? 'Brand Info' : step === 2 ? 'Monitoring' : 'Logo'}
+                      </span>
+                    </div>
+                    {step < 3 && (
+                      <div className={`flex-1 h-1 mx-2 rounded-full transition-all duration-300 ${
+                        addCompetitorStep > step ? 'bg-green-500' : 'bg-muted'
+                      }`} />
+                    )}
+                  </div>
+                ))}
               </div>
-            </DialogHeader>
-            
-            {/* Brand Limit Info */}
-            <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border border-blue-200/50 dark:border-blue-800/50 rounded-xl p-4 mb-2">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-primary" />
-                  Tracked Brands
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  {currentBrandCount} / {maxBrands} (Standard Tier)
-                </span>
+              
+              <div className="text-center">
+                <DialogTitle className="text-2xl font-bold mb-2">
+                  {addCompetitorStep === 1 && 'Basic Information'}
+                  {addCompetitorStep === 2 && 'Monitoring Preferences'}
+                  {addCompetitorStep === 3 && 'Brand Identity'}
+                </DialogTitle>
+                <DialogDescription className="text-sm">
+                  {addCompetitorStep === 1 && 'Start by entering the competitor\'s basic details'}
+                  {addCompetitorStep === 2 && 'Choose how often you want to track this competitor'}
+                  {addCompetitorStep === 3 && 'Add a logo to easily identify this brand'}
+                </DialogDescription>
               </div>
-              <div className="flex items-center gap-3">
-                <Progress value={(currentBrandCount / maxBrands) * 100} className="flex-1 h-2" />
-                <span className="text-sm font-bold text-foreground">{currentBrandCount}/{maxBrands}</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                {maxBrands - currentBrandCount} {maxBrands - currentBrandCount === 1 ? 'slot' : 'slots'} remaining on your {currentTier} plan
-              </p>
             </div>
             
-            {currentBrandCount >= maxBrands ? (
-              // Show upgrade message when limit is reached
-              <div className="relative text-center py-12 space-y-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-950/30 dark:to-red-950/30 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
-                  <Target className="w-10 h-10 text-orange-600 dark:text-orange-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-foreground mb-2">Brand Limit Reached</h3>
-                  <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
-                    You've reached the maximum number of tracked brands for your <span className="font-semibold text-foreground">{currentTier}</span> plan. Upgrade to track more competitors.
-                  </p>
-                </div>
-                <div className="flex gap-3 justify-center pt-4">
-                  <Button variant="outline" size="lg" onClick={() => setShowManualAddDialog(false)}>
-                    Close
-                  </Button>
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-primary/80">
-                    Upgrade Plan
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              // Show form when under limit
-              <>
-                <div className="relative grid gap-5 py-2">
-                  <div className="grid gap-2.5 group">
-                    <Label htmlFor="brand-name" className="text-sm font-semibold flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      Brand Name <span className="text-destructive">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="brand-name"
-                        value={manualBrandForm.name}
-                        onChange={(e) => setManualBrandForm(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="e.g., Competitor Brand"
-                        className="pl-10 h-11 border-2 focus:border-primary transition-all"
-                      />
-                    </div>
+            {/* Content Area */}
+            <div className="relative px-8 py-8 min-h-[400px]">{currentBrandCount >= maxBrands ? (
+                // Show upgrade message when limit is reached
+                <div className="relative text-center py-16 space-y-6 animate-fade-in">
+                  <div className="w-24 h-24 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-950/30 dark:to-red-950/30 rounded-3xl flex items-center justify-center mx-auto shadow-xl">
+                    <Target className="w-12 h-12 text-orange-600 dark:text-orange-400" />
                   </div>
-                  
-                  <div className="grid gap-2.5 group">
-                    <Label htmlFor="website" className="text-sm font-semibold flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      Website URL <span className="text-destructive">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="website"
-                        value={manualBrandForm.website}
-                        onChange={(e) => setManualBrandForm(prev => ({ ...prev, website: e.target.value }))}
-                        placeholder="https://competitor.com"
-                        className="pl-10 h-11 border-2 focus:border-primary transition-all"
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground flex items-center gap-1.5 pl-1">
-                      <div className="w-1 h-1 rounded-full bg-muted-foreground/50" />
-                      We'll use this to analyze their AI visibility and gather insights
+                  <div>
+                    <h3 className="text-2xl font-bold text-foreground mb-3">Brand Limit Reached</h3>
+                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed mb-4">
+                      You've reached the maximum of <span className="font-bold text-foreground">{maxBrands} brands</span> on your <span className="font-semibold text-foreground capitalize">{currentTier}</span> plan.
                     </p>
-                  </div>
-                  <div className="grid gap-2.5 group">
-                    <Label htmlFor="report-frequency" className="text-sm font-semibold flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      Report Frequency <span className="text-destructive">*</span>
-                    </Label>
-                    <Select
-                      value={manualBrandForm.reportFrequency}
-                      onValueChange={(value) => setManualBrandForm(prev => ({ ...prev, reportFrequency: value }))}
-                    >
-                      <SelectTrigger className="h-11 border-2 focus:border-primary transition-all">
-                        <SelectValue placeholder="Select monitoring frequency" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-background border-2 shadow-xl z-50">
-                        <SelectItem value="daily" disabled className="text-muted-foreground">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            Once daily (Enterprise only)
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="weekly">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            Once a week
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="twiceweekly">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            Twice a week
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="biweekly">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            Biweekly
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="monthly">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            Monthly
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  {/* Logo Upload Field */}
-                  <div className="grid gap-2.5">
-                    <Label htmlFor="competitor-logo" className="text-sm font-semibold flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
-                      Brand Logo
-                      <span className="text-xs font-normal text-muted-foreground">(Optional)</span>
-                    </Label>
-                    
-                    <div className="space-y-3">
-                      {!manualBrandForm.logoPreview ? (
-                        <div className="relative group/upload">
-                          <Input
-                            id="competitor-logo"
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                const reader = new FileReader();
-                                reader.onload = (event) => {
-                                  setManualBrandForm(prev => ({
-                                    ...prev,
-                                    logoFile: file,
-                                    logoPreview: event.target?.result as string
-                                  }));
-                                };
-                                reader.readAsDataURL(file);
-                              }
-                            }}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          />
-                          <div className="relative border-2 border-dashed border-muted-foreground/30 rounded-xl p-8 text-center transition-all duration-300 group-hover/upload:border-primary/60 group-hover/upload:bg-primary/5 group-hover/upload:shadow-lg group-hover/upload:shadow-primary/10">
-                            {/* Animated gradient border on hover */}
-                            <div className="absolute inset-0 rounded-xl opacity-0 group-hover/upload:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary/10 via-transparent to-primary/10 pointer-events-none" />
-                            
-                            <div className="relative flex flex-col items-center gap-3">
-                              <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl group-hover/upload:scale-110 transition-transform duration-300">
-                                <Upload className="h-6 w-6 text-primary" />
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold text-foreground mb-1">Drop logo here or click to browse</p>
-                                <p className="text-xs text-muted-foreground">PNG, JPG, or SVG up to 5MB</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="border-2 border-primary/20 rounded-xl p-4 bg-gradient-to-br from-primary/5 to-transparent animate-scale-in">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 rounded-xl border-2 border-primary/20 bg-background p-1.5 flex items-center justify-center overflow-hidden shadow-sm">
-                                <img 
-                                  src={manualBrandForm.logoPreview} 
-                                  alt="Logo preview" 
-                                  className="w-full h-full object-contain"
-                                />
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold text-foreground flex items-center gap-2">
-                                  Logo uploaded
-                                  <CheckCircle className="w-4 h-4 text-green-600" />
-                                </p>
-                                <p className="text-xs text-muted-foreground">Ready to use</p>
-                              </div>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setManualBrandForm(prev => ({ ...prev, logoFile: null, logoPreview: "" }))}
-                              className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      )}
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted rounded-full text-sm">
+                      <BarChart3 className="w-4 h-4 text-primary" />
+                      <span className="font-semibold">{currentBrandCount}/{maxBrands}</span>
+                      <span className="text-muted-foreground">brands tracked</span>
                     </div>
                   </div>
+                  <div className="flex gap-3 justify-center pt-6">
+                    <Button variant="outline" size="lg" onClick={() => setShowManualAddDialog(false)}>
+                      Close
+                    </Button>
+                    <Button size="lg" className="bg-gradient-to-r from-primary to-primary/80 hover:shadow-lg">
+                      <Star className="w-4 h-4 mr-2" />
+                      Upgrade Plan
+                    </Button>
+                  </div>
                 </div>
-                
-                <DialogFooter className="relative gap-3 pt-6 border-t mt-2">
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    onClick={() => {
-                      setShowManualAddDialog(false);
-                      setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
-                    }}
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    size="lg"
-                    className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300"
-                    onClick={() => {
-                      if (!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency) return;
-                      
-                      const placeholderBrand = {
-                        rank: industryRankingBrands.length + 1,
-                        brand: manualBrandForm.name,
-                        score: 0,
-                        change: "0",
-                        insight: "Analyzing brand data...",
-                        link: `/competitors?brand=${manualBrandForm.name.toLowerCase()}`,
-                        isLoading: true
-                      };
-                      
-                      setIndustryRankingBrands(prev => [...prev, placeholderBrand]);
-                      setLoadingBrands(prev => [...prev, manualBrandForm.name]);
-                      
-                      toast({
-                        title: "Scanning Brand",
-                        description: `Collecting data for ${manualBrandForm.name}...`,
-                      });
-                      
-                      const brandName = manualBrandForm.name;
-                      setShowManualAddDialog(false);
-                      setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
-                      
-                      // Simulate data collection process
-                      setTimeout(() => {
-                        setIndustryRankingBrands(prev => 
-                          prev.map(b => 
-                            b.brand === brandName && b.isLoading
-                              ? {
-                                  ...b,
-                                  score: Math.floor(Math.random() * 30) + 70,
-                                  change: Math.random() > 0.5 ? "+1" : "0",
-                                  insight: "Growing presence in AI mentions",
-                                  isLoading: false
-                                }
-                              : b
-                          )
-                        );
+              ) : (
+                // Show funnel steps
+                <>
+                  {/* Step 1: Basic Information */}
+                  {addCompetitorStep === 1 && (
+                    <div className="space-y-8 animate-fade-in">
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <Label htmlFor="brand-name" className="text-base font-semibold flex items-center gap-2">
+                            Brand Name <span className="text-destructive">*</span>
+                          </Label>
+                          <div className="relative group">
+                            <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                            <Input
+                              id="brand-name"
+                              value={manualBrandForm.name}
+                              onChange={(e) => setManualBrandForm(prev => ({ ...prev, name: e.target.value }))}
+                              placeholder="e.g., Competitor Brand"
+                              className="pl-12 h-14 text-base border-2 focus:border-primary transition-all"
+                              autoFocus
+                            />
+                          </div>
+                        </div>
                         
-                        setLoadingBrands(prev => prev.filter(name => name !== brandName));
+                        <div className="space-y-3">
+                          <Label htmlFor="website" className="text-base font-semibold flex items-center gap-2">
+                            Website URL <span className="text-destructive">*</span>
+                          </Label>
+                          <div className="relative group">
+                            <Link className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                            <Input
+                              id="website"
+                              value={manualBrandForm.website}
+                              onChange={(e) => setManualBrandForm(prev => ({ ...prev, website: e.target.value }))}
+                              placeholder="https://competitor.com"
+                              className="pl-12 h-14 text-base border-2 focus:border-primary transition-all"
+                            />
+                          </div>
+                          <p className="text-sm text-muted-foreground flex items-center gap-2 pl-1">
+                            <Eye className="w-4 h-4" />
+                            We'll analyze their AI visibility and gather competitive insights
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Step 2: Monitoring Preferences */}
+                  {addCompetitorStep === 2 && (
+                    <div className="space-y-8 animate-fade-in">
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <Label htmlFor="report-frequency" className="text-base font-semibold">
+                            How often do you want to track this competitor? <span className="text-destructive">*</span>
+                          </Label>
+                          <Select
+                            value={manualBrandForm.reportFrequency}
+                            onValueChange={(value) => setManualBrandForm(prev => ({ ...prev, reportFrequency: value }))}
+                          >
+                            <SelectTrigger className="h-14 text-base border-2 focus:border-primary transition-all">
+                              <SelectValue placeholder="Select monitoring frequency" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background border-2 shadow-xl z-50">
+                              <SelectItem value="daily" disabled className="text-muted-foreground py-3">
+                                <div className="flex items-center gap-3">
+                                  <Calendar className="w-5 h-5" />
+                                  <div>
+                                    <div className="font-medium">Once daily</div>
+                                    <div className="text-xs">Enterprise only</div>
+                                  </div>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="weekly" className="py-3">
+                                <div className="flex items-center gap-3">
+                                  <Calendar className="w-5 h-5" />
+                                  <div>
+                                    <div className="font-medium">Once a week</div>
+                                    <div className="text-xs text-muted-foreground">Recommended for most brands</div>
+                                  </div>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="twiceweekly" className="py-3">
+                                <div className="flex items-center gap-3">
+                                  <Calendar className="w-5 h-5" />
+                                  <div className="font-medium">Twice a week</div>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="biweekly" className="py-3">
+                                <div className="flex items-center gap-3">
+                                  <Calendar className="w-5 h-5" />
+                                  <div className="font-medium">Biweekly</div>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="monthly" className="py-3">
+                                <div className="flex items-center gap-3">
+                                  <Calendar className="w-5 h-5" />
+                                  <div className="font-medium">Monthly</div>
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className="text-sm text-muted-foreground flex items-center gap-2 pl-1">
+                            <BarChart3 className="w-4 h-4" />
+                            More frequent tracking helps identify trends faster
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Step 3: Logo Upload */}
+                  {addCompetitorStep === 3 && (
+                    <div className="space-y-8 animate-fade-in">
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <Label className="text-base font-semibold">
+                            Brand Logo <span className="text-sm font-normal text-muted-foreground">(Optional)</span>
+                          </Label>
+                          
+                          <div className="space-y-4">
+                            {!manualBrandForm.logoPreview ? (
+                              <div className="relative group/upload">
+                                <Input
+                                  id="competitor-logo"
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      const reader = new FileReader();
+                                      reader.onload = (event) => {
+                                        setManualBrandForm(prev => ({
+                                          ...prev,
+                                          logoFile: file,
+                                          logoPreview: event.target?.result as string
+                                        }));
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }
+                                  }}
+                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                />
+                                <div className="relative border-2 border-dashed border-muted-foreground/30 rounded-2xl p-16 text-center transition-all duration-300 group-hover/upload:border-primary/60 group-hover/upload:bg-primary/5 group-hover/upload:shadow-xl cursor-pointer">
+                                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover/upload:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary/10 via-transparent to-primary/10 pointer-events-none" />
+                                  
+                                  <div className="relative flex flex-col items-center gap-4">
+                                    <div className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-3xl group-hover/upload:scale-110 transition-transform duration-300">
+                                      <Upload className="h-10 w-10 text-primary" />
+                                    </div>
+                                    <div>
+                                      <p className="text-lg font-semibold text-foreground mb-2">Upload Brand Logo</p>
+                                      <p className="text-sm text-muted-foreground">Drop your file here or click to browse</p>
+                                      <p className="text-xs text-muted-foreground mt-1">PNG, JPG, or SVG • Max 5MB</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="border-2 border-primary/20 rounded-2xl p-6 bg-gradient-to-br from-primary/5 to-transparent animate-scale-in">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-4">
+                                    <div className="w-16 h-16 rounded-2xl border-2 border-primary/20 bg-background p-2 flex items-center justify-center overflow-hidden shadow-lg">
+                                      <img 
+                                        src={manualBrandForm.logoPreview} 
+                                        alt="Logo preview" 
+                                        className="w-full h-full object-contain"
+                                      />
+                                    </div>
+                                    <div>
+                                      <p className="text-base font-semibold text-foreground flex items-center gap-2">
+                                        Logo uploaded successfully
+                                        <CheckCircle className="w-5 h-5 text-green-600" />
+                                      </p>
+                                      <p className="text-sm text-muted-foreground">Ready to track this brand</p>
+                                    </div>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setManualBrandForm(prev => ({ ...prev, logoFile: null, logoPreview: "" }))}
+                                    className="h-10 w-10 p-0 hover:bg-destructive/10 hover:text-destructive"
+                                  >
+                                    <X className="h-5 w-5" />
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                            <p className="text-sm text-muted-foreground text-center">
+                              Skip this step if you don't have a logo handy
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            
+            {/* Footer Actions */}
+            {currentBrandCount < maxBrands && (
+              <div className="relative px-8 py-6 border-t bg-muted/30 backdrop-blur-sm">
+                <div className="flex gap-3">
+                  {addCompetitorStep > 1 && (
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={() => setAddCompetitorStep(prev => prev - 1)}
+                      className="flex-1"
+                    >
+                      <ChevronDown className="w-4 h-4 mr-2 rotate-90" />
+                      Back
+                    </Button>
+                  )}
+                  
+                  {addCompetitorStep < 3 ? (
+                    <Button 
+                      size="lg"
+                      onClick={() => setAddCompetitorStep(prev => prev + 1)}
+                      disabled={
+                        (addCompetitorStep === 1 && (!manualBrandForm.name.trim() || !manualBrandForm.website.trim())) ||
+                        (addCompetitorStep === 2 && !manualBrandForm.reportFrequency)
+                      }
+                      className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:shadow-lg transition-all"
+                    >
+                      Continue
+                      <ChevronDown className="w-4 h-4 ml-2 -rotate-90" />
+                    </Button>
+                  ) : (
+                    <Button 
+                      size="lg"
+                      onClick={() => {
+                        if (!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency) return;
+                        
+                        const placeholderBrand = {
+                          rank: industryRankingBrands.length + 1,
+                          brand: manualBrandForm.name,
+                          score: 0,
+                          change: "0",
+                          insight: "Analyzing brand data...",
+                          link: `/competitors?brand=${manualBrandForm.name.toLowerCase()}`,
+                          isLoading: true
+                        };
+                        
+                        setIndustryRankingBrands(prev => [...prev, placeholderBrand]);
+                        setLoadingBrands(prev => [...prev, manualBrandForm.name]);
                         
                         toast({
-                          title: "Data Collection Complete",
-                          description: `Successfully analyzed ${brandName}.`,
+                          title: "Scanning Brand",
+                          description: `Collecting data for ${manualBrandForm.name}...`,
                         });
-                      }, 3000);
-                    }}
-                    disabled={!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Competitor
-                  </Button>
-                </DialogFooter>
-              </>
+                        
+                        const brandName = manualBrandForm.name;
+                        setShowManualAddDialog(false);
+                        setAddCompetitorStep(1);
+                        setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
+                        
+                        // Simulate data collection process
+                        setTimeout(() => {
+                          setIndustryRankingBrands(prev => 
+                            prev.map(b => 
+                              b.brand === brandName && b.isLoading
+                                ? {
+                                    ...b,
+                                    score: Math.floor(Math.random() * 30) + 70,
+                                    change: Math.random() > 0.5 ? "+1" : "0",
+                                    insight: "Growing presence in AI mentions",
+                                    isLoading: false
+                                  }
+                                : b
+                            )
+                          );
+                          
+                          setLoadingBrands(prev => prev.filter(name => name !== brandName));
+                          
+                          toast({
+                            title: "Data Collection Complete",
+                            description: `Successfully analyzed ${brandName}.`,
+                          });
+                        }, 3000);
+                      }}
+                      className="flex-1 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white hover:shadow-lg transition-all"
+                    >
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Add Competitor
+                    </Button>
+                  )}
+                </div>
+              </div>
             )}
           </DialogContent>
         </Dialog>
