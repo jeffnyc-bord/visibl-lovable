@@ -350,202 +350,223 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
         </CardContent>
       </Card>
 
-      {/* Tracked Brands - Card Layout */}
+      {/* Tracked Brands - Grid Card Layout */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-foreground">Your Watchlist</h3>
           <p className="text-sm text-muted-foreground">{currentBrandCount} brand{currentBrandCount !== 1 ? 's' : ''} tracked</p>
         </div>
 
-        {/* Primary Brand (You) */}
-        <Card className="shadow-sm border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent relative overflow-hidden">
-          <div className="absolute top-3 right-3">
-            <Badge className="bg-primary text-white shadow-lg">
-              You
-            </Badge>
-          </div>
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start space-x-4 flex-1">
-                <div className="w-16 h-16 bg-white border-2 border-primary/20 rounded-lg flex items-center justify-center shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Primary Brand (You) */}
+          <Card className="relative overflow-hidden border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-b from-white to-gray-50/30">
+            {/* "You" Badge */}
+            <div className="absolute top-4 right-4 z-10">
+              <Badge className="bg-primary text-white text-xs px-2 py-1 shadow-sm border-none">
+                You
+              </Badge>
+            </div>
+            
+            <CardContent className="p-6">
+              {/* Logo */}
+              <div className="flex justify-center mb-4">
+                <div className="w-20 h-20 rounded-2xl bg-white border border-gray-200/60 shadow-sm flex items-center justify-center p-3">
                   {myBrand.name === "Nike" ? (
-                    <img src="/lovable-uploads/d296743b-ff18-4da8-8546-d789de582706.png" alt={myBrand.name} className="w-10 h-10 object-contain" />
+                    <img src="/lovable-uploads/d296743b-ff18-4da8-8546-d789de582706.png" alt={myBrand.name} className="w-full h-full object-contain" />
                   ) : myBrand.name === "Adidas" ? (
-                    <img src="/lovable-uploads/443dfdf9-57da-486d-9339-83c684d1c404.png" alt={myBrand.name} className="w-10 h-10 object-contain" />
+                    <img src="/lovable-uploads/443dfdf9-57da-486d-9339-83c684d1c404.png" alt={myBrand.name} className="w-full h-full object-contain" />
                   ) : myBrand.name === "Apple" ? (
-                    <img src="/lovable-uploads/f7211f59-be5b-4e58-9bfa-3b6653217350.png" alt={myBrand.name} className="w-10 h-10 object-contain" />
+                    <img src="/lovable-uploads/f7211f59-be5b-4e58-9bfa-3b6653217350.png" alt={myBrand.name} className="w-full h-full object-contain" />
                   ) : (
-                    <Building className="w-8 h-8 text-primary" />
+                    <Building className="w-10 h-10 text-primary" />
                   )}
                 </div>
-                
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg text-foreground mb-1">{myBrand.name}</h3>
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Globe className="w-3 h-3 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">{myBrand.url}</p>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-4 mt-4">
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{myBrand.visibilityScore}%</p>
-                      <p className="text-xs text-muted-foreground mt-1">AI Visibility Score</p>
-                    </div>
-                    <div>
-                      <div className="flex items-center">
-                        <span className="text-2xl font-bold text-foreground">{myBrand.totalMentions}</span>
-                        <span className={`text-sm ml-2 ${myBrand.trend.startsWith('+') ? 'text-green-600' : myBrand.trend.startsWith('-') ? 'text-red-600' : 'text-gray-600'}`}>
-                          {myBrand.trend}
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">Total Mentions</p>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{myBrand.platformCoverage}%</p>
-                      <p className="text-xs text-muted-foreground mt-1">Platform Coverage</p>
-                    </div>
+              </div>
+
+              {/* Brand Name */}
+              <div className="text-center mb-4">
+                <h3 className="font-semibold text-lg text-foreground mb-1">{myBrand.name}</h3>
+                <p className="text-xs text-muted-foreground">{myBrand.url}</p>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-4" />
+
+              {/* Stats Grid */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">AI Visibility</span>
+                  <span className="text-base font-semibold text-foreground">{myBrand.visibilityScore}%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Mentions</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-base font-semibold text-foreground">{myBrand.totalMentions}</span>
+                    <span className={`text-xs ${myBrand.trend.startsWith('+') ? 'text-green-600' : myBrand.trend.startsWith('-') ? 'text-red-600' : 'text-gray-600'}`}>
+                      {myBrand.trend}
+                    </span>
                   </div>
                 </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Coverage</span>
+                  <span className="text-base font-semibold text-foreground">{myBrand.platformCoverage}%</span>
+                </div>
               </div>
-              
-              <div className="flex flex-col items-end space-y-2">
-                <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
+
+              {/* Status Footer */}
+              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-100 text-xs">
                   {myBrand.status}
                 </Badge>
-                <p className="text-xs text-muted-foreground">{myBrand.reportFrequency}</p>
-                <p className="text-xs text-muted-foreground">Updated {myBrand.lastReport}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Competitor Brands */}
-        {competitors.map((competitor) => (
-          <Card key={competitor.id} className={`shadow-sm border-border transition-all ${competitor.isLoading ? 'bg-blue-50/50 border-blue-200' : 'hover:shadow-md'}`}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-4 flex-1">
-                  <div className={`w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/40 rounded-lg flex items-center justify-center border ${competitor.isLoading ? 'animate-pulse' : ''}`}>
-                    {competitor.isLoading ? (
-                      <Globe className="w-8 h-8 text-blue-600 animate-spin" />
-                    ) : (
-                      <Target className="w-8 h-8 text-secondary-foreground" />
-                    )}
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-semibold text-lg text-foreground">{competitor.name}</h3>
-                      {!competitor.isLoading && <ExternalLink className="w-4 h-4 text-muted-foreground" />}
-                      {competitor.isLoading && (
-                        <div className="flex items-center space-x-1">
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-2 mb-3">
-                      <Globe className="w-3 h-3 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">{competitor.url}</p>
-                    </div>
-                    
-                    {competitor.isLoading ? (
-                      <div className="mt-3">
-                        <div className="w-full bg-blue-200 rounded-full h-2 mb-2">
-                          <div 
-                            className="bg-blue-500 h-2 rounded-full transition-all duration-500" 
-                            style={{ width: `${competitor.loadingProgress || 0}%` }}
-                          />
-                        </div>
-                        <p className="text-sm text-blue-600 font-medium">
-                          {(competitor.loadingProgress || 0) < 25 ? "Analyzing website..." :
-                           (competitor.loadingProgress || 0) < 50 ? "Discovering content..." :
-                           (competitor.loadingProgress || 0) < 75 ? "Setting up monitoring..." :
-                           "Almost ready..."}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-3 gap-4 mt-4">
-                        <div>
-                          <p className="text-2xl font-bold text-foreground">{competitor.visibilityScore}%</p>
-                          <p className="text-xs text-muted-foreground mt-1">AI Visibility Score</p>
-                        </div>
-                        <div>
-                          <div className="flex items-center">
-                            <span className="text-2xl font-bold text-foreground">{competitor.totalMentions}</span>
-                            <span className={`text-sm ml-2 ${competitor.trend.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                              {competitor.trend}
-                            </span>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">Total Mentions</p>
-                        </div>
-                        <div>
-                          <Badge 
-                            variant="secondary" 
-                            className={`text-xs ${getStatusColor(competitor.status)}`}
-                          >
-                            {competitor.status}
-                          </Badge>
-                          <p className="text-xs text-muted-foreground mt-1">{competitor.reportFrequency}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  {!competitor.isLoading && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem onClick={() => handleToggleMonitoring(competitor.id)}>
-                          {competitor.status === "Active" ? (
-                            <>
-                              <Pause className="w-4 h-4 mr-2" />
-                              Pause Monitoring
-                            </>
-                          ) : (
-                            <>
-                              <Play className="w-4 h-4 mr-2" />
-                              Activate Monitoring
-                            </>
-                          )}
-                        </DropdownMenuItem>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Remove from Watchlist
-                            </DropdownMenuItem>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Remove Competitor</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to remove {competitor.name} from your watchlist? This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleRemoveCompetitor(competitor.id)}>
-                                Remove
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </div>
+                <span className="text-xs text-muted-foreground">{myBrand.reportFrequency}</span>
               </div>
             </CardContent>
           </Card>
-        ))}
+
+          {/* Competitor Brands */}
+          {competitors.map((competitor) => (
+            <Card 
+              key={competitor.id} 
+              className={`relative overflow-hidden border shadow-sm hover:shadow-md transition-all duration-200 ${
+                competitor.isLoading 
+                  ? 'border-blue-200 bg-gradient-to-b from-blue-50/50 to-white' 
+                  : 'border-gray-200/60 bg-gradient-to-b from-white to-gray-50/30'
+              }`}
+            >
+              {/* Actions Menu */}
+              {!competitor.isLoading && (
+                <div className="absolute top-4 right-4 z-10">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-gray-100">
+                        <MoreHorizontal className="w-4 h-4 text-gray-600" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-44">
+                      <DropdownMenuItem onClick={() => handleToggleMonitoring(competitor.id)}>
+                        {competitor.status === "Active" ? (
+                          <>
+                            <Pause className="w-4 h-4 mr-2" />
+                            Pause
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4 mr-2" />
+                            Activate
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Remove
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remove Competitor</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to remove {competitor.name} from your watchlist?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleRemoveCompetitor(competitor.id)}>
+                              Remove
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
+              
+              <CardContent className="p-6">
+                {/* Logo */}
+                <div className="flex justify-center mb-4">
+                  <div className={`w-20 h-20 rounded-2xl border shadow-sm flex items-center justify-center ${
+                    competitor.isLoading 
+                      ? 'bg-blue-50 border-blue-200 animate-pulse' 
+                      : 'bg-white border-gray-200/60'
+                  }`}>
+                    {competitor.isLoading ? (
+                      <Globe className="w-10 h-10 text-blue-500 animate-spin" />
+                    ) : (
+                      <Target className="w-10 h-10 text-gray-600" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Brand Name */}
+                <div className="text-center mb-4">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <h3 className="font-semibold text-lg text-foreground">{competitor.name}</h3>
+                    {competitor.isLoading && (
+                      <div className="flex items-center gap-0.5">
+                        <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce" />
+                        <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                        <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">{competitor.url}</p>
+                </div>
+
+                {/* Divider */}
+                <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-4" />
+
+                {competitor.isLoading ? (
+                  <div className="space-y-3">
+                    <div className="w-full bg-blue-100 rounded-full h-1.5">
+                      <div 
+                        className="bg-blue-500 h-1.5 rounded-full transition-all duration-500" 
+                        style={{ width: `${competitor.loadingProgress || 0}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-blue-600 text-center font-medium">
+                      {(competitor.loadingProgress || 0) < 25 ? "Analyzing..." :
+                       (competitor.loadingProgress || 0) < 50 ? "Discovering..." :
+                       (competitor.loadingProgress || 0) < 75 ? "Setting up..." :
+                       "Almost ready..."}
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Stats Grid */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">AI Visibility</span>
+                        <span className="text-base font-semibold text-foreground">{competitor.visibilityScore}%</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">Mentions</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-base font-semibold text-foreground">{competitor.totalMentions}</span>
+                          <span className={`text-xs ${competitor.trend.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                            {competitor.trend}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Status Footer */}
+                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                      <Badge 
+                        variant="secondary" 
+                        className={`text-xs ${getStatusColor(competitor.status)}`}
+                      >
+                        {competitor.status}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">{competitor.reportFrequency}</span>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
       
       {/* Add New Brand Dialog */}
