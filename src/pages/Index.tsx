@@ -824,12 +824,43 @@ const Index = () => {
         <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden">
           {/* Header with honeycomb design */}
           <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50/50 px-8 py-8 border-b overflow-hidden">
-            {/* Decorative background pattern */}
-            <div className="absolute inset-0 opacity-[0.03]">
-              <div className="absolute inset-0" style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill='%23000000' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")`,
-                backgroundSize: '60px 60px'
-              }} />
+            {/* Decorative hexagons - fewer but more detailed */}
+            <div className="absolute inset-0 pointer-events-none">
+              {/* Top left hexagon */}
+              <div className="absolute top-4 left-8 w-20 h-20 opacity-15">
+                <div className="hexagon bg-gradient-to-br from-primary/40 via-primary/20 to-transparent shadow-lg border border-primary/30" 
+                     style={{
+                       filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
+                       background: 'linear-gradient(135deg, hsl(var(--primary) / 0.15) 0%, hsl(var(--primary) / 0.05) 100%)'
+                     }} />
+              </div>
+              
+              {/* Top right hexagon */}
+              <div className="absolute top-2 right-12 w-16 h-16 opacity-20">
+                <div className="hexagon bg-gradient-to-br from-primary/30 to-primary/10 shadow-md border border-primary/20"
+                     style={{
+                       filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))',
+                       background: 'linear-gradient(135deg, hsl(var(--primary) / 0.2) 0%, transparent 100%)'
+                     }} />
+              </div>
+              
+              {/* Bottom left hexagon */}
+              <div className="absolute bottom-6 left-4 w-14 h-14 opacity-10">
+                <div className="hexagon bg-gradient-to-tr from-primary/35 to-transparent shadow-lg border border-primary/25"
+                     style={{
+                       filter: 'drop-shadow(0 3px 10px rgba(0,0,0,0.09))',
+                       background: 'linear-gradient(45deg, hsl(var(--primary) / 0.18) 0%, transparent 100%)'
+                     }} />
+              </div>
+              
+              {/* Bottom right hexagon */}
+              <div className="absolute bottom-3 right-6 w-18 h-18 opacity-12">
+                <div className="hexagon bg-gradient-to-tl from-primary/40 via-primary/15 to-transparent shadow-xl border-2 border-primary/20"
+                     style={{
+                       filter: 'drop-shadow(0 4px 14px rgba(0,0,0,0.12))',
+                       background: 'linear-gradient(225deg, hsl(var(--primary) / 0.25) 0%, hsl(var(--primary) / 0.08) 50%, transparent 100%)'
+                     }} />
+              </div>
             </div>
             
             <div className="relative z-10">
