@@ -118,9 +118,10 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
     platformCoverage: selectedBrand.platformCoverage
   };
 
-  // Get competitors for the selected brand (exclude the selected brand itself)
-  const [competitors, setCompetitors] = useState(() => 
-    selectedBrand.competitors.map((competitor, index) => ({
+  // Get competitors - combine selected brand's competitors with other tracked brands
+  const [competitors, setCompetitors] = useState(() => {
+    // First, add the explicit competitors from the selected brand
+    const explicitCompetitors = selectedBrand.competitors.map((competitor, index) => ({
       id: index + 2,
       name: competitor.name,
       url: `${competitor.name.toLowerCase().replace(/\s+/g, '')}.com`,
@@ -132,8 +133,27 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       totalMentions: `${(competitor.mentions / 1000).toFixed(1)}K`,
       isLoading: false,
       loadingProgress: 0
-     }))
-  );
+    }));
+
+    // Then add other tracked brands (excluding the currently selected brand)
+    const otherBrands = trackedBrands
+      .filter(brand => brand.id !== selectedBrand.id)
+      .map((brand, index) => ({
+        id: explicitCompetitors.length + index + 2,
+        name: brand.name,
+        url: brand.url,
+        status: "Active" as "Active" | "Paused" | "Loading",
+        visibilityScore: brand.visibilityScore,
+        trend: brand.mentionTrend === "up" ? "+2.1%" : brand.mentionTrend === "down" ? "-1.2%" : "0%",
+        reportFrequency: "Weekly" as "Daily" | "Weekly" | "Bi-weekly" | "Monthly",
+        lastReport: "2 days ago",
+        totalMentions: `${(brand.totalMentions / 1000).toFixed(1)}K`,
+        isLoading: false,
+        loadingProgress: 0
+      }));
+
+    return [...explicitCompetitors, ...otherBrands];
+  });
 
   const getTypeColor = (type: string) => {
     return type === "deep" 
