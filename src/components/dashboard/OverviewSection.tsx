@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, Target, Link, Settings, ExternalLink, HelpCircle, Upload, Plus, X, Globe, Loader2 } from "lucide-react";
+import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Target, Link, Settings, ExternalLink, HelpCircle, Upload, Plus, X, Globe, Loader2, Image as ImageIcon, Building, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -16,6 +16,7 @@ import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
+import boardLabsIcon from "@/assets/board-labs-icon-hex.png";
 
 interface BrandData {
   id: string;
@@ -601,7 +602,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </CardContent>
         </Card>
 
-        {/* Manual Add Brand Dialog - Funnel Approach */}
+        {/* Manual Add Brand Dialog - Sleek Apple-like Design */}
         <Dialog open={showManualAddDialog} onOpenChange={(open) => {
           setShowManualAddDialog(open);
           if (!open) {
@@ -609,57 +610,83 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
           }
         }}>
-          <DialogContent className="sm:max-w-[600px] overflow-hidden p-0">
-            {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
-            
-            {/* Progress Steps */}
-            <div className="relative px-8 pt-8 pb-6 border-b bg-background/80 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-6">
-                {[1, 2, 3].map((step) => (
-                  <div key={step} className="flex items-center flex-1">
-                    <div className="flex flex-col items-center">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
-                        addCompetitorStep === step 
-                          ? 'bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg scale-110' 
-                          : addCompetitorStep > step
-                          ? 'bg-green-500 text-white'
-                          : 'bg-muted text-muted-foreground'
-                      }`}>
-                        {addCompetitorStep > step ? <CheckCircle className="w-5 h-5" /> : step}
-                      </div>
-                      <span className={`text-xs mt-2 font-medium transition-colors ${
-                        addCompetitorStep >= step ? 'text-foreground' : 'text-muted-foreground'
-                      }`}>
-                        {step === 1 ? 'Brand Info' : step === 2 ? 'Monitoring' : 'Logo'}
-                      </span>
-                    </div>
-                    {step < 3 && (
-                      <div className={`flex-1 h-1 mx-2 rounded-full transition-all duration-300 ${
-                        addCompetitorStep > step ? 'bg-green-500' : 'bg-muted'
-                      }`} />
-                    )}
-                  </div>
-                ))}
-              </div>
-              
-              <div className="text-center">
-                <DialogTitle className="text-2xl font-bold mb-2">
-                  {addCompetitorStep === 1 && 'Basic Information'}
-                  {addCompetitorStep === 2 && 'Monitoring Preferences'}
-                  {addCompetitorStep === 3 && 'Brand Identity'}
-                </DialogTitle>
-                <DialogDescription className="text-sm">
-                  {addCompetitorStep === 1 && 'Start by entering the competitor\'s basic details'}
-                  {addCompetitorStep === 2 && 'Choose how often you want to track this competitor'}
-                  {addCompetitorStep === 3 && 'Add a logo to easily identify this brand'}
+          <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden">
+            {/* Header */}
+            <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50/50 px-8 py-8 border-b overflow-hidden">
+              <div className="relative z-10">
+                {/* Title at top */}
+                <DialogHeader className="mb-4">
+                  <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 text-center">
+                    Add Competitor Brand
+                  </DialogTitle>
+                </DialogHeader>
+
+                {/* Description */}
+                <DialogDescription className="text-base text-muted-foreground text-center mb-6">
+                  Track a competitor to compare AI visibility metrics
                 </DialogDescription>
+
+                {/* Board Labs Logo + Plus Icon */}
+                <div className="flex justify-center items-center mb-6">
+                  <div className="flex items-center gap-6">
+                    {/* Board Labs Logo */}
+                    <div className="w-16 h-16 rounded-full border border-gray-200/60 bg-white shadow-sm flex items-center justify-center p-2">
+                      <img 
+                        src={boardLabsIcon} 
+                        alt="Board Labs" 
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    
+                    {/* Connecting Line */}
+                    <div className="h-px w-16 bg-gradient-to-r from-gray-300/40 via-gray-400/60 to-gray-300/40 relative">
+                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-gray-400/60 rotate-45 translate-x-1" />
+                    </div>
+                    
+                    {/* Plus Icon */}
+                    <div className="w-16 h-16 rounded-full border border-gray-200/60 bg-white shadow-sm flex items-center justify-center">
+                      <Plus className="h-7 w-7 text-gray-700 stroke-[1.5]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step indicator */}
+                <div className="mt-6 flex items-center justify-center gap-6">
+                  {[
+                    { num: 1, label: "Info" },
+                    { num: 2, label: "Settings" },
+                    { num: 3, label: "Logo" }
+                  ].map((step, idx) => (
+                    <div key={step.num} className="flex items-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
+                          step.num <= addCompetitorStep 
+                            ? 'bg-primary text-white shadow-lg shadow-primary/30' 
+                            : 'bg-gray-200 text-gray-500'
+                        }`}>
+                          {step.num}
+                        </div>
+                        <span className={`text-xs font-medium transition-colors ${
+                          step.num <= addCompetitorStep ? 'text-primary' : 'text-gray-400'
+                        }`}>
+                          {step.label}
+                        </span>
+                      </div>
+                      {idx < 2 && (
+                        <div className={`w-12 h-0.5 mx-2 mb-6 transition-colors ${
+                          step.num < addCompetitorStep ? 'bg-primary' : 'bg-gray-200'
+                        }`} />
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             
             {/* Content Area */}
-            <div className="relative px-8 py-8 min-h-[400px]">{currentBrandCount >= maxBrands ? (
+            <div className="p-8">
+              <div className="min-h-[240px]">
+                {currentBrandCount >= maxBrands ? (
                 // Show upgrade message when limit is reached
                 <div className="relative text-center py-16 space-y-6 animate-fade-in">
                   <div className="w-24 h-24 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-950/30 dark:to-red-950/30 rounded-3xl flex items-center justify-center mx-auto shadow-xl">
@@ -883,40 +910,50 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   )}
                 </>
               )}
+              </div>
             </div>
             
             {/* Footer Actions */}
             {currentBrandCount < maxBrands && (
-              <div className="relative px-8 py-6 border-t bg-muted/30 backdrop-blur-sm">
-                <div className="flex gap-3">
-                  {addCompetitorStep > 1 && (
+              <div className="px-8 py-5 border-t bg-gradient-to-r from-muted/30 to-muted/10">
+                <div className="flex items-center justify-between gap-3">
+                  {addCompetitorStep > 1 ? (
                     <Button 
                       variant="outline" 
-                      size="lg"
                       onClick={() => setAddCompetitorStep(prev => prev - 1)}
-                      className="flex-1"
+                      className="h-10 px-5 hover:bg-muted transition-all duration-200"
                     >
-                      <ChevronDown className="w-4 h-4 mr-2 rotate-90" />
+                      <ChevronLeft className="h-4 w-4 mr-1" />
                       Back
                     </Button>
+                  ) : (
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => {
+                        setShowManualAddDialog(false);
+                        setAddCompetitorStep(1);
+                        setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
+                      }}
+                      className="h-10 px-5 hover:bg-muted transition-all duration-200"
+                    >
+                      Cancel
+                    </Button>
                   )}
-                  
+
                   {addCompetitorStep < 3 ? (
                     <Button 
-                      size="lg"
                       onClick={() => setAddCompetitorStep(prev => prev + 1)}
                       disabled={
                         (addCompetitorStep === 1 && (!manualBrandForm.name.trim() || !manualBrandForm.website.trim())) ||
                         (addCompetitorStep === 2 && !manualBrandForm.reportFrequency)
                       }
-                      className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:shadow-lg transition-all"
+                      className="h-10 px-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none disabled:shadow-none"
                     >
                       Continue
-                      <ChevronDown className="w-4 h-4 ml-2 -rotate-90" />
+                      <ChevronRight className="h-4 w-4 ml-1" />
                     </Button>
                   ) : (
                     <Button 
-                      size="lg"
                       onClick={() => {
                         if (!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency) return;
                         
@@ -967,10 +1004,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                           });
                         }, 3000);
                       }}
-                      className="flex-1 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white hover:shadow-lg transition-all"
+                      className="h-10 px-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                     >
-                      <CheckCircle className="w-5 h-5 mr-2" />
-                      Add Competitor
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add & Start Tracking
                     </Button>
                   )}
                 </div>
