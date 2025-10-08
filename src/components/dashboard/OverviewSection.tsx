@@ -15,8 +15,6 @@ import { Label } from "@/components/ui/label";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { BrandSelectionDialog } from "@/components/ui/brand-selection-dialog";
-import { BrandVerificationDialog } from "@/components/ui/brand-verification-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface BrandData {
@@ -71,9 +69,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
   const [showManualAddDialog, setShowManualAddDialog] = useState(false);
-  const [showBrandSelectionDialog, setShowBrandSelectionDialog] = useState(false);
-  const [showBrandVerificationDialog, setShowBrandVerificationDialog] = useState(false);
-  const [selectedBrandsForVerification, setSelectedBrandsForVerification] = useState<any[]>([]);
   const [industryRankingBrands, setIndustryRankingBrands] = useState<any[]>([]);
   const [loadingBrands, setLoadingBrands] = useState<string[]>([]);
   const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "", logoFile: null as File | null, logoPreview: "" });
@@ -241,65 +236,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     ? (showAllPlatforms ? COLORS : COLORS.slice(0, 4))
     : COLORS;
 
-  // Handlers for the new dialog flow
-  const handleBrandSelection = (selectedBrands: any[]) => {
-    setSelectedBrandsForVerification(selectedBrands);
-    setShowBrandVerificationDialog(true);
-  };
-
-  const handleBrandVerification = (verifiedBrands: any[]) => {
-    // Add placeholder brands with loading state
-    const placeholderBrands = verifiedBrands.map((brand, index) => ({
-      rank: industryRankingBrands.length + index + 1,
-      brand: brand.name,
-      score: 0,
-      change: "0",
-      insight: "Analyzing brand data...",
-      link: `/competitors?brand=${brand.name.toLowerCase()}`,
-      logo: brand.logo,
-      url: brand.url,
-      isLoading: true
-    }));
-    
-    setIndustryRankingBrands(prev => [...prev, ...placeholderBrands]);
-    setLoadingBrands(verifiedBrands.map(brand => brand.name));
-    setShowBrandVerificationDialog(false);
-    setSelectedBrandsForVerification([]);
-    
-    toast({
-      title: "Scanning Brands",
-      description: `Collecting data for ${verifiedBrands.length} brand${verifiedBrands.length !== 1 ? 's' : ''}...`,
-    });
-
-    // Simulate data collection process
-    verifiedBrands.forEach((brand, index) => {
-      setTimeout(() => {
-        setIndustryRankingBrands(prev => 
-          prev.map(b => 
-            b.brand === brand.name && b.isLoading
-              ? {
-                  ...b,
-                  score: brand.score || Math.floor(Math.random() * 30) + 70,
-                  change: Math.random() > 0.5 ? "+1" : "0",
-                  insight: `${brand.isTracked ? 'Tracked brand with' : 'Growing presence in'} AI mentions`,
-                  isLoading: false
-                }
-              : b
-          )
-        );
-        
-        setLoadingBrands(prev => prev.filter(name => name !== brand.name));
-        
-        // Show completion toast for the last brand
-        if (index === verifiedBrands.length - 1) {
-          toast({
-            title: "Data Collection Complete",
-            description: `Successfully analyzed ${verifiedBrands.length} brand${verifiedBrands.length !== 1 ? 's' : ''}.`,
-          });
-        }
-      }, (index + 1) * 2000); // Stagger the completion by 2 seconds each
-    });
-  };
 
   return (
     <TooltipProvider>
@@ -557,145 +493,110 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {industryRankingBrands.length === 0 ? (
-              // Default empty state for new users
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                  <BarChart3 className="w-8 h-8 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">Set Up Industry Ranking</h3>
-                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  Add competitors to see how your brand ranks in AI visibility. Choose to auto-populate from your tracked brands or add manually.
-                </p>
-                
-                <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-                  <Button
-                    onClick={() => setShowBrandSelectionDialog(true)}
-                    className="flex-1 min-w-0"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Auto Populate
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowManualAddDialog(true)}
-                    className="flex-1 min-w-0"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Competitors Manually
-                  </Button>
-                </div>
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                {industryRankingBrands.length} competitors tracked
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowManualAddDialog(true)}
+                  className="text-xs h-7"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add More
+                </Button>
               </div>
-            ) : (
-              // Show table when brands are added
-              <>
-                <div className="mb-4 flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    {industryRankingBrands.length} competitors tracked
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowManualAddDialog(true)}
-                      className="text-xs h-7"
-                    >
-                      <Plus className="w-3 h-3 mr-1" />
-                      Add More
-                    </Button>
-                  </div>
-                </div>
+            </div>
 
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Rank</TableHead>
-                      <TableHead>Brand</TableHead>
-                      <TableHead>Score</TableHead>
-                      <TableHead>Change</TableHead>
-                      <TableHead className="w-10"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {industryRankingBrands.map((brand) => (
-                      <TableRow key={brand.rank} className={brand.isLoading ? "opacity-70" : ""}>
-                        <TableCell className="font-medium">#{brand.rank}</TableCell>
-                        <TableCell className="font-medium">
-                          <div className="flex items-center space-x-2">
-                            {brand.isLoading && (
-                              <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
-                            )}
-                            <span>{brand.brand}</span>
-                            {brand.isLoading && (
-                              <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
-                                Scanning...
-                              </Badge>
-                            )}
-                            {!brand.isLoading && (
-                              <UITooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-4 w-4 p-0 opacity-60 hover:opacity-100"
-                                    onClick={() => window.open(brand.link, '_blank')}
-                                  >
-                                    <HelpCircle className="w-3 h-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-xs">
-                                  <p className="text-xs">{brand.insight}</p>
-                                  <p className="text-xs text-muted-foreground mt-1">Click to compare in Competitors tab</p>
-                                </TooltipContent>
-                              </UITooltip>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {brand.isLoading ? (
-                            <Skeleton className="h-4 w-8" />
-                          ) : (
-                            brand.score
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {brand.isLoading ? (
-                            <Skeleton className="h-4 w-8" />
-                          ) : (
-                            <Badge variant="secondary" className={
-                              brand.change.startsWith('+') ? 'bg-green-100 text-green-800' :
-                              brand.change.startsWith('-') ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
-                            }>
-                              {brand.change}
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 opacity-60 hover:opacity-100 hover:text-destructive"
-                            disabled={brand.isLoading}
-                            onClick={() => {
-                              setIndustryRankingBrands(prev => prev.filter(b => b.rank !== brand.rank));
-                              setLoadingBrands(prev => prev.filter(name => name !== brand.brand));
-                              toast({
-                                title: "Brand Removed",
-                                description: `${brand.brand} has been removed from the ranking.`,
-                              });
-                            }}
-                          >
-                            <X className="w-3 h-3" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </>
-            )}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Rank</TableHead>
+                  <TableHead>Brand</TableHead>
+                  <TableHead>Score</TableHead>
+                  <TableHead>Change</TableHead>
+                  <TableHead className="w-10"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {industryRankingBrands.map((brand) => (
+                  <TableRow key={brand.rank} className={brand.isLoading ? "opacity-70" : ""}>
+                    <TableCell className="font-medium">#{brand.rank}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center space-x-2">
+                        {brand.isLoading && (
+                          <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
+                        )}
+                        <span>{brand.brand}</span>
+                        {brand.isLoading && (
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                            Scanning...
+                          </Badge>
+                        )}
+                        {!brand.isLoading && (
+                          <UITooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 opacity-60 hover:opacity-100"
+                                onClick={() => window.open(brand.link, '_blank')}
+                              >
+                                <HelpCircle className="w-3 h-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs">
+                              <p className="text-xs">{brand.insight}</p>
+                              <p className="text-xs text-muted-foreground mt-1">Click to compare in Competitors tab</p>
+                            </TooltipContent>
+                          </UITooltip>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {brand.isLoading ? (
+                        <Skeleton className="h-4 w-8" />
+                      ) : (
+                        brand.score
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {brand.isLoading ? (
+                        <Skeleton className="h-4 w-8" />
+                      ) : (
+                        <Badge variant="secondary" className={
+                          brand.change.startsWith('+') ? 'bg-green-100 text-green-800' :
+                          brand.change.startsWith('-') ? 'bg-red-100 text-red-800' :
+                          'bg-gray-100 text-gray-800'
+                        }>
+                          {brand.change}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 opacity-60 hover:opacity-100 hover:text-destructive"
+                        disabled={brand.isLoading}
+                        onClick={() => {
+                          setIndustryRankingBrands(prev => prev.filter(b => b.rank !== brand.rank));
+                          setLoadingBrands(prev => prev.filter(name => name !== brand.brand));
+                          toast({
+                            title: "Brand Removed",
+                            description: `${brand.brand} has been removed from the ranking.`,
+                          });
+                        }}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
 
@@ -943,21 +844,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </Dialog>
       </div>
 
-      {/* Brand Selection Dialog */}
-      <BrandSelectionDialog
-        open={showBrandSelectionDialog}
-        onOpenChange={setShowBrandSelectionDialog}
-        onConfirm={handleBrandSelection}
-        preSelectTrackedBrands={true}
-      />
-
-      {/* Brand Verification Dialog */}
-      <BrandVerificationDialog
-        open={showBrandVerificationDialog}
-        onOpenChange={setShowBrandVerificationDialog}
-        brands={selectedBrandsForVerification}
-        onConfirm={handleBrandVerification}
-      />
 
       {/* AI Platform Mention Distribution */}
       <Card className="mb-6 group relative" onMouseLeave={() => setShowTooltips({...showTooltips, platformDistribution: false})}>
