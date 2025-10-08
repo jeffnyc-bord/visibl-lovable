@@ -357,7 +357,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
           <p className="text-sm text-muted-foreground">{currentBrandCount} brand{currentBrandCount !== 1 ? 's' : ''} tracked</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {/* Primary Brand (You) */}
           <Card className="relative overflow-hidden border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-b from-white to-gray-50/30">
             {/* "You" Badge */}
@@ -367,10 +367,9 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
               </Badge>
             </div>
             
-            <CardContent className="p-6">
-              {/* Logo */}
-              <div className="flex justify-center mb-4">
-                <div className="w-20 h-20 rounded-2xl bg-white border border-gray-200/60 shadow-sm flex items-center justify-center p-3">
+            <CardContent className="p-5">
+              <div className="flex justify-center mb-3">
+                <div className="w-16 h-16 rounded-xl bg-white border border-gray-200/60 shadow-sm flex items-center justify-center p-2.5">
                   {myBrand.name === "Nike" ? (
                     <img src="/lovable-uploads/d296743b-ff18-4da8-8546-d789de582706.png" alt={myBrand.name} className="w-full h-full object-contain" />
                   ) : myBrand.name === "Adidas" ? (
@@ -384,16 +383,14 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
               </div>
 
               {/* Brand Name */}
-              <div className="text-center mb-4">
-                <h3 className="font-semibold text-lg text-foreground mb-1">{myBrand.name}</h3>
-                <p className="text-xs text-muted-foreground">{myBrand.url}</p>
+              <div className="text-center mb-3">
+                <h3 className="font-semibold text-base text-foreground mb-0.5">{myBrand.name}</h3>
+                <p className="text-xs text-muted-foreground truncate">{myBrand.url}</p>
               </div>
 
-              {/* Divider */}
-              <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-4" />
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-3" />
 
-              {/* Stats Grid */}
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">AI Visibility</span>
                   <span className="text-base font-semibold text-foreground">{myBrand.visibilityScore}%</span>
@@ -413,8 +410,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                 </div>
               </div>
 
-              {/* Status Footer */}
-              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+              <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
                 <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-100 text-xs">
                   {myBrand.status}
                 </Badge>
@@ -483,10 +479,9 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                 </div>
               )}
               
-              <CardContent className="p-6">
-                {/* Logo */}
-                <div className="flex justify-center mb-4">
-                  <div className={`w-20 h-20 rounded-2xl border shadow-sm flex items-center justify-center ${
+              <CardContent className="p-5">
+                <div className="flex justify-center mb-3">
+                  <div className={`w-16 h-16 rounded-xl border shadow-sm flex items-center justify-center ${
                     competitor.isLoading 
                       ? 'bg-blue-50 border-blue-200 animate-pulse' 
                       : 'bg-white border-gray-200/60'
@@ -500,9 +495,9 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                 </div>
 
                 {/* Brand Name */}
-                <div className="text-center mb-4">
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <h3 className="font-semibold text-lg text-foreground">{competitor.name}</h3>
+                <div className="text-center mb-3">
+                  <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                    <h3 className="font-semibold text-base text-foreground">{competitor.name}</h3>
                     {competitor.isLoading && (
                       <div className="flex items-center gap-0.5">
                         <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce" />
@@ -511,11 +506,10 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground">{competitor.url}</p>
+                  <p className="text-xs text-muted-foreground truncate">{competitor.url}</p>
                 </div>
 
-                {/* Divider */}
-                <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-4" />
+                <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-3" />
 
                 {competitor.isLoading ? (
                   <div className="space-y-3">
@@ -534,8 +528,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                   </div>
                 ) : (
                   <>
-                    {/* Stats Grid */}
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">AI Visibility</span>
                         <span className="text-base font-semibold text-foreground">{competitor.visibilityScore}%</span>
@@ -551,8 +544,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                       </div>
                     </div>
 
-                    {/* Status Footer */}
-                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                    <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
                       <Badge 
                         variant="secondary" 
                         className={`text-xs ${getStatusColor(competitor.status)}`}
