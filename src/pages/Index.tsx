@@ -205,6 +205,7 @@ const Index = () => {
   const [userRole, setUserRole] = useState<"business_user" | "agency_admin">("business_user");
   const [loadingDuration, setLoadingDuration] = useState(6);
   const [showAddBrandDialog, setShowAddBrandDialog] = useState(false);
+  const [addBrandStep, setAddBrandStep] = useState(1);
   const [newBrandData, setNewBrandData] = useState({
     name: "",
     url: "",
@@ -812,158 +813,266 @@ const Index = () => {
       </div>
 
       {/* Add New Brand Dialog */}
-      <Dialog open={showAddBrandDialog} onOpenChange={setShowAddBrandDialog}>
-        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden">
-          <div className="bg-gradient-to-br from-primary/5 to-primary/10 p-6 border-b">
-            <DialogHeader className="space-y-3">
-              <DialogTitle className="text-2xl font-bold text-foreground">
-                Add New Brand
-              </DialogTitle>
-              <DialogDescription className="text-base text-muted-foreground">
-                Start tracking a new brand's AI visibility and performance insights.
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-          
-          <div className="p-6 space-y-6">
-            {/* Brand Name Field */}
-            <div className="space-y-2">
-              <Label htmlFor="brand-name" className="text-sm font-medium text-foreground flex items-center gap-2">
-                <Building className="h-4 w-4 text-primary" />
-                Brand Name
-              </Label>
-              <Input
-                id="brand-name"
-                value={newBrandData.name}
-                onChange={(e) => setNewBrandData(prev => ({ ...prev, name: e.target.value }))}
-                className="transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                placeholder="Enter your brand name"
-              />
-            </div>
-
-            {/* Website URL Field */}
-            <div className="space-y-2">
-              <Label htmlFor="brand-url" className="text-sm font-medium text-foreground flex items-center gap-2">
-                <Globe className="h-4 w-4 text-primary" />
-                Website URL
-              </Label>
-              <Input
-                id="brand-url"
-                value={newBrandData.url}
-                onChange={(e) => setNewBrandData(prev => ({ ...prev, url: e.target.value }))}
-                className="transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                placeholder="https://yourbrand.com"
-              />
-            </div>
-
-            {/* Report Frequency Field */}
-            <div className="space-y-2">
-              <Label htmlFor="report-frequency" className="text-sm font-medium text-foreground flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-primary" />
-                Report Frequency
-              </Label>
-              <Select
-                value={newBrandData.reportFrequency || ""}
-                onValueChange={(value) => setNewBrandData(prev => ({ ...prev, reportFrequency: value }))}
-              >
-                <SelectTrigger className="transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                  <SelectValue placeholder="Select monitoring frequency" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border shadow-lg z-50">
-                  <SelectItem value="daily" disabled className="text-gray-400">
-                    Once daily (Enterprise only)
-                  </SelectItem>
-                  <SelectItem value="weekly">Once a week</SelectItem>
-                  <SelectItem value="twiceweekly">Twice a week</SelectItem>
-                  <SelectItem value="biweekly">Biweekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Logo Upload Field */}
-            <div className="space-y-3">
-              <Label htmlFor="brand-logo" className="text-sm font-medium text-foreground flex items-center gap-2">
-                <ImageIcon className="h-4 w-4 text-primary" />
-                Brand Logo
-              </Label>
+      <Dialog open={showAddBrandDialog} onOpenChange={(open) => {
+        setShowAddBrandDialog(open);
+        if (!open) {
+          setAddBrandStep(1);
+          setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "", reportFrequency: "" });
+        }
+      }}>
+        <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden">
+          {/* Header with gradient background */}
+          <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 p-8 border-b overflow-hidden">
+            <div className="absolute inset-0 bg-grid-white/10 [mask-image:radial-gradient(white,transparent_85%)]" />
+            <div className="relative z-10">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm mb-4 shadow-lg">
+                <Building className="h-6 w-6 text-white" />
+              </div>
+              <DialogHeader className="space-y-2">
+                <DialogTitle className="text-2xl font-bold text-white">
+                  Add New Brand to Track
+                </DialogTitle>
+                <DialogDescription className="text-white/90 text-base">
+                  Step {addBrandStep} of 3: {
+                    addBrandStep === 1 ? "Basic Brand Information" :
+                    addBrandStep === 2 ? "Monitoring Preferences" :
+                    "Brand Logo (Optional)"
+                  }
+                </DialogDescription>
+              </DialogHeader>
               
-              <div className="space-y-3">
-                {!newBrandData.logoPreview ? (
-                  <div className="relative">
-                    <Input
-                      id="brand-logo"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                    />
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-primary/50 transition-colors duration-200 hover:bg-primary/5">
-                      <div className="flex flex-col items-center gap-2">
-                        <div className="p-3 bg-muted rounded-full">
-                          <Upload className="h-6 w-6 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Drop your logo here or click to browse</p>
-                          <p className="text-xs text-muted-foreground">Optional • PNG, JPG, or SVG up to 5MB</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="border rounded-lg p-4 bg-muted/30">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg border bg-background p-1 flex items-center justify-center overflow-hidden">
-                          <img 
-                            src={newBrandData.logoPreview} 
-                            alt="Logo preview" 
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Logo uploaded</p>
-                          <p className="text-xs text-muted-foreground">Looks great!</p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setNewBrandData(prev => ({ ...prev, logoFile: null, logoPreview: "" }))}
-                        className="h-8 w-8 p-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
+              {/* Progress indicator */}
+              <div className="mt-6 flex items-center gap-2">
+                {[1, 2, 3].map((step) => (
+                  <div
+                    key={step}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      step <= addBrandStep 
+                        ? 'bg-white flex-1' 
+                        : 'bg-white/30 flex-1'
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </div>
-          
-          <div className="px-6 py-4 border-t bg-muted/30">
-            <DialogFooter className="gap-3">
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setShowAddBrandDialog(false);
-                  setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "", reportFrequency: "" });
-                }}
-                className="transition-all duration-200 hover:bg-muted h-9 px-4"
-                size="sm"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleAddNewBrand}
-                disabled={!newBrandData.name.trim() || !newBrandData.url.trim() || !newBrandData.reportFrequency}
-                className="bg-primary hover:bg-primary/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none disabled:shadow-none h-9 px-4"
-                size="sm"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add & Start Monitoring
-              </Button>
-            </DialogFooter>
+
+          {/* Content area with transitions */}
+          <div className="p-8">
+            <div className="min-h-[240px]">
+              {addBrandStep === 1 && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-2">
+                    <Label htmlFor="brand-name" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <div className="p-1.5 rounded-md bg-primary/10">
+                        <Building className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      Brand Name
+                    </Label>
+                    <Input
+                      id="brand-name"
+                      value={newBrandData.name}
+                      onChange={(e) => setNewBrandData(prev => ({ ...prev, name: e.target.value }))}
+                      className="h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary text-base"
+                      placeholder="e.g., Nike, Apple, Tesla"
+                      autoFocus
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Enter the official brand name you want to track
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="brand-url" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <div className="p-1.5 rounded-md bg-primary/10">
+                        <Globe className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      Website URL
+                    </Label>
+                    <Input
+                      id="brand-url"
+                      value={newBrandData.url}
+                      onChange={(e) => setNewBrandData(prev => ({ ...prev, url: e.target.value }))}
+                      className="h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary text-base"
+                      placeholder="https://yourbrand.com"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      The main website for brand verification
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {addBrandStep === 2 && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-4">
+                    <Label htmlFor="report-frequency" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <div className="p-1.5 rounded-md bg-primary/10">
+                        <Calendar className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      Monitoring Frequency
+                    </Label>
+                    <Select
+                      value={newBrandData.reportFrequency || ""}
+                      onValueChange={(value) => setNewBrandData(prev => ({ ...prev, reportFrequency: value }))}
+                    >
+                      <SelectTrigger className="h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary text-base">
+                        <SelectValue placeholder="Choose how often to check brand visibility" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border shadow-lg z-50">
+                        <SelectItem value="daily" disabled className="text-gray-400 text-base">
+                          <div className="flex items-center justify-between w-full">
+                            <span>Once daily</span>
+                            <Badge variant="secondary" className="ml-2 text-xs">Enterprise</Badge>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="weekly" className="text-base">Once a week</SelectItem>
+                        <SelectItem value="twiceweekly" className="text-base">Twice a week</SelectItem>
+                        <SelectItem value="biweekly" className="text-base">Biweekly</SelectItem>
+                        <SelectItem value="monthly" className="text-base">Monthly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      How often should we track this brand's AI visibility?
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <Zap className="h-4 w-4 text-primary" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-semibold text-foreground">Smart Monitoring</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Our AI-powered system continuously tracks your brand across major AI platforms and provides actionable insights.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {addBrandStep === 3 && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-3">
+                    <Label htmlFor="brand-logo" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <div className="p-1.5 rounded-md bg-primary/10">
+                        <ImageIcon className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      Brand Logo
+                    </Label>
+                    
+                    {!newBrandData.logoPreview ? (
+                      <div className="relative group">
+                        <Input
+                          id="brand-logo"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleLogoUpload}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        />
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-xl p-8 text-center hover:border-primary/50 transition-all duration-300 hover:bg-primary/5 group-hover:scale-[1.01] transform cursor-pointer">
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full group-hover:scale-110 transition-transform duration-300">
+                              <Upload className="h-7 w-7 text-primary" />
+                            </div>
+                            <div>
+                              <p className="text-base font-semibold text-foreground mb-1">Drop your logo here or click to browse</p>
+                              <p className="text-xs text-muted-foreground">PNG, JPG, or SVG • Max 5MB</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-primary/20 rounded-xl p-5 bg-gradient-to-br from-primary/5 to-transparent">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-xl border-2 border-primary/20 bg-white p-2 flex items-center justify-center overflow-hidden shadow-sm">
+                              <img 
+                                src={newBrandData.logoPreview} 
+                                alt="Logo preview" 
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-foreground">Logo uploaded successfully</p>
+                              <p className="text-xs text-muted-foreground">Your brand is ready to track</p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setNewBrandData(prev => ({ ...prev, logoFile: null, logoPreview: "" }))}
+                            className="h-9 w-9 p-0 hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Optional • Add your logo for better visual tracking
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Footer with gradient buttons */}
+          <div className="px-8 py-5 border-t bg-gradient-to-r from-muted/30 to-muted/10">
+            <div className="flex items-center justify-between gap-3">
+              {addBrandStep > 1 ? (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setAddBrandStep(prev => prev - 1)}
+                  className="h-10 px-5 hover:bg-muted transition-all duration-200"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Back
+                </Button>
+              ) : (
+                <Button 
+                  variant="ghost" 
+                  onClick={() => {
+                    setShowAddBrandDialog(false);
+                    setAddBrandStep(1);
+                    setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "", reportFrequency: "" });
+                  }}
+                  className="h-10 px-5 hover:bg-muted transition-all duration-200"
+                >
+                  Cancel
+                </Button>
+              )}
+
+              {addBrandStep < 3 ? (
+                <Button 
+                  onClick={() => setAddBrandStep(prev => prev + 1)}
+                  disabled={
+                    (addBrandStep === 1 && (!newBrandData.name.trim() || !newBrandData.url.trim())) ||
+                    (addBrandStep === 2 && !newBrandData.reportFrequency)
+                  }
+                  className="h-10 px-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none disabled:shadow-none"
+                >
+                  Continue
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => {
+                    handleAddNewBrand();
+                    setAddBrandStep(1);
+                  }}
+                  className="h-10 px-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add & Start Monitoring
+                </Button>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
