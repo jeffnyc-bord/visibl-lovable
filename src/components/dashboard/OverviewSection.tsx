@@ -602,53 +602,61 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
         {/* Manual Add Brand Dialog */}
         <Dialog open={showManualAddDialog} onOpenChange={setShowManualAddDialog}>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Add Competitor Manually</DialogTitle>
-              <DialogDescription>
-                Add a competitor brand to track in your industry ranking.
-              </DialogDescription>
+          <DialogContent className="sm:max-w-[550px] overflow-hidden">
+            {/* Gradient Header Background */}
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent" />
+            
+            <DialogHeader className="relative space-y-3 pb-2">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
+                  <Plus className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-2xl font-bold">Add Competitor</DialogTitle>
+                  <DialogDescription className="text-base mt-1">
+                    Track a new competitor in your industry ranking
+                  </DialogDescription>
+                </div>
+              </div>
             </DialogHeader>
             
             {/* Brand Limit Info */}
-            <div className="bg-muted/50 border rounded-lg p-3 mb-4">
+            <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border border-blue-200/50 dark:border-blue-800/50 rounded-xl p-4 mb-2">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-foreground">Tracked Brands</span>
+                <span className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-primary" />
+                  Tracked Brands
+                </span>
                 <span className="text-sm text-muted-foreground">
                   {currentBrandCount} / {maxBrands} (Standard Tier)
                 </span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div 
-                  className={`h-2 rounded-full transition-all ${
-                    currentBrandCount >= maxBrands ? 'bg-destructive' : 'bg-primary'
-                  }`}
-                  style={{ width: `${Math.min((currentBrandCount / maxBrands) * 100, 100)}%` }}
-                />
+              <div className="flex items-center gap-3">
+                <Progress value={(currentBrandCount / maxBrands) * 100} className="flex-1 h-2" />
+                <span className="text-sm font-bold text-foreground">{currentBrandCount}/{maxBrands}</span>
               </div>
-              {currentBrandCount >= maxBrands && (
-                <p className="text-xs text-destructive mt-2">
-                  You've reached your brand limit. Upgrade to Premium for 15 brands or Enterprise for 50 brands.
-                </p>
-              )}
+              <p className="text-xs text-muted-foreground mt-2">
+                {maxBrands - currentBrandCount} {maxBrands - currentBrandCount === 1 ? 'slot' : 'slots'} remaining on your {currentTier} plan
+              </p>
             </div>
-
+            
             {currentBrandCount >= maxBrands ? (
-              // Show upgrade prompt when at limit
-              <div className="text-center py-6">
-                <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Target className="w-6 h-6 text-destructive" />
+              // Show upgrade message when limit is reached
+              <div className="relative text-center py-12 space-y-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-950/30 dark:to-red-950/30 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+                  <Target className="w-10 h-10 text-orange-600 dark:text-orange-400" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-2">Brand Limit Reached</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  You're currently tracking {currentBrandCount} brands on the Standard Tier. 
-                  Upgrade to add more competitors to your ranking.
-                </p>
-                <div className="flex gap-2 justify-center">
-                  <Button variant="outline" onClick={() => setShowManualAddDialog(false)}>
-                    Cancel
+                <div>
+                  <h3 className="text-xl font-bold text-foreground mb-2">Brand Limit Reached</h3>
+                  <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
+                    You've reached the maximum number of tracked brands for your <span className="font-semibold text-foreground">{currentTier}</span> plan. Upgrade to track more competitors.
+                  </p>
+                </div>
+                <div className="flex gap-3 justify-center pt-4">
+                  <Button variant="outline" size="lg" onClick={() => setShowManualAddDialog(false)}>
+                    Close
                   </Button>
-                  <Button>
+                  <Button size="lg" className="bg-gradient-to-r from-primary to-primary/80">
                     Upgrade Plan
                   </Button>
                 </div>
@@ -656,64 +664,102 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             ) : (
               // Show form when under limit
               <>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="brand-name">
+                <div className="relative grid gap-5 py-2">
+                  <div className="grid gap-2.5 group">
+                    <Label htmlFor="brand-name" className="text-sm font-semibold flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                       Brand Name <span className="text-destructive">*</span>
                     </Label>
-                    <Input
-                      id="brand-name"
-                      value={manualBrandForm.name}
-                      onChange={(e) => setManualBrandForm(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="Enter competitor name"
-                    />
+                    <div className="relative">
+                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="brand-name"
+                        value={manualBrandForm.name}
+                        onChange={(e) => setManualBrandForm(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="e.g., Competitor Brand"
+                        className="pl-10 h-11 border-2 focus:border-primary transition-all"
+                      />
+                    </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="website">
+                  
+                  <div className="grid gap-2.5 group">
+                    <Label htmlFor="website" className="text-sm font-semibold flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                       Website URL <span className="text-destructive">*</span>
                     </Label>
-                    <Input
-                      id="website"
-                      value={manualBrandForm.website}
-                      onChange={(e) => setManualBrandForm(prev => ({ ...prev, website: e.target.value }))}
-                      placeholder="https://competitor.com"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      We'll use this to analyze their AI visibility and gather insights.
+                    <div className="relative">
+                      <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="website"
+                        value={manualBrandForm.website}
+                        onChange={(e) => setManualBrandForm(prev => ({ ...prev, website: e.target.value }))}
+                        placeholder="https://competitor.com"
+                        className="pl-10 h-11 border-2 focus:border-primary transition-all"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1.5 pl-1">
+                      <div className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+                      We'll use this to analyze their AI visibility and gather insights
                     </p>
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="report-frequency">
+                  <div className="grid gap-2.5 group">
+                    <Label htmlFor="report-frequency" className="text-sm font-semibold flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                       Report Frequency <span className="text-destructive">*</span>
                     </Label>
                     <Select
                       value={manualBrandForm.reportFrequency}
                       onValueChange={(value) => setManualBrandForm(prev => ({ ...prev, reportFrequency: value }))}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-11 border-2 focus:border-primary transition-all">
                         <SelectValue placeholder="Select monitoring frequency" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border shadow-lg z-50">
-                        <SelectItem value="daily" disabled className="text-gray-400">
-                          Once daily (Enterprise only)
+                      <SelectContent className="bg-background border-2 shadow-xl z-50">
+                        <SelectItem value="daily" disabled className="text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            Once daily (Enterprise only)
+                          </div>
                         </SelectItem>
-                        <SelectItem value="weekly">Once a week</SelectItem>
-                        <SelectItem value="twiceweekly">Twice a week</SelectItem>
-                        <SelectItem value="biweekly">Biweekly</SelectItem>
-                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="weekly">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            Once a week
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="twiceweekly">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            Twice a week
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="biweekly">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            Biweekly
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="monthly">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            Monthly
+                          </div>
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
                   {/* Logo Upload Field */}
-                  <div className="grid gap-2">
-                    <Label htmlFor="competitor-logo">
+                  <div className="grid gap-2.5">
+                    <Label htmlFor="competitor-logo" className="text-sm font-semibold flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
                       Brand Logo
+                      <span className="text-xs font-normal text-muted-foreground">(Optional)</span>
                     </Label>
                     
                     <div className="space-y-3">
                       {!manualBrandForm.logoPreview ? (
-                        <div className="relative">
+                        <div className="relative group/upload">
                           <Input
                             id="competitor-logo"
                             type="file"
@@ -734,23 +780,26 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                             }}
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                           />
-                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-primary/50 transition-colors duration-200 hover:bg-primary/5">
-                            <div className="flex flex-col items-center gap-2">
-                              <div className="p-2 bg-muted rounded-full">
-                                <Upload className="h-4 w-4 text-muted-foreground" />
+                          <div className="relative border-2 border-dashed border-muted-foreground/30 rounded-xl p-8 text-center transition-all duration-300 group-hover/upload:border-primary/60 group-hover/upload:bg-primary/5 group-hover/upload:shadow-lg group-hover/upload:shadow-primary/10">
+                            {/* Animated gradient border on hover */}
+                            <div className="absolute inset-0 rounded-xl opacity-0 group-hover/upload:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary/10 via-transparent to-primary/10 pointer-events-none" />
+                            
+                            <div className="relative flex flex-col items-center gap-3">
+                              <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl group-hover/upload:scale-110 transition-transform duration-300">
+                                <Upload className="h-6 w-6 text-primary" />
                               </div>
                               <div>
-                                <p className="text-sm font-medium text-foreground">Drop logo here or click to browse</p>
-                                <p className="text-xs text-muted-foreground">Optional • PNG, JPG, or SVG up to 5MB</p>
+                                <p className="text-sm font-semibold text-foreground mb-1">Drop logo here or click to browse</p>
+                                <p className="text-xs text-muted-foreground">PNG, JPG, or SVG up to 5MB</p>
                               </div>
                             </div>
                           </div>
                         </div>
                       ) : (
-                        <div className="border rounded-lg p-3 bg-muted/30">
+                        <div className="border-2 border-primary/20 rounded-xl p-4 bg-gradient-to-br from-primary/5 to-transparent animate-scale-in">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-lg border bg-background p-1 flex items-center justify-center overflow-hidden">
+                              <div className="w-12 h-12 rounded-xl border-2 border-primary/20 bg-background p-1.5 flex items-center justify-center overflow-hidden shadow-sm">
                                 <img 
                                   src={manualBrandForm.logoPreview} 
                                   alt="Logo preview" 
@@ -758,7 +807,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                                 />
                               </div>
                               <div>
-                                <p className="text-sm font-medium text-foreground">Logo uploaded</p>
+                                <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                  Logo uploaded
+                                  <CheckCircle className="w-4 h-4 text-green-600" />
+                                </p>
                                 <p className="text-xs text-muted-foreground">Ready to use</p>
                               </div>
                             </div>
@@ -766,9 +818,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                               variant="ghost"
                               size="sm"
                               onClick={() => setManualBrandForm(prev => ({ ...prev, logoFile: null, logoPreview: "" }))}
-                              className="h-6 w-6 p-0"
+                              className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
                             >
-                              <X className="h-3 w-3" />
+                              <X className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
@@ -776,14 +828,22 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                     </div>
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => {
-                    setShowManualAddDialog(false);
-                    setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
-                  }}>
+                
+                <DialogFooter className="relative gap-3 pt-6 border-t mt-2">
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    onClick={() => {
+                      setShowManualAddDialog(false);
+                      setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
+                    }}
+                    className="flex-1"
+                  >
                     Cancel
                   </Button>
                   <Button 
+                    size="lg"
+                    className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300"
                     onClick={() => {
                       if (!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency) return;
                       
@@ -835,6 +895,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                     }}
                     disabled={!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency}
                   >
+                    <Plus className="w-4 h-4 mr-2" />
                     Add Competitor
                   </Button>
                 </DialogFooter>
