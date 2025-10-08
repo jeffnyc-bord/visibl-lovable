@@ -845,27 +845,36 @@ const Index = () => {
                 <div className="flex items-center gap-8">
                   {/* Board Labs Logo (Left) */}
                   <div className="hexagon-container w-20 h-20 animate-pulse-subtle">
-                    <div className="hexagon bg-gradient-to-br from-white to-gray-50 shadow-2xl border-2 border-primary/20 flex items-center justify-center">
+                    <div className="hexagon bg-gradient-to-br from-white via-gray-50/80 to-gray-100/60 shadow-2xl border-2 border-primary/20 flex items-center justify-center relative overflow-hidden">
+                      {/* Inner glow effect */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10" />
                       <img 
                         src={boardLabsIcon} 
                         alt="Board Labs" 
-                        className="w-10 h-10 object-contain filter drop-shadow-md"
+                        className="w-10 h-10 object-contain filter drop-shadow-lg relative z-10"
                       />
                     </div>
                   </div>
                   
-                  {/* Connecting Line with arrow */}
+                  {/* Connecting Line with animated arrow */}
                   <div className="flex items-center gap-2">
-                    <div className="h-0.5 w-24 bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40 relative">
-                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary/60 rotate-45 translate-x-1" />
+                    <div className="h-0.5 w-24 bg-gradient-to-r from-primary/30 via-primary/70 to-primary/30 relative overflow-hidden">
+                      {/* Animated shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/40 to-transparent animate-shimmer" 
+                        style={{ animationDuration: '2s', animationIterationCount: 'infinite' }} />
+                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-gradient-to-br from-primary to-primary/80 rotate-45 translate-x-1 shadow-md" />
                     </div>
                   </div>
                   
                   {/* New Brand Icon (Right) */}
-                  <div className="hexagon-container w-20 h-20">
-                    <div className="hexagon bg-white shadow-lg border-2 border-primary/30 flex items-center justify-center">
-                      <div className="p-2.5 rounded-full bg-gradient-to-br from-primary/10 to-primary/20">
-                        <Plus className="h-6 w-6 text-primary" />
+                  <div className="hexagon-container w-20 h-20 group">
+                    <div className="hexagon bg-gradient-to-br from-white via-blue-50/30 to-primary/5 shadow-xl border-2 border-primary/30 flex items-center justify-center relative overflow-hidden transition-all duration-300 group-hover:shadow-2xl group-hover:border-primary/50">
+                      {/* Animated background gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-primary/0 via-primary/5 to-primary/10 opacity-50" />
+                      {/* Highlight effect */}
+                      <div className="absolute top-0 left-1/4 w-1/2 h-1/3 bg-white/40 blur-lg rounded-full" />
+                      <div className="p-2.5 rounded-full bg-gradient-to-br from-primary/15 to-primary/25 relative z-10 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                        <Plus className="h-6 w-6 text-primary drop-shadow-sm" />
                       </div>
                     </div>
                   </div>
