@@ -3,17 +3,35 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CreditCard, Download, Star, Shield } from "lucide-react";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 
 interface BillingSettingsProps {
   userRole: "business_user" | "agency_admin";
 }
 
 export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
-  // Mock current plan - in real app this would come from subscription status
-  const currentPlan = userRole === "agency_admin" ? "Starter" : "Business";
-  const monthlyPrice = userRole === "agency_admin" ? "$1,500" : "$99";
-  const yearlyPrice = userRole === "agency_admin" ? "$18,000" : "$1,188";
-  const clientLimit = userRole === "agency_admin" ? 5 : 1;
+  const { tier, limits, productsTracked } = useSubscription();
+  
+  // Map subscription tier to display values
+  const tierNames = {
+    free: 'Free',
+    pro: 'Pro',
+    enterprise: 'Enterprise'
+  };
+  
+  const tierPrices = {
+    free: '$0/month',
+    pro: '$99/month',
+    enterprise: 'Custom pricing'
+  };
+  
+  const currentPlan = tierNames[tier];
+  const planPrice = tierPrices[tier];
+  const planFeatures = tier === 'free'
+    ? ['Twice weekly tracking', 'Up to 10 products', 'Basic analytics', 'Community support']
+    : tier === 'pro'
+    ? ['Daily tracking', 'Up to 25 products', 'Advanced analytics', 'Priority support']
+    : ['Daily tracking', 'Unlimited products', 'Dedicated account manager', 'Custom integrations', 'SLA guarantee'];
 
   const billingHistory = [
     { date: "2024-01-01", amount: "$99.00", status: "Paid", invoice: "INV-2024-001" },
@@ -41,28 +59,11 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                 <h3 className="font-semibold">{currentPlan} Plan</h3>
                 <Badge variant="secondary">Active</Badge>
               </div>
-              <p className="text-sm text-gray-600 mt-1">
-                {userRole === "agency_admin" 
-                  ? `${monthlyPrice}/month • ${yearlyPrice}/year • Billed monthly` 
-                  : "Billed monthly"
-                }
-              </p>
-              <div className="mt-2 text-sm text-gray-500">
-                {userRole === "agency_admin" ? (
-                  <>
-                    <p>• {clientLimit} client accounts</p>
-                    <p>• Unlimited competitor tracking per client</p>
-                    <p>• White-label reports</p>
-                    <p>• Multi-client management dashboard</p>
-                    <p>• Team collaboration tools</p>
-                  </>
-                ) : (
-                  <>
-                    <p>• 1 deep-tracked brand</p>
-                    <p>• 5 competitor slots</p>
-                    <p>• Standard reports</p>
-                  </>
-                )}
+              <p className="text-sm text-muted-foreground mt-1">{planPrice}</p>
+              <div className="mt-2 text-sm text-muted-foreground">
+                {planFeatures.map((feature, index) => (
+                  <p key={index}>• {feature}</p>
+                ))}
               </div>
             </div>
             <div className="text-right">
@@ -70,21 +71,19 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-1 gap-4 p-4 bg-muted rounded-lg">
             <div>
-              <p className="text-sm font-medium text-gray-700">
-                {userRole === "agency_admin" ? "Client Accounts" : "Brands Used"}
-              </p>
+              <p className="text-sm font-medium">Products Tracked</p>
               <p className="text-2xl font-semibold">
-                {userRole === "agency_admin" ? `3 / ${clientLimit}` : "1 / 1"}
+                {productsTracked} / {limits.maxProducts === 999999 ? '∞' : limits.maxProducts}
               </p>
             </div>
-            {userRole !== "agency_admin" && (
-              <div>
-                <p className="text-sm font-medium text-gray-700">Competitor Slots</p>
-                <p className="text-2xl font-semibold">2 / 5</p>
-              </div>
-            )}
+            <div>
+              <p className="text-sm font-medium">Tracking Frequency</p>
+              <p className="text-2xl font-semibold capitalize">
+                {limits.trackingFrequency === 'twice_weekly' ? 'Twice Weekly' : 'Daily'}
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -108,7 +107,7 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
               </div>
               <div>
                 <p className="font-medium">•••• •••• •••• 4242</p>
-                <p className="text-sm text-gray-500">Expires 12/26</p>
+                <p className="text-sm text-muted-foreground">Expires 12/26</p>
               </div>
               <Badge variant="secondary">Default</Badge>
             </div>
@@ -138,7 +137,7 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                 <div className="flex items-center justify-between py-3">
                   <div>
                     <p className="font-medium">{bill.invoice}</p>
-                    <p className="text-sm text-gray-500">{bill.date}</p>
+                    <p className="text-sm text-muted-foreground">{bill.date}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-medium">{bill.amount}</p>
@@ -159,8 +158,8 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
         </CardContent>
       </Card>
 
-      {/* Available Plans for Agency Admins */}
-      {userRole === "agency_admin" && (
+      {/* Available Plans */}
+      {tier !== 'enterprise' && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -168,62 +167,114 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
               <span>Available Plans</span>
             </CardTitle>
             <CardDescription>
-              Choose the plan that best fits your agency's needs
+              Upgrade to unlock more features
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Current Starter Plan */}
-            <div className="border-2 border-green-200 bg-green-50 rounded-lg p-4">
-              <div className="flex items-center justify-between">
+          <CardContent>
+            <div className="grid gap-6 md:grid-cols-3">
+              {/* Free Plan */}
+              <div className={`border rounded-lg p-6 space-y-4 ${tier === 'free' ? 'border-primary' : ''}`}>
+                {tier === 'free' && <Badge className="mb-2">Current Plan</Badge>}
                 <div>
-                  <div className="flex items-center space-x-2">
-                    <h3 className="text-lg font-semibold text-green-800">Starter</h3>
-                    <Badge className="bg-green-600">Current Plan</Badge>
+                  <h3 className="text-lg font-semibold">Free</h3>
+                  <div className="mt-2">
+                    <span className="text-3xl font-bold">$0</span>
+                    <span className="text-muted-foreground">/month</span>
                   </div>
-                  <p className="text-green-700 font-medium">$1,500/month or $18,000/year</p>
-                  <ul className="text-sm text-green-700 mt-2 space-y-1">
-                    <li>• 5 client accounts</li>
-                    <li>• Unlimited competitor tracking per client</li>
-                    <li>• White-label reports</li>
-                    <li>• Team collaboration tools</li>
-                  </ul>
                 </div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Twice weekly tracking
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Up to 10 products
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Basic analytics
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Community support
+                  </li>
+                </ul>
+                {tier === 'free' && (
+                  <Button variant="outline" className="w-full" disabled>
+                    Current Plan
+                  </Button>
+                )}
               </div>
-            </div>
 
-            {/* Professional Plan */}
-            <div className="border rounded-lg p-4">
-              <div className="flex items-center justify-between">
+              {/* Pro Plan */}
+              <div className={`border-2 rounded-lg p-6 space-y-4 relative ${tier === 'pro' ? 'border-primary' : 'border-primary'}`}>
+                {tier === 'pro' ? (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">Current Plan</Badge>
+                ) : (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">Most Popular</Badge>
+                )}
                 <div>
-                  <h3 className="text-lg font-semibold">Professional</h3>
-                  <p className="text-gray-700 font-medium">$2,500/month or $30,000/year</p>
-                  <ul className="text-sm text-gray-600 mt-2 space-y-1">
-                    <li>• 15 client accounts</li>
-                    <li>• Everything in Starter, plus:</li>
-                    <li>• Advanced analytics and reporting</li>
-                    <li>• Priority support</li>
-                    <li>• Custom integrations</li>
-                  </ul>
+                  <h3 className="text-lg font-semibold">Pro</h3>
+                  <div className="mt-2">
+                    <span className="text-3xl font-bold">$99</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
                 </div>
-                <Button variant="outline">Upgrade</Button>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Daily tracking
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Up to 25 products
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Advanced analytics
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Priority support
+                  </li>
+                </ul>
+                <Button className="w-full" disabled={tier === 'pro'}>
+                  {tier === 'pro' ? 'Current Plan' : 'Upgrade to Pro'}
+                </Button>
               </div>
-            </div>
 
-            {/* Enterprise Plan */}
-            <div className="border rounded-lg p-4">
-              <div className="flex items-center justify-between">
+              {/* Enterprise Plan */}
+              <div className="border rounded-lg p-6 space-y-4">
                 <div>
                   <h3 className="text-lg font-semibold">Enterprise</h3>
-                  <p className="text-gray-700 font-medium">Contact Sales</p>
-                  <ul className="text-sm text-gray-600 mt-2 space-y-1">
-                    <li>• Unlimited client accounts</li>
-                    <li>• Everything in Professional, plus:</li>
-                    <li>• Dedicated account manager</li>
-                    <li>• Custom development</li>
-                    <li>• SLA guarantees</li>
-                  </ul>
+                  <div className="mt-2">
+                    <span className="text-3xl font-bold">Custom</span>
+                  </div>
                 </div>
-                <Button variant="outline">Contact Sales</Button>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Daily tracking
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Unlimited products
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Dedicated account manager
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Custom integrations
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    SLA guarantee
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full">Contact Sales</Button>
               </div>
             </div>
           </CardContent>

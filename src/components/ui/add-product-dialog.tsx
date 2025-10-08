@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useSubscription } from "@/contexts/SubscriptionContext";
+import { UpgradeDialog } from "./upgrade-dialog";
 
 interface AddProductDialogProps {
   trigger?: React.ReactNode;
@@ -16,6 +18,9 @@ interface AddProductDialogProps {
 export function AddProductDialog({ trigger, onProductAdded }: AddProductDialogProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const { canAddProduct, productsTracked, limits, refreshSubscription } = useSubscription();
+  
   const [formData, setFormData] = useState({
     name: "",
     url: "",
@@ -49,6 +54,12 @@ export function AddProductDialog({ trigger, onProductAdded }: AddProductDialogPr
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check product limit
+    if (!canAddProduct) {
+      setShowUpgradeDialog(true);
+      return;
+    }
+    
     if (!validateForm()) {
       return;
     }
@@ -69,6 +80,9 @@ export function AddProductDialog({ trigger, onProductAdded }: AddProductDialogPr
         score: null, // Will be populated after analysis
         status: "analyzing"
       };
+      
+      // Refresh subscription to update product count
+      await refreshSubscription();
       
       onProductAdded?.(newProduct);
       
@@ -107,131 +121,139 @@ export function AddProductDialog({ trigger, onProductAdded }: AddProductDialogPr
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button className="flex items-center space-x-2">
-            <Plus className="w-4 h-4" />
-            <span>Add Product/Service</span>
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            <Plus className="w-5 h-5" />
-            <span>Add Product/Service</span>
-          </DialogTitle>
-          <DialogDescription>
-            Manually add a product or service for AI readiness analysis. This will trigger an initial comprehensive scan.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">
-                Product/Service Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                placeholder="e.g., Nike Air Max 1"
-                value={formData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                className={errors.name ? "border-red-500" : ""}
-              />
-              {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button className="flex items-center space-x-2" disabled={!canAddProduct}>
+              <Plus className="w-4 h-4" />
+              <span>Add Product/Service {!canAddProduct && '(Limit Reached)'}</span>
+            </Button>
+          )}
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <Plus className="w-5 h-5" />
+              <span>Add Product/Service</span>
+            </DialogTitle>
+            <DialogDescription>
+              Manually add a product or service for AI readiness analysis ({productsTracked}/{limits.maxProducts === 999999 ? '∞' : limits.maxProducts} products used)
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-medium">
+                  Product/Service Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  placeholder="e.g., Nike Air Max 1"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  className={errors.name ? "border-red-500" : ""}
+                />
+                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="category" className="text-sm font-medium">
+                  Category
+                </Label>
+                <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category (optional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="footwear">Footwear</SelectItem>
+                    <SelectItem value="apparel">Apparel</SelectItem>
+                    <SelectItem value="accessories">Accessories</SelectItem>
+                    <SelectItem value="electronics">Electronics</SelectItem>
+                    <SelectItem value="services">Services</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="category" className="text-sm font-medium">
-                Category
+              <Label htmlFor="url" className="text-sm font-medium">
+                Primary URL <span className="text-red-500">*</span>
               </Label>
-              <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="footwear">Footwear</SelectItem>
-                  <SelectItem value="apparel">Apparel</SelectItem>
-                  <SelectItem value="accessories">Accessories</SelectItem>
-                  <SelectItem value="electronics">Electronics</SelectItem>
-                  <SelectItem value="services">Services</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input
+                id="url"
+                type="url"
+                placeholder="https://example.com/product-page"
+                value={formData.url}
+                onChange={(e) => handleInputChange("url", e.target.value)}
+                className={errors.url ? "border-red-500" : ""}
+              />
+              {errors.url && <p className="text-sm text-red-500">{errors.url}</p>}
+              <p className="text-xs text-muted-foreground">The main product/service page URL for analysis</p>
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="url" className="text-sm font-medium">
-              Primary URL <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="url"
-              type="url"
-              placeholder="https://example.com/product-page"
-              value={formData.url}
-              onChange={(e) => handleInputChange("url", e.target.value)}
-              className={errors.url ? "border-red-500" : ""}
-            />
-            {errors.url && <p className="text-sm text-red-500">{errors.url}</p>}
-            <p className="text-xs text-gray-500">The main product/service page URL for analysis</p>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="sku" className="text-sm font-medium">
-              SKU/Identifier
-            </Label>
-            <Input
-              id="sku"
-              placeholder="e.g., AIR-MAX-001 (optional)"
-              value={formData.sku}
-              onChange={(e) => handleInputChange("sku", e.target.value)}
-            />
-            <p className="text-xs text-gray-500">Internal product identifier or SKU</p>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-sm font-medium">
-              Short Description
-            </Label>
-            <Textarea
-              id="description"
-              placeholder="Brief description of the product/service (optional)"
-              value={formData.description}
-              onChange={(e) => handleInputChange("description", e.target.value)}
-              rows={3}
-              className="resize-none"
-            />
-          </div>
-          
-          <div className="flex items-center justify-between pt-4 border-t">
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <AlertCircle className="w-4 h-4" />
-              <span>Analysis typically takes 5-10 minutes</span>
+            
+            <div className="space-y-2">
+              <Label htmlFor="sku" className="text-sm font-medium">
+                SKU/Identifier
+              </Label>
+              <Input
+                id="sku"
+                placeholder="e.g., AIR-MAX-001 (optional)"
+                value={formData.sku}
+                onChange={(e) => handleInputChange("sku", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">Internal product identifier or SKU</p>
             </div>
-            <div className="flex space-x-2">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Adding...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Product
-                  </>
-                )}
-              </Button>
+            
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-sm font-medium">
+                Short Description
+              </Label>
+              <Textarea
+                id="description"
+                placeholder="Brief description of the product/service (optional)"
+                value={formData.description}
+                onChange={(e) => handleInputChange("description", e.target.value)}
+                rows={3}
+                className="resize-none"
+              />
             </div>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+            
+            <div className="flex items-center justify-between pt-4 border-t">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <AlertCircle className="w-4 h-4" />
+                <span>Analysis typically takes 5-10 minutes</span>
+              </div>
+              <div className="flex space-x-2">
+                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Product
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+      
+      <UpgradeDialog 
+        open={showUpgradeDialog} 
+        onOpenChange={setShowUpgradeDialog}
+        reason="product_limit"
+      />
+    </>
   );
 }
