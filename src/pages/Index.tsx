@@ -833,8 +833,15 @@ const Index = () => {
             </div>
             
             <div className="relative z-10">
+              {/* Title at top */}
+              <DialogHeader className="mb-8">
+                <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 text-center">
+                  Add New Brand to Your Platform
+                </DialogTitle>
+              </DialogHeader>
+
               {/* Horizontal layout with Board Labs logo, line, and new brand icon */}
-              <div className="flex justify-center items-center mb-6">
+              <div className="flex justify-center items-center mb-4">
                 <div className="flex items-center gap-8">
                   {/* Board Labs Logo (Left) */}
                   <div className="hexagon-container w-20 h-20 animate-pulse-subtle">
@@ -865,15 +872,10 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Title and description */}
-              <DialogHeader className="space-y-3 text-center">
-                <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700">
-                  Add New Brand to Your Platform
-                </DialogTitle>
-                <DialogDescription className="text-base text-muted-foreground max-w-md mx-auto">
-                  Join brands already being monitored on visibl. Track AI visibility across all major platforms.
-                </DialogDescription>
-              </DialogHeader>
+              {/* Description */}
+              <DialogDescription className="text-base text-muted-foreground text-center">
+                Track a new brand to monitor visibility across major AI platform
+              </DialogDescription>
               
               {/* Step indicator */}
               <div className="mt-6 flex items-center justify-center gap-6">
