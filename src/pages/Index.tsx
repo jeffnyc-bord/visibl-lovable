@@ -822,89 +822,18 @@ const Index = () => {
         }
       }}>
         <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden">
-          {/* Header with honeycomb design */}
+          {/* Header */}
           <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50/50 px-8 py-8 border-b overflow-hidden">
-            {/* Decorative hexagons - fewer but more detailed */}
-            <div className="absolute inset-0 pointer-events-none">
-              {/* Top left hexagon */}
-              <div className="absolute top-4 left-8 w-20 h-20 opacity-15">
-                <div className="hexagon bg-gradient-to-br from-primary/40 via-primary/20 to-transparent shadow-lg border border-primary/30" 
-                     style={{
-                       filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
-                       background: 'linear-gradient(135deg, hsl(var(--primary) / 0.15) 0%, hsl(var(--primary) / 0.05) 100%)'
-                     }} />
-              </div>
-              
-              {/* Top right hexagon */}
-              <div className="absolute top-2 right-12 w-16 h-16 opacity-20">
-                <div className="hexagon bg-gradient-to-br from-primary/30 to-primary/10 shadow-md border border-primary/20"
-                     style={{
-                       filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))',
-                       background: 'linear-gradient(135deg, hsl(var(--primary) / 0.2) 0%, transparent 100%)'
-                     }} />
-              </div>
-              
-              {/* Bottom left hexagon */}
-              <div className="absolute bottom-6 left-4 w-14 h-14 opacity-10">
-                <div className="hexagon bg-gradient-to-tr from-primary/35 to-transparent shadow-lg border border-primary/25"
-                     style={{
-                       filter: 'drop-shadow(0 3px 10px rgba(0,0,0,0.09))',
-                       background: 'linear-gradient(45deg, hsl(var(--primary) / 0.18) 0%, transparent 100%)'
-                     }} />
-              </div>
-              
-              {/* Bottom right hexagon */}
-              <div className="absolute bottom-3 right-6 w-18 h-18 opacity-12">
-                <div className="hexagon bg-gradient-to-tl from-primary/40 via-primary/15 to-transparent shadow-xl border-2 border-primary/20"
-                     style={{
-                       filter: 'drop-shadow(0 4px 14px rgba(0,0,0,0.12))',
-                       background: 'linear-gradient(225deg, hsl(var(--primary) / 0.25) 0%, hsl(var(--primary) / 0.08) 50%, transparent 100%)'
-                     }} />
-              </div>
-            </div>
-            
             <div className="relative z-10">
               {/* Title at top */}
-              <DialogHeader className="mb-8">
+              <DialogHeader className="mb-4">
                 <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 text-center">
                   Add New Brand to Your Platform
                 </DialogTitle>
               </DialogHeader>
 
-              {/* Horizontal layout with Board Labs logo, line, and new brand icon */}
-              <div className="flex justify-center items-center mb-4">
-                <div className="flex items-center gap-8">
-                  {/* Board Labs Logo (Left) */}
-                  <div className="hexagon-container w-20 h-20 animate-pulse-subtle">
-                    <div className="hexagon bg-gradient-to-br from-white to-gray-50 shadow-2xl border-2 border-primary/20 flex items-center justify-center">
-                      <img 
-                        src={boardLabsIcon} 
-                        alt="Board Labs" 
-                        className="w-10 h-10 object-contain filter drop-shadow-md"
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* Connecting Line with arrow */}
-                  <div className="flex items-center gap-2">
-                    <div className="h-0.5 w-24 bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40 relative">
-                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary/60 rotate-45 translate-x-1" />
-                    </div>
-                  </div>
-                  
-                  {/* New Brand Icon (Right) */}
-                  <div className="hexagon-container w-20 h-20">
-                    <div className="hexagon bg-white shadow-lg border-2 border-primary/30 flex items-center justify-center">
-                      <div className="p-2.5 rounded-full bg-gradient-to-br from-primary/10 to-primary/20">
-                        <Plus className="h-6 w-6 text-primary" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* Description */}
-              <DialogDescription className="text-base text-muted-foreground text-center">
+              <DialogDescription className="text-base text-muted-foreground text-center mb-6">
                 Track a new brand to monitor visibility across major AI platform
               </DialogDescription>
               
