@@ -823,7 +823,7 @@ const Index = () => {
       }}>
         <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden">
           {/* Header with honeycomb design */}
-          <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50/50 px-8 py-12 border-b overflow-hidden">
+          <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50/50 px-8 py-8 border-b overflow-hidden">
             {/* Decorative background pattern */}
             <div className="absolute inset-0 opacity-[0.03]">
               <div className="absolute inset-0" style={{
@@ -833,73 +833,33 @@ const Index = () => {
             </div>
             
             <div className="relative z-10">
-              {/* Honeycomb pattern with logos */}
+              {/* Horizontal layout with Board Labs logo, line, and new brand icon */}
               <div className="flex justify-center items-center mb-6">
-                <div className="relative" style={{ width: '280px', height: '200px' }}>
-                  {/* Define hexagon positions in a honeycomb pattern */}
-                  {/* Top row - 3 hexagons */}
-                  <div className="absolute" style={{ left: '35px', top: '0px' }}>
-                    <div className="hexagon-container w-16 h-16 opacity-40">
-                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
-                    </div>
-                  </div>
-                  <div className="absolute" style={{ left: '110px', top: '0px' }}>
-                    <div className="hexagon-container w-20 h-20">
-                      <div className="hexagon bg-white shadow-lg border border-gray-200/50 flex items-center justify-center">
-                        <div className="p-3 rounded-full bg-gradient-to-br from-primary/5 to-primary/10">
-                          <Plus className="h-5 w-5 text-primary" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="absolute" style={{ left: '185px', top: '0px' }}>
-                    <div className="hexagon-container w-16 h-16 opacity-40">
-                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
+                <div className="flex items-center gap-8">
+                  {/* Board Labs Logo (Left) */}
+                  <div className="hexagon-container w-20 h-20 animate-pulse-subtle">
+                    <div className="hexagon bg-gradient-to-br from-white to-gray-50 shadow-2xl border-2 border-primary/20 flex items-center justify-center">
+                      <img 
+                        src={boardLabsIcon} 
+                        alt="Board Labs" 
+                        className="w-10 h-10 object-contain filter drop-shadow-md"
+                      />
                     </div>
                   </div>
                   
-                  {/* Middle row - 4 hexagons with center being Board Labs */}
-                  <div className="absolute" style={{ left: '0px', top: '70px' }}>
-                    <div className="hexagon-container w-18 h-18 opacity-30">
-                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
-                    </div>
-                  </div>
-                  <div className="absolute" style={{ left: '72px', top: '70px' }}>
-                    <div className="hexagon-container w-20 h-20">
-                      <div className="hexagon bg-white shadow-lg border border-gray-200/50 flex items-center justify-center">
-                        <div className="p-3 rounded-full bg-gradient-to-br from-primary/5 to-primary/10">
-                          <Building className="h-5 w-5 text-primary" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* CENTER - Board Labs Logo */}
-                  <div className="absolute" style={{ left: '148px', top: '70px' }}>
-                    <div className="hexagon-container w-24 h-24 animate-pulse-subtle">
-                      <div className="hexagon bg-gradient-to-br from-white to-gray-50 shadow-2xl border-2 border-primary/20 flex items-center justify-center">
-                        <img 
-                          src={boardLabsIcon} 
-                          alt="Board Labs" 
-                          className="w-12 h-12 object-contain filter drop-shadow-md"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="absolute" style={{ left: '224px', top: '70px' }}>
-                    <div className="hexagon-container w-18 h-18 opacity-30">
-                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
+                  {/* Connecting Line with arrow */}
+                  <div className="flex items-center gap-2">
+                    <div className="h-0.5 w-24 bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40 relative">
+                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary/60 rotate-45 translate-x-1" />
                     </div>
                   </div>
                   
-                  {/* Bottom row - 2 hexagons */}
-                  <div className="absolute" style={{ left: '72px', top: '140px' }}>
-                    <div className="hexagon-container w-16 h-16 opacity-40">
-                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
-                    </div>
-                  </div>
-                  <div className="absolute" style={{ left: '148px', top: '140px' }}>
-                    <div className="hexagon-container w-16 h-16 opacity-40">
-                      <div className="hexagon bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm" />
+                  {/* New Brand Icon (Right) */}
+                  <div className="hexagon-container w-20 h-20">
+                    <div className="hexagon bg-white shadow-lg border-2 border-primary/30 flex items-center justify-center">
+                      <div className="p-2.5 rounded-full bg-gradient-to-br from-primary/10 to-primary/20">
+                        <Plus className="h-6 w-6 text-primary" />
+                      </div>
                     </div>
                   </div>
                 </div>
