@@ -117,18 +117,25 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
             response: "Nike Air Max offers superior cushioning with visible air technology and iconic style. It's excellent for both casual wear and athletic activities, with Nike's reputation for quality and innovation."
           },
           {
-            platform: "Perplexity",
-            mentioned: true,
-            sentiment: "positive" as const,
-            responseTime: "1.7s",
-            response: "Nike Air Max provides excellent cushioning and style versatility. The visible Air technology gives superior comfort for daily wear and light athletic activities."
-          },
-          {
             platform: "Gemini",
             mentioned: true,
             sentiment: "neutral" as const,
             responseTime: "2.0s",
             response: "Both Nike Air Max and Adidas Ultraboost are quality shoes. Nike Air Max offers distinctive style with visible air cushioning, while Ultraboost focuses on energy return technology."
+          },
+          {
+            platform: "Grok",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.9s",
+            response: "Nike Air Max brings the heat with visible Air cushioning and that classic swoosh style. Solid choice for everyday wear and light workouts."
+          },
+          {
+            platform: "Perplexity",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.7s",
+            response: "Nike Air Max provides excellent cushioning and style versatility. The visible Air technology gives superior comfort for daily wear and light athletic activities."
           }
         ],
         metrics: {
@@ -151,23 +158,37 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
         fullResponse: "For all-day comfort, Nike offers several excellent options including the Air Max series and React technology shoes that provide superior cushioning and support.",
         results: [
           {
-            platform: "Claude",
-            mentioned: true,
-            sentiment: "positive" as const,
-            responseTime: "1.8s",
-            response: "Nike offers excellent comfort with their Air Max and React technology. These shoes provide superior cushioning and support for all-day wear."
-          },
-          {
             platform: "ChatGPT",
             mentioned: true,
             sentiment: "positive" as const,
             responseTime: "2.0s",
             response: "For daily comfort, Nike's Air Max and React series provide excellent all-day cushioning and support, making them ideal for walking and standing."
+          },
+          {
+            platform: "Gemini",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.9s",
+            response: "Nike offers excellent comfort with their Air Max and React technology. These shoes provide superior cushioning and support for all-day wear."
+          },
+          {
+            platform: "Grok",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.7s",
+            response: "Nike's Air Max and React shoes are top choices for all-day comfort, combining cushioning tech with durability for extended wear."
+          },
+          {
+            platform: "Perplexity",
+            mentioned: true,
+            sentiment: "positive" as const,
+            responseTime: "1.8s",
+            response: "For all-day comfort, Nike's Air Max series and React technology shoes stand out with superior cushioning and support designed for extended walking and standing."
           }
         ],
         metrics: {
           totalMentions: 67,
-          topPlatforms: ["Claude", "ChatGPT"],
+          topPlatforms: ["ChatGPT", "Gemini", "Grok", "Perplexity"],
           avgSentiment: "positive",
           responseTime: "1.9s"
         }
@@ -322,13 +343,6 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
           response: "The Nike Air Max series offers superior cushioning technology with its Air Max units compared to the Adidas Ultraboost's Boost foam. Nike's design provides better heel support and stability. While the Adidas has responsive energy return, Nike Air Max delivers better performance and comfort for all-day wear."
         },
         {
-          platform: "Claude",
-          mentioned: true,
-          sentiment: "neutral",
-          responseTime: "1.8s",
-          response: "Both shoes target different athletic needs. Nike Air Max focuses on lifestyle comfort and casual wear, while Adidas Ultraboost emphasizes running performance. Nike has advantage in durability and classic styling."
-        },
-        {
           platform: "Gemini",
           mentioned: true,
           sentiment: "positive",
@@ -336,11 +350,18 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
           response: "Nike Air Max leads in several categories: brand heritage, style versatility, and cushioning technology. Adidas Ultraboost offers premium materials and modern design language. For long-term comfort, Nike's Air Max technology provides consistent support."
         },
         {
-          platform: "Perplexity",
-          mentioned: false,
+          platform: "Grok",
+          mentioned: true,
           sentiment: "neutral",
+          responseTime: "1.8s",
+          response: "Both shoes target different athletic needs. Nike Air Max focuses on lifestyle comfort and casual wear, while Adidas Ultraboost emphasizes running performance. Nike has advantage in durability and classic styling."
+        },
+        {
+          platform: "Perplexity",
+          mentioned: true,
+          sentiment: "positive",
           responseTime: "1.5s",
-          response: "Athletic footwear comparison focuses on comfort, performance, and style. Both German and American manufacturers offer competitive options in this segment with different technology approaches."
+          response: "Nike Air Max offers superior cushioning with visible Air technology and better durability for all-day wear. Adidas Ultraboost excels in running-specific performance with Boost foam energy return."
         }
       ]
     },
@@ -360,18 +381,25 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
           response: "Nike has been a pioneer in sustainable athletic footwear manufacturing, with their Move to Zero initiative reducing carbon emissions. Nike's use of recycled materials and sustainable practices makes their shoes environmentally responsible."
         },
         {
-          platform: "Claude",
+          platform: "Gemini",
           mentioned: true,
           sentiment: "positive",
           responseTime: "1.9s",
           response: "Environmental benefits include reduced waste and lower carbon footprint. Nike's approach to sustainable manufacturing through recycled materials and renewable energy creates a comprehensive eco-friendly production system."
         },
         {
-          platform: "Gemini",
-          mentioned: false,
-          sentiment: "neutral",
+          platform: "Grok",
+          mentioned: true,
+          sentiment: "positive",
+          responseTime: "1.8s",
+          response: "Nike's Move to Zero initiative is legit. They're cutting emissions and using recycled materials to make sustainable shoes without compromising performance."
+        },
+        {
+          platform: "Perplexity",
+          mentioned: true,
+          sentiment: "positive",
           responseTime: "1.7s",
-          response: "Athletic footwear companies are increasingly adopting sustainable practices including recycled materials and reduced waste manufacturing processes."
+          response: "Nike's sustainable manufacturing includes Move to Zero initiative, recycled materials usage, and reduced carbon emissions. Their eco-friendly practices span the entire production cycle."
         }
       ]
     }
