@@ -17,6 +17,7 @@ import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IndustryRankingEmpty } from "@/components/ui/industry-ranking-empty";
+import { GradientMetricCard, GradientBadge, FeatureCard } from "@/components/ui/gradient-cards";
 import boardLabsIcon from "@/assets/board-labs-icon-hex.png";
 
 interface BrandData {
@@ -425,6 +426,73 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </CardContent>
         </Card>
       </div>
+
+      {/* Elegant Gradient Insights Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <GradientMetricCard
+          title="Visibility Trend"
+          value="+23%"
+          change="vs last month"
+          icon={<TrendingUp className="w-5 h-5" />}
+          gradient="purple"
+        />
+        <GradientMetricCard
+          title="AI Platform Reach"
+          value={brandData.platforms.length}
+          change="platforms"
+          icon={<MessageSquare className="w-5 h-5" />}
+          gradient="blue"
+        />
+        <GradientMetricCard
+          title="Sentiment Score"
+          value={`${brandData.sentimentScore}%`}
+          change="positive"
+          icon={<Star className="w-5 h-5" />}
+          gradient="pink"
+        />
+      </div>
+
+      {/* Quick Insights with Gradient Badges */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Eye className="w-5 h-5 text-primary" />
+            Quick Insights
+          </CardTitle>
+          <CardDescription>
+            Key highlights from your AI visibility performance
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FeatureCard
+              icon={<TrendingUp className="w-5 h-5" />}
+              title="Strong Momentum"
+              description={`Your visibility score increased by 5 points this week, ranking you #${brandData.industryRanking} in your industry.`}
+              gradient="purple"
+            />
+            <FeatureCard
+              icon={<MessageSquare className="w-5 h-5" />}
+              title="Platform Coverage"
+              description={`Active presence across ${brandData.platforms.length} major AI platforms with ${brandData.totalMentions.toLocaleString()} total mentions.`}
+              gradient="blue"
+            />
+          </div>
+          
+          <div className="flex flex-wrap gap-3 mt-6 pt-6 border-t">
+            <GradientBadge variant="primary">
+              <Star className="w-3.5 h-3.5" />
+              Top Performer
+            </GradientBadge>
+            <GradientBadge variant="success">
+              {brandData.mentionTrend === "up" ? "↑" : "→"} Trending Up
+            </GradientBadge>
+            <GradientBadge variant="info">
+              {brandData.platformCoverage}% Coverage
+            </GradientBadge>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
