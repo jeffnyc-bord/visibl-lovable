@@ -18,10 +18,10 @@ export function IndustryRankingEmpty({ onAddCompetitor }: IndustryRankingEmptyPr
         {/* Text content */}
         <div className="space-y-2">
           <h3 className="text-xl font-semibold text-foreground">
-            Track Your Competition
+            Track Businesses In Your Industry
           </h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Monitor how your competitors rank in AI visibility. 
+            Monitor how other businesses in your industry rank in AI visibility. 
             Compare mentions, scores, and track position changes over time.
           </p>
         </div>
@@ -55,7 +55,7 @@ export function IndustryRankingEmpty({ onAddCompetitor }: IndustryRankingEmptyPr
           className="mt-2"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Your First Competitor
+          Add Your First Business
         </Button>
       </div>
     </div>
