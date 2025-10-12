@@ -251,7 +251,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </div>
         <ReportExportDialog
           trigger={
-            <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg">
+            <Button>
               <FileText className="w-4 h-4 mr-2" />
               Export Report
             </Button>
@@ -619,11 +619,11 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         }}>
           <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden">
             {/* Header */}
-            <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50/50 px-8 py-8 border-b overflow-hidden">
+            <div className="px-8 py-8 border-b">
               <div className="relative z-10">
                 {/* Title at top */}
                 <DialogHeader className="mb-4">
-                  <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 text-center">
+                  <DialogTitle className="text-2xl font-semibold text-center">
                     Add Competitor Brand
                   </DialogTitle>
                 </DialogHeader>
@@ -637,7 +637,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 <div className="flex justify-center items-center mb-6">
                   <div className="flex items-center gap-6">
                     {/* Board Labs Logo */}
-                    <div className="w-16 h-16 rounded-full border border-gray-200/60 bg-white shadow-sm flex items-center justify-center p-2">
+                    <div className="w-16 h-16 rounded-full border bg-white shadow-sm flex items-center justify-center p-2">
                       <img 
                         src={boardLabsIcon} 
                         alt="Board Labs" 
@@ -646,13 +646,13 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                     </div>
                     
                     {/* Connecting Line */}
-                    <div className="h-px w-16 bg-gradient-to-r from-gray-300/40 via-gray-400/60 to-gray-300/40 relative">
-                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-gray-400/60 rotate-45 translate-x-1" />
+                    <div className="h-px w-16 bg-border relative">
+                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-border rotate-45 translate-x-1" />
                     </div>
                     
                     {/* Plus Icon */}
-                    <div className="w-16 h-16 rounded-full border border-gray-200/60 bg-white shadow-sm flex items-center justify-center">
-                      <Plus className="h-7 w-7 text-gray-700 stroke-[1.5]" />
+                    <div className="w-16 h-16 rounded-full border bg-white shadow-sm flex items-center justify-center">
+                      <Plus className="h-7 w-7 text-foreground stroke-[1.5]" />
                     </div>
                   </div>
                 </div>
@@ -696,7 +696,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 {currentBrandCount >= maxBrands ? (
                 // Show upgrade message when limit is reached
                 <div className="relative text-center py-16 space-y-6 animate-fade-in">
-                  <div className="w-24 h-24 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-950/30 dark:to-red-950/30 rounded-3xl flex items-center justify-center mx-auto shadow-xl">
+                  <div className="w-24 h-24 bg-orange-100 dark:bg-orange-950/30 rounded-3xl flex items-center justify-center mx-auto shadow-sm">
                     <Target className="w-12 h-12 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
@@ -714,7 +714,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                     <Button variant="outline" size="lg" onClick={() => setShowManualAddDialog(false)}>
                       Close
                     </Button>
-                    <Button size="lg" className="bg-gradient-to-r from-primary to-primary/80 hover:shadow-lg">
+                    <Button size="lg">
                       <Star className="w-4 h-4 mr-2" />
                       Upgrade Plan
                     </Button>
@@ -862,11 +862,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                                   }}
                                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                 />
-                                <div className="relative border-2 border-dashed border-muted-foreground/30 rounded-2xl p-16 text-center transition-all duration-300 group-hover/upload:border-primary/60 group-hover/upload:bg-primary/5 group-hover/upload:shadow-xl cursor-pointer">
-                                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover/upload:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary/10 via-transparent to-primary/10 pointer-events-none" />
+                                <div className="relative border-2 border-dashed border-muted-foreground/30 rounded-2xl p-16 text-center transition-all duration-300 group-hover/upload:border-primary/60 group-hover/upload:bg-primary/5 cursor-pointer">
                                   
                                   <div className="relative flex flex-col items-center gap-4">
-                                    <div className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-3xl group-hover/upload:scale-110 transition-transform duration-300">
+                                    <div className="p-6 bg-primary/10 rounded-3xl group-hover/upload:scale-110 transition-transform duration-300">
                                       <Upload className="h-10 w-10 text-primary" />
                                     </div>
                                     <div>
@@ -878,7 +877,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                                 </div>
                               </div>
                             ) : (
-                              <div className="border-2 border-primary/20 rounded-2xl p-6 bg-gradient-to-br from-primary/5 to-transparent animate-scale-in">
+                              <div className="border-2 border-primary/20 rounded-2xl p-6 bg-primary/5 animate-scale-in">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-4">
                                     <div className="w-16 h-16 rounded-2xl border-2 border-primary/20 bg-background p-2 flex items-center justify-center overflow-hidden shadow-lg">
@@ -922,7 +921,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             
             {/* Footer Actions */}
             {currentBrandCount < maxBrands && (
-              <div className="px-8 py-5 border-t bg-gradient-to-r from-muted/30 to-muted/10">
+              <div className="px-8 py-5 border-t bg-muted/30">
                 <div className="flex items-center justify-between gap-3">
                   {addCompetitorStep > 1 ? (
                     <Button 
@@ -954,7 +953,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                         (addCompetitorStep === 1 && (!manualBrandForm.name.trim() || !manualBrandForm.website.trim())) ||
                         (addCompetitorStep === 2 && !manualBrandForm.reportFrequency)
                       }
-                      className="h-10 px-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none disabled:shadow-none"
+                      className="h-10 px-6"
                     >
                       Continue
                       <ChevronRight className="h-4 w-4 ml-1" />
@@ -1011,7 +1010,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                           });
                         }, 3000);
                       }}
-                      className="h-10 px-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                      className="h-10 px-6"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Add & Start Tracking

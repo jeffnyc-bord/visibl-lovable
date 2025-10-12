@@ -587,11 +587,11 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       }}>
         <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden">
           {/* Header */}
-          <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50/50 px-8 py-8 border-b overflow-hidden">
+          <div className="px-8 py-8 border-b">
             <div className="relative z-10">
               {/* Title at top */}
               <DialogHeader className="mb-4">
-                <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 text-center">
+                <DialogTitle className="text-2xl font-semibold text-center">
                   Add New Brand to Your Platform
                 </DialogTitle>
               </DialogHeader>
@@ -605,7 +605,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
               <div className="flex justify-center items-center mb-6">
                 <div className="flex items-center gap-6">
                   {/* Board Labs Logo */}
-                  <div className="w-16 h-16 rounded-full border border-gray-200/60 bg-white shadow-sm flex items-center justify-center p-2">
+                  <div className="w-16 h-16 rounded-full border bg-white shadow-sm flex items-center justify-center p-2">
                     <img 
                       src={boardLabsIcon} 
                       alt="Board Labs" 
@@ -614,13 +614,13 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                   </div>
                   
                   {/* Connecting Line */}
-                  <div className="h-px w-16 bg-gradient-to-r from-gray-300/40 via-gray-400/60 to-gray-300/40 relative">
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-gray-400/60 rotate-45 translate-x-1" />
+                  <div className="h-px w-16 bg-border relative">
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-border rotate-45 translate-x-1" />
                   </div>
                   
                   {/* Plus Icon */}
-                  <div className="w-16 h-16 rounded-full border border-gray-200/60 bg-white shadow-sm flex items-center justify-center">
-                    <Plus className="h-7 w-7 text-gray-700 stroke-[1.5]" />
+                  <div className="w-16 h-16 rounded-full border bg-white shadow-sm flex items-center justify-center">
+                    <Plus className="h-7 w-7 text-foreground stroke-[1.5]" />
                   </div>
                 </div>
               </div>
@@ -777,7 +777,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                         />
                         <div className="border-2 border-dashed border-muted-foreground/25 rounded-xl p-8 text-center hover:border-primary/50 transition-all duration-300 hover:bg-primary/5 group-hover:scale-[1.01] transform cursor-pointer">
                           <div className="flex flex-col items-center gap-3">
-                            <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full group-hover:scale-110 transition-transform duration-300">
+                            <div className="p-4 bg-primary/10 rounded-full group-hover:scale-110 transition-transform duration-300">
                               <Upload className="h-7 w-7 text-primary" />
                             </div>
                             <div>
@@ -824,7 +824,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
           </div>
 
           {/* Footer with gradient buttons */}
-          <div className="px-8 py-5 border-t bg-gradient-to-r from-muted/30 to-muted/10">
+          <div className="px-8 py-5 border-t bg-muted/30">
             <div className="flex items-center justify-between gap-3">
               {addBrandStep > 1 ? (
                 <Button 
@@ -856,7 +856,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                     (addBrandStep === 1 && (!newBrandData.name.trim() || !newBrandData.url.trim())) ||
                     (addBrandStep === 2 && !newBrandData.reportFrequency)
                   }
-                  className="h-10 px-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none disabled:shadow-none"
+                  className="h-10 px-6"
                 >
                   Continue
                   <ChevronRight className="h-4 w-4 ml-1" />
@@ -867,7 +867,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                     handleAddBrand();
                     setAddBrandStep(1);
                   }}
-                  className="h-10 px-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                  className="h-10 px-6"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add & Start Monitoring
