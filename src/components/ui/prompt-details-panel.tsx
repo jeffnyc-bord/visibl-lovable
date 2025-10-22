@@ -38,6 +38,9 @@ interface PromptDetailsPanelProps {
 export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetailsPanelProps) => {
   const [selectedPlatform, setSelectedPlatform] = useState<string>("ChatGPT");
   
+  // All tracked platforms
+  const allPlatforms = ["ChatGPT", "Perplexity", "Gemini", "Grok"];
+  
   // Initialize selected platform with the first available result
   React.useEffect(() => {
     if (isOpen && promptData?.results?.length > 0) {
@@ -163,10 +166,11 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
             {/* Enhanced Carousel Navigation */}
             <div className="flex items-center justify-center py-8">
               <div className="flex items-center space-x-2">
-                {promptData.results.map((result, index) => {
-                  const styles = getPlatformStyles(result.platform);
-                  const isSelected = selectedPlatform === result.platform;
-                  const selectedIndex = promptData.results.findIndex(r => r.platform === selectedPlatform);
+                {allPlatforms.map((platform, index) => {
+                  const styles = getPlatformStyles(platform);
+                  const hasResult = promptData.results.some(r => r.platform === platform);
+                  const isSelected = selectedPlatform === platform;
+                  const selectedIndex = allPlatforms.findIndex(p => p === selectedPlatform);
                   
                   // Calculate dynamic margin based on position relative to selected
                   let marginClass = "";
@@ -180,20 +184,23 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                   
                   return (
                     <button
-                      key={result.platform}
-                      onClick={() => setSelectedPlatform(result.platform)}
+                      key={platform}
+                      onClick={() => hasResult && setSelectedPlatform(platform)}
+                      disabled={!hasResult}
                       className={cn(
                         "relative transition-all duration-300 ease-out transform-gpu will-change-transform",
                         isSelected ? "scale-150 z-10" : "scale-75 opacity-60 hover:scale-85 hover:opacity-80",
+                        !hasResult && "opacity-30 cursor-not-allowed hover:scale-75",
                         marginClass
                       )}
                     >
                       <img 
                         src={styles.logo} 
-                        alt={`${result.platform} logo`}
+                        alt={`${platform} logo`}
                         className={cn(
                           "w-16 h-16 object-contain transition-all duration-300 ease-out",
-                          isSelected ? "drop-shadow-lg" : ""
+                          isSelected ? "drop-shadow-lg" : "",
+                          !hasResult && "grayscale"
                         )}
                       />
                     </button>
