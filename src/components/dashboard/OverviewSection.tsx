@@ -131,12 +131,12 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   ];
 
   const sourceQuality = [
-    { source: "Nike.com (Official)", mentions: 342, authority: "high", freshness: "current" },
-    { source: "ESPN Sports Analysis", mentions: 298, authority: "high", freshness: "current" },
-    { source: "Footwear News Industry", mentions: 215, authority: "high", freshness: "current" },
-    { source: "Complex Sneakers Reviews", mentions: 187, authority: "medium", freshness: "current" },
-    { source: "Runner's World Gear Tests", mentions: 156, authority: "medium", freshness: "current" },
-    { source: "Sneaker Community Forums", mentions: 123, authority: "low", freshness: "current" },
+    { source: "www.nike.com", url: "https://www.nike.com", mentions: 342 },
+    { source: "www.espn.com", url: "https://www.espn.com", mentions: 298 },
+    { source: "www.footwearnews.com", url: "https://www.footwearnews.com", mentions: 215 },
+    { source: "www.complex.com", url: "https://www.complex.com", mentions: 187 },
+    { source: "www.runnersworld.com", url: "https://www.runnersworld.com", mentions: 156 },
+    { source: "www.reddit.com", url: "https://www.reddit.com", mentions: 123 },
   ];
 
   const allPlatformMentionsData = [
@@ -480,7 +480,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 {(showAllSources ? sourceQuality : sourceQuality.slice(0, 3)).map((source, index) => (
                   <TableRow 
                     key={index}
-                    className="animate-fade-in"
+                    onClick={() => window.open(source.url, '_blank')}
+                    className="animate-fade-in cursor-pointer transition-all duration-200 hover:bg-muted/50"
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
                     <TableCell className="font-medium">{source.source}</TableCell>
