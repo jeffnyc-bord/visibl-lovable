@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowLeft,
@@ -570,47 +571,65 @@ export const ProductDetail = () => {
           <TabsContent value="mentions" className="space-y-8">
             <div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Product AI Mentions</h3>
-              <p className="text-gray-600 mb-8">How {mockProduct.name} appears across different AI platforms</p>
-              <div className="space-y-6">
-                 {aiMentions.map((mention) => (
-                   <div 
-                     key={mention.id} 
-                     className="border-l-4 border-purple-500 bg-white pl-6 pr-6 py-6 hover:bg-gray-50 transition-colors duration-200 rounded-r-3xl shadow-sm cursor-pointer"
-                     onClick={() => handleMentionClick(mention.id)}
-                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-3xl bg-gradient-to-r from-purple-500 to-violet-500 flex items-center justify-center">
-                          <Globe className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <Badge variant="outline" className="mb-1">{mention.model}</Badge>
-                          <div className="text-xs text-gray-500">{mention.date}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge 
-                          className={
-                            mention.sentiment === 'positive' ? 'bg-green-50 text-green-700 border-green-200' :
-                            mention.sentiment === 'negative' ? 'bg-red-50 text-red-700 border-red-200' :
-                            'bg-gray-50 text-gray-700 border-gray-200'
-                          }
-                          variant="outline"
-                        >
-                          {mention.sentiment}
-                        </Badge>
-                        <Button size="sm" variant="ghost" className="text-gray-400 hover:text-gray-600">
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="font-medium text-gray-900">"{mention.query}"</p>
-                      <p className="text-gray-600 leading-relaxed">"{mention.excerpt}"</p>
-                      <p className="text-xs text-gray-500">Source: {mention.url}</p>
-                    </div>
-                  </div>
-                ))}
+              <p className="text-gray-600 mb-6">How {mockProduct.name} appears across different AI platforms</p>
+              
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="font-semibold">Query</TableHead>
+                      <TableHead className="font-semibold">Platform</TableHead>
+                      <TableHead className="font-semibold">Sentiment</TableHead>
+                      <TableHead className="font-semibold">Source</TableHead>
+                      <TableHead className="font-semibold">Date</TableHead>
+                      <TableHead className="w-16"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {aiMentions.map((mention) => (
+                      <TableRow 
+                        key={mention.id} 
+                        className="hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleMentionClick(mention.id)}
+                      >
+                        <TableCell>
+                          <p className="font-medium text-gray-900 max-w-xs truncate">{mention.query}</p>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{mention.model}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            className={
+                              mention.sentiment === 'positive' ? 'bg-green-50 text-green-700 border-green-200' :
+                              mention.sentiment === 'negative' ? 'bg-red-50 text-red-700 border-red-200' :
+                              'bg-gray-50 text-gray-700 border-gray-200'
+                            }
+                            variant="outline"
+                          >
+                            {mention.sentiment}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm text-gray-600">{mention.url.split('/')[0]}</p>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm text-gray-500">{mention.date}</p>
+                        </TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="text-gray-400 hover:text-gray-600"
+                            onClick={() => window.open(`https://${mention.url}`, '_blank')}
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </div>
           </TabsContent>
