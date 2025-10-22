@@ -143,23 +143,69 @@ export const ProductDetail = () => {
 
     const baseUrl = mention.url.startsWith('http') ? mention.url : `https://${mention.url}`;
 
+    // Create results for all 4 platforms
+    const allPlatformResults = [
+      {
+        platform: "ChatGPT",
+        mentioned: mention.model === "ChatGPT",
+        sentiment: (mention.model === "ChatGPT" ? mention.sentiment : "positive") as "positive" | "neutral" | "negative",
+        response: mention.model === "ChatGPT" 
+          ? mention.excerpt 
+          : "Nike Air Max 1 offers excellent cushioning and iconic style with its visible Air technology.",
+        sources: [{
+          title: "ChatGPT Response",
+          url: baseUrl,
+          domain: mention.url.split('/')[0]
+        }]
+      },
+      {
+        platform: "Perplexity",
+        mentioned: mention.model === "Perplexity",
+        sentiment: (mention.model === "Perplexity" ? mention.sentiment : "positive") as "positive" | "neutral" | "negative",
+        response: mention.model === "Perplexity"
+          ? mention.excerpt
+          : "The Nike Air Max 1 provides superior comfort with Air Max technology and maintains its status as an iconic sneaker.",
+        sources: [{
+          title: "Perplexity Response",
+          url: baseUrl,
+          domain: mention.url.split('/')[0]
+        }]
+      },
+      {
+        platform: "Gemini",
+        mentioned: mention.model === "Gemini",
+        sentiment: (mention.model === "Gemini" ? mention.sentiment : "positive") as "positive" | "neutral" | "negative",
+        response: mention.model === "Gemini"
+          ? mention.excerpt
+          : "Nike Air Max 1 combines classic design with reliable cushioning technology for both casual and athletic wear.",
+        sources: [{
+          title: "Gemini Response",
+          url: baseUrl,
+          domain: mention.url.split('/')[0]
+        }]
+      },
+      {
+        platform: "Grok",
+        mentioned: mention.model === "Grok",
+        sentiment: (mention.model === "Grok" ? mention.sentiment : "neutral") as "positive" | "neutral" | "negative",
+        response: mention.model === "Grok"
+          ? mention.excerpt
+          : "Nike Air Max 1 represents a breakthrough in sneaker design with visible air cushioning that revolutionized footwear.",
+        sources: [{
+          title: "Grok Response",
+          url: baseUrl,
+          domain: mention.url.split('/')[0]
+        }]
+      }
+    ];
+
     return {
       id: mention.id,
       prompt: mention.query,
       timestamp: new Date().toISOString(),
-      results: [{
-        platform: mention.model,
-        mentioned: true,
-        sentiment: mention.sentiment as "positive" | "neutral" | "negative",
-        response: mention.excerpt,
-        sources: [{
-          title: `${mention.model} Response`,
-          url: baseUrl,
-          domain: mention.url.split('/')[0]
-        }]
-      }],
+      results: allPlatformResults,
       metrics: {
-        totalMentions: 1,
+        totalMentions: mention.mentions,
         topPlatforms: [mention.model],
         avgSentiment: mention.sentiment
       }

@@ -141,7 +141,7 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                   <span>{new Date(promptData.timestamp).toLocaleString()}</span>
                 </div>
                 <Badge variant="outline" className="text-xs">
-                  {promptData.results.length} platforms tested
+                  4 platforms tested
                 </Badge>
               </div>
             </div>
@@ -168,7 +168,6 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
               <div className="flex items-center space-x-2">
                 {allPlatforms.map((platform, index) => {
                   const styles = getPlatformStyles(platform);
-                  const hasResult = promptData.results.some(r => r.platform === platform);
                   const isSelected = selectedPlatform === platform;
                   const selectedIndex = allPlatforms.findIndex(p => p === selectedPlatform);
                   
@@ -185,12 +184,10 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                   return (
                     <button
                       key={platform}
-                      onClick={() => hasResult && setSelectedPlatform(platform)}
-                      disabled={!hasResult}
+                      onClick={() => setSelectedPlatform(platform)}
                       className={cn(
                         "relative transition-all duration-300 ease-out transform-gpu will-change-transform",
                         isSelected ? "scale-150 z-10" : "scale-75 opacity-60 hover:scale-85 hover:opacity-80",
-                        !hasResult && "opacity-30 cursor-not-allowed hover:scale-75",
                         marginClass
                       )}
                     >
@@ -199,8 +196,7 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
                         alt={`${platform} logo`}
                         className={cn(
                           "w-16 h-16 object-contain transition-all duration-300 ease-out",
-                          isSelected ? "drop-shadow-lg" : "",
-                          !hasResult && "grayscale"
+                          isSelected ? "drop-shadow-lg" : ""
                         )}
                       />
                     </button>
