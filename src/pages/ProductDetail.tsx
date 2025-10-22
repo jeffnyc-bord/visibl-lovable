@@ -605,19 +605,7 @@ export const ProductDetail = () => {
                           <Badge variant="outline">{mention.model}</Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-900">1</span>
-                            <Badge 
-                              className={
-                                mention.sentiment === 'positive' ? 'bg-green-50 text-green-700 border-green-200' :
-                                mention.sentiment === 'negative' ? 'bg-red-50 text-red-700 border-red-200' :
-                                'bg-gray-50 text-gray-700 border-gray-200'
-                              }
-                              variant="outline"
-                            >
-                              {mention.sentiment}
-                            </Badge>
-                          </div>
+                          <span className="text-sm text-gray-900">1</span>
                         </TableCell>
                         <TableCell>
                           <p className="text-sm text-gray-600">{mention.url.split('/')[0]}</p>
