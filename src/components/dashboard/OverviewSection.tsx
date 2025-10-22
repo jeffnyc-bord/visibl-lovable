@@ -67,6 +67,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   
   // State for Top Prompts section
   const [listMoreClicked, setListMoreClicked] = useState(false);
+  
+  // State for Source Quality section
+  const [showAllSources, setShowAllSources] = useState(false);
 
   const visibilityData = [
     { month: "Jul", score: 75 },
@@ -476,8 +479,12 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sourceQuality.map((source, index) => (
-                  <TableRow key={index}>
+                {(showAllSources ? sourceQuality : sourceQuality.slice(0, 3)).map((source, index) => (
+                  <TableRow 
+                    key={index}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 0.05}s` }}
+                  >
                     <TableCell className="font-medium">{source.source}</TableCell>
                     <TableCell>{source.mentions}</TableCell>
                     <TableCell>
@@ -497,6 +504,20 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 ))}
               </TableBody>
             </Table>
+            
+            {/* View All Button */}
+            {sourceQuality.length > 3 && (
+              <div className="flex justify-center pt-4 border-t mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAllSources(!showAllSources)}
+                  className="min-w-[120px] transition-all duration-300 hover:scale-105"
+                >
+                  {showAllSources ? "Show less" : `View all (${sourceQuality.length})`}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
