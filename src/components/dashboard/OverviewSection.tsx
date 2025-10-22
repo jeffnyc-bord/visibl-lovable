@@ -474,8 +474,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 <TableRow>
                   <TableHead>Source</TableHead>
                   <TableHead>References</TableHead>
-                  <TableHead>Authority</TableHead>
-                  <TableHead>Freshness</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -487,19 +485,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   >
                     <TableCell className="font-medium">{source.source}</TableCell>
                     <TableCell>{source.mentions}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className={getAuthorityColor(source.authority)}>
-                        {source.authority}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant="secondary" 
-                        className={source.freshness === "current" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
-                      >
-                        {source.freshness}
-                      </Badge>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
