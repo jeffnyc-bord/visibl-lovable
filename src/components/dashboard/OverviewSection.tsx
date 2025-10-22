@@ -6,18 +6,12 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, Eye, FileText, Calendar, MessageSquare, CheckCircle, Star, BarChart3, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Target, Link, Settings, ExternalLink, HelpCircle, Upload, Plus, X, Globe, Loader2, Image as ImageIcon, Building, Zap } from "lucide-react";
+import { TrendingUp, Eye, FileText, MessageSquare, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
-import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
-import { IndustryRankingEmpty } from "@/components/ui/industry-ranking-empty";
-import boardLabsIcon from "@/assets/board-labs-icon-hex.png";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface BrandData {
   id: string;
@@ -70,25 +64,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
-  const [showManualAddDialog, setShowManualAddDialog] = useState(false);
-  const [addCompetitorStep, setAddCompetitorStep] = useState(1);
-  const [industryRankingBrands, setIndustryRankingBrands] = useState<any[]>([]);
-  const [loadingBrands, setLoadingBrands] = useState<string[]>([]);
-  const [manualBrandForm, setManualBrandForm] = useState({ name: "", website: "", reportFrequency: "", logoFile: null as File | null, logoPreview: "" });
   
   // State for Top Prompts section
   const [listMoreClicked, setListMoreClicked] = useState(false);
-  
-  // Brand limits based on tier
-  const TIER_LIMITS = {
-    standard: 5,
-    premium: 15,
-    enterprise: 50
-  };
-  
-  const currentTier = "standard"; // This would come from user subscription data
-  const maxBrands = TIER_LIMITS[currentTier];
-  const currentBrandCount = 3; // This would come from actual tracked brands count
 
   const visibilityData = [
     { month: "Jul", score: 75 },
@@ -97,14 +75,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     { month: "Oct", score: 80 },
     { month: "Nov", score: 85 },
     { month: "Dec", score: 87 },
-  ];
-
-  const industryRanking = [
-    { rank: 1, brand: "Nike", score: 87, change: "+2", insight: "Leading in performance-focused queries", link: "/competitors?brand=nike" },
-    { rank: 2, brand: "Adidas", score: 85, change: "-1", insight: "Strong in sustainable product queries", link: "/competitors?brand=adidas" },
-    { rank: 3, brand: "Under Armour", score: 82, change: "+1", insight: "Growing in tech & innovation mentions", link: "/competitors?brand=under-armour" },
-    { rank: 4, brand: "Puma", score: 78, change: "0", insight: "Stable in lifestyle & fashion segments", link: "/competitors?brand=puma" },
-    { rank: 5, brand: "New Balance", score: 76, change: "+3", insight: "Rising in comfort & wellness categories", link: "/competitors?brand=new-balance" },
   ];
 
   // AI Visibility data from ExternalAIVisibilitySection
@@ -471,556 +441,65 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </CardContent>
         </Card>
 
-        {/* Industry Ranking */}
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, industryRankingChart: false})}>
+        {/* Source Quality & Authority */}
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, sourceQuality: false})}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <TrendingUp className="w-5 h-5 text-green-500" />
-                <span>Industry AI Ranking</span>
+                <img src="/lovable-uploads/210deded-106c-459a-8f28-05761a09348c.png" alt="Source Quality" className="w-12 h-12" />
+                <span>Source Quality & Authority</span>
               </div>
               <div className="relative">
                 <HelpCircle 
                   className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
-                  onClick={() => setShowTooltips({...showTooltips, industryRankingChart: !showTooltips.industryRankingChart})}
+                  onClick={() => setShowTooltips({...showTooltips, sourceQuality: !showTooltips.sourceQuality})}
                 />
-                {showTooltips.industryRankingChart && (
+                {showTooltips.sourceQuality && (
                   <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
-                    <p>See how your brand ranks against top competitors in AI visibility scores and track position changes over time.</p>
+                    <p>Analysis of the sources AI platforms reference when mentioning Nike vs competitors, including authority level and content freshness from sports industry publications.</p>
                   </div>
                 )}
               </div>
             </CardTitle>
             <CardDescription>
-              Compare your brand's AI visibility against competitors
+              Analysis of the sources AI platforms reference when mentioning Nike vs competitors like Adidas, Under Armour, and Puma.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {industryRankingBrands.length === 0 ? (
-              <IndustryRankingEmpty onAddCompetitor={() => setShowManualAddDialog(true)} />
-            ) : (
-              <>
-                <div className="mb-4 flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    {industryRankingBrands.length} competitors tracked
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowManualAddDialog(true)}
-                      className="text-xs h-7"
-                    >
-                      <Plus className="w-3 h-3 mr-1" />
-                      Add More
-                    </Button>
-                  </div>
-                </div>
-
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Rank</TableHead>
-                      <TableHead>Brand</TableHead>
-                      <TableHead>Score</TableHead>
-                      <TableHead>Change</TableHead>
-                      <TableHead className="w-10"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {industryRankingBrands.map((brand) => (
-                      <TableRow key={brand.rank} className={brand.isLoading ? "opacity-70" : ""}>
-                        <TableCell className="font-medium">#{brand.rank}</TableCell>
-                        <TableCell className="font-medium">
-                          <div className="flex items-center space-x-2">
-                            {brand.isLoading && (
-                              <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
-                            )}
-                            <span>{brand.brand}</span>
-                            {brand.isLoading && (
-                              <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
-                                Scanning...
-                              </Badge>
-                            )}
-                            {!brand.isLoading && (
-                              <UITooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-4 w-4 p-0 opacity-60 hover:opacity-100"
-                                    onClick={() => window.open(brand.link, '_blank')}
-                                  >
-                                    <HelpCircle className="w-3 h-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-xs">
-                                  <p className="text-xs">{brand.insight}</p>
-                                  <p className="text-xs text-muted-foreground mt-1">Click to compare in Competitors tab</p>
-                                </TooltipContent>
-                              </UITooltip>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {brand.isLoading ? (
-                            <Skeleton className="h-4 w-8" />
-                          ) : (
-                            brand.score
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {brand.isLoading ? (
-                            <Skeleton className="h-4 w-8" />
-                          ) : (
-                            <Badge variant="secondary" className={
-                              brand.change.startsWith('+') ? 'bg-green-100 text-green-800' :
-                              brand.change.startsWith('-') ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
-                            }>
-                              {brand.change}
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 opacity-60 hover:opacity-100 hover:text-destructive"
-                            disabled={brand.isLoading}
-                            onClick={() => {
-                              setIndustryRankingBrands(prev => prev.filter(b => b.rank !== brand.rank));
-                              setLoadingBrands(prev => prev.filter(name => name !== brand.brand));
-                              toast({
-                                title: "Brand Removed",
-                                description: `${brand.brand} has been removed from the ranking.`,
-                              });
-                            }}
-                          >
-                            <X className="w-3 h-3" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </>
-            )}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Source</TableHead>
+                  <TableHead>References</TableHead>
+                  <TableHead>Authority</TableHead>
+                  <TableHead>Freshness</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sourceQuality.map((source, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{source.source}</TableCell>
+                    <TableCell>{source.mentions}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className={getAuthorityColor(source.authority)}>
+                        {source.authority}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant="secondary" 
+                        className={source.freshness === "current" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
+                      >
+                        {source.freshness}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
 
-        {/* Manual Add Brand Dialog - Sleek Apple-like Design */}
-        <Dialog open={showManualAddDialog} onOpenChange={(open) => {
-          setShowManualAddDialog(open);
-          if (!open) {
-            setAddCompetitorStep(1);
-            setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
-          }
-        }}>
-          <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden">
-            {/* Header */}
-            <div className="px-8 py-8 border-b">
-              <div className="relative z-10">
-                {/* Title at top */}
-                <DialogHeader className="mb-4">
-                  <DialogTitle className="text-2xl font-semibold text-center">
-                    Add Competitor Brand
-                  </DialogTitle>
-                </DialogHeader>
-
-                {/* Description */}
-                <DialogDescription className="text-base text-muted-foreground text-center mb-6">
-                  Track a competitor to compare AI visibility metrics
-                </DialogDescription>
-
-                {/* Board Labs Logo + Plus Icon */}
-                <div className="flex justify-center items-center mb-6">
-                  <div className="flex items-center gap-6">
-                    {/* Board Labs Logo */}
-                    <div className="w-16 h-16 rounded-full border bg-white shadow-sm flex items-center justify-center p-2">
-                      <img 
-                        src={boardLabsIcon} 
-                        alt="Board Labs" 
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    
-                    {/* Connecting Line */}
-                    <div className="h-px w-16 bg-border relative">
-                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-border rotate-45 translate-x-1" />
-                    </div>
-                    
-                    {/* Plus Icon */}
-                    <div className="w-16 h-16 rounded-full border bg-white shadow-sm flex items-center justify-center">
-                      <Plus className="h-7 w-7 text-foreground stroke-[1.5]" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Step indicator */}
-                <div className="mt-6 flex items-center justify-center gap-6">
-                  {[
-                    { num: 1, label: "Info" },
-                    { num: 2, label: "Settings" },
-                    { num: 3, label: "Logo" }
-                  ].map((step, idx) => (
-                    <div key={step.num} className="flex items-center">
-                      <div className="flex flex-col items-center gap-2">
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
-                          step.num <= addCompetitorStep 
-                            ? 'bg-primary text-white shadow-lg shadow-primary/30' 
-                            : 'bg-gray-200 text-gray-500'
-                        }`}>
-                          {step.num}
-                        </div>
-                        <span className={`text-xs font-medium transition-colors ${
-                          step.num <= addCompetitorStep ? 'text-primary' : 'text-gray-400'
-                        }`}>
-                          {step.label}
-                        </span>
-                      </div>
-                      {idx < 2 && (
-                        <div className={`w-12 h-0.5 mx-2 mb-6 transition-colors ${
-                          step.num < addCompetitorStep ? 'bg-primary' : 'bg-gray-200'
-                        }`} />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            {/* Content Area */}
-            <div className="p-8">
-              <div className="min-h-[240px]">
-                {currentBrandCount >= maxBrands ? (
-                // Show upgrade message when limit is reached
-                <div className="relative text-center py-16 space-y-6 animate-fade-in">
-                  <div className="w-24 h-24 bg-orange-100 dark:bg-orange-950/30 rounded-3xl flex items-center justify-center mx-auto shadow-sm">
-                    <Target className="w-12 h-12 text-orange-600 dark:text-orange-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-foreground mb-3">Brand Limit Reached</h3>
-                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed mb-4">
-                      You've reached the maximum of <span className="font-bold text-foreground">{maxBrands} brands</span> on your <span className="font-semibold text-foreground capitalize">{currentTier}</span> plan.
-                    </p>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted rounded-full text-sm">
-                      <BarChart3 className="w-4 h-4 text-primary" />
-                      <span className="font-semibold">{currentBrandCount}/{maxBrands}</span>
-                      <span className="text-muted-foreground">brands tracked</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 justify-center pt-6">
-                    <Button variant="outline" size="lg" onClick={() => setShowManualAddDialog(false)}>
-                      Close
-                    </Button>
-                    <Button size="lg">
-                      <Star className="w-4 h-4 mr-2" />
-                      Upgrade Plan
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                // Show funnel steps
-                <>
-                  {/* Step 1: Basic Information */}
-                  {addCompetitorStep === 1 && (
-                    <div className="space-y-8 animate-fade-in">
-                      <div className="space-y-6">
-                        <div className="space-y-3">
-                          <Label htmlFor="brand-name" className="text-base font-semibold flex items-center gap-2">
-                            Brand Name <span className="text-destructive">*</span>
-                          </Label>
-                          <div className="relative group">
-                            <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                            <Input
-                              id="brand-name"
-                              value={manualBrandForm.name}
-                              onChange={(e) => setManualBrandForm(prev => ({ ...prev, name: e.target.value }))}
-                              placeholder="e.g., Competitor Brand"
-                              className="pl-12 h-14 text-base border-2 focus:border-primary transition-all"
-                              autoFocus
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-3">
-                          <Label htmlFor="website" className="text-base font-semibold flex items-center gap-2">
-                            Website URL <span className="text-destructive">*</span>
-                          </Label>
-                          <div className="relative group">
-                            <Link className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                            <Input
-                              id="website"
-                              value={manualBrandForm.website}
-                              onChange={(e) => setManualBrandForm(prev => ({ ...prev, website: e.target.value }))}
-                              placeholder="https://competitor.com"
-                              className="pl-12 h-14 text-base border-2 focus:border-primary transition-all"
-                            />
-                          </div>
-                          <p className="text-sm text-muted-foreground flex items-center gap-2 pl-1">
-                            <Eye className="w-4 h-4" />
-                            We'll analyze their AI visibility and gather competitive insights
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Step 2: Monitoring Preferences */}
-                  {addCompetitorStep === 2 && (
-                    <div className="space-y-8 animate-fade-in">
-                      <div className="space-y-6">
-                        <div className="space-y-3">
-                          <Label htmlFor="report-frequency" className="text-base font-semibold">
-                            How often do you want to track this competitor? <span className="text-destructive">*</span>
-                          </Label>
-                          <Select
-                            value={manualBrandForm.reportFrequency}
-                            onValueChange={(value) => setManualBrandForm(prev => ({ ...prev, reportFrequency: value }))}
-                          >
-                            <SelectTrigger className="h-14 text-base border-2 focus:border-primary transition-all">
-                              <SelectValue placeholder="Select monitoring frequency" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-background border-2 shadow-xl z-50">
-                              <SelectItem value="daily" disabled className="text-muted-foreground py-3">
-                                <div className="flex items-center gap-3">
-                                  <Calendar className="w-5 h-5" />
-                                  <div>
-                                    <div className="font-medium">Once daily</div>
-                                    <div className="text-xs">Enterprise only</div>
-                                  </div>
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="weekly" className="py-3">
-                                <div className="flex items-center gap-3">
-                                  <Calendar className="w-5 h-5" />
-                                  <div>
-                                    <div className="font-medium">Once a week</div>
-                                    <div className="text-xs text-muted-foreground">Recommended for most brands</div>
-                                  </div>
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="twiceweekly" className="py-3">
-                                <div className="flex items-center gap-3">
-                                  <Calendar className="w-5 h-5" />
-                                  <div className="font-medium">Twice a week</div>
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="biweekly" className="py-3">
-                                <div className="flex items-center gap-3">
-                                  <Calendar className="w-5 h-5" />
-                                  <div className="font-medium">Biweekly</div>
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="monthly" className="py-3">
-                                <div className="flex items-center gap-3">
-                                  <Calendar className="w-5 h-5" />
-                                  <div className="font-medium">Monthly</div>
-                                </div>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <p className="text-sm text-muted-foreground flex items-center gap-2 pl-1">
-                            <BarChart3 className="w-4 h-4" />
-                            More frequent tracking helps identify trends faster
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Step 3: Logo Upload */}
-                  {addCompetitorStep === 3 && (
-                    <div className="space-y-8 animate-fade-in">
-                      <div className="space-y-6">
-                        <div className="space-y-3">
-                          <Label className="text-base font-semibold">
-                            Brand Logo <span className="text-sm font-normal text-muted-foreground">(Optional)</span>
-                          </Label>
-                          
-                          <div className="space-y-4">
-                            {!manualBrandForm.logoPreview ? (
-                              <div className="relative group/upload">
-                                <Input
-                                  id="competitor-logo"
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                      const reader = new FileReader();
-                                      reader.onload = (event) => {
-                                        setManualBrandForm(prev => ({
-                                          ...prev,
-                                          logoFile: file,
-                                          logoPreview: event.target?.result as string
-                                        }));
-                                      };
-                                      reader.readAsDataURL(file);
-                                    }
-                                  }}
-                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                />
-                                <div className="relative border-2 border-dashed border-muted-foreground/30 rounded-2xl p-16 text-center transition-all duration-300 group-hover/upload:border-primary/60 group-hover/upload:bg-primary/5 cursor-pointer">
-                                  
-                                  <div className="relative flex flex-col items-center gap-4">
-                                    <div className="p-6 bg-primary/10 rounded-3xl group-hover/upload:scale-110 transition-transform duration-300">
-                                      <Upload className="h-10 w-10 text-primary" />
-                                    </div>
-                                    <div>
-                                      <p className="text-lg font-semibold text-foreground mb-2">Upload Brand Logo</p>
-                                      <p className="text-sm text-muted-foreground">Drop your file here or click to browse</p>
-                                      <p className="text-xs text-muted-foreground mt-1">PNG, JPG, or SVG • Max 5MB</p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="border-2 border-primary/20 rounded-2xl p-6 bg-primary/5 animate-scale-in">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 rounded-2xl border-2 border-primary/20 bg-background p-2 flex items-center justify-center overflow-hidden shadow-lg">
-                                      <img 
-                                        src={manualBrandForm.logoPreview} 
-                                        alt="Logo preview" 
-                                        className="w-full h-full object-contain"
-                                      />
-                                    </div>
-                                    <div>
-                                      <p className="text-base font-semibold text-foreground flex items-center gap-2">
-                                        Logo uploaded successfully
-                                        <CheckCircle className="w-5 h-5 text-green-600" />
-                                      </p>
-                                      <p className="text-sm text-muted-foreground">Ready to track this brand</p>
-                                    </div>
-                                  </div>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setManualBrandForm(prev => ({ ...prev, logoFile: null, logoPreview: "" }))}
-                                    className="h-10 w-10 p-0 hover:bg-destructive/10 hover:text-destructive"
-                                  >
-                                    <X className="h-5 w-5" />
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
-                            <p className="text-sm text-muted-foreground text-center">
-                              Skip this step if you don't have a logo handy
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-              </div>
-            </div>
-            
-            {/* Footer Actions */}
-            {currentBrandCount < maxBrands && (
-              <div className="px-8 py-5 border-t bg-muted/30">
-                <div className="flex items-center justify-between gap-3">
-                  {addCompetitorStep > 1 ? (
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setAddCompetitorStep(prev => prev - 1)}
-                      className="h-10 px-5 hover:bg-muted transition-all duration-200"
-                    >
-                      <ChevronLeft className="h-4 w-4 mr-1" />
-                      Back
-                    </Button>
-                  ) : (
-                    <Button 
-                      variant="ghost" 
-                      onClick={() => {
-                        setShowManualAddDialog(false);
-                        setAddCompetitorStep(1);
-                        setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
-                      }}
-                      className="h-10 px-5 hover:bg-muted transition-all duration-200"
-                    >
-                      Cancel
-                    </Button>
-                  )}
-
-                  {addCompetitorStep < 3 ? (
-                    <Button 
-                      onClick={() => setAddCompetitorStep(prev => prev + 1)}
-                      disabled={
-                        (addCompetitorStep === 1 && (!manualBrandForm.name.trim() || !manualBrandForm.website.trim())) ||
-                        (addCompetitorStep === 2 && !manualBrandForm.reportFrequency)
-                      }
-                      className="h-10 px-6"
-                    >
-                      Continue
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  ) : (
-                    <Button 
-                      onClick={() => {
-                        if (!manualBrandForm.name.trim() || !manualBrandForm.website.trim() || !manualBrandForm.reportFrequency) return;
-                        
-                        const placeholderBrand = {
-                          rank: industryRankingBrands.length + 1,
-                          brand: manualBrandForm.name,
-                          score: 0,
-                          change: "0",
-                          insight: "Analyzing brand data...",
-                          link: `/competitors?brand=${manualBrandForm.name.toLowerCase()}`,
-                          isLoading: true
-                        };
-                        
-                        setIndustryRankingBrands(prev => [...prev, placeholderBrand]);
-                        setLoadingBrands(prev => [...prev, manualBrandForm.name]);
-                        
-                        toast({
-                          title: "Scanning Brand",
-                          description: `Collecting data for ${manualBrandForm.name}...`,
-                        });
-                        
-                        const brandName = manualBrandForm.name;
-                        setShowManualAddDialog(false);
-                        setAddCompetitorStep(1);
-                        setManualBrandForm({ name: "", website: "", reportFrequency: "", logoFile: null, logoPreview: "" });
-                        
-                        // Simulate data collection process
-                        setTimeout(() => {
-                          setIndustryRankingBrands(prev => 
-                            prev.map(b => 
-                              b.brand === brandName && b.isLoading
-                                ? {
-                                    ...b,
-                                    score: Math.floor(Math.random() * 30) + 70,
-                                    change: Math.random() > 0.5 ? "+1" : "0",
-                                    insight: "Growing presence in AI mentions",
-                                    isLoading: false
-                                  }
-                                : b
-                            )
-                          );
-                          
-                          setLoadingBrands(prev => prev.filter(name => name !== brandName));
-                          
-                          toast({
-                            title: "Data Collection Complete",
-                            description: `Successfully analyzed ${brandName}.`,
-                          });
-                        }, 3000);
-                      }}
-                      className="h-10 px-6"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add & Start Tracking
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
       </div>
 
 
@@ -1321,64 +800,6 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </CardContent>
       </Card>
 
-      {/* Source Quality Analysis */}
-      <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, sourceQuality: false})}>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <img src="/lovable-uploads/210deded-106c-459a-8f28-05761a09348c.png" alt="Source Quality" className="w-12 h-12" />
-              <span>Source Quality & Authority</span>
-            </div>
-            <div className="relative">
-              <HelpCircle 
-                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
-                onClick={() => setShowTooltips({...showTooltips, sourceQuality: !showTooltips.sourceQuality})}
-              />
-              {showTooltips.sourceQuality && (
-                 <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
-                  <p>Analysis of the sources AI platforms reference when mentioning Nike vs competitors, including authority level and content freshness from sports industry publications.</p>
-                </div>
-              )}
-            </div>
-          </CardTitle>
-            <CardDescription>
-            Analysis of the sources AI platforms reference when mentioning Nike vs competitors like Adidas, Under Armour, and Puma.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Source</TableHead>
-                <TableHead>References</TableHead>
-                <TableHead>Authority</TableHead>
-                <TableHead>Freshness</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sourceQuality.map((source, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{source.source}</TableCell>
-                  <TableCell>{source.mentions}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className={getAuthorityColor(source.authority)}>
-                      {source.authority}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant="secondary" 
-                      className={source.freshness === "current" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
-                    >
-                      {source.freshness}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
       </div>
     </TooltipProvider>
   );
