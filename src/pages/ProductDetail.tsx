@@ -577,12 +577,15 @@ export const ProductDetail = () => {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead className="font-semibold">Query</TableHead>
-                      <TableHead className="font-semibold">Platform</TableHead>
-                      <TableHead className="font-semibold">Sentiment</TableHead>
+                      <TableHead className="w-12">
+                        <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-input bg-background" />
+                      </TableHead>
+                      <TableHead className="font-semibold">Prompt</TableHead>
+                      <TableHead className="font-semibold">Top Platform</TableHead>
+                      <TableHead className="font-semibold">Mentions</TableHead>
                       <TableHead className="font-semibold">Source</TableHead>
                       <TableHead className="font-semibold">Date</TableHead>
-                      <TableHead className="w-16"></TableHead>
+                      <TableHead className="font-semibold w-24">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -592,6 +595,9 @@ export const ProductDetail = () => {
                         className="hover:bg-gray-50 cursor-pointer"
                         onClick={() => handleMentionClick(mention.id)}
                       >
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background" />
+                        </TableCell>
                         <TableCell>
                           <p className="font-medium text-gray-900 max-w-xs truncate">{mention.query}</p>
                         </TableCell>
@@ -599,16 +605,19 @@ export const ProductDetail = () => {
                           <Badge variant="outline">{mention.model}</Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge 
-                            className={
-                              mention.sentiment === 'positive' ? 'bg-green-50 text-green-700 border-green-200' :
-                              mention.sentiment === 'negative' ? 'bg-red-50 text-red-700 border-red-200' :
-                              'bg-gray-50 text-gray-700 border-gray-200'
-                            }
-                            variant="outline"
-                          >
-                            {mention.sentiment}
-                          </Badge>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-900">1</span>
+                            <Badge 
+                              className={
+                                mention.sentiment === 'positive' ? 'bg-green-50 text-green-700 border-green-200' :
+                                mention.sentiment === 'negative' ? 'bg-red-50 text-red-700 border-red-200' :
+                                'bg-gray-50 text-gray-700 border-gray-200'
+                              }
+                              variant="outline"
+                            >
+                              {mention.sentiment}
+                            </Badge>
+                          </div>
                         </TableCell>
                         <TableCell>
                           <p className="text-sm text-gray-600">{mention.url.split('/')[0]}</p>
