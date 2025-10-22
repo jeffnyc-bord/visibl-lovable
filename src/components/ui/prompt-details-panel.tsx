@@ -119,19 +119,23 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
       {/* Backdrop */}
       <div 
         className={cn(
-          "fixed inset-0 bg-black/20 z-40 transition-opacity duration-500 ease-in-out",
+          "fixed inset-0 bg-black/20 z-40 transition-opacity duration-700",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
+        style={{ transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' }}
         onClick={onClose}
       />
       
       {/* Panel */}
-      <div className={cn(
-        "fixed right-0 top-0 h-full w-3/4 max-w-4xl bg-white border-l border-gray-200 z-50",
-        "transform transition-all duration-500 ease-in-out",
-        "shadow-xl overflow-y-auto",
-        isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
-      )}>
+      <div 
+        className={cn(
+          "fixed right-0 top-0 h-full w-3/4 max-w-4xl bg-white border-l border-gray-200 z-50",
+          "transform transition-all duration-700",
+          "shadow-xl overflow-y-auto",
+          isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+        )}
+        style={{ transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' }}
+      >
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-10">
           <div className="flex items-start justify-between">
