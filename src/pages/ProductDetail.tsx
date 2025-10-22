@@ -109,7 +109,16 @@ export const ProductDetail = () => {
   const keywords = [
     { keyword: "nike air max 1", volume: 49500, rank: 2, clicks: 1250, impressions: 15600, ctr: 8.0, trend: "up" },
     { keyword: "air max 1 shoes", volume: 18100, rank: 4, clicks: 890, impressions: 12400, ctr: 7.2, trend: "stable" },
-    { keyword: "classic nike sneakers", volume: 8200, rank: 6, clicks: 420, impressions: 6800, ctr: 6.2, trend: "down" }
+    { keyword: "nike sneakers", volume: 8200, rank: 6, clicks: 420, impressions: 6800, ctr: 6.2, trend: "down" },
+    { keyword: "nike air max 1", volume: 49500, rank: 2, clicks: 1250, impressions: 15600, ctr: 8.0, trend: "up" },
+    { keyword: "nike air max 1", volume: 49500, rank: 2, clicks: 1250, impressions: 15600, ctr: 8.0, trend: "up" },
+    { keyword: "air max 1 shoes", volume: 18100, rank: 4, clicks: 890, impressions: 12400, ctr: 7.2, trend: "stable" },
+    { keyword: "nike sneakers", volume: 8200, rank: 6, clicks: 420, impressions: 6800, ctr: 6.2, trend: "down" },
+    { keyword: "nike air max 1", volume: 49500, rank: 2, clicks: 1250, impressions: 15600, ctr: 8.0, trend: "up" },
+    { keyword: "nike air max 1", volume: 49500, rank: 2, clicks: 1250, impressions: 15600, ctr: 8.0, trend: "up" },
+    { keyword: "air max 1 shoes", volume: 18100, rank: 4, clicks: 890, impressions: 12400, ctr: 7.2, trend: "stable" },
+    { keyword: "nike sneakers", volume: 8200, rank: 6, clicks: 420, impressions: 6800, ctr: 6.2, trend: "down" },
+    { keyword: "nike air max 1", volume: 49500, rank: 2, clicks: 1250, impressions: 15600, ctr: 8.0, trend: "up" },
   ];
 
   // Pre-select section based on navigation source
@@ -302,117 +311,110 @@ export const ProductDetail = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* AI Readiness Hero Section */}
-        <div className="space-y-8 mb-8">
-          {/* Main Score Card */}
-          <div className="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-blue-100 hover:border-blue-200 cursor-pointer transform hover:scale-[1.02] relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent">
-            <div className="flex items-end justify-between mb-6">
-              <div className="space-y-2">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900">AI Readiness Score</h2>
-                    <p className="text-gray-600">Overall performance and optimization status</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* AI Readiness Score Card */}
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardContent className="pt-6">
+              <div className="flex items-start space-x-4 mb-6">
+                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <Package className="w-5 h-5 text-gray-600" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-1">AI Readiness Score</h2>
+                  <p className="text-sm text-gray-600">Overall performance and Optimization status</p>
+                </div>
+                <div className="relative w-32 h-32">
+                  <svg className="transform -rotate-90 w-32 h-32">
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="currentColor"
+                      strokeWidth="12"
+                      fill="transparent"
+                      className="text-gray-200"
+                    />
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="currentColor"
+                      strokeWidth="12"
+                      fill="transparent"
+                      strokeDasharray={2 * Math.PI * 56}
+                      strokeDashoffset={2 * Math.PI * 56 * (1 - mockProduct.score / 100)}
+                      className="text-gray-900"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-gray-900">{mockProduct.score}%</span>
                   </div>
                 </div>
               </div>
-              <div className="text-right transform group-hover:scale-110 transition-transform duration-300">
-                <div className="text-6xl font-bold mb-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
-                  {mockProduct.score}%
+              
+              <div className="space-y-3 pt-4 border-t border-gray-100">
+                <div className="flex items-center space-x-2">
+                  <Package className="w-4 h-4 text-gray-400" />
+                  <span className="font-semibold text-gray-900">{mockProduct.name}</span>
                 </div>
-                <div className="flex items-center justify-end text-green-600 bg-green-50 rounded-full px-3 py-1">
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  <span className="font-medium text-sm">+{mockProduct.trend}% this week</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-500"># SKU: {mockProduct.sku}</span>
+                </div>
+                <div className="inline-flex items-center space-x-1 bg-green-50 text-green-700 px-3 py-1 rounded-md text-sm">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>+{mockProduct.trend}% up this week</span>
                 </div>
               </div>
-            </div>
-            
-            <div className="relative">
-              <Progress value={mockProduct.score} className="h-4 bg-gray-200 rounded-full shadow-inner" />
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 rounded-full shadow-lg opacity-90" 
-                   style={{ width: `${mockProduct.score}%` }} />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          {/* Interactive Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* AI Mentions Card */}
-            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                  <Eye className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-300">
-                    {mockProduct.mentions}
+          {/* Metrics Grid Card */}
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 gap-6">
+                {/* Pages Analyzed */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2 text-gray-600">
+                    <FileText className="w-5 h-5" />
+                    <span className="font-medium text-gray-900">Pages Analyzed</span>
                   </div>
-                  <div className="w-2 h-2 rounded-full bg-green-400 mx-auto mt-1 group-hover:animate-pulse" />
+                  <p className="text-xs text-gray-600">Total mentions across AI platforms</p>
+                  <p className="text-3xl font-bold text-gray-900">{mockProduct.pagesCrawled}</p>
                 </div>
-              </div>
-              <div>
-                <div className="text-sm font-medium text-gray-900 mb-1">Product Mentions</div>
-                <div className="text-xs text-gray-600">Total mentions across AI platforms</div>
-              </div>
-            </div>
 
-            {/* Average Rank Card */}
-            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                  <Search className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-                    #{mockProduct.avgRank}
+                {/* Avg. Rank */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2 text-gray-600">
+                    <Search className="w-5 h-5" />
+                    <span className="font-medium text-gray-900">Avg. Rank</span>
                   </div>
-                  <div className="w-2 h-2 rounded-full bg-blue-400 mx-auto mt-1 group-hover:animate-pulse" />
+                  <p className="text-xs text-gray-600">Average rank position</p>
+                  <p className="text-3xl font-bold text-gray-900">#{mockProduct.avgRank}</p>
                 </div>
-              </div>
-              <div>
-                <div className="text-sm font-medium text-gray-900 mb-1">Avg. Rank</div>
-                <div className="text-xs text-gray-600">Average ranking position</div>
-              </div>
-            </div>
 
-            {/* Technical Health Card */}
-            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-violet-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                  <Code className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-green-600 group-hover:text-purple-600 transition-colors duration-300">
-                    Good
+                {/* Product Mentions */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2 text-gray-600">
+                    <Eye className="w-5 h-5" />
+                    <span className="font-medium text-gray-900">Product Mentions</span>
                   </div>
-                  <div className="w-2 h-2 rounded-full bg-green-400 group-hover:bg-purple-400 mx-auto mt-1 transition-colors duration-300 group-hover:animate-pulse" />
+                  <p className="text-xs text-gray-600">Overall technical optimization</p>
+                  <p className="text-3xl font-bold text-gray-900">{mockProduct.mentions}</p>
                 </div>
-              </div>
-              <div>
-                <div className="text-sm font-medium text-gray-900 mb-1">Technical Health</div>
-                <div className="text-xs text-gray-600">Overall technical optimization</div>
-              </div>
-            </div>
 
-            {/* Pages Analyzed Card */}
-            <div className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-amber-200 cursor-pointer transform hover:scale-105 hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                  <Activity className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-gray-900 group-hover:text-amber-600 transition-colors duration-300">
-                    {mockProduct.pagesCrawled}
+                {/* Technical Health */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2 text-gray-600">
+                    <Code className="w-5 h-5" />
+                    <span className="font-medium text-gray-900">Technical Health</span>
                   </div>
-                  <div className="w-2 h-2 rounded-full bg-amber-400 mx-auto mt-1 group-hover:animate-pulse" />
+                  <p className="text-xs text-gray-600">Total pages crawled and analyzed</p>
+                  <p className="text-2xl font-bold text-gray-900">Good</p>
                 </div>
               </div>
-              <div>
-                <div className="text-sm font-medium text-gray-900 mb-1">Pages Analyzed</div>
-                <div className="text-xs text-gray-600">Total pages crawled and analyzed</div>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Navigation Tabs */}
@@ -615,37 +617,26 @@ export const ProductDetail = () => {
 
           <TabsContent value="keywords" className="space-y-8">
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Search Performance</h3>
-              <p className="text-gray-600 mb-8">Keyword rankings and performance metrics for {mockProduct.name}</p>
-              <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden">
-                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                  <div className="grid grid-cols-7 gap-4 text-sm font-semibold text-gray-700">
-                    <div>Keyword</div>
-                    <div>Volume</div>
-                    <div>Rank</div>
-                    <div>Clicks</div>
-                    <div>Impressions</div>
-                    <div>CTR</div>
-                    <div>Trend</div>
-                  </div>
-                </div>
-                <div className="divide-y divide-gray-200">
-                  {keywords.map((keyword, index) => (
-                    <div key={index} className="grid grid-cols-7 gap-4 px-6 py-4 text-sm hover:bg-gray-50 transition-colors">
-                      <div className="font-medium text-gray-900">{keyword.keyword}</div>
-                      <div className="text-gray-600">{keyword.volume.toLocaleString()}</div>
-                      <div className="font-semibold text-blue-600">#{keyword.rank}</div>
-                      <div className="text-gray-600">{keyword.clicks}</div>
-                      <div className="text-gray-600">{keyword.impressions.toLocaleString()}</div>
-                      <div className="text-gray-600">{keyword.ctr}%</div>
-                      <div className="flex items-center">
-                        {keyword.trend === 'up' && <TrendingUp className="w-4 h-4 text-green-600" />}
-                        {keyword.trend === 'down' && <TrendingDown className="w-4 h-4 text-red-600" />}
-                        {keyword.trend === 'stable' && <div className="w-4 h-4 bg-gray-400 rounded-full" />}
+              <div className="flex items-center space-x-2 mb-2">
+                <Search className="w-5 h-5 text-gray-600" />
+                <h3 className="text-xl font-semibold text-gray-900">Search Performance — {mockProduct.name}</h3>
+              </div>
+              <p className="text-gray-600 mb-6">Keyword rankings and performance metrics</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {keywords.map((keyword, index) => (
+                  <Card key={index} className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <CardContent className="pt-6">
+                      <div className="space-y-3">
+                        <p className="font-medium text-gray-900 text-sm">{keyword.keyword}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600 text-sm">{keyword.volume.toLocaleString()}</span>
+                          <span className="text-blue-600 font-semibold text-lg">#{keyword.rank}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
           </TabsContent>
