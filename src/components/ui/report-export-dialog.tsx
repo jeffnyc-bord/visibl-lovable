@@ -76,9 +76,6 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
 
   const exportFormats = [
     { id: "pdf", label: "PDF Report", description: "Professional formatted report document" },
-    { id: "word", label: "Word Document", description: "Editable document with tables and formatting" },
-    { id: "excel", label: "Excel Spreadsheet", description: "Data tables and charts" },
-    { id: "powerpoint", label: "PowerPoint Presentation", description: "Slide deck for presentations" },
     { id: "csv", label: "CSV Data", description: "Raw data export" },
   ];
 
