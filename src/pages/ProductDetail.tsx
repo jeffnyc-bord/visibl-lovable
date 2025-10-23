@@ -733,19 +733,15 @@ export const ProductDetail = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleToggleQueue(mention.id)}>
-                                {mention.queued ? (
-                                  <>
-                                    <X className="mr-2 h-4 w-4" />
-                                    Remove from Queue
-                                  </>
-                                ) : (
-                                  <>
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add to Queue
-                                  </>
-                                )}
-                              </DropdownMenuItem>
+                              {mention.status === "queued" && (
+                                <DropdownMenuItem 
+                                  onClick={() => handleDeleteSinglePrompt(mention.id)}
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <X className="mr-2 h-4 w-4" />
+                                  Remove from Queue
+                                </DropdownMenuItem>
+                              )}
                               <DropdownMenuItem onClick={() => {
                                 if (mention.status !== "queued") {
                                   handleMentionClick(mention.id);
@@ -764,13 +760,15 @@ export const ProductDetail = () => {
                                 <Copy className="mr-2 h-4 w-4" />
                                 Copy Prompt
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleDeleteSinglePrompt(mention.id)}
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Prompt
-                              </DropdownMenuItem>
+                              {mention.status !== "queued" && (
+                                <DropdownMenuItem 
+                                  onClick={() => handleDeleteSinglePrompt(mention.id)}
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete Prompt
+                                </DropdownMenuItem>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
