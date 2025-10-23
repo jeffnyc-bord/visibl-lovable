@@ -1119,7 +1119,14 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                     });
                   }}
                 />
-                <AddPromptDialog 
+                <Button
+                  onClick={() => setShowAddPromptDialog(true)}
+                  className="bg-gray-900 hover:bg-gray-800 text-white"
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Add Prompt
+                </Button>
+                <AddPromptDialog
                   open={showAddPromptDialog}
                   onOpenChange={setShowAddPromptDialog}
                   onAdd={(promptText) => {
