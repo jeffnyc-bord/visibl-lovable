@@ -80,15 +80,12 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
   ];
 
   const [reportSections, setReportSections] = useState<ReportSection[]>([
-    { id: "executive-summary", label: "Executive Summary", description: "AI-generated overview of key findings", enabled: true },
-    { id: "ai-visibility-score", label: "AI Visibility Overview", description: "Overall performance metrics and trends", enabled: true },
-    { id: "platform-analysis", label: "AI Platform Breakdown", description: "Detailed analysis across ChatGPT, Claude, Gemini, Perplexity", enabled: true },
-    { id: "product-analysis", label: "Product & Brand Analysis", description: "AI readiness and visibility of products/services", enabled: reportType === "full" || reportType === "visibility" },
-    { id: "competitor-analysis", label: "Competitive Landscape", description: "Brand positioning vs competitors in AI platforms", enabled: reportType === "full" },
-    { id: "technical-health", label: "Technical AI Optimization", description: "Schema, crawlability and technical performance", enabled: reportType === "full" },
-    { id: "top-prompts", label: "Top AI Prompts & Queries", description: "Most frequent prompts mentioning your brand", enabled: true },
-    { id: "financial-projections", label: "Financial Impact Projections", description: "Revenue estimates based on AI search volume", enabled: true },
-    { id: "recommendations", label: "Strategic Recommendations", description: "Platform-specific and technical optimization recommendations", enabled: true },
+    { id: "ai-visibility-overview", label: "AI Visibility Overview", description: "Overall performance metrics and trends", enabled: true },
+    { id: "platform-mention-distribution", label: "AI Platform Mention Distribution", description: "Detailed analysis across ChatGPT, Claude, Gemini, Perplexity", enabled: true },
+    { id: "product-brand-analysis", label: "Product & Brand Analysis", description: "AI readiness and visibility of products/services", enabled: true },
+    { id: "product-readiness-distribution", label: "Overall Product Readiness Distribution", description: "Distribution of product readiness across portfolio", enabled: true },
+    { id: "top-prompts-queries", label: "Top AI Prompts & Queries", description: "Most frequent prompts mentioning your brand", enabled: true },
+    { id: "strategic-recommendations", label: "Strategic Recommendations", description: "Platform-specific and technical optimization recommendations", enabled: true },
   ]);
 
   const handleSectionToggle = (sectionId: string, enabled: boolean) => {
