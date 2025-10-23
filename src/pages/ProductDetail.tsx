@@ -358,19 +358,33 @@ export const ProductDetail = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* AI Readiness Hero Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* AI Readiness Score Card */}
-          <Card className="bg-white border-gray-200 shadow-sm">
-            <CardContent className="pt-6">
-              <div className="flex items-start space-x-4 mb-6">
+        <Card className="bg-white border-gray-200 shadow-sm mb-8">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Left: AI Readiness Score */}
+              <div className="flex items-start space-x-4">
                 <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                   <Package className="w-5 h-5 text-gray-600" />
                 </div>
                 <div className="flex-1">
                   <h2 className="text-lg font-semibold text-gray-900 mb-1">AI Readiness Score</h2>
-                  <p className="text-sm text-gray-600">Overall performance and Optimization status</p>
+                  <p className="text-sm text-gray-600 mb-6">Overall performance and Optimization status</p>
+                  
+                  <div className="space-y-3 pt-4 border-t border-gray-100">
+                    <div className="flex items-center space-x-2">
+                      <Package className="w-4 h-4 text-gray-400" />
+                      <span className="font-semibold text-gray-900">{mockProduct.name}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-500"># SKU: {mockProduct.sku}</span>
+                    </div>
+                    <div className="inline-flex items-center space-x-1 bg-green-50 text-green-700 px-3 py-1 rounded-md text-sm">
+                      <TrendingUp className="w-4 h-4" />
+                      <span>+{mockProduct.trend}% up this week</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="relative w-32 h-32">
+                <div className="relative w-32 h-32 flex-shrink-0">
                   <svg className="transform -rotate-90 w-32 h-32">
                     <circle
                       cx="64"
@@ -399,37 +413,9 @@ export const ProductDetail = () => {
                   </div>
                 </div>
               </div>
-              
-              <div className="space-y-3 pt-4 border-t border-gray-100">
-                <div className="flex items-center space-x-2">
-                  <Package className="w-4 h-4 text-gray-400" />
-                  <span className="font-semibold text-gray-900">{mockProduct.name}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-500"># SKU: {mockProduct.sku}</span>
-                </div>
-                <div className="inline-flex items-center space-x-1 bg-green-50 text-green-700 px-3 py-1 rounded-md text-sm">
-                  <TrendingUp className="w-4 h-4" />
-                  <span>+{mockProduct.trend}% up this week</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Metrics Grid Card */}
-          <Card className="bg-white border-gray-200 shadow-sm">
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-2 gap-6">
-                {/* Pages Analyzed */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <FileText className="w-5 h-5" />
-                    <span className="font-medium text-gray-900">Pages Analyzed</span>
-                  </div>
-                  <p className="text-xs text-gray-600">Total mentions across AI platforms</p>
-                  <p className="text-3xl font-bold text-gray-900">{mockProduct.pagesCrawled}</p>
-                </div>
-
+              {/* Right: Key Metrics */}
+              <div className="grid grid-cols-2 gap-6 lg:border-l lg:border-gray-100 lg:pl-8">
                 {/* Avg. Rank */}
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 text-gray-600">
@@ -446,23 +432,13 @@ export const ProductDetail = () => {
                     <Eye className="w-5 h-5" />
                     <span className="font-medium text-gray-900">Product Mentions</span>
                   </div>
-                  <p className="text-xs text-gray-600">Overall technical optimization</p>
+                  <p className="text-xs text-gray-600">Total mentions across platforms</p>
                   <p className="text-3xl font-bold text-gray-900">{mockProduct.mentions}</p>
                 </div>
-
-                {/* Technical Health */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <Code className="w-5 h-5" />
-                    <span className="font-medium text-gray-900">Technical Health</span>
-                  </div>
-                  <p className="text-xs text-gray-600">Total pages crawled and analyzed</p>
-                  <p className="text-2xl font-bold text-gray-900">Good</p>
-                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Navigation Tabs */}
         <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-8">
