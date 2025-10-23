@@ -531,6 +531,10 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                           <img src="/lovable-uploads/f7211f59-be5b-4e58-9bfa-3b6653217350.png" alt={competitor.name} className="w-full h-full object-contain" />
                         ) : competitor.name === "Nike" ? (
                           <img src="/lovable-uploads/d296743b-ff18-4da8-8546-d789de582706.png" alt={competitor.name} className="w-full h-full object-contain" />
+                        ) : competitor.name === "Under Armour" ? (
+                          <img src="/lovable-uploads/under-armour-logo.jpg" alt={competitor.name} className="w-full h-full object-contain" />
+                        ) : competitor.name === "Puma" ? (
+                          <img src="/lovable-uploads/puma-logo.jpg" alt={competitor.name} className="w-full h-full object-contain" />
                         ) : (
                           <Building className="w-10 h-10 text-gray-400" />
                         )}
