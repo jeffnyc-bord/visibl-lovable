@@ -1117,12 +1117,14 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                   }}
                 />
                 <AddPromptDialog 
-                  onPromptAdded={(prompt) => {
+                  open={false}
+                  onOpenChange={() => {}}
+                  onAdd={(promptText) => {
                     // Create new prompt with pending status
                     const newPrompt = {
-                      id: Date.now(), // Simple ID generation
-                      prompt: prompt.prompt,
-                      fullPrompt: prompt.prompt,
+                      id: Date.now(),
+                      prompt: promptText,
+                      fullPrompt: promptText,
                       topPlatforms: <img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="AI Platform" className="w-12 h-12" />,
                       mentions: 0,
                       source: "User",
@@ -1139,7 +1141,6 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                       }
                     };
 
-                    // Add to state
                     setDetailedPromptsState(prev => [newPrompt, ...prev]);
                     
                     toast({

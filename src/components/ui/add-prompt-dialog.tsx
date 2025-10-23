@@ -1,20 +1,19 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { MessageSquare, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 interface AddPromptDialogProps {
-  onPromptAdded?: (prompt: { prompt: string; queued: boolean }) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onAdd: (promptText: string) => void;
 }
 
-export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
+export const AddPromptDialog = ({ open, onOpenChange, onAdd }: AddPromptDialogProps) => {
   const { toast } = useToast();
-  const [open, setOpen] = React.useState(false);
   const [prompt, setPrompt] = React.useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,31 +28,14 @@ export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
       return;
     }
 
-    const newPrompt = {
-      prompt: prompt.trim(),
-      queued: true, // New prompts are automatically queued
-    };
-
-    onPromptAdded?.(newPrompt);
+    onAdd(prompt.trim());
     
-    toast({
-      title: "Prompt Added to Queue",
-      description: "Your custom prompt has been queued for the next analysis run.",
-    });
-
-    // Reset form and close dialog
+    // Reset form
     setPrompt("");
-    setOpen(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="flex items-center space-x-2">
-          <MessageSquare className="w-4 h-4" />
-          <span>Add Prompt</span>
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
@@ -61,7 +43,7 @@ export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
             <span>Add Custom Prompt</span>
           </DialogTitle>
           <DialogDescription>
-            Create a custom prompt to test your brand visibility across AI platforms.
+            Create a custom prompt to test your product visibility across AI platforms.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -80,23 +62,22 @@ export const AddPromptDialog = ({ onPromptAdded }: AddPromptDialogProps) => {
             </p>
           </div>
           
+          <DialogFooter>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={!prompt.trim()}
+            >
+              Add Prompt
+            </Button>
+          </DialogFooter>
         </form>
-        <DialogFooter>
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={() => setOpen(false)}
-          >
-            Cancel
-          </Button>
-          <Button 
-            type="submit" 
-            onClick={handleSubmit}
-            disabled={!prompt.trim()}
-          >
-            Add Prompt
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -1,50 +1,51 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowLeft,
   TrendingUp,
-  TrendingDown,
-  CheckCircle,
-  AlertTriangle,
   Eye,
   Search,
-  Code,
-  Zap,
   RefreshCw,
-  Star,
   ExternalLink,
-  Clock,
   Target,
-  FileText,
-  BarChart3,
   Package,
-  Activity,
-  Globe,
-  Award,
-  ChevronRight,
   Pin,
-  PinOff
+  PinOff,
+  Trash2,
+  Plus,
+  CheckCircle2,
+  Clock,
+  AlertCircle
 } from "lucide-react";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
+import { AddPromptDialog } from "@/components/ui/add-prompt-dialog";
 
 export const ProductDetail = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeSection, setActiveSection] = useState("mentions");
+  const [activeSection, setActiveSection] = useState("prompts");
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [showMentionDetails, setShowMentionDetails] = useState(false);
   const [selectedMentionId, setSelectedMentionId] = useState<number | null>(null);
+  const [selectedPrompts, setSelectedPrompts] = useState<number[]>([]);
+  const [prompts, setPrompts] = useState([
+    { id: 1, model: "ChatGPT", query: "best running shoes 2024", excerpt: "Nike Air Max 1 offers excellent cushioning for daily runs with its Air Max technology providing superior comfort and impact protection.", sentiment: "positive", url: "nike.com/air-max-1", date: "2 hours ago", mentions: 3 },
+    { id: 2, model: "Gemini", query: "comfortable athletic footwear", excerpt: "The Nike Air Max 1 combines classic design with reliable cushioning technology, making it a solid choice for both casual wear and light athletic activities.", sentiment: "positive", url: "nike.com/air-max-1", date: "4 hours ago", mentions: 2 },
+    { id: 3, model: "Perplexity", query: "retro sneakers style", excerpt: "Air Max 1 maintains its classic appeal while incorporating modern comfort technologies, though some newer models offer better performance.", sentiment: "neutral", url: "nike.com/heritage", date: "6 hours ago", mentions: 1 },
+    { id: 4, model: "Grok", query: "athletic shoes innovation", excerpt: "Nike Air Max 1 represents a breakthrough in sneaker design with its visible air cushioning technology that revolutionized athletic footwear.", sentiment: "positive", url: "nike.com/innovation", date: "8 hours ago", mentions: 4 }
+  ]);
+  const [showAddPrompt, setShowAddPrompt] = useState(false);
+  const MAX_PROMPTS = 5;
 
   // Mock product data - in real app this would come from API
   const mockProduct = {
@@ -64,19 +65,19 @@ export const ProductDetail = () => {
   const gaps = [
     { 
       id: 1, 
-      title: "Missing Product Schema Markup", 
+      title: "Product specs missing", 
       priority: "High", 
-      status: "pending", 
-      description: "Add Reviews, Price, and Availability schema markup to improve AI understanding",
+      status: "in-progress", 
+      description: "Technical specifications are not comprehensive enough for AI systems",
       impact: "High",
       effort: "Medium"
     },
     { 
       id: 2, 
-      title: "Low AI Mentions for 'cross-training shoes'", 
+      title: "Limited customer reviews", 
       priority: "Medium", 
-      status: "in-progress", 
-      description: "Competitors dominate this query space - need content optimization",
+      status: "pending", 
+      description: "More customer testimonials needed to build trust signals",
       impact: "Medium",
       effort: "High"
     },
@@ -98,13 +99,6 @@ export const ProductDetail = () => {
       impact: "Low",
       effort: "Low"
     }
-  ];
-
-  const aiMentions = [
-    { id: 1, model: "ChatGPT", query: "best running shoes 2024", excerpt: "Nike Air Max 1 offers excellent cushioning for daily runs with its Air Max technology providing superior comfort and impact protection.", sentiment: "positive", url: "nike.com/air-max-1", date: "2 hours ago", mentions: 3 },
-    { id: 2, model: "Gemini", query: "comfortable athletic footwear", excerpt: "The Nike Air Max 1 combines classic design with reliable cushioning technology, making it a solid choice for both casual wear and light athletic activities.", sentiment: "positive", url: "nike.com/air-max-1", date: "4 hours ago", mentions: 2 },
-    { id: 3, model: "Perplexity", query: "retro sneakers style", excerpt: "Air Max 1 maintains its classic appeal while incorporating modern comfort technologies, though some newer models offer better performance.", sentiment: "neutral", url: "nike.com/heritage", date: "6 hours ago", mentions: 1 },
-    { id: 4, model: "Grok", query: "athletic shoes innovation", excerpt: "Nike Air Max 1 represents a breakthrough in sneaker design with its visible air cushioning technology that revolutionized athletic footwear.", sentiment: "positive", url: "nike.com/innovation", date: "8 hours ago", mentions: 4 }
   ];
 
   const keywords = [
@@ -138,7 +132,7 @@ export const ProductDetail = () => {
 
   // Transform AI mention data to work with PromptDetailsPanel
   const transformMentionToPromptData = (mentionId: number) => {
-    const mention = aiMentions.find(m => m.id === mentionId);
+    const mention = prompts.find(m => m.id === mentionId);
     if (!mention) return null;
 
     const baseUrl = mention.url.startsWith('http') ? mention.url : `https://${mention.url}`;
@@ -246,8 +240,64 @@ export const ProductDetail = () => {
     toast({
       title: isPinned ? "Removed from Watchlist" : "Added to Watchlist",
       description: isPinned ? 
-        "Product removed from priority monitoring." : 
-        "Product added to priority monitoring watchlist.",
+        "Product removed from your watchlist" : 
+        "Product added to your watchlist"
+    });
+  };
+
+  const handleTogglePromptSelection = (promptId: number) => {
+    setSelectedPrompts(prev =>
+      prev.includes(promptId)
+        ? prev.filter(id => id !== promptId)
+        : [...prev, promptId]
+    );
+  };
+
+  const handleToggleAllPrompts = () => {
+    if (selectedPrompts.length === prompts.length) {
+      setSelectedPrompts([]);
+    } else {
+      setSelectedPrompts(prompts.map(p => p.id));
+    }
+  };
+
+  const handleDeletePrompts = () => {
+    if (selectedPrompts.length === 0) return;
+    
+    setPrompts(prev => prev.filter(p => !selectedPrompts.includes(p.id)));
+    setSelectedPrompts([]);
+    toast({
+      title: "Prompts Deleted",
+      description: `${selectedPrompts.length} prompt${selectedPrompts.length > 1 ? 's' : ''} deleted successfully.`,
+    });
+  };
+
+  const handleAddPrompt = (promptText: string) => {
+    if (prompts.length >= MAX_PROMPTS) {
+      toast({
+        title: "Limit Reached",
+        description: `You can only have up to ${MAX_PROMPTS} prompts.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newPrompt = {
+      id: Math.max(...prompts.map(p => p.id), 0) + 1,
+      model: "ChatGPT",
+      query: promptText,
+      excerpt: "Prompt analysis pending...",
+      sentiment: "neutral" as const,
+      url: "pending",
+      date: "Just now",
+      mentions: 0
+    };
+
+    setPrompts(prev => [...prev, newPrompt]);
+    setShowAddPrompt(false);
+    toast({
+      title: "Prompt Added",
+      description: "New prompt has been added successfully.",
     });
   };
 
@@ -270,9 +320,9 @@ export const ProductDetail = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'resolved': return <CheckCircle className="w-5 h-5 text-green-600" />;
+      case 'resolved': return <CheckCircle2 className="w-5 h-5 text-green-600" />;
       case 'in-progress': return <Clock className="w-5 h-5 text-blue-600" />;
-      default: return <AlertTriangle className="w-5 h-5 text-amber-600" />;
+      default: return <AlertCircle className="w-5 h-5 text-amber-600" />;
     }
   };
 
@@ -445,11 +495,11 @@ export const ProductDetail = () => {
           <div className="border-b border-gray-200">
             <TabsList className="grid w-full grid-cols-3 bg-transparent h-auto p-0 space-x-8">
               <TabsTrigger 
-                value="mentions" 
+                value="prompts" 
                 className="flex items-center space-x-2 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 px-0 py-4 rounded-none bg-transparent hover:text-blue-500 transition-colors"
               >
                 <Eye className="w-4 h-4" />
-                <span className="font-medium">AI Mentions</span>
+                <span className="font-medium">Prompts</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="recommendations" 
@@ -521,17 +571,45 @@ export const ProductDetail = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="mentions" className="space-y-8">
+          <TabsContent value="prompts" className="space-y-8">
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Product AI Mentions</h3>
-              <p className="text-gray-600 mb-6">How {mockProduct.name} appears across different AI platforms</p>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-1">Product Prompts</h3>
+                  <p className="text-gray-600">Track how {mockProduct.name} performs across different prompts</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {selectedPrompts.length > 0 && (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={handleDeletePrompts}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete ({selectedPrompts.length})
+                    </Button>
+                  )}
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => setShowAddPrompt(true)}
+                    disabled={prompts.length >= MAX_PROMPTS}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Prompt ({prompts.length}/{MAX_PROMPTS})
+                  </Button>
+                </div>
+              </div>
               
               <div className="border border-gray-200 rounded-lg overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-12">
-                        <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-input bg-background" />
+                        <Checkbox
+                          checked={selectedPrompts.length === prompts.length && prompts.length > 0}
+                          onCheckedChange={handleToggleAllPrompts}
+                        />
                       </TableHead>
                       <TableHead className="font-semibold">Prompt</TableHead>
                       <TableHead className="font-semibold">Top Platform</TableHead>
@@ -542,14 +620,17 @@ export const ProductDetail = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {aiMentions.map((mention) => (
+                    {prompts.map((mention) => (
                       <TableRow 
                         key={mention.id} 
                         className="hover:bg-gray-50 cursor-pointer"
                         onClick={() => handleMentionClick(mention.id)}
                       >
                         <TableCell onClick={(e) => e.stopPropagation()}>
-                          <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background" />
+                          <Checkbox
+                            checked={selectedPrompts.includes(mention.id)}
+                            onCheckedChange={() => handleTogglePromptSelection(mention.id)}
+                          />
                         </TableCell>
                         <TableCell>
                           <p className="font-medium text-gray-900 max-w-xs truncate">{mention.query}</p>
@@ -613,11 +694,18 @@ export const ProductDetail = () => {
        </div>
      </div>
 
-     {/* AI Mention Details Panel */}
+     {/* Prompt Details Panel */}
      <PromptDetailsPanel
        isOpen={showMentionDetails}
        onClose={() => setShowMentionDetails(false)}
        promptData={selectedMentionId ? transformMentionToPromptData(selectedMentionId) : null}
+     />
+
+     {/* Add Prompt Dialog */}
+     <AddPromptDialog
+       open={showAddPrompt}
+       onOpenChange={setShowAddPrompt}
+       onAdd={handleAddPrompt}
      />
      </>
    );
