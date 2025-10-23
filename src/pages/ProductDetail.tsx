@@ -23,10 +23,15 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
-  MessageSquare
+  MessageSquare,
+  Settings,
+  Copy,
+  BarChart3,
+  X
 } from "lucide-react";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
 import { AddPromptDialog } from "@/components/ui/add-prompt-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export const ProductDetail = () => {
   const { productId } = useParams();
@@ -285,6 +290,29 @@ export const ProductDetail = () => {
     toast({
       title: "Prompts Deleted",
       description: `${selectedPrompts.length} prompt${selectedPrompts.length > 1 ? 's' : ''} deleted successfully.`,
+    });
+  };
+
+  const handleDeleteSinglePrompt = (promptId: number) => {
+    setPrompts(prev => prev.filter(p => p.id !== promptId));
+    toast({
+      title: "Prompt Deleted",
+      description: "Prompt deleted successfully.",
+    });
+  };
+
+  const handleToggleQueue = (promptId: number) => {
+    setPrompts(prev => prev.map(p => 
+      p.id === promptId 
+        ? { ...p, queued: !p.queued, status: !p.queued ? "queued" as const : "completed" as const }
+        : p
+    ));
+    const prompt = prompts.find(p => p.id === promptId);
+    toast({
+      title: prompt?.queued ? "Removed from Queue" : "Added to Queue",
+      description: prompt?.queued 
+        ? "Prompt removed from analysis queue." 
+        : "Prompt added to analysis queue.",
     });
   };
 
@@ -698,18 +726,53 @@ export const ProductDetail = () => {
                           <p className="text-sm text-gray-500">{mention.date}</p>
                         </TableCell>
                         <TableCell onClick={(e) => e.stopPropagation()}>
-                          {mention.status !== "queued" ? (
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              className="text-gray-400 hover:text-gray-600"
-                              onClick={() => window.open(`https://${mention.url}`, '_blank')}
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                            </Button>
-                          ) : (
-                            <span className="text-xs text-gray-400">Pending</span>
-                          )}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Settings className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleToggleQueue(mention.id)}>
+                                {mention.queued ? (
+                                  <>
+                                    <X className="mr-2 h-4 w-4" />
+                                    Remove from Queue
+                                  </>
+                                ) : (
+                                  <>
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Add to Queue
+                                  </>
+                                )}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => {
+                                if (mention.status !== "queued") {
+                                  handleMentionClick(mention.id);
+                                }
+                              }} disabled={mention.status === "queued"}>
+                                <BarChart3 className="mr-2 h-4 w-4" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => {
+                                navigator.clipboard.writeText(mention.query);
+                                toast({
+                                  title: "Copied",
+                                  description: "Prompt copied to clipboard.",
+                                });
+                              }}>
+                                <Copy className="mr-2 h-4 w-4" />
+                                Copy Prompt
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleDeleteSinglePrompt(mention.id)}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete Prompt
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}
