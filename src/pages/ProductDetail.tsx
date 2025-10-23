@@ -39,11 +39,26 @@ export const ProductDetail = () => {
   const [showMentionDetails, setShowMentionDetails] = useState(false);
   const [selectedMentionId, setSelectedMentionId] = useState<number | null>(null);
   const [selectedPrompts, setSelectedPrompts] = useState<number[]>([]);
-  const [prompts, setPrompts] = useState([
-    { id: 1, model: "ChatGPT", query: "best running shoes 2024", excerpt: "Nike Air Max 1 offers excellent cushioning for daily runs with its Air Max technology providing superior comfort and impact protection.", sentiment: "positive", url: "nike.com/air-max-1", date: "2 hours ago", mentions: 3 },
-    { id: 2, model: "Gemini", query: "comfortable athletic footwear", excerpt: "The Nike Air Max 1 combines classic design with reliable cushioning technology, making it a solid choice for both casual wear and light athletic activities.", sentiment: "positive", url: "nike.com/air-max-1", date: "4 hours ago", mentions: 2 },
-    { id: 3, model: "Perplexity", query: "retro sneakers style", excerpt: "Air Max 1 maintains its classic appeal while incorporating modern comfort technologies, though some newer models offer better performance.", sentiment: "neutral", url: "nike.com/heritage", date: "6 hours ago", mentions: 1 },
-    { id: 4, model: "Grok", query: "athletic shoes innovation", excerpt: "Nike Air Max 1 represents a breakthrough in sneaker design with its visible air cushioning technology that revolutionized athletic footwear.", sentiment: "positive", url: "nike.com/innovation", date: "8 hours ago", mentions: 4 }
+  
+  type PromptStatus = "completed" | "queued";
+  type Prompt = {
+    id: number;
+    model: string;
+    query: string;
+    excerpt: string;
+    sentiment: "positive" | "neutral" | "negative";
+    url: string;
+    date: string;
+    mentions: number;
+    queued: boolean;
+    status: PromptStatus;
+  };
+  
+  const [prompts, setPrompts] = useState<Prompt[]>([
+    { id: 1, model: "ChatGPT", query: "best running shoes 2024", excerpt: "Nike Air Max 1 offers excellent cushioning for daily runs with its Air Max technology providing superior comfort and impact protection.", sentiment: "positive", url: "nike.com/air-max-1", date: "2 hours ago", mentions: 3, queued: false, status: "completed" },
+    { id: 2, model: "Gemini", query: "comfortable athletic footwear", excerpt: "The Nike Air Max 1 combines classic design with reliable cushioning technology, making it a solid choice for both casual wear and light athletic activities.", sentiment: "positive", url: "nike.com/air-max-1", date: "4 hours ago", mentions: 2, queued: false, status: "completed" },
+    { id: 3, model: "Perplexity", query: "retro sneakers style", excerpt: "Air Max 1 maintains its classic appeal while incorporating modern comfort technologies, though some newer models offer better performance.", sentiment: "neutral", url: "nike.com/heritage", date: "6 hours ago", mentions: 1, queued: false, status: "completed" },
+    { id: 4, model: "Grok", query: "athletic shoes innovation", excerpt: "Nike Air Max 1 represents a breakthrough in sneaker design with its visible air cushioning technology that revolutionized athletic footwear.", sentiment: "positive", url: "nike.com/innovation", date: "8 hours ago", mentions: 4, queued: false, status: "completed" }
   ]);
   const [showAddPrompt, setShowAddPrompt] = useState(false);
   const MAX_PROMPTS = 5;
@@ -283,22 +298,24 @@ export const ProductDetail = () => {
       return;
     }
 
-    const newPrompt = {
+    const newPrompt: Prompt = {
       id: Math.max(...prompts.map(p => p.id), 0) + 1,
-      model: "ChatGPT",
+      model: "Pending",
       query: promptText,
-      excerpt: "Prompt analysis pending...",
-      sentiment: "neutral" as const,
+      excerpt: "This prompt is queued for analysis. Results will appear once processing is complete.",
+      sentiment: "neutral",
       url: "pending",
       date: "Just now",
-      mentions: 0
+      mentions: 0,
+      queued: true,
+      status: "queued"
     };
 
-    setPrompts(prev => [...prev, newPrompt]);
+    setPrompts(prev => [newPrompt, ...prev]);
     setShowAddPrompt(false);
     toast({
-      title: "Prompt Added",
-      description: "New prompt has been added successfully.",
+      title: "Prompt Queued",
+      description: "Your prompt has been added to the analysis queue.",
     });
   };
 
@@ -574,6 +591,29 @@ export const ProductDetail = () => {
 
           <TabsContent value="prompts" className="space-y-8">
             <div>
+              {/* Queue Indicator */}
+              {prompts.filter(p => p.queued).length > 0 && (
+                <div className="flex items-center justify-between mb-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="w-5 h-5 text-amber-600" />
+                      <div>
+                        <p className="font-semibold text-gray-900">
+                          {prompts.filter(p => p.queued).length} prompt{prompts.filter(p => p.queued).length > 1 ? 's' : ''} queued
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          Waiting for next analysis run
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="bg-white">
+                    <Clock className="w-3 h-3 mr-1" />
+                    Pending Analysis
+                  </Badge>
+                </div>
+              )}
+
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-1">Product Prompts</h3>
@@ -624,8 +664,8 @@ export const ProductDetail = () => {
                     {prompts.map((mention) => (
                       <TableRow 
                         key={mention.id} 
-                        className="hover:bg-gray-50 cursor-pointer"
-                        onClick={() => handleMentionClick(mention.id)}
+                        className={`hover:bg-gray-50 ${mention.status !== "queued" ? "cursor-pointer" : "cursor-default"}`}
+                        onClick={() => mention.status !== "queued" && handleMentionClick(mention.id)}
                       >
                         <TableCell onClick={(e) => e.stopPropagation()}>
                           <Checkbox
@@ -637,7 +677,16 @@ export const ProductDetail = () => {
                           <p className="font-medium text-gray-900 max-w-xs truncate">{mention.query}</p>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">{mention.model}</Badge>
+                          <div className="flex items-center space-x-2">
+                            {mention.status === "queued" ? (
+                              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                                <Clock className="w-3 h-3 mr-1" />
+                                Queued
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline">{mention.model}</Badge>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <span className="text-sm text-gray-900">{mention.mentions}</span>
@@ -649,14 +698,18 @@ export const ProductDetail = () => {
                           <p className="text-sm text-gray-500">{mention.date}</p>
                         </TableCell>
                         <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="text-gray-400 hover:text-gray-600"
-                            onClick={() => window.open(`https://${mention.url}`, '_blank')}
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </Button>
+                          {mention.status !== "queued" ? (
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="text-gray-400 hover:text-gray-600"
+                              onClick={() => window.open(`https://${mention.url}`, '_blank')}
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-gray-400">Pending</span>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
