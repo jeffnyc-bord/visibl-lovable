@@ -119,10 +119,10 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
       {/* Backdrop */}
       <div 
         className={cn(
-          "fixed inset-0 bg-black/20 z-40 transition-opacity duration-500",
+          "fixed inset-0 bg-black/20 z-40 transition-opacity duration-[800ms]",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
-        style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+        style={{ transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}
         onClick={onClose}
       />
       
@@ -130,11 +130,11 @@ export const PromptDetailsPanel = ({ isOpen, onClose, promptData }: PromptDetail
       <div 
         className={cn(
           "fixed right-0 top-0 h-full w-3/4 max-w-4xl bg-white border-l border-gray-200 z-50",
-          "transform transition-all duration-600 will-change-transform",
+          "transform transition-all duration-[800ms] will-change-transform",
           "shadow-xl overflow-y-auto",
           isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
         )}
-        style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+        style={{ transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}
       >
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-10">
