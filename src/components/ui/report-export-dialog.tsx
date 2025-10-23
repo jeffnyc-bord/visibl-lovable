@@ -70,8 +70,6 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
     to: new Date()
   });
   const [reportTitle, setReportTitle] = useState(`${brandName} AI Visibility Report`);
-  const [executiveSummary, setExecutiveSummary] = useState("");
-  const [clientLogo, setClientLogo] = useState<File | null>(null);
   const [agencyLogo, setAgencyLogo] = useState<File | null>(null);
   const [agencyName, setAgencyName] = useState("");
   const [selectedFormats, setSelectedFormats] = useState<string[]>(["pdf"]);
@@ -112,12 +110,8 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
     );
   };
 
-  const handleFileUpload = (file: File, type: 'client' | 'agency') => {
-    if (type === 'client') {
-      setClientLogo(file);
-    } else {
-      setAgencyLogo(file);
-    }
+  const handleFileUpload = (file: File) => {
+    setAgencyLogo(file);
   };
 
   const handleExport = async () => {
@@ -148,7 +142,6 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
       reportTitle,
       dateRange,
       sections: enabledSections,
-      executiveSummary,
       agencyName,
       brandData, // Pass the comprehensive brand data
     };
@@ -204,8 +197,6 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
   const resetForm = () => {
     setStep(1);
     setReportTitle(`${brandName} AI Visibility Report`);
-    setExecutiveSummary("");
-    setClientLogo(null);
     setAgencyLogo(null);
     setAgencyName("");
     setSelectedFormats(["pdf"]);
@@ -363,17 +354,6 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
                   />
                 </div>
 
-                {/* Executive Summary */}
-                <div className="space-y-2">
-                  <Label className="text-base font-medium">Custom Executive Summary (Optional)</Label>
-                  <Textarea
-                    value={executiveSummary}
-                    onChange={(e) => setExecutiveSummary(e.target.value)}
-                    placeholder="Add a custom introduction or leave blank for AI-generated summary"
-                    rows={3}
-                  />
-                </div>
-
                 {/* Agency Branding */}
                 <div className="space-y-4 p-4 border rounded-lg bg-muted/20">
                   <div className="flex items-center space-x-2">
@@ -391,35 +371,13 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
                       />
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium">Client Logo</Label>
-                        <div className="mt-2">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'client')}
-                            className="hidden"
-                            id="client-logo"
-                          />
-                          <label htmlFor="client-logo" className="cursor-pointer">
-                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
-                              <Upload className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
-                              <p className="text-xs text-muted-foreground">
-                                {clientLogo ? clientLogo.name : "Upload client logo"}
-                              </p>
-                            </div>
-                          </label>
-                        </div>
-                      </div>
-                      
-                      <div>
+                    <div>
                         <Label className="text-sm font-medium">Agency Logo</Label>
                         <div className="mt-2">
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'agency')}
+                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
                             className="hidden"
                             id="agency-logo"
                           />
@@ -434,7 +392,6 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
                         </div>
                       </div>
                     </div>
-                  </div>
                 </div>
 
                 <div className="flex justify-between">
