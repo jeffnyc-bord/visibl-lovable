@@ -39,7 +39,7 @@ export const ProductDetail = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeSection, setActiveSection] = useState("recommendations");
+  const [activeSection, setActiveSection] = useState("mentions");
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
@@ -445,18 +445,18 @@ export const ProductDetail = () => {
           <div className="border-b border-gray-200">
             <TabsList className="grid w-full grid-cols-3 bg-transparent h-auto p-0 space-x-8">
               <TabsTrigger 
-                value="recommendations" 
-                className="flex items-center space-x-2 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 px-0 py-4 rounded-none bg-transparent hover:text-blue-500 transition-colors"
-              >
-                <Target className="w-4 h-4" />
-                <span className="font-medium">Recommendations</span>
-              </TabsTrigger>
-              <TabsTrigger 
                 value="mentions" 
                 className="flex items-center space-x-2 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 px-0 py-4 rounded-none bg-transparent hover:text-blue-500 transition-colors"
               >
                 <Eye className="w-4 h-4" />
                 <span className="font-medium">AI Mentions</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="recommendations" 
+                className="flex items-center space-x-2 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 px-0 py-4 rounded-none bg-transparent hover:text-blue-500 transition-colors"
+              >
+                <Target className="w-4 h-4" />
+                <span className="font-medium">Recommendations</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="keywords" 
