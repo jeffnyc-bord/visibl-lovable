@@ -577,7 +577,7 @@ export const ProductDetail = () => {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-1">Product Prompts</h3>
-                  <p className="text-gray-600">Track how {mockProduct.name} performs across different prompts</p>
+                  <p className="text-gray-600">Track how {mockProduct.name} performs across different prompts • {prompts.length}/{MAX_PROMPTS} prompts used</p>
                 </div>
                 <div className="flex items-center space-x-2">
                   {selectedPrompts.length > 0 && (
