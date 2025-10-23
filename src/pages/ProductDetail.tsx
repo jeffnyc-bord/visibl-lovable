@@ -22,7 +22,8 @@ import {
   Plus,
   CheckCircle2,
   Clock,
-  AlertCircle
+  AlertCircle,
+  MessageSquare
 } from "lucide-react";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
 import { AddPromptDialog } from "@/components/ui/add-prompt-dialog";
@@ -590,13 +591,13 @@ export const ProductDetail = () => {
                     </Button>
                   )}
                   <Button
-                    variant="default"
+                    className="bg-gray-900 hover:bg-gray-800 text-white"
                     size="sm"
                     onClick={() => setShowAddPrompt(true)}
                     disabled={prompts.length >= MAX_PROMPTS}
                   >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Prompt ({prompts.length}/{MAX_PROMPTS})
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Add Prompt
                   </Button>
                 </div>
               </div>
