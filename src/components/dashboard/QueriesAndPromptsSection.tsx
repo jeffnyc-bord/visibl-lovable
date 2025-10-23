@@ -92,6 +92,9 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
   
   // Bulk selection state
   const [selectedPrompts, setSelectedPrompts] = useState<number[]>([]);
+  
+  // Add prompt dialog state
+  const [showAddPromptDialog, setShowAddPromptDialog] = useState(false);
 
   // Prompts state - convert mock data to state
   const [detailedPromptsState, setDetailedPromptsState] = useState(() => {
@@ -1117,8 +1120,8 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                   }}
                 />
                 <AddPromptDialog 
-                  open={false}
-                  onOpenChange={() => {}}
+                  open={showAddPromptDialog}
+                  onOpenChange={setShowAddPromptDialog}
                   onAdd={(promptText) => {
                     // Create new prompt with pending status
                     const newPrompt = {
