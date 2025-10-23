@@ -27,7 +27,8 @@ import {
   Settings,
   Copy,
   BarChart3,
-  X
+  X,
+  Check
 } from "lucide-react";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
 import { AddPromptDialog } from "@/components/ui/add-prompt-dialog";
@@ -675,10 +676,21 @@ export const ProductDetail = () => {
                   <TableHeader>
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-12">
-                        <Checkbox
-                          checked={selectedPrompts.length === prompts.length && prompts.length > 0}
-                          onCheckedChange={handleToggleAllPrompts}
-                        />
+                        <button
+                          onClick={handleToggleAllPrompts}
+                          className="group relative flex items-center justify-center w-5 h-5 rounded-full border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background"
+                        >
+                          <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
+                            selectedPrompts.length === prompts.length && prompts.length > 0
+                              ? 'bg-primary scale-100 opacity-100' 
+                              : 'bg-transparent scale-0 opacity-0'
+                          }`} />
+                          <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
+                            selectedPrompts.length === prompts.length && prompts.length > 0
+                              ? 'text-primary-foreground scale-100 opacity-100' 
+                              : 'text-transparent scale-0 opacity-0'
+                          }`} />
+                        </button>
                       </TableHead>
                       <TableHead className="font-semibold">Prompt</TableHead>
                       <TableHead className="font-semibold">Top Platform</TableHead>
@@ -696,10 +708,21 @@ export const ProductDetail = () => {
                         onClick={() => mention.status !== "queued" && handleMentionClick(mention.id)}
                       >
                         <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Checkbox
-                            checked={selectedPrompts.includes(mention.id)}
-                            onCheckedChange={() => handleTogglePromptSelection(mention.id)}
-                          />
+                          <button
+                            onClick={() => handleTogglePromptSelection(mention.id)}
+                            className="group relative flex items-center justify-center w-5 h-5 rounded-full border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background"
+                          >
+                            <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
+                              selectedPrompts.includes(mention.id)
+                                ? 'bg-primary scale-100 opacity-100' 
+                                : 'bg-transparent scale-0 opacity-0'
+                            }`} />
+                            <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
+                              selectedPrompts.includes(mention.id)
+                                ? 'text-primary-foreground scale-100 opacity-100' 
+                                : 'text-transparent scale-0 opacity-0'
+                            }`} />
+                          </button>
                         </TableCell>
                         <TableCell>
                           <p className="font-medium text-gray-900 max-w-xs truncate">{mention.query}</p>
