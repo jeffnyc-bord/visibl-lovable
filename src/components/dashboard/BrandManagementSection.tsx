@@ -99,9 +99,6 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   
   const currentTier = "standard"; // This would come from user subscription data
   const maxBrands = TIER_LIMITS[currentTier];
-  const currentBrandCount = trackedBrands.length; // Actual count from tracked brands
-  const brandsRemaining = Math.max(0, maxBrands - currentBrandCount);
-  const isAtLimit = currentBrandCount >= maxBrands;
   
   // Use selected brand as the primary brand
   const myBrand = {
@@ -135,9 +132,15 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       loadingProgress: 0
     }));
 
-    // Then add other tracked brands (excluding the currently selected brand)
+    // Get names of explicit competitors to avoid duplicates
+    const existingNames = new Set(explicitCompetitors.map(c => c.name.toLowerCase()));
+
+    // Then add other tracked brands (excluding the currently selected brand and duplicates)
     const otherBrands = trackedBrands
-      .filter(brand => brand.id !== selectedBrand.id)
+      .filter(brand => 
+        brand.id !== selectedBrand.id && 
+        !existingNames.has(brand.name.toLowerCase())
+      )
       .map((brand, index) => ({
         id: explicitCompetitors.length + index + 2,
         name: brand.name,
@@ -172,6 +175,11 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   };
 
   const competitorCount = competitors.length;
+  // Total brands = 1 primary brand + competitors
+  const totalBrandsTracked = 1 + competitorCount;
+  const currentBrandCount = totalBrandsTracked; // For consistency with existing code
+  const brandsRemaining = Math.max(0, maxBrands - totalBrandsTracked);
+  const isAtLimit = totalBrandsTracked >= maxBrands;
 
   const handleToggleMonitoring = (competitorId: number) => {
     setCompetitors(prev => prev.map(competitor => 
@@ -202,8 +210,8 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   const handleAddBrand = () => {
     if (!newBrandData.name.trim() || !newBrandData.url.trim() || !newBrandData.reportFrequency) return;
     
-    // Check brand limit
-    if (isAtLimit) {
+    // Check brand limit (primary brand + competitors)
+    if (totalBrandsTracked >= maxBrands) {
       toast({
         title: "Brand Limit Reached",
         description: `You've reached the maximum of ${maxBrands} brands for the ${currentTier} tier. Upgrade to add more competitors.`,
@@ -374,7 +382,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-foreground">Your Watchlist</h3>
-          <p className="text-sm text-muted-foreground">{currentBrandCount} brand{currentBrandCount !== 1 ? 's' : ''} tracked</p>
+          <p className="text-sm text-muted-foreground">{totalBrandsTracked} brand{totalBrandsTracked !== 1 ? 's' : ''} tracked</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
