@@ -32,7 +32,6 @@ import {
 } from "lucide-react";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
 import { AddPromptDialog } from "@/components/ui/add-prompt-dialog";
-import { SuggestPromptsDialog } from "@/components/ui/suggest-prompts-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export const ProductDetail = () => {
@@ -660,16 +659,6 @@ export const ProductDetail = () => {
                       Delete ({selectedPrompts.length})
                     </Button>
                   )}
-                  <SuggestPromptsDialog
-                    brandName={mockProduct.name}
-                    onPromptsSelected={(selectedPromptData) => {
-                      selectedPromptData.forEach(({ prompt }) => {
-                        if (prompts.length < MAX_PROMPTS) {
-                          handleAddPrompt(prompt);
-                        }
-                      });
-                    }}
-                  />
                   <Button
                     className="bg-gray-900 hover:bg-gray-800 text-white"
                     size="sm"
