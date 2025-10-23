@@ -39,7 +39,7 @@ export const ProductDetail = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeSection, setActiveSection] = useState("overview");
+  const [activeSection, setActiveSection] = useState("recommendations");
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
@@ -443,20 +443,13 @@ export const ProductDetail = () => {
         {/* Navigation Tabs */}
         <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-8">
           <div className="border-b border-gray-200">
-            <TabsList className="grid w-full grid-cols-4 bg-transparent h-auto p-0 space-x-8">
+            <TabsList className="grid w-full grid-cols-3 bg-transparent h-auto p-0 space-x-8">
               <TabsTrigger 
-                value="overview" 
-                className="flex items-center space-x-2 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 px-0 py-4 rounded-none bg-transparent hover:text-blue-500 transition-colors"
-              >
-                <BarChart3 className="w-4 h-4" />
-                <span className="font-medium">Overview</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="opportunities" 
+                value="recommendations" 
                 className="flex items-center space-x-2 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 px-0 py-4 rounded-none bg-transparent hover:text-blue-500 transition-colors"
               >
                 <Target className="w-4 h-4" />
-                <span className="font-medium">Opportunities</span>
+                <span className="font-medium">Recommendations</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="mentions" 
@@ -475,71 +468,9 @@ export const ProductDetail = () => {
             </TabsList>
           </div>
 
-          <TabsContent value="overview" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Performance Trend</h3>
-                  <p className="text-gray-600 mb-6">AI readiness score over the last 30 days</p>
-                  <div className="h-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl flex items-center justify-center text-gray-600">
-                    <div className="text-center">
-                      <BarChart3 className="w-12 h-12 mx-auto mb-2 text-blue-400" />
-                      <p>Interactive chart showing AI readiness trend</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Performance Breakdown</h3>
-                  <p className="text-gray-600 mb-6">Detailed scoring by category</p>
-                  <div className="space-y-6">
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-700">Content Quality</span>
-                        <span className="font-semibold text-gray-900">95%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '95%' }} />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-700">Schema Markup</span>
-                        <span className="font-semibold text-gray-900">75%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '75%' }} />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-700">Link Authority</span>
-                        <span className="font-semibold text-gray-900">88%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '88%' }} />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-700">Technical Health</span>
-                        <span className="font-semibold text-gray-900">92%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '92%' }} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="opportunities" className="space-y-8">
+          <TabsContent value="recommendations" className="space-y-8">
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Optimization Opportunities</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Optimization Recommendations</h3>
               <p className="text-gray-600 mb-8">Prioritized improvements to boost your product's AI readiness score</p>
               <div className="space-y-6">
                 {gaps.map((gap) => (
