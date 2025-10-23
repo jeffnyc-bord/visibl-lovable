@@ -377,7 +377,7 @@ export const ProductDetail = () => {
                       cy="64"
                       r="56"
                       stroke="currentColor"
-                      strokeWidth="3"
+                      strokeWidth="5"
                       fill="transparent"
                       className="text-gray-200"
                     />
@@ -386,7 +386,7 @@ export const ProductDetail = () => {
                       cy="64"
                       r="56"
                       stroke="currentColor"
-                      strokeWidth="3"
+                      strokeWidth="5"
                       fill="transparent"
                       strokeDasharray={2 * Math.PI * 56}
                       strokeDashoffset={2 * Math.PI * 56 * (1 - mockProduct.score / 100)}
