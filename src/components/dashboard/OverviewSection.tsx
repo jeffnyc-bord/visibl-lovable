@@ -60,9 +60,10 @@ interface OverviewSectionProps {
   showBaseline?: boolean;
   highlightTopSource?: boolean;
   testTopSourceUrl?: string;
+  dataPointsCount?: number;
 }
 
-export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false, highlightTopSource = false, testTopSourceUrl = "" }: OverviewSectionProps) => {
+export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false, highlightTopSource = false, testTopSourceUrl = "", dataPointsCount = 6 }: OverviewSectionProps) => {
   const { toast } = useToast();
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
@@ -75,7 +76,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   // State for Source Quality section
   const [showAllSources, setShowAllSources] = useState(false);
 
-  const visibilityData = [
+  const allVisibilityData = [
     { month: "Jul", score: 75 },
     { month: "Aug", score: 78 },
     { month: "Sep", score: 82 },
@@ -83,6 +84,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     { month: "Nov", score: 85 },
     { month: "Dec", score: 87 },
   ];
+
+  // Use dataPointsCount to filter visibility data
+  const visibilityData = allVisibilityData.slice(0, dataPointsCount);
 
   // AI Visibility data from ExternalAIVisibilitySection
   const visibilityMetrics = {
@@ -123,10 +127,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     { month: "Dec", mentions: 1247 },
   ];
 
-  // Show only first data point if baseline mode is enabled
+  // Show only first data point if baseline mode is enabled, otherwise use dataPointsCount
   const visibilityTrendData = showBaseline 
     ? [allVisibilityTrendData[0]] 
-    : allVisibilityTrendData;
+    : allVisibilityTrendData.slice(0, dataPointsCount);
 
   const coreQueries = [
     { query: "Nike Air Max vs Adidas Ultraboost", brand: "Nike", mentions: 203 },

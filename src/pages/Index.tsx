@@ -206,6 +206,7 @@ const Index = () => {
   const [userRole, setUserRole] = useState<"business_user" | "agency_admin">("business_user");
   const [loadingDuration, setLoadingDuration] = useState(6);
   const [topSourceUrl, setTopSourceUrl] = useState("");
+  const [dataPointsCount, setDataPointsCount] = useState(6);
   const [showAddBrandDialog, setShowAddBrandDialog] = useState(false);
   const [addBrandStep, setAddBrandStep] = useState(1);
   const [newBrandData, setNewBrandData] = useState({
@@ -415,6 +416,8 @@ const Index = () => {
         onLoadingDurationChange={setLoadingDuration}
         topSourceUrl={topSourceUrl}
         onTopSourceUrlChange={setTopSourceUrl}
+        dataPointsCount={dataPointsCount}
+        onDataPointsCountChange={setDataPointsCount}
       />
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
@@ -703,6 +706,7 @@ const Index = () => {
                               showBaseline={dashboardStates.showBaseline}
                               highlightTopSource={dashboardStates.highlightTopSource}
                               testTopSourceUrl={topSourceUrl}
+                              dataPointsCount={dataPointsCount}
                               onQueryClick={(query) => {
                                 // Store current scroll position
                                 setPreviousScrollPosition(window.scrollY);

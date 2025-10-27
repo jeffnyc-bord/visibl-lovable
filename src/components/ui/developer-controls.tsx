@@ -26,9 +26,11 @@ interface DeveloperControlsProps {
   onLoadingDurationChange: (duration: number) => void;
   topSourceUrl: string;
   onTopSourceUrlChange: (url: string) => void;
+  dataPointsCount: number;
+  onDataPointsCountChange: (count: number) => void;
 }
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -173,6 +175,21 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                   />
                   <p className="text-xs text-muted-foreground">
                     Test overflow handling with long URLs
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Graph Data Points: {dataPointsCount}</Label>
+                  <Input
+                    type="range"
+                    min="1"
+                    max="6"
+                    value={dataPointsCount}
+                    onChange={(e) => onDataPointsCountChange(Number(e.target.value))}
+                    className="h-8"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Control number of data points in visibility graphs
                   </p>
                 </div>
                 
