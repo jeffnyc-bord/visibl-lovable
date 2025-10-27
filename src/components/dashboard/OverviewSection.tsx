@@ -337,8 +337,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 )}
               </div>
             </div>
-            <div className="mt-2">
-              <span className="text-lg font-bold text-green-600 truncate block">
+            <div className="mt-2 min-w-0">
+              <span className="text-lg font-bold text-green-600 block truncate max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                 {sourceQuality.reduce((max, source) => 
                   source.mentions > max.mentions ? source : max
                 , sourceQuality[0]).source}
@@ -349,7 +349,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 , sourceQuality[0]).mentions} references
               </Badge>
             </div>
-            <div className="text-sm text-gray-600 mt-1">Most referenced source</div>
+            <div className="text-sm text-gray-600 mt-1 truncate">Most referenced source</div>
           </CardContent>
         </Card>
 
