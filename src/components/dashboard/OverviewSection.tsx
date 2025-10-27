@@ -426,21 +426,42 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={visibilityTrendData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="mentions" 
-                  stroke="hsl(var(--primary))" 
-                  strokeWidth={2}
-                  dot={{ fill: 'hsl(var(--primary))' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {visibilityTrendData.length === 1 ? (
+              <div className="flex flex-col items-center justify-center h-[250px] bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg border-2 border-dashed border-primary/30">
+                <div className="text-center px-6 py-8 max-w-md">
+                  <h3 className="text-xl font-semibold text-foreground mb-3 flex items-center justify-center gap-2">
+                    Your Baseline is Set! 📍
+                  </h3>
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <p className="leading-relaxed">
+                      Your first AI visibility scan is complete, logging <span className="font-semibold text-foreground">{visibilityTrendData[0].mentions.toLocaleString()} mentions</span> for <span className="font-semibold text-foreground">{visibilityTrendData[0].month}</span>.
+                    </p>
+                    <p className="leading-relaxed">
+                      A trend graph needs at least two data points to draw a line. After the next scan, this chart will come alive to show your brand's AI mention volume over time.
+                    </p>
+                    <p className="text-primary font-medium mt-4">
+                      Great start! 📈
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={visibilityTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line 
+                    type="monotone" 
+                    dataKey="mentions" 
+                    stroke="hsl(var(--primary))" 
+                    strokeWidth={2}
+                    dot={{ fill: 'hsl(var(--primary))' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
 
