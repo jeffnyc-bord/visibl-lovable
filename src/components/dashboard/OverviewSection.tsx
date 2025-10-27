@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
+import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, Area, AreaChart } from "recharts";
 import { TrendingUp, Eye, FileText, MessageSquare, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -75,6 +75,13 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   
   // State for Source Quality section
   const [showAllSources, setShowAllSources] = useState(false);
+
+  // Helper function to get next month
+  const getNextMonth = (currentMonth: string) => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const currentIndex = months.indexOf(currentMonth);
+    return months[(currentIndex + 1) % 12];
+  };
 
   const allVisibilityData = [
     { month: "Jul", score: 75 },
@@ -503,19 +510,121 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={visibilityTrendData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey="mentions" 
-                    stroke="hsl(var(--primary))" 
-                    strokeWidth={2}
-                    dot={{ fill: 'hsl(var(--primary))' }}
+                <AreaChart 
+                  data={visibilityTrendData}
+                  onMouseMove={(e) => {
+                    if (e && e.activeTooltipIndex !== undefined) {
+                      setHoveredSegment(e.activeTooltipIndex);
+                    }
+                  }}
+                  onMouseLeave={() => setHoveredSegment(null)}
+                >
+                  <defs>
+                    <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
+                    </linearGradient>
+                    <clipPath id="clip-area">
+                      <rect x="0" y="0" width="100%" height="100%">
+                        <animate 
+                          attributeName="width" 
+                          from="0%" 
+                          to="100%" 
+                          dur="1s" 
+                          fill="freeze"
+                        />
+                      </rect>
+                    </clipPath>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                  <XAxis 
+                    dataKey="month" 
+                    stroke="hsl(var(--muted-foreground))"
+                    style={{ fontSize: '12px' }}
                   />
-                </LineChart>
+                  <YAxis 
+                    stroke="hsl(var(--muted-foreground))"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <Tooltip 
+                    content={({ active, payload }) => {
+                      if (active && payload && payload[0]) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-background border border-border rounded-lg shadow-lg p-3 animate-in fade-in-0 zoom-in-95 duration-200">
+                            <p className="text-xs font-medium mb-1 text-muted-foreground">{data.month}</p>
+                            <p className="text-sm font-bold text-primary">{data.mentions?.toLocaleString()} mentions</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                    cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '5 5' }}
+                  />
+                  {/* Filled area with animation */}
+                  <Area
+                    type="monotone"
+                    dataKey="mentions"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={3}
+                    fill="url(#areaGradient)"
+                    fillOpacity={1}
+                    animationDuration={1000}
+                    animationEasing="ease-out"
+                    dot={(props) => {
+                      const { cx, cy, index } = props;
+                      const isHovered = hoveredSegment === index;
+                      return (
+                        <g>
+                          <circle
+                            cx={cx}
+                            cy={cy}
+                            r={isHovered ? 8 : 6}
+                            fill="hsl(var(--background))"
+                            stroke="hsl(var(--primary))"
+                            strokeWidth={isHovered ? 3 : 2.5}
+                            className="transition-all duration-200"
+                            style={{
+                              filter: isHovered ? 'drop-shadow(0 0 8px hsl(var(--primary)))' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                            }}
+                          />
+                          {isHovered && (
+                            <circle
+                              cx={cx}
+                              cy={cy}
+                              r={12}
+                              fill="none"
+                              stroke="hsl(var(--primary))"
+                              strokeWidth={2}
+                              opacity={0.3}
+                              className="animate-pulse"
+                            />
+                          )}
+                        </g>
+                      );
+                    }}
+                  />
+                  {/* Future projection dotted line */}
+                  {visibilityTrendData.length < 6 && visibilityTrendData.length > 0 && (
+                    <Line
+                      type="monotone"
+                      dataKey="mentions"
+                      data={[
+                        visibilityTrendData[visibilityTrendData.length - 1],
+                        { 
+                          month: getNextMonth(visibilityTrendData[visibilityTrendData.length - 1].month), 
+                          mentions: visibilityTrendData[visibilityTrendData.length - 1].mentions 
+                        }
+                      ]}
+                      stroke="hsl(var(--primary))"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      opacity={0.4}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                  )}
+                </AreaChart>
               </ResponsiveContainer>
             )}
           </CardContent>
