@@ -12,6 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ScoreDial } from "@/components/ui/score-dial";
 
 interface BrandData {
   id: string;
@@ -255,31 +256,25 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityScore: false})}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <img src="/lovable-uploads/b3896000-028e-49c5-b74f-04e22725b257.png" alt="AI Visibility Score" className="w-4 h-4" />
-                <span className="text-sm font-medium text-gray-600">AI Visibility Score</span>
-              </div>
-              <div className="relative">
-                <HelpCircle 
-                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
-                  onClick={() => setShowTooltips({...showTooltips, visibilityScore: !showTooltips.visibilityScore})}
-                />
-                {showTooltips.visibilityScore && (
-                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
-                    <p>Your brand's overall visibility score across AI platforms, calculated based on mention frequency, sentiment, and platform coverage.</p>
-                  </div>
-                )}
-              </div>
+          <CardContent className="p-6 flex flex-col items-center">
+            <div className="absolute top-4 right-4">
+              <HelpCircle 
+                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                onClick={() => setShowTooltips({...showTooltips, visibilityScore: !showTooltips.visibilityScore})}
+              />
+              {showTooltips.visibilityScore && (
+                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <p>Your brand's overall visibility score across AI platforms, calculated based on mention frequency, sentiment, and platform coverage.</p>
+                </div>
+              )}
             </div>
-            <div className="mt-2">
-              <span className="text-2xl font-bold text-blue-600">{brandData.visibilityScore}</span>
-              <Badge variant="secondary" className="ml-2 text-xs bg-green-100 text-green-800">
-                {brandData.mentionTrend === "up" ? "+" : ""}5
-              </Badge>
-            </div>
-            <Progress value={brandData.visibilityScore} className="mt-2 h-2" />
+            <ScoreDial
+              currentScore={brandData.visibilityScore}
+              previousScore={82}
+              change={5}
+              label="AI Visibility Score"
+              icon={<img src="/lovable-uploads/b3896000-028e-49c5-b74f-04e22725b257.png" alt="AI Visibility Score" className="w-4 h-4" />}
+            />
           </CardContent>
         </Card>
 
