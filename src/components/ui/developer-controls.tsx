@@ -24,9 +24,11 @@ interface DeveloperControlsProps {
   onRoleChange: (role: "business_user" | "agency_admin") => void;
   loadingDuration: number;
   onLoadingDurationChange: (duration: number) => void;
+  topSourceUrl: string;
+  onTopSourceUrlChange: (url: string) => void;
 }
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -157,6 +159,20 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                   />
                   <p className="text-xs text-muted-foreground">
                     Controls how long competitor addition loading lasts
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Top Source URL (for testing)</Label>
+                  <Input
+                    type="text"
+                    value={topSourceUrl}
+                    onChange={(e) => onTopSourceUrlChange(e.target.value)}
+                    className="h-8 text-xs"
+                    placeholder="www.example.com"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Test overflow handling with long URLs
                   </p>
                 </div>
                 

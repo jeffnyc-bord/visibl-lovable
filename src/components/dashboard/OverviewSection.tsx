@@ -59,9 +59,10 @@ interface OverviewSectionProps {
   userRole?: "business_user" | "agency_admin";
   showBaseline?: boolean;
   highlightTopSource?: boolean;
+  testTopSourceUrl?: string;
 }
 
-export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false, highlightTopSource = false }: OverviewSectionProps) => {
+export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false, highlightTopSource = false, testTopSourceUrl = "" }: OverviewSectionProps) => {
   const { toast } = useToast();
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
@@ -344,7 +345,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             </div>
             <div className="mt-2 min-w-0">
               <span className="text-lg font-bold text-green-600 block truncate max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                {sourceQuality.reduce((max, source) => 
+                {testTopSourceUrl || sourceQuality.reduce((max, source) => 
                   source.mentions > max.mentions ? source : max
                 , sourceQuality[0]).source}
               </span>
