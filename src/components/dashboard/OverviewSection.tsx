@@ -67,7 +67,7 @@ interface OverviewSectionProps {
 const GRADIENT_CONFIGS: Record<string, string[]> = {
   gradient1: ["#3B82F6", "#06B6D4", "#10B981"],
   gradient2: ["#F59E0B", "#EF4444", "#EC4899"],
-  gradient3: ["#87CEEB", "#A0D8EF", "#B0E0E6"],
+  gradient3: ["#69c5f2", "#a7def8", "#cbebfa"],
   gradient4: ["#DC2626", "#F97316", "#FCD34D"],
   gradient5: ["#059669", "#10B981", "#34D399"],
   gradient6: ["#6366F1", "#8B5CF6", "#A855F7"],
