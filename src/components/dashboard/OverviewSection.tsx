@@ -306,32 +306,50 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </CardContent>
         </Card>
 
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, industryRanking: false})}>
+        <Card 
+          className="group relative cursor-pointer hover:shadow-lg transition-shadow" 
+          onClick={() => {
+            const topSource = sourceQuality.reduce((max, source) => 
+              source.mentions > max.mentions ? source : max
+            , sourceQuality[0]);
+            window.open(topSource.url, '_blank');
+          }}
+          onMouseLeave={() => setShowTooltips({...showTooltips, topSource: false})}
+        >
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <TrendingUp className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-medium text-gray-600">Industry AI Ranking</span>
+                <span className="text-sm font-medium text-gray-600">Top Source</span>
               </div>
               <div className="relative">
                 <HelpCircle 
                   className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
-                  onClick={() => setShowTooltips({...showTooltips, industryRanking: !showTooltips.industryRanking})}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowTooltips({...showTooltips, topSource: !showTooltips.topSource});
+                  }}
                 />
-                {showTooltips.industryRanking && (
+                {showTooltips.topSource && (
                   <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
-                    <p>Your brand's ranking compared to competitors in your industry based on AI platform visibility and mentions.</p>
+                    <p>The source with the highest number of references across all AI platforms. Click to visit the source.</p>
                   </div>
                 )}
               </div>
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-bold text-green-600">#{brandData.industryRanking}</span>
-              <Badge variant="secondary" className="ml-2 text-xs bg-green-100 text-green-800">
-                +2
+              <span className="text-lg font-bold text-green-600 truncate block">
+                {sourceQuality.reduce((max, source) => 
+                  source.mentions > max.mentions ? source : max
+                , sourceQuality[0]).source}
+              </span>
+              <Badge variant="secondary" className="ml-0 mt-1 text-xs bg-green-100 text-green-800">
+                {sourceQuality.reduce((max, source) => 
+                  source.mentions > max.mentions ? source : max
+                , sourceQuality[0]).mentions} references
               </Badge>
             </div>
-            <div className="text-sm text-gray-600 mt-1">Among industry brands</div>
+            <div className="text-sm text-gray-600 mt-1">Most referenced source</div>
           </CardContent>
         </Card>
 
