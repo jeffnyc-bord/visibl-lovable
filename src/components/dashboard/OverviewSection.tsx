@@ -133,20 +133,54 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         });
       });
 
-  // Generate brand-specific visibility trend data based on brandData
+  // Generate brand-specific visibility trend data with more variation
   const generateBrandTrendData = () => {
-    const baseMentions = brandData.totalMentions / 6; // Average per month
-    const variance = brandData.visibilityScore / 100; // Use score for variance
-    const trendMultiplier = brandData.mentionTrend === "up" ? 1.05 : 0.98;
+    // Create a seed based on brand name for consistent but varied patterns
+    const brandSeed = brandData.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const patternType = brandSeed % 4;
     
-    return [
-      { month: "Jul", mentions: Math.round(baseMentions * 0.85) },
-      { month: "Aug", mentions: Math.round(baseMentions * 0.92 * trendMultiplier) },
-      { month: "Sep", mentions: Math.round(baseMentions * 0.98 * Math.pow(trendMultiplier, 2)) },
-      { month: "Oct", mentions: Math.round(baseMentions * 0.95 * Math.pow(trendMultiplier, 3)) },
-      { month: "Nov", mentions: Math.round(baseMentions * 1.05 * Math.pow(trendMultiplier, 4)) },
-      { month: "Dec", mentions: Math.round(baseMentions * 1.10 * Math.pow(trendMultiplier, 5)) },
-    ];
+    const baseMentions = brandData.totalMentions / 6;
+    const scoreMultiplier = (brandData.visibilityScore / 100) * 0.5 + 0.75; // Range: 0.75 to 1.25
+    
+    // Different growth patterns based on brand
+    switch(patternType) {
+      case 0: // Steady growth
+        return [
+          { month: "Jul", mentions: Math.round(baseMentions * 0.65 * scoreMultiplier) },
+          { month: "Aug", mentions: Math.round(baseMentions * 0.80 * scoreMultiplier) },
+          { month: "Sep", mentions: Math.round(baseMentions * 0.95 * scoreMultiplier) },
+          { month: "Oct", mentions: Math.round(baseMentions * 1.08 * scoreMultiplier) },
+          { month: "Nov", mentions: Math.round(baseMentions * 1.20 * scoreMultiplier) },
+          { month: "Dec", mentions: Math.round(baseMentions * 1.35 * scoreMultiplier) },
+        ];
+      case 1: // Spike pattern
+        return [
+          { month: "Jul", mentions: Math.round(baseMentions * 0.85 * scoreMultiplier) },
+          { month: "Aug", mentions: Math.round(baseMentions * 0.90 * scoreMultiplier) },
+          { month: "Sep", mentions: Math.round(baseMentions * 1.45 * scoreMultiplier) },
+          { month: "Oct", mentions: Math.round(baseMentions * 1.15 * scoreMultiplier) },
+          { month: "Nov", mentions: Math.round(baseMentions * 0.95 * scoreMultiplier) },
+          { month: "Dec", mentions: Math.round(baseMentions * 1.05 * scoreMultiplier) },
+        ];
+      case 2: // Volatile pattern
+        return [
+          { month: "Jul", mentions: Math.round(baseMentions * 0.95 * scoreMultiplier) },
+          { month: "Aug", mentions: Math.round(baseMentions * 1.25 * scoreMultiplier) },
+          { month: "Sep", mentions: Math.round(baseMentions * 0.80 * scoreMultiplier) },
+          { month: "Oct", mentions: Math.round(baseMentions * 1.35 * scoreMultiplier) },
+          { month: "Nov", mentions: Math.round(baseMentions * 1.10 * scoreMultiplier) },
+          { month: "Dec", mentions: Math.round(baseMentions * 0.90 * scoreMultiplier) },
+        ];
+      default: // Declining then recovering
+        return [
+          { month: "Jul", mentions: Math.round(baseMentions * 1.20 * scoreMultiplier) },
+          { month: "Aug", mentions: Math.round(baseMentions * 1.05 * scoreMultiplier) },
+          { month: "Sep", mentions: Math.round(baseMentions * 0.85 * scoreMultiplier) },
+          { month: "Oct", mentions: Math.round(baseMentions * 0.80 * scoreMultiplier) },
+          { month: "Nov", mentions: Math.round(baseMentions * 1.00 * scoreMultiplier) },
+          { month: "Dec", mentions: Math.round(baseMentions * 1.25 * scoreMultiplier) },
+        ];
+    }
   };
 
   const allVisibilityTrendData = generateBrandTrendData();
