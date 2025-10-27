@@ -33,7 +33,7 @@ interface DeveloperControlsProps {
 const gradientOptions = [
   { id: "gradient1", name: "Ocean Breeze", colors: ["#3B82F6", "#06B6D4", "#10B981"] },
   { id: "gradient2", name: "Sunset Glow", colors: ["#F59E0B", "#EF4444", "#EC4899"] },
-  { id: "gradient3", name: "Purple Haze", colors: ["#8B5CF6", "#A78BFA", "#C4B5FD"] },
+  { id: "gradient3", name: "Purple Haze", colors: ["#87CEEB", "#A0D8EF", "#B0E0E6"] },
   { id: "gradient4", name: "Fire & Ice", colors: ["#DC2626", "#F97316", "#FCD34D"] },
   { id: "gradient5", name: "Forest Dawn", colors: ["#059669", "#10B981", "#34D399"] },
   { id: "gradient6", name: "Royal Purple", colors: ["#6366F1", "#8B5CF6", "#A855F7"] },
