@@ -103,14 +103,14 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
         </CollapsibleTrigger>
         
         <CollapsibleContent className="animate-in slide-in-from-bottom-2 duration-300 ease-out data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-2 data-[state=closed]:duration-200">
-          <Card className="mt-2 w-80 bg-background/95 backdrop-blur-sm border-2 shadow-lg transform transition-all duration-300 ease-out scale-100 animate-in fade-in-0 zoom-in-95">
-            <CardHeader className="pb-3">
+          <Card className="mt-2 w-80 max-h-[calc(100vh-8rem)] bg-background/95 backdrop-blur-sm border-2 shadow-lg transform transition-all duration-300 ease-out scale-100 animate-in fade-in-0 zoom-in-95 flex flex-col">
+            <CardHeader className="pb-3 flex-shrink-0">
               <CardTitle className="text-sm flex items-center gap-2">
                 Dashboard State Controls
                 <Badge variant="secondary" className="text-xs">DEV ONLY</Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 overflow-y-auto flex-1">
               {controlItems.map((item) => (
                 <div key={item.key} className="flex items-start space-x-3">
                   <Switch
