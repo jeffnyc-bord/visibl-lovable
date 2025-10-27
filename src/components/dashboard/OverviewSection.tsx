@@ -179,23 +179,32 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         });
       });
 
-  // Vibrant color palette for donut segments
+  // Premium color palette using design tokens
+  const CHART_COLORS = {
+    primary: 'hsl(var(--primary))',
+    success: 'hsl(var(--success))',
+    warning: 'hsl(var(--warning))',
+    accent: 'hsl(220, 75%, 60%)',
+    premium: 'hsl(var(--premium))',
+    muted: 'hsl(var(--muted-foreground))',
+  };
+
   const DONUT_COLORS = [
-    '#65CAD2', // Light teal
-    '#FFB366', // Light orange
-    '#FF6633', // Darker orange
-    '#33CCB3'  // Bright teal
+    CHART_COLORS.primary,
+    CHART_COLORS.accent,
+    CHART_COLORS.success,
+    CHART_COLORS.premium,
   ];
 
   const COLORS = [
-    '#3B82F6', // Blue
-    '#10B981', // Green  
-    '#F59E0B', // Orange
-    '#EF4444', // Red
-    '#8B5CF6', // Purple
-    '#06B6D4', // Cyan
-    '#84CC16', // Lime
-    '#F97316'  // Orange-red
+    CHART_COLORS.primary,
+    CHART_COLORS.success,
+    CHART_COLORS.accent,
+    CHART_COLORS.warning,
+    CHART_COLORS.premium,
+    'hsl(200, 75%, 55%)',
+    'hsl(160, 70%, 50%)',
+    'hsl(280, 65%, 55%)',
   ];
 
   const getSentimentColor = (sentiment: string) => {
@@ -237,14 +246,18 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     <TooltipProvider>
       <div className="space-y-6">
       {/* Export Report Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">AI Visibility Overview</h2>
-          <p className="text-muted-foreground">Comprehensive AI visibility metrics and platform insights for {brandData.name}</p>
+      <div className="flex items-center justify-between mb-8">
+        <div className="space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            AI Visibility Overview
+          </h2>
+          <p className="text-base text-muted-foreground max-w-2xl">
+            Comprehensive AI visibility metrics and platform insights for <span className="font-semibold text-foreground">{brandData.name}</span>
+          </p>
         </div>
         <ReportExportDialog
           trigger={
-            <Button>
+            <Button className="shadow-lg hover:shadow-xl transition-all duration-300">
               <FileText className="w-4 h-4 mr-2" />
               Export Report
             </Button>
@@ -268,15 +281,15 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityScore: false})}>
-          <CardContent className="p-4">
+        <Card className="group relative border-0 shadow-lg hover:shadow-xl transition-all duration-300" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityScore: false})}>
+          <CardContent className="p-5">
             <div className="absolute top-4 right-4">
               <HelpCircle 
-                className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer hover:text-primary" 
                 onClick={() => setShowTooltips({...showTooltips, visibilityScore: !showTooltips.visibilityScore})}
               />
               {showTooltips.visibilityScore && (
-                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-card/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl">
                   <p>Your brand's overall visibility score across AI platforms, calculated based on mention frequency, sentiment, and platform coverage.</p>
                 </div>
               )}
@@ -291,28 +304,32 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </CardContent>
         </Card>
 
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, totalMentions: false})}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <img src="/lovable-uploads/44498275-d714-4181-80c1-79b02c494519.png" alt="Total Mentions" className="w-4 h-4" />
-                <span className="text-sm font-medium text-gray-600">Total Mentions</span>
+        <Card className="group relative border-0 shadow-lg hover:shadow-xl transition-all duration-300" onMouseLeave={() => setShowTooltips({...showTooltips, totalMentions: false})}>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-primary/10">
+                  <img src="/lovable-uploads/44498275-d714-4181-80c1-79b02c494519.png" alt="Total Mentions" className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-semibold text-muted-foreground">Total Mentions</span>
               </div>
               <div className="relative">
                 <HelpCircle 
-                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer hover:text-primary" 
                   onClick={() => setShowTooltips({...showTooltips, totalMentions: !showTooltips.totalMentions})}
                 />
                 {showTooltips.totalMentions && (
-                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-card/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl">
                     <p>Total number of times your brand has been mentioned across all AI platforms in the selected time period.</p>
                   </div>
                 )}
               </div>
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-bold text-gray-900">{brandData.totalMentions.toLocaleString()}</span>
-              <Badge variant="secondary" className="ml-2 text-xs bg-green-100 text-green-800">
+              <span className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                {brandData.totalMentions.toLocaleString()}
+              </span>
+              <Badge variant="secondary" className="ml-2 text-xs bg-success/10 text-success border-success/20 font-semibold">
                 +15%
               </Badge>
             </div>
@@ -320,9 +337,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </Card>
 
         <Card 
-          className={`group relative cursor-pointer hover:shadow-lg transition-all duration-300 ${
+          className={`group relative border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer ${
             highlightTopSource 
-              ? 'ring-4 ring-primary ring-offset-2 shadow-2xl animate-pulse' 
+              ? 'ring-2 ring-primary ring-offset-2 shadow-2xl' 
               : ''
           }`}
           onClick={() => {
@@ -333,57 +350,61 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           }}
           onMouseLeave={() => setShowTooltips({...showTooltips, topSource: false})}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-medium text-gray-600">Top Source</span>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-success/10">
+                  <TrendingUp className="w-4 h-4 text-success" />
+                </div>
+                <span className="text-sm font-semibold text-muted-foreground">Top Source</span>
               </div>
               <div className="relative">
                 <HelpCircle 
-                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer hover:text-primary" 
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowTooltips({...showTooltips, topSource: !showTooltips.topSource});
                   }}
                 />
                 {showTooltips.topSource && (
-                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-card/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl">
                     <p>The source with the highest number of references across all AI platforms. Click to visit the source.</p>
                   </div>
                 )}
               </div>
             </div>
             <div className="mt-2 min-w-0">
-              <span className="text-lg font-bold text-green-600 block truncate max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+              <span className="text-lg font-bold text-success block truncate max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                 {testTopSourceUrl || sourceQuality.reduce((max, source) => 
                   source.mentions > max.mentions ? source : max
                 , sourceQuality[0]).source}
               </span>
-              <Badge variant="secondary" className="ml-0 mt-1 text-xs bg-green-100 text-green-800">
+              <Badge variant="secondary" className="ml-0 mt-2 text-xs bg-success/10 text-success border-success/20 font-semibold">
                 {sourceQuality.reduce((max, source) => 
                   source.mentions > max.mentions ? source : max
                 , sourceQuality[0]).mentions} references
               </Badge>
             </div>
-            <div className="text-sm text-gray-600 mt-1 truncate">Most referenced source</div>
+            <div className="text-xs text-muted-foreground mt-2">Most referenced source</div>
           </CardContent>
         </Card>
 
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, platformCoverage: false})}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <img src="/lovable-uploads/0a1405cf-54d9-4154-9c04-cbb22a4ad851.png" alt="Platform Coverage" className="w-4 h-4" />
-                <span className="text-sm font-medium text-gray-600">Platform Coverage</span>
+        <Card className="group relative border-0 shadow-lg hover:shadow-xl transition-all duration-300" onMouseLeave={() => setShowTooltips({...showTooltips, platformCoverage: false})}>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-primary/10">
+                  <img src="/lovable-uploads/0a1405cf-54d9-4154-9c04-cbb22a4ad851.png" alt="Platform Coverage" className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-semibold text-muted-foreground">Platform Coverage</span>
               </div>
               <div className="relative">
                 <HelpCircle 
-                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer hover:text-primary" 
                   onClick={() => setShowTooltips({...showTooltips, platformCoverage: !showTooltips.platformCoverage})}
                 />
                 {showTooltips.platformCoverage && (
-                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
+                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-card/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl">
                     <p>Number of AI platforms where your brand has been mentioned. Click the number to see detailed platform insights.</p>
                   </div>
                 )}
@@ -438,28 +459,41 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Visibility Chart */}
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityTrend: false})}>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <img src="/lovable-uploads/c450af84-c4bc-4808-9aef-caf1ef5fb80c.png" alt="Overall AI Visibility Trend" className="w-5 h-5" />
-                <span>Overall AI Visibility Trend</span>
+        <Card className="group relative border-0 shadow-xl bg-gradient-to-br from-background via-background to-muted/5 overflow-hidden" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityTrend: false})}>
+          {/* Subtle decorative element */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-32 translate-x-32 pointer-events-none"></div>
+          
+          <CardHeader className="relative z-10 space-y-3 pb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10 ring-1 ring-primary/20">
+                  <img src="/lovable-uploads/c450af84-c4bc-4808-9aef-caf1ef5fb80c.png" alt="Overall AI Visibility Trend" className="w-5 h-5" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl font-semibold tracking-tight">Overall AI Visibility Trend</CardTitle>
+                  <CardDescription className="text-sm mt-1">Brand mentions across the AI ecosystem</CardDescription>
+                </div>
               </div>
               <div className="relative">
                 <HelpCircle 
-                  className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                  className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer hover:text-primary" 
                   onClick={() => setShowTooltips({...showTooltips, visibilityTrend: !showTooltips.visibilityTrend})}
                 />
                 {showTooltips.visibilityTrend && (
-                  <div className="absolute right-0 top-6 z-50 w-64 p-3 text-xs bg-popover border rounded-md shadow-md">
-                    <p>Track your brand's mention volume across the AI ecosystem over time to identify trends and measure progress.</p>
+                  <div className="absolute right-0 top-6 z-50 w-72 p-4 text-sm bg-card/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl">
+                    <p className="leading-relaxed">Track your brand's mention volume across the AI ecosystem over time to identify trends and measure progress.</p>
                   </div>
                 )}
               </div>
-            </CardTitle>
-            <CardDescription>
-              Your brand's mention volume across the AI ecosystem over time
-            </CardDescription>
+            </div>
+            {visibilityTrendData.length > 1 && (
+              <div className="flex items-baseline gap-2 pt-2">
+                <span className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  {visibilityTrendData[visibilityTrendData.length - 1]?.mentions.toLocaleString()}
+                </span>
+                <span className="text-sm text-muted-foreground font-medium">current mentions</span>
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             {visibilityTrendData.length === 1 ? (
@@ -509,123 +543,200 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 </div>
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height={250}>
-                <AreaChart 
-                  data={visibilityTrendData}
-                  onMouseMove={(e) => {
-                    if (e && e.activeTooltipIndex !== undefined) {
-                      setHoveredSegment(e.activeTooltipIndex);
-                    }
-                  }}
-                  onMouseLeave={() => setHoveredSegment(null)}
-                >
-                  <defs>
-                    <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
-                    </linearGradient>
-                    <clipPath id="clip-area">
-                      <rect x="0" y="0" width="100%" height="100%">
-                        <animate 
-                          attributeName="width" 
-                          from="0%" 
-                          to="100%" 
-                          dur="1s" 
-                          fill="freeze"
-                        />
-                      </rect>
-                    </clipPath>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                  <XAxis 
-                    dataKey="month" 
-                    stroke="hsl(var(--muted-foreground))"
-                    style={{ fontSize: '12px' }}
-                  />
-                  <YAxis 
-                    stroke="hsl(var(--muted-foreground))"
-                    style={{ fontSize: '12px' }}
-                  />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload[0]) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="bg-background border border-border rounded-lg shadow-lg p-3 animate-in fade-in-0 zoom-in-95 duration-200">
-                            <p className="text-xs font-medium mb-1 text-muted-foreground">{data.month}</p>
-                            <p className="text-sm font-bold text-primary">{data.mentions?.toLocaleString()} mentions</p>
-                          </div>
-                        );
+              <div className="relative -mx-2">
+                <ResponsiveContainer width="100%" height={320}>
+                  <AreaChart 
+                    data={visibilityTrendData}
+                    margin={{ top: 10, right: 20, left: -10, bottom: 10 }}
+                    onMouseMove={(e) => {
+                      if (e && e.activeTooltipIndex !== undefined) {
+                        setHoveredSegment(e.activeTooltipIndex);
                       }
-                      return null;
                     }}
-                    cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '5 5' }}
-                  />
-                  {/* Filled area with animation */}
-                  <Area
-                    type="monotone"
-                    dataKey="mentions"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={3}
-                    fill="url(#areaGradient)"
-                    fillOpacity={1}
-                    animationDuration={1000}
-                    animationEasing="ease-out"
-                    dot={(props) => {
-                      const { cx, cy, index } = props;
-                      const isHovered = hoveredSegment === index;
-                      return (
-                        <g>
-                          <circle
-                            cx={cx}
-                            cy={cy}
-                            r={isHovered ? 8 : 6}
-                            fill="hsl(var(--background))"
-                            stroke="hsl(var(--primary))"
-                            strokeWidth={isHovered ? 3 : 2.5}
-                            className="transition-all duration-200"
-                            style={{
-                              filter: isHovered ? 'drop-shadow(0 0 8px hsl(var(--primary)))' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-                            }}
+                    onMouseLeave={() => setHoveredSegment(null)}
+                  >
+                    <defs>
+                      <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.25} />
+                        <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
+                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      </linearGradient>
+                      <filter id="glow">
+                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                        <feMerge>
+                          <feMergeNode in="coloredBlur"/>
+                          <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                      </filter>
+                      <clipPath id="clip-area">
+                        <rect x="0" y="0" width="100%" height="100%">
+                          <animate 
+                            attributeName="width" 
+                            from="0%" 
+                            to="100%" 
+                            dur="1.2s" 
+                            fill="freeze"
                           />
-                          {isHovered && (
+                        </rect>
+                      </clipPath>
+                    </defs>
+                    
+                    <CartesianGrid 
+                      strokeDasharray="0" 
+                      stroke="hsl(var(--border))" 
+                      strokeOpacity={0.3}
+                      vertical={false}
+                    />
+                    
+                    <XAxis 
+                      dataKey="month" 
+                      stroke="hsl(var(--muted-foreground))"
+                      strokeOpacity={0.2}
+                      style={{ 
+                        fontSize: '13px',
+                        fontWeight: 500,
+                        letterSpacing: '0.02em'
+                      }}
+                      tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                      axisLine={false}
+                      tickLine={false}
+                      dy={10}
+                    />
+                    
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      strokeOpacity={0.2}
+                      style={{ 
+                        fontSize: '12px',
+                        fontWeight: 500
+                      }}
+                      tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                      axisLine={false}
+                      tickLine={false}
+                      dx={-10}
+                      tickFormatter={(value) => `${(value / 1000).toFixed(1)}k`}
+                    />
+                    
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload[0]) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl p-4 min-w-[150px]">
+                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+                                {data.month}
+                              </p>
+                              <p className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                                {data.mentions?.toLocaleString()}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">total mentions</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                      cursor={{ 
+                        stroke: 'hsl(var(--primary))', 
+                        strokeWidth: 1.5, 
+                        strokeDasharray: '4 4',
+                        strokeOpacity: 0.5
+                      }}
+                    />
+                    
+                    {/* Filled area with animation */}
+                    <Area
+                      type="monotone"
+                      dataKey="mentions"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth={3}
+                      fill="url(#areaGradient)"
+                      fillOpacity={1}
+                      animationDuration={1200}
+                      animationEasing="ease-in-out"
+                      dot={(props) => {
+                        const { cx, cy, index } = props;
+                        const isHovered = hoveredSegment === index;
+                        return (
+                          <g>
                             <circle
                               cx={cx}
                               cy={cy}
-                              r={12}
-                              fill="none"
+                              r={isHovered ? 9 : 7}
+                              fill="hsl(var(--card))"
                               stroke="hsl(var(--primary))"
-                              strokeWidth={2}
-                              opacity={0.3}
-                              className="animate-pulse"
+                              strokeWidth={isHovered ? 3.5 : 3}
+                              className="transition-all duration-300"
+                              style={{
+                                filter: isHovered 
+                                  ? 'drop-shadow(0 0 12px hsl(var(--primary) / 0.6))' 
+                                  : 'drop-shadow(0 2px 6px rgba(0,0,0,0.15))'
+                              }}
                             />
-                          )}
-                        </g>
-                      );
-                    }}
-                  />
-                  {/* Future projection dotted line */}
-                  {visibilityTrendData.length < 6 && visibilityTrendData.length > 0 && (
-                    <Line
-                      type="monotone"
-                      dataKey="mentions"
-                      data={[
-                        visibilityTrendData[visibilityTrendData.length - 1],
-                        { 
-                          month: getNextMonth(visibilityTrendData[visibilityTrendData.length - 1].month), 
-                          mentions: visibilityTrendData[visibilityTrendData.length - 1].mentions 
-                        }
-                      ]}
-                      stroke="hsl(var(--primary))"
-                      strokeWidth={2}
-                      strokeDasharray="5 5"
-                      opacity={0.4}
-                      dot={false}
-                      isAnimationActive={false}
+                            {isHovered && (
+                              <>
+                                <circle
+                                  cx={cx}
+                                  cy={cy}
+                                  r={14}
+                                  fill="none"
+                                  stroke="hsl(var(--primary))"
+                                  strokeWidth={2}
+                                  opacity={0.3}
+                                  className="animate-pulse"
+                                />
+                                <circle
+                                  cx={cx}
+                                  cy={cy}
+                                  r={20}
+                                  fill="none"
+                                  stroke="hsl(var(--primary))"
+                                  strokeWidth={1}
+                                  opacity={0.15}
+                                />
+                              </>
+                            )}
+                          </g>
+                        );
+                      }}
                     />
-                  )}
-                </AreaChart>
-              </ResponsiveContainer>
+                    
+                    {/* Future projection dotted line */}
+                    {visibilityTrendData.length < 6 && visibilityTrendData.length > 0 && (
+                      <Line
+                        type="monotone"
+                        dataKey="mentions"
+                        data={[
+                          visibilityTrendData[visibilityTrendData.length - 1],
+                          { 
+                            month: getNextMonth(visibilityTrendData[visibilityTrendData.length - 1].month), 
+                            mentions: visibilityTrendData[visibilityTrendData.length - 1].mentions 
+                          }
+                        ]}
+                        stroke="hsl(var(--muted-foreground))"
+                        strokeWidth={2}
+                        strokeDasharray="6 6"
+                        strokeOpacity={0.3}
+                        dot={false}
+                        isAnimationActive={false}
+                      />
+                    )}
+                  </AreaChart>
+                </ResponsiveContainer>
+                
+                {/* Legend */}
+                {visibilityTrendData.length < 6 && visibilityTrendData.length > 0 && (
+                  <div className="flex items-center gap-4 mt-6 pt-4 border-t border-border/50 px-2">
+                    <div className="flex items-center gap-2">
+                      <div className="h-1.5 w-8 rounded-full bg-gradient-to-r from-primary to-primary/40"></div>
+                      <span className="text-xs text-muted-foreground font-medium">Historical data</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-1.5 w-8 rounded-full border-2 border-dashed border-muted-foreground/30"></div>
+                      <span className="text-xs text-muted-foreground font-medium">Projected trend</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </CardContent>
         </Card>
