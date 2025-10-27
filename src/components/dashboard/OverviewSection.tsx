@@ -61,9 +61,24 @@ interface OverviewSectionProps {
   highlightTopSource?: boolean;
   testTopSourceUrl?: string;
   dataPointsCount?: number;
+  selectedGradient?: string;
 }
 
-export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false, highlightTopSource = false, testTopSourceUrl = "", dataPointsCount = 6 }: OverviewSectionProps) => {
+const GRADIENT_CONFIGS: Record<string, string[]> = {
+  gradient1: ["#3B82F6", "#06B6D4", "#10B981"],
+  gradient2: ["#F59E0B", "#EF4444", "#EC4899"],
+  gradient3: ["#8B5CF6", "#A78BFA", "#C4B5FD"],
+  gradient4: ["#DC2626", "#F97316", "#FCD34D"],
+  gradient5: ["#059669", "#10B981", "#34D399"],
+  gradient6: ["#6366F1", "#8B5CF6", "#A855F7"],
+  gradient7: ["#06B6D4", "#8B5CF6", "#EC4899"],
+  gradient8: ["#10B981", "#06B6D4", "#3B82F6"],
+  gradient9: ["#F59E0B", "#EC4899", "#A855F7"],
+  gradient10: ["#84CC16", "#06B6D4", "#8B5CF6"],
+};
+
+export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false, highlightTopSource = false, testTopSourceUrl = "", dataPointsCount = 6, selectedGradient = "gradient1" }: OverviewSectionProps) => {
+  const gradientColors = GRADIENT_CONFIGS[selectedGradient] || GRADIENT_CONFIGS.gradient1;
   const { toast } = useToast();
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
@@ -506,9 +521,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 <BarChart data={visibilityTrendData}>
                   <defs>
                     <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#3B82F6" stopOpacity={1} />
-                      <stop offset="50%" stopColor="#06B6D4" stopOpacity={0.95} />
-                      <stop offset="100%" stopColor="#10B981" stopOpacity={0.9} />
+                      <stop offset="0%" stopColor={gradientColors[0]} stopOpacity={1} />
+                      <stop offset="50%" stopColor={gradientColors[1]} stopOpacity={0.95} />
+                      <stop offset="100%" stopColor={gradientColors[2]} stopOpacity={0.9} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid 
@@ -536,7 +551,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                     }}
                     labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }}
-                    itemStyle={{ color: '#8B5CF6' }}
+                    itemStyle={{ color: gradientColors[1] }}
                   />
                   <Bar 
                     dataKey="mentions" 

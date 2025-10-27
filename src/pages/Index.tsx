@@ -207,6 +207,7 @@ const Index = () => {
   const [loadingDuration, setLoadingDuration] = useState(6);
   const [topSourceUrl, setTopSourceUrl] = useState("");
   const [dataPointsCount, setDataPointsCount] = useState(6);
+  const [selectedGradient, setSelectedGradient] = useState("gradient1");
   const [showAddBrandDialog, setShowAddBrandDialog] = useState(false);
   const [addBrandStep, setAddBrandStep] = useState(1);
   const [newBrandData, setNewBrandData] = useState({
@@ -418,6 +419,8 @@ const Index = () => {
         onTopSourceUrlChange={setTopSourceUrl}
         dataPointsCount={dataPointsCount}
         onDataPointsCountChange={setDataPointsCount}
+        selectedGradient={selectedGradient}
+        onGradientChange={setSelectedGradient}
       />
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
@@ -707,6 +710,7 @@ const Index = () => {
                               highlightTopSource={dashboardStates.highlightTopSource}
                               testTopSourceUrl={topSourceUrl}
                               dataPointsCount={dataPointsCount}
+                              selectedGradient={selectedGradient}
                               onQueryClick={(query) => {
                                 // Store current scroll position
                                 setPreviousScrollPosition(window.scrollY);

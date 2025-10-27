@@ -26,9 +26,24 @@ interface DeveloperControlsProps {
   onTopSourceUrlChange: (url: string) => void;
   dataPointsCount: number;
   onDataPointsCountChange: (count: number) => void;
+  selectedGradient: string;
+  onGradientChange: (gradient: string) => void;
 }
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange }: DeveloperControlsProps) {
+const gradientOptions = [
+  { id: "gradient1", name: "Ocean Breeze", colors: ["#3B82F6", "#06B6D4", "#10B981"] },
+  { id: "gradient2", name: "Sunset Glow", colors: ["#F59E0B", "#EF4444", "#EC4899"] },
+  { id: "gradient3", name: "Purple Haze", colors: ["#8B5CF6", "#A78BFA", "#C4B5FD"] },
+  { id: "gradient4", name: "Fire & Ice", colors: ["#DC2626", "#F97316", "#FCD34D"] },
+  { id: "gradient5", name: "Forest Dawn", colors: ["#059669", "#10B981", "#34D399"] },
+  { id: "gradient6", name: "Royal Purple", colors: ["#6366F1", "#8B5CF6", "#A855F7"] },
+  { id: "gradient7", name: "Miami Vice", colors: ["#06B6D4", "#8B5CF6", "#EC4899"] },
+  { id: "gradient8", name: "Northern Lights", colors: ["#10B981", "#06B6D4", "#3B82F6"] },
+  { id: "gradient9", name: "Rose Gold", colors: ["#F59E0B", "#EC4899", "#A855F7"] },
+  { id: "gradient10", name: "Neon Dreams", colors: ["#84CC16", "#06B6D4", "#8B5CF6"] },
+];
+
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -178,6 +193,33 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                   />
                   <p className="text-xs text-muted-foreground">
                     Control number of data points in visibility graphs
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Bar Chart Gradient</Label>
+                  <Select value={selectedGradient} onValueChange={onGradientChange}>
+                    <SelectTrigger className="w-full h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {gradientOptions.map((gradient) => (
+                        <SelectItem key={gradient.id} value={gradient.id}>
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-16 h-3 rounded"
+                              style={{
+                                background: `linear-gradient(90deg, ${gradient.colors.join(', ')})`
+                              }}
+                            />
+                            <span>{gradient.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Choose a gradient style for the bar chart
                   </p>
                 </div>
                 
