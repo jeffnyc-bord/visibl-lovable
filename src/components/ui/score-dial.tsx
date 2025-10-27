@@ -21,12 +21,6 @@ export const ScoreDial = ({
   const [showChange, setShowChange] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const size = 100;
-  const strokeWidth = 8;
-  const center = size / 2;
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-
   useEffect(() => {
     // Start animation after a brief delay
     const startDelay = setTimeout(() => {
@@ -71,91 +65,52 @@ export const ScoreDial = ({
     return () => clearTimeout(startDelay);
   }, [currentScore, previousScore]);
 
-  // Calculate the stroke dash offset for the circular progress
-  const progress = (animatedProgress / 100) * circumference;
-  const offset = circumference - progress;
-
   return (
     <div 
-      className="relative flex flex-col items-center justify-center group cursor-pointer transition-all duration-300"
+      className="w-full transition-all duration-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Label and Icon */}
-      <div className="flex items-center space-x-2 mb-3">
-        {icon}
-        <span className="text-sm font-medium text-muted-foreground">{label}</span>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center space-x-2">
+          {icon}
+          <span className="text-sm font-medium text-muted-foreground">{label}</span>
+        </div>
       </div>
 
-      {/* Circular Dial */}
-      <div className="relative">
-        <svg
-          width={size}
-          height={size}
-          className="transform -rotate-90 transition-all duration-300"
-          style={{
-            filter: isHovered ? 'drop-shadow(0 0 12px hsl(var(--primary) / 0.3))' : 'none'
-          }}
-        >
-          {/* Background circle */}
-          <circle
-            cx={center}
-            cy={center}
-            r={radius}
-            stroke="hsl(var(--muted))"
-            strokeWidth={strokeWidth}
-            fill="none"
-          />
-          
-          {/* Animated progress circle with gradient */}
-          <defs>
-            <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="hsl(var(--primary))" />
-              <stop offset="100%" stopColor="hsl(var(--primary) / 0.6)" />
-            </linearGradient>
-          </defs>
-          
-          <circle
-            cx={center}
-            cy={center}
-            r={radius}
-            stroke="url(#scoreGradient)"
-            strokeWidth={strokeWidth}
-            fill="none"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            strokeLinecap="round"
-            className="transition-all duration-300"
-            style={{
-              filter: isHovered ? 'drop-shadow(0 0 6px hsl(var(--primary) / 0.5))' : 'none'
-            }}
-          />
-        </svg>
+      {/* Score Display */}
+      <div className="flex items-end gap-2 mb-2">
+        <span className="text-3xl font-bold text-foreground tabular-nums">
+          {animatedScore}
+        </span>
+        {showChange && (
+          <>
+            {isHovered ? (
+              <span className="text-xs text-muted-foreground mb-1 animate-fade-in whitespace-nowrap">
+                Up from {previousScore} last week
+              </span>
+            ) : (
+              <Badge 
+                variant="secondary" 
+                className="bg-success/10 text-success border-success/20 animate-scale-in text-xs mb-1"
+              >
+                +{change}
+              </Badge>
+            )}
+          </>
+        )}
+      </div>
 
-        {/* Center content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-3xl font-bold text-foreground tabular-nums">
-            {animatedScore}
-          </div>
-          
-          {/* Change indicator with pop animation */}
-          {showChange && (
-            <div className="mt-1">
-              {isHovered ? (
-                <div className="text-xs text-muted-foreground animate-fade-in whitespace-nowrap">
-                  Up from {previousScore} last week
-                </div>
-              ) : (
-                <Badge 
-                  variant="secondary" 
-                  className="bg-success/10 text-success border-success/20 animate-scale-in text-xs"
-                >
-                  +{change}
-                </Badge>
-              )}
-            </div>
-          )}
-        </div>
+      {/* Progress Bar */}
+      <div className="relative h-2 w-full bg-muted rounded-full overflow-hidden">
+        <div 
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-300"
+          style={{ 
+            width: `${animatedProgress}%`,
+            filter: isHovered ? 'drop-shadow(0 0 8px hsl(var(--primary) / 0.6))' : 'none'
+          }}
+        />
       </div>
     </div>
   );
