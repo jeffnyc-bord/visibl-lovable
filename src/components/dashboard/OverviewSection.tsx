@@ -503,7 +503,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       Baseline Established
                     </h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      Your first scan captured <span className="font-semibold text-foreground">{visibilityTrendData[0].mentions.toLocaleString()}</span> mentions in <span className="font-semibold text-foreground">{visibilityTrendData[0].month}</span>
+                      Your first scan captured <span className="font-semibold text-foreground">450</span> mentions
                     </p>
                     <div className="pt-2">
                       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border" style={{ backgroundColor: 'rgba(105, 197, 242, 0.05)', borderColor: 'rgba(105, 197, 242, 0.2)' }}>
