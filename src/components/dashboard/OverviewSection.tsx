@@ -56,9 +56,10 @@ interface OverviewSectionProps {
   onQueryClick?: (query: string) => void;
   onNavigateToPrompts?: () => void;
   userRole?: "business_user" | "agency_admin";
+  showBaseline?: boolean;
 }
 
-export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user" }: OverviewSectionProps) => {
+export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false }: OverviewSectionProps) => {
   const { toast } = useToast();
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
@@ -110,7 +111,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         });
       });
 
-  const visibilityTrendData = [
+  const allVisibilityTrendData = [
     { month: "Jul", mentions: 890 },
     { month: "Aug", mentions: 1020 },
     { month: "Sep", mentions: 1156 },
@@ -118,6 +119,11 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     { month: "Nov", mentions: 1203 },
     { month: "Dec", mentions: 1247 },
   ];
+
+  // Show only first data point if baseline mode is enabled
+  const visibilityTrendData = showBaseline 
+    ? [allVisibilityTrendData[0]] 
+    : allVisibilityTrendData;
 
   const coreQueries = [
     { query: "Nike Air Max vs Adidas Ultraboost", brand: "Nike", mentions: 203 },

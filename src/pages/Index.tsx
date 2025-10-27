@@ -263,6 +263,7 @@ const Index = () => {
     fullDashboardError: false,
     widgetError: false,
     emptyState: false,
+    showBaseline: false,
   });
 
   // Get current selected brand data
@@ -695,6 +696,7 @@ const Index = () => {
                               selectedModels={selectedModels}
                               selectedDateRange={selectedDateRange}
                               userRole={userRole}
+                              showBaseline={dashboardStates.showBaseline}
                               onQueryClick={(query) => {
                                 // Store current scroll position
                                 setPreviousScrollPosition(window.scrollY);
