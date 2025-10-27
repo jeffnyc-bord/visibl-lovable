@@ -21,8 +21,8 @@ export const ScoreDial = ({
   const [showChange, setShowChange] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const size = 140;
-  const strokeWidth = 10;
+  const size = 100;
+  const strokeWidth = 8;
   const center = size / 2;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -82,7 +82,7 @@ export const ScoreDial = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Label and Icon */}
-      <div className="flex items-center space-x-2 mb-4">
+      <div className="flex items-center space-x-2 mb-3">
         {icon}
         <span className="text-sm font-medium text-muted-foreground">{label}</span>
       </div>
@@ -94,7 +94,7 @@ export const ScoreDial = ({
           height={size}
           className="transform -rotate-90 transition-all duration-300"
           style={{
-            filter: isHovered ? 'drop-shadow(0 0 20px hsl(var(--primary) / 0.4))' : 'none'
+            filter: isHovered ? 'drop-shadow(0 0 12px hsl(var(--primary) / 0.3))' : 'none'
           }}
         >
           {/* Background circle */}
@@ -127,14 +127,14 @@ export const ScoreDial = ({
             strokeLinecap="round"
             className="transition-all duration-300"
             style={{
-              filter: isHovered ? 'drop-shadow(0 0 8px hsl(var(--primary) / 0.6))' : 'none'
+              filter: isHovered ? 'drop-shadow(0 0 6px hsl(var(--primary) / 0.5))' : 'none'
             }}
           />
         </svg>
 
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-4xl font-bold text-foreground tabular-nums">
+          <div className="text-3xl font-bold text-foreground tabular-nums">
             {animatedScore}
           </div>
           
@@ -148,7 +148,7 @@ export const ScoreDial = ({
               ) : (
                 <Badge 
                   variant="secondary" 
-                  className="bg-success/10 text-success border-success/20 animate-scale-in"
+                  className="bg-success/10 text-success border-success/20 animate-scale-in text-xs"
                 >
                   +{change}
                 </Badge>
@@ -157,11 +157,6 @@ export const ScoreDial = ({
           )}
         </div>
       </div>
-
-      {/* Subtle glow effect on hover */}
-      {isHovered && (
-        <div className="absolute inset-0 rounded-full bg-primary/5 animate-scale-in -z-10" />
-      )}
     </div>
   );
 };

@@ -256,7 +256,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityScore: false})}>
-          <CardContent className="p-6 flex flex-col items-center">
+          <CardContent className="p-4 flex flex-col items-center justify-center h-full">
             <div className="absolute top-4 right-4">
               <HelpCircle 
                 className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
