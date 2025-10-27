@@ -506,9 +506,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 <BarChart data={visibilityTrendData}>
                   <defs>
                     <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#06B6D4" stopOpacity={1} />
-                      <stop offset="50%" stopColor="#8B5CF6" stopOpacity={0.9} />
-                      <stop offset="100%" stopColor="#EC4899" stopOpacity={0.8} />
+                      <stop offset="0%" stopColor="#3B82F6" stopOpacity={1} />
+                      <stop offset="50%" stopColor="#06B6D4" stopOpacity={0.95} />
+                      <stop offset="100%" stopColor="#10B981" stopOpacity={0.9} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid 
