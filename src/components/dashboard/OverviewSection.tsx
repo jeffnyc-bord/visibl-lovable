@@ -482,18 +482,18 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   {/* Animated progress indicator */}
                   <div className="mb-6 flex items-center gap-3">
                     <div className="relative">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
-                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                          <div className="w-4 h-4 rounded-full bg-primary"></div>
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center animate-pulse" style={{ backgroundColor: 'rgba(105, 197, 242, 0.1)' }}>
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(105, 197, 242, 0.2)' }}>
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#69c5f2' }}></div>
                         </div>
                       </div>
-                      <div className="absolute -inset-1 rounded-full border-2 border-primary/30 animate-[scale-in_2s_ease-in-out_infinite]"></div>
+                      <div className="absolute -inset-1 rounded-full border-2 animate-[scale-in_2s_ease-in-out_infinite]" style={{ borderColor: 'rgba(105, 197, 242, 0.3)' }}></div>
                     </div>
-                    <div className="h-0.5 w-16 bg-gradient-to-r from-primary via-primary/50 to-muted relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent animate-[slide-in-right_2s_ease-in-out_infinite]"></div>
+                    <div className="h-0.5 w-16 relative overflow-hidden" style={{ background: 'linear-gradient(90deg, #69c5f2, rgba(105, 197, 242, 0.5), hsl(var(--muted)))' }}>
+                      <div className="absolute inset-0 animate-[slide-in-right_2s_ease-in-out_infinite]" style={{ background: 'linear-gradient(90deg, transparent, #69c5f2, transparent)' }}></div>
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                      <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/30 border-dashed"></div>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(167, 222, 248, 0.2)' }}>
+                      <div className="w-3 h-3 rounded-full border-2 border-dashed" style={{ borderColor: 'rgba(105, 197, 242, 0.4)' }}></div>
                     </div>
                   </div>
 
@@ -506,8 +506,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       Your first scan captured <span className="font-semibold text-foreground">{visibilityTrendData[0].mentions.toLocaleString()}</span> mentions in <span className="font-semibold text-foreground">{visibilityTrendData[0].month}</span>
                     </p>
                     <div className="pt-2">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20">
-                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border" style={{ backgroundColor: 'rgba(105, 197, 242, 0.05)', borderColor: 'rgba(105, 197, 242, 0.2)' }}>
+                        <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#69c5f2' }}></div>
                         <span className="text-xs font-medium text-muted-foreground">
                           Waiting for next scan to show trends
                         </span>
