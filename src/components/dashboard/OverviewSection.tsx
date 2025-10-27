@@ -133,14 +133,23 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         });
       });
 
-  const allVisibilityTrendData = [
-    { month: "Jul", mentions: 890 },
-    { month: "Aug", mentions: 1020 },
-    { month: "Sep", mentions: 1156 },
-    { month: "Oct", mentions: 1089 },
-    { month: "Nov", mentions: 1203 },
-    { month: "Dec", mentions: 1247 },
-  ];
+  // Generate brand-specific visibility trend data based on brandData
+  const generateBrandTrendData = () => {
+    const baseMentions = brandData.totalMentions / 6; // Average per month
+    const variance = brandData.visibilityScore / 100; // Use score for variance
+    const trendMultiplier = brandData.mentionTrend === "up" ? 1.05 : 0.98;
+    
+    return [
+      { month: "Jul", mentions: Math.round(baseMentions * 0.85) },
+      { month: "Aug", mentions: Math.round(baseMentions * 0.92 * trendMultiplier) },
+      { month: "Sep", mentions: Math.round(baseMentions * 0.98 * Math.pow(trendMultiplier, 2)) },
+      { month: "Oct", mentions: Math.round(baseMentions * 0.95 * Math.pow(trendMultiplier, 3)) },
+      { month: "Nov", mentions: Math.round(baseMentions * 1.05 * Math.pow(trendMultiplier, 4)) },
+      { month: "Dec", mentions: Math.round(baseMentions * 1.10 * Math.pow(trendMultiplier, 5)) },
+    ];
+  };
+
+  const allVisibilityTrendData = generateBrandTrendData();
 
   // Show only first data point if baseline mode is enabled, otherwise use dataPointsCount
   const visibilityTrendData = showBaseline 
@@ -158,14 +167,26 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     { query: "Nike React vs Nike ZoomX technology", brand: "Nike", mentions: 134 },
   ];
 
-  const sourceQuality = [
-    { source: "www.nike.com", url: "https://www.nike.com", mentions: 342 },
-    { source: "www.espn.com", url: "https://www.espn.com", mentions: 298 },
-    { source: "www.footwearnews.com", url: "https://www.footwearnews.com", mentions: 215 },
-    { source: "www.complex.com", url: "https://www.complex.com", mentions: 187 },
-    { source: "www.runnersworld.com", url: "https://www.runnersworld.com", mentions: 156 },
-    { source: "www.reddit.com", url: "https://www.reddit.com", mentions: 123 },
-  ];
+  // Generate brand-specific source quality data
+  const generateBrandSources = () => {
+    const brandUrl = brandData.url.startsWith('http') ? brandData.url : `https://${brandData.url}`;
+    const brandDomain = brandData.url.replace(/^https?:\/\//, '').replace(/^www\./, '');
+    const baseMentions = Math.round(brandData.totalMentions * 0.027); // ~2.7% of total
+    
+    // Different source patterns for different brand types
+    const sources = [
+      { source: `www.${brandDomain}`, url: brandUrl, mentions: Math.round(baseMentions * 1.2) },
+      { source: "www.techcrunch.com", url: "https://www.techcrunch.com", mentions: Math.round(baseMentions * 0.95) },
+      { source: "www.theverge.com", url: "https://www.theverge.com", mentions: Math.round(baseMentions * 0.75) },
+      { source: "www.wired.com", url: "https://www.wired.com", mentions: Math.round(baseMentions * 0.68) },
+      { source: "www.forbes.com", url: "https://www.forbes.com", mentions: Math.round(baseMentions * 0.58) },
+      { source: "www.reddit.com", url: "https://www.reddit.com", mentions: Math.round(baseMentions * 0.45) },
+    ];
+    
+    return sources;
+  };
+
+  const sourceQuality = generateBrandSources();
 
   const allPlatformMentionsData = [
     { platform: "ChatGPT", mentions: 456, percentage: 36 },
