@@ -433,49 +433,112 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </CardHeader>
           <CardContent>
             {visibilityTrendData.length === 1 ? (
-              <div className="relative h-[250px] flex items-center justify-center bg-gradient-to-b from-background to-muted/20 rounded-lg overflow-hidden">
-                {/* Subtle background pattern */}
-                <div className="absolute inset-0 opacity-[0.03]" style={{
-                  backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary)) 1px, transparent 0)',
-                  backgroundSize: '40px 40px'
-                }}></div>
+              <div className="relative h-[250px]">
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={[
+                    visibilityTrendData[0],
+                    { 
+                      month: new Date(new Date(visibilityTrendData[0].month).setMonth(new Date(visibilityTrendData[0].month).getMonth() + 1)).toLocaleDateString('en-US', { month: 'short' }),
+                      mentions: null 
+                    }
+                  ]} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                    <XAxis 
+                      dataKey="month" 
+                      stroke="hsl(var(--muted-foreground))"
+                      tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    />
+                    <Tooltip content={<></>} />
+                    
+                    {/* Dotted line to future */}
+                    <Line 
+                      type="monotone" 
+                      dataKey="mentions" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      opacity={0.4}
+                      dot={false}
+                      connectNulls={false}
+                    />
+                    
+                    {/* Actual data point with pulsing animation */}
+                    <Line 
+                      type="monotone" 
+                      dataKey="mentions" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={0}
+                      dot={(props: any) => {
+                        const { cx, cy, payload } = props;
+                        if (payload.mentions === null) {
+                          // Next scan icon
+                          return (
+                            <g>
+                              <circle 
+                                cx={cx} 
+                                cy={cy} 
+                                r={12} 
+                                fill="hsl(var(--muted))" 
+                                stroke="hsl(var(--border))"
+                                strokeWidth={2}
+                                strokeDasharray="3 3"
+                              />
+                              <text
+                                x={cx}
+                                y={cy + 4}
+                                textAnchor="middle"
+                                fill="hsl(var(--muted-foreground))"
+                                fontSize={16}
+                              >
+                                📅
+                              </text>
+                            </g>
+                          );
+                        }
+                        // Current data point with pulse
+                        return (
+                          <g>
+                            <circle 
+                              cx={cx} 
+                              cy={cy} 
+                              r={16} 
+                              fill="hsl(var(--primary))" 
+                              opacity={0.1}
+                              className="animate-[scale-in_2s_ease-in-out_infinite]"
+                            />
+                            <circle 
+                              cx={cx} 
+                              cy={cy} 
+                              r={12} 
+                              fill="hsl(var(--primary))" 
+                              opacity={0.2}
+                              className="animate-pulse"
+                            />
+                            <circle 
+                              cx={cx} 
+                              cy={cy} 
+                              r={6} 
+                              fill="hsl(var(--primary))"
+                            />
+                          </g>
+                        );
+                      }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
                 
-                <div className="relative z-10 flex flex-col items-center max-w-md px-8">
-                  {/* Animated progress indicator */}
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="relative">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
-                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                          <div className="w-4 h-4 rounded-full bg-primary"></div>
-                        </div>
-                      </div>
-                      <div className="absolute -inset-1 rounded-full border-2 border-primary/30 animate-[scale-in_2s_ease-in-out_infinite]"></div>
-                    </div>
-                    <div className="h-0.5 w-16 bg-gradient-to-r from-primary via-primary/50 to-muted relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent animate-[slide-in-right_2s_ease-in-out_infinite]"></div>
-                    </div>
-                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                      <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/30 border-dashed"></div>
-                    </div>
-                  </div>
-
-                  {/* Clean centered content */}
-                  <div className="text-center space-y-3 animate-fade-in">
-                    <h3 className="text-lg font-medium text-foreground">
-                      Baseline Established
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Your first scan captured <span className="font-semibold text-foreground">{visibilityTrendData[0].mentions.toLocaleString()}</span> mentions in <span className="font-semibold text-foreground">{visibilityTrendData[0].month}</span>
-                    </p>
-                    <div className="pt-2">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20">
-                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                        <span className="text-xs font-medium text-muted-foreground">
-                          Waiting for next scan to show trends
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                {/* Text overlay */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center space-y-1 animate-fade-in max-w-md">
+                  <h3 className="text-base font-semibold text-foreground">
+                    Your Benchmark is Set!
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    We've captured your first data point: <span className="font-semibold text-foreground">{visibilityTrendData[0].mentions.toLocaleString()}</span> mentions in <span className="font-semibold text-foreground">{visibilityTrendData[0].month}</span>. This trend graph will come alive after your next scan.
+                  </p>
                 </div>
               </div>
             ) : (
