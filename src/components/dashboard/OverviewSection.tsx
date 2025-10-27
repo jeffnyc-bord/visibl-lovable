@@ -506,8 +506,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 <BarChart data={visibilityTrendData}>
                   <defs>
                     <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.9} />
-                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.6} />
+                      <stop offset="0%" stopColor="#06B6D4" stopOpacity={1} />
+                      <stop offset="50%" stopColor="#8B5CF6" stopOpacity={0.9} />
+                      <stop offset="100%" stopColor="#EC4899" stopOpacity={0.8} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid 
@@ -535,13 +536,13 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                     }}
                     labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }}
-                    itemStyle={{ color: 'hsl(var(--primary))' }}
+                    itemStyle={{ color: '#8B5CF6' }}
                   />
                   <Bar 
                     dataKey="mentions" 
                     fill="url(#barGradient)"
                     radius={[8, 8, 0, 0]}
-                    maxBarSize={60}
+                    maxBarSize={40}
                   />
                 </BarChart>
               </ResponsiveContainer>
