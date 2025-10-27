@@ -15,9 +15,7 @@ interface DeveloperControlsProps {
     widgetLoading: boolean;
     fullDashboardError: boolean;
     widgetError: boolean;
-    emptyState: boolean;
     showBaseline: boolean;
-    highlightTopSource: boolean;
   };
   onStateChange: (state: string, value: boolean) => void;
   userRole: "business_user" | "agency_admin";
@@ -73,19 +71,9 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
       description: "Shows error state in individual widgets"
     },
     {
-      key: "emptyState",
-      label: "Empty/No Data State",
-      description: "Shows empty state when no data is available"
-    },
-    {
       key: "showBaseline",
       label: "Show Baseline State",
       description: "Shows single data point baseline message in trends"
-    },
-    {
-      key: "highlightTopSource",
-      label: "Highlight Top Source",
-      description: "Highlights the Top Source card with special styling"
     }
   ];
 
