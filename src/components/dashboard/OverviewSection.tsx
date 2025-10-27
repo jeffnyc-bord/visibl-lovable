@@ -545,13 +545,27 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   />
                   <Tooltip 
                     contentStyle={{
-                      backgroundColor: 'hsl(var(--popover))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      border: 'none',
+                      borderRadius: '16px',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04)',
+                      padding: '12px 16px',
                     }}
-                    labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }}
-                    itemStyle={{ color: gradientColors[1] }}
+                    labelStyle={{ 
+                      color: 'hsl(var(--foreground))', 
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      marginBottom: '2px'
+                    }}
+                    itemStyle={{ 
+                      color: gradientColors[1],
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      padding: '2px 0'
+                    }}
+                    cursor={{ fill: 'rgba(0, 0, 0, 0.02)' }}
                   />
                   <Bar 
                     dataKey="mentions" 
