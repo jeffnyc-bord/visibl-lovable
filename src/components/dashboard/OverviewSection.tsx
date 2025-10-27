@@ -433,21 +433,48 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </CardHeader>
           <CardContent>
             {visibilityTrendData.length === 1 ? (
-              <div className="flex flex-col items-center justify-center h-[250px] bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg border-2 border-dashed border-primary/30">
-                <div className="text-center px-6 py-8 max-w-md">
-                  <h3 className="text-xl font-semibold text-foreground mb-3 flex items-center justify-center gap-2">
-                    Your Baseline is Set! 📍
-                  </h3>
-                  <div className="space-y-3 text-sm text-muted-foreground">
-                    <p className="leading-relaxed">
-                      Your first AI visibility scan is complete, logging <span className="font-semibold text-foreground">{visibilityTrendData[0].mentions.toLocaleString()} mentions</span> for <span className="font-semibold text-foreground">{visibilityTrendData[0].month}</span>.
+              <div className="relative h-[250px] flex items-center justify-center bg-gradient-to-b from-background to-muted/20 rounded-lg overflow-hidden">
+                {/* Subtle background pattern */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{
+                  backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary)) 1px, transparent 0)',
+                  backgroundSize: '40px 40px'
+                }}></div>
+                
+                <div className="relative z-10 flex flex-col items-center max-w-md px-8">
+                  {/* Animated progress indicator */}
+                  <div className="mb-6 flex items-center gap-3">
+                    <div className="relative">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                          <div className="w-4 h-4 rounded-full bg-primary"></div>
+                        </div>
+                      </div>
+                      <div className="absolute -inset-1 rounded-full border-2 border-primary/30 animate-[scale-in_2s_ease-in-out_infinite]"></div>
+                    </div>
+                    <div className="h-0.5 w-16 bg-gradient-to-r from-primary via-primary/50 to-muted relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent animate-[slide-in-right_2s_ease-in-out_infinite]"></div>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/30 border-dashed"></div>
+                    </div>
+                  </div>
+
+                  {/* Clean centered content */}
+                  <div className="text-center space-y-3 animate-fade-in">
+                    <h3 className="text-lg font-medium text-foreground">
+                      Baseline Established
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Your first scan captured <span className="font-semibold text-foreground">{visibilityTrendData[0].mentions.toLocaleString()}</span> mentions in <span className="font-semibold text-foreground">{visibilityTrendData[0].month}</span>
                     </p>
-                    <p className="leading-relaxed">
-                      A trend graph needs at least two data points to draw a line. After the next scan, this chart will come alive to show your brand's AI mention volume over time.
-                    </p>
-                    <p className="text-primary font-medium mt-4">
-                      Great start! 📈
-                    </p>
+                    <div className="pt-2">
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20">
+                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          Waiting for next scan to show trends
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
