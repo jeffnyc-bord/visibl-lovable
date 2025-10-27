@@ -17,6 +17,7 @@ interface DeveloperControlsProps {
     widgetError: boolean;
     emptyState: boolean;
     showBaseline: boolean;
+    highlightTopSource: boolean;
   };
   onStateChange: (state: string, value: boolean) => void;
   userRole: "business_user" | "agency_admin";
@@ -76,6 +77,11 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
       key: "showBaseline",
       label: "Show Baseline State",
       description: "Shows single data point baseline message in trends"
+    },
+    {
+      key: "highlightTopSource",
+      label: "Highlight Top Source",
+      description: "Highlights the Top Source card with special styling"
     }
   ];
 

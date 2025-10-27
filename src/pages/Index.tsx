@@ -264,6 +264,7 @@ const Index = () => {
     widgetError: false,
     emptyState: false,
     showBaseline: false,
+    highlightTopSource: false,
   });
 
   // Get current selected brand data
@@ -697,6 +698,7 @@ const Index = () => {
                               selectedDateRange={selectedDateRange}
                               userRole={userRole}
                               showBaseline={dashboardStates.showBaseline}
+                              highlightTopSource={dashboardStates.highlightTopSource}
                               onQueryClick={(query) => {
                                 // Store current scroll position
                                 setPreviousScrollPosition(window.scrollY);

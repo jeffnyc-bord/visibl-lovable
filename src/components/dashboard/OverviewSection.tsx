@@ -58,9 +58,10 @@ interface OverviewSectionProps {
   onNavigateToPrompts?: () => void;
   userRole?: "business_user" | "agency_admin";
   showBaseline?: boolean;
+  highlightTopSource?: boolean;
 }
 
-export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false }: OverviewSectionProps) => {
+export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false, highlightTopSource = false }: OverviewSectionProps) => {
   const { toast } = useToast();
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
@@ -307,7 +308,11 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </Card>
 
         <Card 
-          className="group relative cursor-pointer hover:shadow-lg transition-shadow" 
+          className={`group relative cursor-pointer hover:shadow-lg transition-all duration-300 ${
+            highlightTopSource 
+              ? 'ring-4 ring-primary ring-offset-2 shadow-2xl animate-pulse' 
+              : ''
+          }`}
           onClick={() => {
             const topSource = sourceQuality.reduce((max, source) => 
               source.mentions > max.mentions ? source : max
