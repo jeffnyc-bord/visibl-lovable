@@ -207,7 +207,7 @@ const Index = () => {
   const [loadingDuration, setLoadingDuration] = useState(6);
   const [topSourceUrl, setTopSourceUrl] = useState("");
   const [dataPointsCount, setDataPointsCount] = useState(6);
-  const [selectedGradient, setSelectedGradient] = useState("gradient1");
+  const [selectedGradient, setSelectedGradient] = useState("gradient3");
   const [showAddBrandDialog, setShowAddBrandDialog] = useState(false);
   const [addBrandStep, setAddBrandStep] = useState(1);
   const [newBrandData, setNewBrandData] = useState({
