@@ -11,6 +11,7 @@ import { DeveloperControls } from '@/components/ui/developer-controls';
 import chatGPTLogo from '@/assets/chatGPT_logo.png';
 import geminiLogo from '@/assets/gemini_logo.png';
 import perplexityLogo from '@/assets/perplexity_logo.png';
+import grokLogo from '@/assets/grok_logo.png';
 
 const emailSchema = z.string().email('Invalid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -301,6 +302,7 @@ export const Auth = () => {
                 { src: chatGPTLogo, alt: 'ChatGPT' },
                 { src: geminiLogo, alt: 'Gemini' },
                 { src: perplexityLogo, alt: 'Perplexity' },
+                { src: grokLogo, alt: 'Grok' },
               ].map((logo, index) => (
                 <div
                   key={logo.alt}
