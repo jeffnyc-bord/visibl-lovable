@@ -297,7 +297,7 @@ export const Auth = () => {
           {/* AI Platform Logos */}
           <div className="animate-fade-in animation-delay-800">
             <p className="text-sm text-muted-foreground mb-4">Supported AI Platforms</p>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-4 gap-4">
               {[
                 { src: chatGPTLogo, alt: 'ChatGPT' },
                 { src: geminiLogo, alt: 'Gemini' },
