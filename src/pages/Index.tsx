@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -197,6 +198,7 @@ const mockTrackedBrands: BrandData[] = [
 
 const Index = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [hasAnalysis, setHasAnalysis] = useState(true);
@@ -421,6 +423,7 @@ const Index = () => {
         onDataPointsCountChange={setDataPointsCount}
         selectedGradient={selectedGradient}
         onGradientChange={setSelectedGradient}
+        onNavigateToAuth={() => navigate('/auth')}
       />
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>

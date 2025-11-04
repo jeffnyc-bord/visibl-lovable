@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { z } from 'zod';
+import { DeveloperControls } from '@/components/ui/developer-controls';
 
 const emailSchema = z.string().email('Invalid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -15,10 +17,20 @@ const passwordSchema = z.string().min(6, 'Password must be at least 6 characters
 export const Auth = () => {
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [signupData, setSignupData] = useState({ email: '', password: '', fullName: '' });
+  
+  // Dev controls states (minimal for auth page)
+  const [dashboardStates] = useState({
+    fullDashboardLoading: false,
+    widgetLoading: false,
+    fullDashboardError: false,
+    widgetError: false,
+    showBaseline: false,
+  });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +110,21 @@ export const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
+      <DeveloperControls
+        states={dashboardStates}
+        onStateChange={() => {}}
+        userRole="business_user"
+        onRoleChange={() => {}}
+        loadingDuration={5}
+        onLoadingDurationChange={() => {}}
+        topSourceUrl=""
+        onTopSourceUrlChange={() => {}}
+        dataPointsCount={6}
+        onDataPointsCountChange={() => {}}
+        selectedGradient="gradient3"
+        onGradientChange={() => {}}
+        onNavigateToAuth={() => navigate('/')}
+      />
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Board Labs</CardTitle>

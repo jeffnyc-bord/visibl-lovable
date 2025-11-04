@@ -28,6 +28,7 @@ interface DeveloperControlsProps {
   onDataPointsCountChange: (count: number) => void;
   selectedGradient: string;
   onGradientChange: (gradient: string) => void;
+  onNavigateToAuth?: () => void;
 }
 
 const gradientOptions = [
@@ -43,7 +44,7 @@ const gradientOptions = [
   { id: "gradient10", name: "Neon Dreams", colors: ["#84CC16", "#06B6D4", "#8B5CF6"] },
 ];
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -219,22 +220,35 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
-                    Choose a gradient style for the bar chart
-                  </p>
+                  Choose a gradient style for the bar chart
+                </p>
+              </div>
+              
+              {onNavigateToAuth && (
+                <div className="pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={onNavigateToAuth}
+                  >
+                    Toggle Auth Page
+                  </Button>
                 </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => {
-                    Object.keys(states).forEach(key => {
-                      onStateChange(key, false);
-                    });
-                  }}
-                >
-                  Reset All States
-                </Button>
+              )}
+              
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => {
+                  Object.keys(states).forEach(key => {
+                    onStateChange(key, false);
+                  });
+                }}
+              >
+                Reset All States
+              </Button>
               </div>
             </CardContent>
           </Card>
