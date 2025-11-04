@@ -289,33 +289,6 @@ export const Auth = () => {
               </div>
             </div>
           </div>
-          
-          <div className="bg-card border rounded-lg p-8 shadow-sm">
-            <h3 className="text-2xl font-semibold mb-4">Your First Steps to Success</h3>
-            
-            <div className="space-y-6">
-              <div>
-                <h4 className="font-semibold mb-2">Analyze a brands AI visibility score</h4>
-                <p className="text-sm text-muted-foreground">
-                  Collect data from AI-powered platforms and search engines where your brand may surface.
-                </p>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold mb-2">Test prompts in real-time or add them to a queue</h4>
-                <p className="text-sm text-muted-foreground">
-                  Experiment with prompts instantly or schedule them for consistent visibility checks.
-                </p>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold mb-2">Identify actionable AEO recommendations</h4>
-                <p className="text-sm text-muted-foreground">
-                  Pinpoint practical steps that strengthen your brand's AI-driven discoverability.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
