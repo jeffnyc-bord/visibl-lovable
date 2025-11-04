@@ -6,6 +6,7 @@ export type SubscriptionTier = 'free' | 'pro' | 'enterprise';
 
 interface SubscriptionLimits {
   maxProducts: number;
+  maxBrands: number;
   trackingFrequency: 'twice_weekly' | 'daily';
 }
 
@@ -14,14 +15,16 @@ interface SubscriptionContextType {
   limits: SubscriptionLimits;
   productsTracked: number;
   canAddProduct: boolean;
+  canAddBrand: boolean;
+  brandsTracked: number;
   loading: boolean;
   refreshSubscription: () => Promise<void>;
 }
 
 const TIER_LIMITS: Record<SubscriptionTier, SubscriptionLimits> = {
-  free: { maxProducts: 10, trackingFrequency: 'twice_weekly' },
-  pro: { maxProducts: 25, trackingFrequency: 'daily' },
-  enterprise: { maxProducts: 999999, trackingFrequency: 'daily' },
+  free: { maxProducts: 10, maxBrands: 1, trackingFrequency: 'twice_weekly' },
+  pro: { maxProducts: 25, maxBrands: 5, trackingFrequency: 'daily' },
+  enterprise: { maxProducts: 999999, maxBrands: 999999, trackingFrequency: 'daily' },
 };
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -30,6 +33,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
   const { user } = useAuth();
   const [tier, setTier] = useState<SubscriptionTier>('free');
   const [productsTracked, setProductsTracked] = useState(0);
+  const [brandsTracked, setBrandsTracked] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const fetchSubscription = async () => {
@@ -50,6 +54,14 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
 
       setTier(profile?.subscription_tier || 'free');
       setProductsTracked(profile?.products_tracked || 0);
+      
+      // Count user's brands
+      const { count: brandCount } = await supabase
+        .from('brands')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      
+      setBrandsTracked(brandCount || 0);
     } catch (error) {
       console.error('Error fetching subscription:', error);
     } finally {
@@ -63,6 +75,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
 
   const limits = TIER_LIMITS[tier];
   const canAddProduct = productsTracked < limits.maxProducts;
+  const canAddBrand = brandsTracked < limits.maxBrands;
 
   return (
     <SubscriptionContext.Provider
@@ -70,7 +83,9 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
         tier,
         limits,
         productsTracked,
+        brandsTracked,
         canAddProduct,
+        canAddBrand,
         loading,
         refreshSubscription: fetchSubscription,
       }}

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -78,9 +79,11 @@ interface BrandManagementSectionProps {
 
 export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDuration = 6 }: BrandManagementSectionProps) => {
   const { toast } = useToast();
+  const { tier, limits, brandsTracked, canAddBrand } = useSubscription();
   const [isAddingBrand, setIsAddingBrand] = useState(false);
   const [addBrandProgress, setAddBrandProgress] = useState(0);
   const [showAddBrandDialog, setShowAddBrandDialog] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [addBrandStep, setAddBrandStep] = useState(1);
   const [newBrandData, setNewBrandData] = useState({
     name: "",
@@ -90,15 +93,8 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
     reportFrequency: ""
   });
   
-  // Brand limits based on tier
-  const TIER_LIMITS = {
-    standard: 5,
-    premium: 15,
-    enterprise: 50
-  };
-  
-  const currentTier = "standard"; // This would come from user subscription data
-  const maxBrands = TIER_LIMITS[currentTier];
+  const maxBrands = limits.maxBrands;
+  const currentTier = tier;
   
   // Use selected brand as the primary brand
   const myBrand = {
@@ -175,11 +171,11 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   };
 
   const competitorCount = competitors.length;
-  // Total brands = 1 primary brand + competitors
-  const totalBrandsTracked = 1 + competitorCount;
-  const currentBrandCount = totalBrandsTracked; // For consistency with existing code
+  // Total brands = actual brands from database
+  const totalBrandsTracked = brandsTracked;
+  const currentBrandCount = totalBrandsTracked;
   const brandsRemaining = Math.max(0, maxBrands - totalBrandsTracked);
-  const isAtLimit = totalBrandsTracked >= maxBrands;
+  const isAtLimit = !canAddBrand;
 
   const handleToggleMonitoring = (competitorId: number) => {
     setCompetitors(prev => prev.map(competitor => 
@@ -207,14 +203,23 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
     });
   };
 
+  const handleAddBrandClick = () => {
+    // Check if user can add more brands
+    if (!canAddBrand) {
+      setShowUpgradeDialog(true);
+      return;
+    }
+    setShowAddBrandDialog(true);
+  };
+
   const handleAddBrand = () => {
     if (!newBrandData.name.trim() || !newBrandData.url.trim() || !newBrandData.reportFrequency) return;
     
-    // Check brand limit (primary brand + competitors)
-    if (totalBrandsTracked >= maxBrands) {
+    // Double check brand limit
+    if (!canAddBrand) {
       toast({
         title: "Brand Limit Reached",
-        description: `You've reached the maximum of ${maxBrands} brands for the ${currentTier} tier. Upgrade to add more competitors.`,
+        description: `You've reached the maximum of ${maxBrands} brand${maxBrands !== 1 ? 's' : ''} for the ${currentTier} tier. Upgrade to add more brands.`,
         variant: "destructive",
       });
       return;
@@ -348,32 +353,14 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
               </div>
             </div>
             
-            {isAtLimit ? (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
-                <div className="flex items-start gap-2">
-                  <Target className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-destructive mb-1">
-                      Brand limit reached
-                    </p>
-                    <p className="text-xs text-destructive/80 mb-2">
-                      Upgrade to Premium for 15 brands or Enterprise for 50 brands.
-                    </p>
-                    <Button size="sm" variant="destructive" className="h-7 text-xs">
-                      Upgrade Plan
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <Button 
-                onClick={() => setShowAddBrandDialog(true)}
-                className="w-full h-10"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Brand
-              </Button>
-            )}
+            <Button 
+              onClick={handleAddBrandClick}
+              className="w-full h-10"
+              variant={isAtLimit ? "outline" : "default"}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              {isAtLimit ? "Upgrade to Add More" : "Add New Brand"}
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -886,6 +873,90 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                   Add & Start Monitoring
                 </Button>
               )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Upgrade Dialog */}
+      <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <DialogContent className="max-w-lg">
+          <div className="text-center space-y-4 py-4">
+            <div className="flex justify-center">
+              <img 
+                src={boardLabsIcon} 
+                alt="Bord Labs" 
+                className="w-16 h-16"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold text-foreground">
+                Upgrade to Track More Brands
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                You've reached your brand limit on the {currentTier} plan. Upgrade to add more brands to your watchlist.
+              </p>
+            </div>
+
+            <div className="space-y-3 pt-4">
+              <div className="grid grid-cols-1 gap-3">
+                {currentTier === 'free' && (
+                  <div className="border border-primary/20 bg-primary/5 rounded-lg p-4 text-left">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-foreground">Pro Plan</h3>
+                      <Badge variant="secondary" className="bg-primary/10 text-primary">Popular</Badge>
+                    </div>
+                    <div className="space-y-2 mb-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Target className="w-4 h-4 text-primary" />
+                        <span>Track up to 5 brands</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Zap className="w-4 h-4 text-primary" />
+                        <span>Daily tracking updates</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <TrendingUp className="w-4 h-4 text-primary" />
+                        <span>Advanced analytics</span>
+                      </div>
+                    </div>
+                    <Button className="w-full" size="sm">
+                      Upgrade to Pro
+                    </Button>
+                  </div>
+                )}
+                
+                <div className="border border-border rounded-lg p-4 text-left">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-foreground">Enterprise</h3>
+                    <Badge variant="outline">Custom</Badge>
+                  </div>
+                  <div className="space-y-2 mb-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Target className="w-4 h-4 text-primary" />
+                      <span>Unlimited brands</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Building className="w-4 h-4 text-primary" />
+                      <span>White-label reports</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <TrendingUp className="w-4 h-4 text-primary" />
+                      <span>Custom integrations</span>
+                    </div>
+                  </div>
+                  <Button variant="outline" className="w-full" size="sm">
+                    Contact Sales
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <Button variant="ghost" onClick={() => setShowUpgradeDialog(false)} size="sm">
+                Maybe Later
+              </Button>
             </div>
           </div>
         </DialogContent>
