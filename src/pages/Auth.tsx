@@ -127,18 +127,18 @@ export const Auth = () => {
       />
       
       {/* Left Section - Auth Form */}
-      <div className="w-full lg:w-[40%] flex flex-col justify-between p-8 lg:p-12">
-        <div>
-          <h1 className="text-3xl font-bold font-terminal mb-2">visibl</h1>
+      <div className="w-full lg:w-[40%] flex flex-col justify-between p-8 lg:p-12 animate-fade-in">
+        <div className="animate-scale-in">
+          <h1 className="text-3xl font-bold font-terminal mb-2 hover-scale cursor-default">visibl</h1>
         </div>
         
-        <div className="max-w-md">
-          <h2 className="text-4xl font-bold mb-2">Welcome back!</h2>
-          <p className="text-muted-foreground mb-8">
+        <div className="max-w-md animate-fade-in animation-delay-200">
+          <h2 className="text-4xl font-bold mb-2 animate-scale-in animation-delay-300">Welcome back!</h2>
+          <p className="text-muted-foreground mb-8 animate-fade-in animation-delay-400">
             {isSignUp ? 'Create your AI Visibility Dashboard account' : 'Sign in to your AI Visibility Dashboard'}
           </p>
           
-          <form onSubmit={isSignUp ? handleSignup : handleLogin} className="space-y-6">
+          <form onSubmit={isSignUp ? handleSignup : handleLogin} className="space-y-6 animate-fade-in animation-delay-600">
             {isSignUp && (
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-medium">
@@ -151,7 +151,7 @@ export const Auth = () => {
                   value={signupData.fullName}
                   onChange={(e) => setSignupData({ ...signupData, fullName: e.target.value })}
                   required
-                  className="h-12"
+                  className="h-12 transition-all duration-300 focus:scale-[1.02] focus:shadow-lg"
                 />
               </div>
             )}
@@ -170,7 +170,7 @@ export const Auth = () => {
                   : setLoginData({ ...loginData, email: e.target.value })
                 }
                 required
-                className="h-12"
+                className="h-12 transition-all duration-300 focus:scale-[1.02] focus:shadow-lg"
               />
             </div>
             
@@ -182,7 +182,7 @@ export const Auth = () => {
                 {!isSignUp && (
                   <button
                     type="button"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105"
                   >
                     Forgot Password?
                   </button>
@@ -199,12 +199,12 @@ export const Auth = () => {
                     : setLoginData({ ...loginData, password: e.target.value })
                   }
                   required
-                  className="h-12 pr-10"
+                  className="h-12 pr-10 transition-all duration-300 focus:scale-[1.02] focus:shadow-lg"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-110"
                 >
                   <Eye className="h-5 w-5" />
                 </button>
@@ -213,22 +213,22 @@ export const Auth = () => {
             
             <Button 
               type="submit" 
-              className="w-full h-12 text-base bg-foreground text-background hover:bg-foreground/90"
+              className="w-full h-12 text-base bg-foreground text-background hover:bg-foreground/90 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isSignUp ? 'Sign Up' : 'Sign In'}
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Button>
           </form>
           
-          <p className="mt-6 text-center text-sm text-muted-foreground">
+          <p className="mt-6 text-center text-sm text-muted-foreground animate-fade-in">
             {isSignUp ? (
               <>
                 Already have an account?{' '}
                 <button
                   onClick={() => setIsSignUp(false)}
-                  className="text-foreground font-medium hover:underline"
+                  className="text-foreground font-medium hover:underline transition-all duration-300 hover:scale-105 inline-block"
                 >
                   Sign In
                 </button>
@@ -238,7 +238,7 @@ export const Auth = () => {
                 Don't have an account?{' '}
                 <button
                   onClick={() => setIsSignUp(true)}
-                  className="text-foreground font-medium hover:underline"
+                  className="text-foreground font-medium hover:underline transition-all duration-300 hover:scale-105 inline-block"
                 >
                   Sign up for Free
                 </button>
@@ -247,25 +247,25 @@ export const Auth = () => {
           </p>
         </div>
         
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="flex items-center justify-between text-sm text-muted-foreground animate-fade-in">
           <p>© Visibl 2025. All Rights Reserved</p>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-foreground transition-all duration-300 hover:scale-105">Privacy Policy</a>
             <span>•</span>
-            <a href="#" className="hover:text-foreground transition-colors">Terms & Conditions</a>
+            <a href="#" className="hover:text-foreground transition-all duration-300 hover:scale-105">Terms & Conditions</a>
           </div>
         </div>
       </div>
       
       {/* Right Section - Feature Showcase */}
-      <div className="hidden lg:flex lg:w-[60%] bg-muted/30 p-12 flex-col justify-center">
+      <div className="hidden lg:flex lg:w-[60%] bg-muted/30 p-12 flex-col justify-center animate-fade-in animation-delay-400">
         <div className="max-w-2xl">
-          <h2 className="text-5xl font-bold mb-16">
-            Get <span className="italic">visibl</span>. Stay Visible.
+          <h2 className="text-5xl font-bold mb-16 animate-scale-in animation-delay-600">
+            Get <span className="italic hover-scale inline-block cursor-default">visibl</span>. Stay Visible.
           </h2>
           
           {/* Demo indicator card */}
-          <div className="bg-card border rounded-lg p-8 mb-8 shadow-sm">
+          <div className="bg-card border rounded-lg p-8 mb-8 shadow-sm transition-all duration-500 hover:shadow-lg hover:scale-[1.02] animate-fade-in animation-delay-600">
             <div className="flex items-start gap-4">
               <div className="flex-1">
                 <h3 className="text-2xl font-semibold mb-3">Demo Login Page</h3>
@@ -273,16 +273,16 @@ export const Auth = () => {
                   This is the authentication interface for the Board Labs AI Visibility Platform demo.
                 </p>
                 <div className="space-y-2 text-sm">
-                  <p className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-primary rounded-full"></span>
+                  <p className="flex items-center gap-2 animate-fade-in animation-delay-200 transition-transform duration-300 hover:translate-x-2">
+                    <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
                     Sign in to access your dashboard
                   </p>
-                  <p className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-primary rounded-full"></span>
+                  <p className="flex items-center gap-2 animate-fade-in animation-delay-300 transition-transform duration-300 hover:translate-x-2">
+                    <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
                     Create a free account to get started
                   </p>
-                  <p className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-primary rounded-full"></span>
+                  <p className="flex items-center gap-2 animate-fade-in animation-delay-400 transition-transform duration-300 hover:translate-x-2">
+                    <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
                     Use dev controls to toggle views
                   </p>
                 </div>
