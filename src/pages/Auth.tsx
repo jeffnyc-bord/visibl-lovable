@@ -8,6 +8,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Eye, ArrowRight } from 'lucide-react';
 import { z } from 'zod';
 import { DeveloperControls } from '@/components/ui/developer-controls';
+import chatGPTLogo from '@/assets/chatGPT_logo.png';
+import claudeLogo from '@/assets/claude_logo.png';
+import geminiLogo from '@/assets/gemini_logo.png';
+import perplexityLogo from '@/assets/perplexity_logo.png';
+import grokLogo from '@/assets/grok_logo.png';
+import deepseekLogo from '@/assets/deepseek_logo.png';
 
 const emailSchema = z.string().email('Invalid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -268,25 +274,52 @@ export const Auth = () => {
           <div className="bg-card border rounded-lg p-8 mb-8 shadow-sm transition-all duration-500 hover:shadow-lg hover:scale-[1.02] animate-fade-in animation-delay-600">
             <div className="flex items-start gap-4">
               <div className="flex-1">
-                <h3 className="text-2xl font-semibold mb-3">Demo Login Page</h3>
+                <h3 className="text-2xl font-semibold mb-3">Track Your AI Visibility</h3>
                 <p className="text-muted-foreground mb-4">
-                  This is the authentication interface for the Board Labs AI Visibility Platform demo.
+                  Monitor your brand's presence across leading AI platforms
                 </p>
                 <div className="space-y-2 text-sm">
                   <p className="flex items-center gap-2 animate-fade-in animation-delay-200 transition-transform duration-300 hover:translate-x-2">
                     <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                    Sign in to access your dashboard
+                    Real-time AI visibility tracking
                   </p>
                   <p className="flex items-center gap-2 animate-fade-in animation-delay-300 transition-transform duration-300 hover:translate-x-2">
                     <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                    Create a free account to get started
+                    Competitor analysis & insights
                   </p>
                   <p className="flex items-center gap-2 animate-fade-in animation-delay-400 transition-transform duration-300 hover:translate-x-2">
                     <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                    Use dev controls to toggle views
+                    AI-powered recommendations
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+          
+          {/* AI Platform Logos */}
+          <div className="animate-fade-in animation-delay-800">
+            <p className="text-sm text-muted-foreground mb-4">Supported AI Platforms</p>
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { src: chatGPTLogo, alt: 'ChatGPT' },
+                { src: claudeLogo, alt: 'Claude' },
+                { src: geminiLogo, alt: 'Gemini' },
+                { src: perplexityLogo, alt: 'Perplexity' },
+                { src: grokLogo, alt: 'Grok' },
+                { src: deepseekLogo, alt: 'DeepSeek' },
+              ].map((logo, index) => (
+                <div
+                  key={logo.alt}
+                  className="bg-card border rounded-lg p-4 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg animate-fade-in cursor-pointer"
+                  style={{ animationDelay: `${800 + index * 100}ms` }}
+                >
+                  <img 
+                    src={logo.src} 
+                    alt={logo.alt}
+                    className="h-8 w-8 object-contain"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
