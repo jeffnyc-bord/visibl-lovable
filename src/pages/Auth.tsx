@@ -9,11 +9,8 @@ import { Loader2, Eye, ArrowRight } from 'lucide-react';
 import { z } from 'zod';
 import { DeveloperControls } from '@/components/ui/developer-controls';
 import chatGPTLogo from '@/assets/chatGPT_logo.png';
-import claudeLogo from '@/assets/claude_logo.png';
 import geminiLogo from '@/assets/gemini_logo.png';
 import perplexityLogo from '@/assets/perplexity_logo.png';
-import grokLogo from '@/assets/grok_logo.png';
-import deepseekLogo from '@/assets/deepseek_logo.png';
 
 const emailSchema = z.string().email('Invalid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -302,11 +299,8 @@ export const Auth = () => {
             <div className="grid grid-cols-3 gap-4">
               {[
                 { src: chatGPTLogo, alt: 'ChatGPT' },
-                { src: claudeLogo, alt: 'Claude' },
                 { src: geminiLogo, alt: 'Gemini' },
                 { src: perplexityLogo, alt: 'Perplexity' },
-                { src: grokLogo, alt: 'Grok' },
-                { src: deepseekLogo, alt: 'DeepSeek' },
               ].map((logo, index) => (
                 <div
                   key={logo.alt}
