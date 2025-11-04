@@ -129,7 +129,7 @@ export const Auth = () => {
       {/* Left Section - Auth Form */}
       <div className="w-full lg:w-[40%] flex flex-col justify-between p-8 lg:p-12">
         <div>
-          <h1 className="text-3xl font-bold mb-2">visibl</h1>
+          <h1 className="text-3xl font-bold font-terminal mb-2">visibl</h1>
         </div>
         
         <div className="max-w-md">
