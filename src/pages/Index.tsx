@@ -268,13 +268,7 @@ const Index = () => {
     emptyState: false,
     showBaseline: false,
     highlightTopSource: false,
-    bypassAuth: localStorage.getItem('dev_bypass_auth') === 'true',
   });
-
-  // Sync bypassAuth state to localStorage
-  useEffect(() => {
-    localStorage.setItem('dev_bypass_auth', String(dashboardStates.bypassAuth));
-  }, [dashboardStates.bypassAuth]);
 
   // Get current selected brand data
   const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];

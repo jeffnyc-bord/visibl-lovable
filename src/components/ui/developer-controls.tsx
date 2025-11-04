@@ -16,7 +16,6 @@ interface DeveloperControlsProps {
     fullDashboardError: boolean;
     widgetError: boolean;
     showBaseline: boolean;
-    bypassAuth: boolean;
   };
   onStateChange: (state: string, value: boolean) => void;
   userRole: "business_user" | "agency_admin";
@@ -66,11 +65,6 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
   }, [isOpen]);
 
   const controlItems = [
-    {
-      key: "bypassAuth",
-      label: "Bypass Authentication",
-      description: "Skip login/signup - go directly to dashboard"
-    },
     {
       key: "fullDashboardLoading",
       label: "Full Dashboard Loading",

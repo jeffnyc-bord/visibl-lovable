@@ -16,14 +16,11 @@ const queryClient = new QueryClient();
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
-  // Check if dev mode auth bypass is enabled
-  const devBypassAuth = localStorage.getItem('dev_bypass_auth') === 'true';
-  
-  if (loading && !devBypassAuth) {
+  if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
   
-  if (!user && !devBypassAuth) {
+  if (!user) {
     return <Navigate to="/auth" replace />;
   }
   
