@@ -131,7 +131,7 @@ export const Auth = () => {
       />
       
       {/* Left Section - Auth Form */}
-      <div className="w-full lg:w-[40%] flex flex-col justify-between p-8 lg:p-12 animate-fade-in">
+      <div className="w-full lg:w-[45%] flex flex-col justify-between p-8 lg:p-12 animate-fade-in">
         <div className="animate-scale-in">
           <h1 className="text-3xl font-bold font-terminal mb-2 hover-scale cursor-default">visibl</h1>
         </div>
@@ -262,8 +262,8 @@ export const Auth = () => {
       </div>
       
       {/* Right Section - Feature Showcase */}
-      <div className="hidden lg:flex lg:w-[60%] bg-muted/30 p-12 flex-col justify-center animate-fade-in animation-delay-400">
-        <div className="max-w-2xl">
+      <div className="hidden lg:flex lg:w-[55%] bg-muted/30 p-12 flex-col justify-center items-center animate-fade-in animation-delay-400">
+        <div className="w-full max-w-3xl">
           <h2 className="text-5xl font-bold mb-16 animate-scale-in animation-delay-600">
             Get <span className="italic hover-scale inline-block cursor-default">visibl</span>. Stay Visible.
           </h2>
