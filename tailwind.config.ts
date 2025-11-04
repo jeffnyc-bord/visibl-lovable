@@ -19,7 +19,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'terminal': ['JetBrains Mono', 'monospace'],
+				'terminal': ['Source Code Pro', 'monospace'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
