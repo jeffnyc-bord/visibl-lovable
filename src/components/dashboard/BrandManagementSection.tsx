@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -80,7 +81,7 @@ interface BrandManagementSectionProps {
 
 export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDuration = 6 }: BrandManagementSectionProps) => {
   const { toast } = useToast();
-  const { tier, limits, brandsTracked, canAddBrand } = useSubscription();
+  const { tier, limits, brandsTracked, canAddBrand, swapsUsed, swapsRemaining, canSwap, refreshSubscription } = useSubscription();
   const [isAddingBrand, setIsAddingBrand] = useState(false);
   const [addBrandProgress, setAddBrandProgress] = useState(0);
   const [showAddBrandDialog, setShowAddBrandDialog] = useState(false);
@@ -416,20 +417,60 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>Remove & Replace Primary Brand</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This will remove {myBrand.name} as your primary brand and allow you to add a new brand to replace it.
+                            <AlertDialogDescription className="space-y-3">
+                              <div className="text-destructive font-medium">
+                                ⚠️ Warning: Swapping may delete previous scan data
+                              </div>
+                              <div>
+                                This will remove {myBrand.name} as your primary brand and allow you to add a new brand to replace it.
+                              </div>
+                              <div className="flex items-center gap-2 text-sm">
+                                <Badge variant={canSwap ? "default" : "destructive"} className="text-xs">
+                                  {swapsRemaining} swap{swapsRemaining !== 1 ? 's' : ''} remaining
+                                </Badge>
+                                <span className="text-muted-foreground">({swapsUsed}/3 used)</span>
+                              </div>
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => {
-                              toast({
-                                title: "Primary Brand Removed",
-                                description: `${myBrand.name} has been removed. Add a new brand to replace it.`,
-                              });
-                              setShowAddBrandDialog(true);
-                            }}>
-                              Remove & Replace
+                            <AlertDialogAction 
+                              disabled={!canSwap}
+                              onClick={async () => {
+                                if (!canSwap) {
+                                  toast({
+                                    title: "Swap Limit Reached",
+                                    description: "You've used all 3 brand swaps.",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
+                                
+                                // Update swaps_used in database
+                                const { error } = await supabase
+                                  .from('profiles')
+                                  .update({ swaps_used: swapsUsed + 1 })
+                                  .eq('id', (await supabase.auth.getUser()).data.user?.id);
+                                
+                                if (error) {
+                                  toast({
+                                    title: "Error",
+                                    description: "Failed to update swap count.",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
+                                
+                                await refreshSubscription();
+                                
+                                toast({
+                                  title: "Primary Brand Removed",
+                                  description: `${myBrand.name} has been removed. ${swapsRemaining - 1} swap${swapsRemaining - 1 !== 1 ? 's' : ''} remaining.`,
+                                });
+                                setShowAddBrandDialog(true);
+                              }}
+                            >
+                              {canSwap ? 'Remove & Replace' : 'No Swaps Left'}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>

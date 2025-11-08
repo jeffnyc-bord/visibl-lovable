@@ -96,6 +96,7 @@ export type Database = {
           id: string
           products_tracked: number
           subscription_tier: Database["public"]["Enums"]["subscription_tier"]
+          swaps_used: number
           updated_at: string
         }
         Insert: {
@@ -105,6 +106,7 @@ export type Database = {
           id: string
           products_tracked?: number
           subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          swaps_used?: number
           updated_at?: string
         }
         Update: {
@@ -114,6 +116,7 @@ export type Database = {
           id?: string
           products_tracked?: number
           subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          swaps_used?: number
           updated_at?: string
         }
         Relationships: []

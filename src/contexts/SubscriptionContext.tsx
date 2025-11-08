@@ -18,6 +18,9 @@ interface SubscriptionContextType {
   canAddBrand: boolean;
   brandsTracked: number;
   loading: boolean;
+  swapsUsed: number;
+  swapsRemaining: number;
+  canSwap: boolean;
   refreshSubscription: () => Promise<void>;
 }
 
@@ -34,6 +37,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
   const [tier, setTier] = useState<SubscriptionTier>('free');
   const [productsTracked, setProductsTracked] = useState(0);
   const [brandsTracked, setBrandsTracked] = useState(0);
+  const [swapsUsed, setSwapsUsed] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const fetchSubscription = async () => {
@@ -46,7 +50,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
       // Fetch user profile with subscription tier
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('subscription_tier, products_tracked')
+        .select('subscription_tier, products_tracked, swaps_used')
         .eq('id', user.id)
         .single();
 
@@ -54,6 +58,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
 
       setTier(profile?.subscription_tier || 'free');
       setProductsTracked(profile?.products_tracked || 0);
+      setSwapsUsed(profile?.swaps_used || 0);
       
       // Count user's brands
       const { count: brandCount } = await supabase
@@ -76,6 +81,8 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
   const limits = TIER_LIMITS[tier];
   const canAddProduct = productsTracked < limits.maxProducts;
   const canAddBrand = brandsTracked < limits.maxBrands;
+  const swapsRemaining = Math.max(0, 3 - swapsUsed);
+  const canSwap = swapsUsed < 3;
 
   return (
     <SubscriptionContext.Provider
@@ -87,6 +94,9 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
         canAddProduct,
         canAddBrand,
         loading,
+        swapsUsed,
+        swapsRemaining,
+        canSwap,
         refreshSubscription: fetchSubscription,
       }}
     >
