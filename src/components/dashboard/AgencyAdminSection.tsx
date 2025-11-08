@@ -370,7 +370,7 @@ export const AgencyAdminSection = () => {
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleChangeScanFrequency(client.id)}>
                           <Clock className="w-4 h-4 mr-2" />
-                          Change Scan Frequency
+                          Change Frequency
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleClientSettings(client.id, client.name)}>
                           <Settings className="w-4 h-4 mr-2" />
@@ -518,7 +518,7 @@ export const AgencyAdminSection = () => {
         <Dialog open={showScanFrequencyDialog} onOpenChange={setShowScanFrequencyDialog}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Change Scan Frequency</DialogTitle>
+              <DialogTitle>Change Frequency</DialogTitle>
               <DialogDescription>
                 Update how often this client's brand is scanned.
               </DialogDescription>
@@ -531,9 +531,11 @@ export const AgencyAdminSection = () => {
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Enterprise">Daily (Enterprise)</SelectItem>
-                    <SelectItem value="Professional">Twice Weekly (Professional)</SelectItem>
-                    <SelectItem value="Basic">Weekly (Basic)</SelectItem>
+                    <SelectItem value="daily">Daily (Enterprise only)</SelectItem>
+                    <SelectItem value="weekly">Once a week</SelectItem>
+                    <SelectItem value="twice-weekly">Twice a week</SelectItem>
+                    <SelectItem value="biweekly">Biweekly</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
