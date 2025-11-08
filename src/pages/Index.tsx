@@ -408,7 +408,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 flex text-sm">
+    <div className="min-h-screen bg-gray-50 flex text-sm">
       {/* Developer Controls */}
       <DeveloperControls 
         states={dashboardStates}
@@ -571,23 +571,6 @@ const Index = () => {
 
         {/* Content Area */}
         <main className="flex-1 p-3 overflow-auto">
-          {/* Scrolling Information Ticker */}
-          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border-b border-primary/20 overflow-hidden rounded-lg mb-4">
-            <div className="animate-[scroll_30s_linear_infinite] whitespace-nowrap py-2 px-4">
-              <span className="inline-block text-sm font-medium text-foreground">
-                👋 Welcome, Sarah Johnson • Your next site audit is <span className="font-semibold text-primary">Wednesday at 2:00 PM</span> • 
-                Last scan completed: <span className="font-semibold">Nov 8, 2025 at 10:30 AM</span> • 
-                AI Visibility Score improved by <span className="font-semibold text-green-600">+5%</span> this week • 
-                You have <span className="font-semibold text-primary">3 new recommendations</span> to review •
-              </span>
-              <span className="inline-block text-sm font-medium text-foreground ml-8">
-                👋 Welcome, Sarah Johnson • Your next site audit is <span className="font-semibold text-primary">Wednesday at 2:00 PM</span> • 
-                Last scan completed: <span className="font-semibold">Nov 8, 2025 at 10:30 AM</span> • 
-                AI Visibility Score improved by <span className="font-semibold text-green-600">+5%</span> this week • 
-                You have <span className="font-semibold text-primary">3 new recommendations</span> to review •
-              </span>
-            </div>
-          </div>
           {activeView === "dashboard" && (
             <>
               {/* Show skeleton if full dashboard loading */}
