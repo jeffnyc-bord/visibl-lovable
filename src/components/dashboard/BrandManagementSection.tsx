@@ -214,6 +214,14 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   };
 
   const handleEditName = (competitorId: number) => {
+    // Handle primary brand (id: 1)
+    if (competitorId === 1) {
+      setSelectedCompetitor(1);
+      setEditedName(myBrand.name);
+      setShowEditNameDialog(true);
+      return;
+    }
+    
     const competitor = competitors.find(c => c.id === competitorId);
     if (competitor) {
       setSelectedCompetitor(competitorId);
@@ -224,6 +232,18 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
 
   const handleSaveEditedName = () => {
     if (selectedCompetitor !== null && editedName.trim()) {
+      // For primary brand, just show a toast (in a real app, you'd update the database)
+      if (selectedCompetitor === 1) {
+        toast({
+          title: "Name Updated",
+          description: `Primary brand name updated to ${editedName.trim()}`,
+        });
+        setShowEditNameDialog(false);
+        setSelectedCompetitor(null);
+        setEditedName("");
+        return;
+      }
+      
       setCompetitors(prev =>
         prev.map(competitor =>
           competitor.id === selectedCompetitor
@@ -238,6 +258,14 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   };
 
   const handleChangeScanFrequency = (competitorId: number) => {
+    // Handle primary brand (id: 1)
+    if (competitorId === 1) {
+      setSelectedCompetitor(1);
+      setSelectedFrequency(myBrand.reportFrequency.toLowerCase().replace('-', ''));
+      setShowScanFrequencyDialog(true);
+      return;
+    }
+    
     const competitor = competitors.find(c => c.id === competitorId);
     if (competitor) {
       setSelectedCompetitor(competitorId);
@@ -251,6 +279,18 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       const formattedFrequency = selectedFrequency === "biweekly" 
         ? "Bi-weekly" 
         : selectedFrequency.charAt(0).toUpperCase() + selectedFrequency.slice(1) as "Daily" | "Weekly" | "Bi-weekly" | "Monthly";
+      
+      // For primary brand, just show a toast (in a real app, you'd update the database)
+      if (selectedCompetitor === 1) {
+        toast({
+          title: "Frequency Updated",
+          description: `Scan frequency updated to ${formattedFrequency}`,
+        });
+        setShowScanFrequencyDialog(false);
+        setSelectedCompetitor(null);
+        setSelectedFrequency("");
+        return;
+      }
       
       setCompetitors(prev =>
         prev.map(competitor =>
@@ -494,7 +534,15 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                         <MoreHorizontal className="w-4 h-4 text-gray-600" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-44">
+                    <DropdownMenuContent align="end" className="w-48 z-50 bg-background">
+                      <DropdownMenuItem onClick={() => handleEditName(1)}>
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit Name
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleChangeScanFrequency(1)}>
+                        <Clock className="w-4 h-4 mr-2" />
+                        Change Frequency
+                      </DropdownMenuItem>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
