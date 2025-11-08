@@ -17,7 +17,7 @@ import {
   Globe, 
   TrendingUp, 
   Calendar,
-  Settings,
+  MoreVertical,
   ExternalLink,
   Eye,
   MoreHorizontal,
@@ -402,7 +402,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-gray-100">
-                        <Settings className="w-4 h-4 text-gray-600" />
+                        <MoreVertical className="w-4 h-4 text-gray-600" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-44">
