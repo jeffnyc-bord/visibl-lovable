@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AddClientDialog } from "@/components/ui/add-client-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Users, 
   Plus, 
@@ -27,11 +30,17 @@ import {
   Upload,
   Palette,
   Download,
-  Loader2
+  Loader2,
+  Clock
 } from "lucide-react";
 
 export const AgencyAdminSection = () => {
   const [showAddClientDialog, setShowAddClientDialog] = useState(false);
+  const [showEditNameDialog, setShowEditNameDialog] = useState(false);
+  const [showScanFrequencyDialog, setShowScanFrequencyDialog] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<number | null>(null);
+  const [editedName, setEditedName] = useState("");
+  const [selectedFrequency, setSelectedFrequency] = useState("");
   const [clients, setClients] = useState([
     {
       id: 1,
@@ -139,6 +148,54 @@ export const AgencyAdminSection = () => {
   const handleDeleteClient = (clientId: number) => {
     if (confirm("Are you sure you want to delete this client? This action cannot be undone.")) {
       setClients(clients.filter(client => client.id !== clientId));
+    }
+  };
+
+  const handleEditName = (clientId: number) => {
+    const client = clients.find(c => c.id === clientId);
+    if (client) {
+      setSelectedClient(clientId);
+      setEditedName(client.name);
+      setShowEditNameDialog(true);
+    }
+  };
+
+  const handleSaveEditedName = () => {
+    if (selectedClient !== null && editedName.trim()) {
+      setClients(prev =>
+        prev.map(client =>
+          client.id === selectedClient
+            ? { ...client, name: editedName.trim() }
+            : client
+        )
+      );
+      setShowEditNameDialog(false);
+      setSelectedClient(null);
+      setEditedName("");
+    }
+  };
+
+  const handleChangeScanFrequency = (clientId: number) => {
+    const client = clients.find(c => c.id === clientId);
+    if (client) {
+      setSelectedClient(clientId);
+      setSelectedFrequency(client.tier);
+      setShowScanFrequencyDialog(true);
+    }
+  };
+
+  const handleSaveScanFrequency = () => {
+    if (selectedClient !== null && selectedFrequency) {
+      setClients(prev =>
+        prev.map(client =>
+          client.id === selectedClient
+            ? { ...client, tier: selectedFrequency }
+            : client
+        )
+      );
+      setShowScanFrequencyDialog(false);
+      setSelectedClient(null);
+      setSelectedFrequency("");
     }
   };
 
@@ -294,7 +351,15 @@ export const AgencyAdminSection = () => {
                           <MoreHorizontal className="w-4 h-4 text-gray-600" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-44 z-50 bg-background">
+                      <DropdownMenuContent align="end" className="w-48 z-50 bg-background">
+                        <DropdownMenuItem onClick={() => handleEditName(client.id)}>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit Name
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleChangeScanFrequency(client.id)}>
+                          <Clock className="w-4 h-4 mr-2" />
+                          Change Scan Frequency
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleClientSettings(client.id, client.name)}>
                           <Settings className="w-4 h-4 mr-2" />
                           Settings
@@ -407,6 +472,70 @@ export const AgencyAdminSection = () => {
           currentClientCount={clients.length}
           subscriptionTier="Starter"
         />
+
+        <Dialog open={showEditNameDialog} onOpenChange={setShowEditNameDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Client Name</DialogTitle>
+              <DialogDescription>
+                Update the display name for this client.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="client-name">Client Name</Label>
+                <Input
+                  id="client-name"
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  placeholder="Enter client name"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowEditNameDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveEditedName}>
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showScanFrequencyDialog} onOpenChange={setShowScanFrequencyDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Change Scan Frequency</DialogTitle>
+              <DialogDescription>
+                Update how often this client's brand is scanned.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="scan-frequency">Scan Frequency</Label>
+                <Select value={selectedFrequency} onValueChange={setSelectedFrequency}>
+                  <SelectTrigger id="scan-frequency">
+                    <SelectValue placeholder="Select frequency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Enterprise">Daily (Enterprise)</SelectItem>
+                    <SelectItem value="Professional">Twice Weekly (Professional)</SelectItem>
+                    <SelectItem value="Basic">Weekly (Basic)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowScanFrequencyDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveScanFrequency}>
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
     </div>
   );
 };
