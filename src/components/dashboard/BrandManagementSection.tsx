@@ -87,6 +87,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   const [showAddBrandDialog, setShowAddBrandDialog] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [addBrandStep, setAddBrandStep] = useState(1);
+  const [isReplacingPrimaryBrand, setIsReplacingPrimaryBrand] = useState(false);
   const [newBrandData, setNewBrandData] = useState({
     name: "",
     url: "",
@@ -227,7 +228,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
     setShowAddBrandDialog(true);
   };
 
-  const handleAddBrand = () => {
+  const handleAddBrand = async () => {
     if (!newBrandData.name.trim() || !newBrandData.url.trim() || !newBrandData.reportFrequency) return;
     
     // Double check brand limit
@@ -257,6 +258,34 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
     
     // Add to competitors list immediately
     setCompetitors(prev => [...prev, newCompetitor]);
+    
+    // If replacing primary brand, update swap counter
+    if (isReplacingPrimaryBrand) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { error } = await supabase
+          .from('profiles')
+          .update({ swaps_used: swapsUsed + 1 })
+          .eq('id', user?.id);
+        
+        if (error) throw error;
+        
+        await refreshSubscription();
+        
+        toast({
+          title: "Primary Brand Replaced",
+          description: `${swapsRemaining - 1} swap${swapsRemaining - 1 !== 1 ? 's' : ''} remaining.`,
+        });
+      } catch (error) {
+        console.error('Error updating swap count:', error);
+        toast({
+          title: "Warning",
+          description: "Brand added but failed to track swap count.",
+          variant: "destructive",
+        });
+      }
+      setIsReplacingPrimaryBrand(false);
+    }
     
     // Close dialog and reset
     setShowAddBrandDialog(false);
@@ -436,7 +465,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction 
                               disabled={!canSwap}
-                              onClick={async () => {
+                              onClick={() => {
                                 if (!canSwap) {
                                   toast({
                                     title: "Swap Limit Reached",
@@ -446,26 +475,10 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                                   return;
                                 }
                                 
-                                // Update swaps_used in database
-                                const { error } = await supabase
-                                  .from('profiles')
-                                  .update({ swaps_used: swapsUsed + 1 })
-                                  .eq('id', (await supabase.auth.getUser()).data.user?.id);
-                                
-                                if (error) {
-                                  toast({
-                                    title: "Error",
-                                    description: "Failed to update swap count.",
-                                    variant: "destructive",
-                                  });
-                                  return;
-                                }
-                                
-                                await refreshSubscription();
-                                
+                                setIsReplacingPrimaryBrand(true);
                                 toast({
                                   title: "Primary Brand Removed",
-                                  description: `${myBrand.name} has been removed. ${swapsRemaining - 1} swap${swapsRemaining - 1 !== 1 ? 's' : ''} remaining.`,
+                                  description: `${myBrand.name} has been removed. Add a new brand to complete the replacement.`,
                                 });
                                 setShowAddBrandDialog(true);
                               }}
@@ -704,6 +717,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
         if (!open) {
           setAddBrandStep(1);
           setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "", reportFrequency: "" });
+          setIsReplacingPrimaryBrand(false);
         }
       }}>
         <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden">
