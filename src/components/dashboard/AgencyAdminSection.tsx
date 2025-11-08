@@ -31,11 +31,7 @@ import {
   Loader2
 } from "lucide-react";
 
-interface AgencyAdminSectionProps {
-  onViewClientDashboard: (brandId: string) => void;
-}
-
-export const AgencyAdminSection = ({ onViewClientDashboard }: AgencyAdminSectionProps) => {
+export const AgencyAdminSection = () => {
   const [showAddClientDialog, setShowAddClientDialog] = useState(false);
   const [clients, setClients] = useState([
     {
@@ -89,8 +85,8 @@ export const AgencyAdminSection = ({ onViewClientDashboard }: AgencyAdminSection
     const client = clients.find(c => c.id === clientId);
     const brandParam = client?.brand || clientName.toLowerCase();
     console.log(`Navigating to dashboard for client ${clientId}: ${clientName} (${brandParam})`);
-    // Navigate to the specific brand's dashboard using the callback
-    onViewClientDashboard(brandParam);
+    // Navigate to the specific brand's dashboard
+    window.location.href = `/?brand=${brandParam}&view=dashboard`;
   };
 
   const handleGenerateReport = (clientId: number, clientName: string) => {

@@ -827,14 +827,7 @@ const Index = () => {
           )}
 
           {activeView === "brands" && <BrandManagementSection selectedBrand={selectedBrand} trackedBrands={trackedBrands} loadingDuration={loadingDuration} />}
-          {activeView === "agency" && (
-            <AgencyAdminSection 
-              onViewClientDashboard={(brandId) => {
-                setSelectedBrandId(brandId);
-                setActiveView("dashboard");
-              }}
-            />
-          )}
+          {activeView === "agency" && <AgencyAdminSection />}
           {activeView === "settings" && <SettingsPage userRole={userRole} />}
         </main>
       </div>
