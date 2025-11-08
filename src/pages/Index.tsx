@@ -619,6 +619,22 @@ const Index = () => {
                         Next scan: <span className="text-foreground">Wed 2:00 PM</span>
                       </span>
                     </div>
+
+                    {/* Manual Scan Trigger */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 px-3 rounded-full hover:bg-muted/60"
+                      onClick={() => {
+                        toast({
+                          title: "Scan Started",
+                          description: "Running a full AI visibility scan...",
+                        });
+                      }}
+                    >
+                      <Zap className="w-3.5 h-3.5" />
+                      <span className="text-xs font-medium">Scan Now</span>
+                    </Button>
                     
                     <Separator orientation="vertical" className="h-4" />
                     
