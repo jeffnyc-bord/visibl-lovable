@@ -501,7 +501,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Visibility Chart */}
-        <Card className="group relative self-start" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityTrend: false})}>
+        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityTrend: false})}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -524,7 +524,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               Your brand's mention volume across the AI ecosystem over time
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex items-center justify-center">
             {visibilityTrendData.length === 1 ? (
               <div className="relative h-[250px] flex items-center justify-center bg-gradient-to-b from-background to-muted/20 rounded-lg overflow-hidden">
                 {/* Subtle background pattern */}
