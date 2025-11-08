@@ -501,7 +501,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Visibility Chart */}
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityTrend: false})}>
+        <Card className="group relative self-start" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityTrend: false})}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
