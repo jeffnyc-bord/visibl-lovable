@@ -476,10 +476,6 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                                 }
                                 
                                 setIsReplacingPrimaryBrand(true);
-                                toast({
-                                  title: "Primary Brand Removed",
-                                  description: `${myBrand.name} has been removed. Add a new brand to complete the replacement.`,
-                                });
                                 setShowAddBrandDialog(true);
                               }}
                             >
