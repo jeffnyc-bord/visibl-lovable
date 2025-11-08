@@ -31,7 +31,8 @@ import {
   Image as ImageIcon,
   Upload,
   X,
-  Zap
+  Zap,
+  Repeat
 } from "lucide-react";
 import boardLabsIcon from "@/assets/board-labs-icon-hex.png";
 
@@ -201,6 +202,19 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       title: "Competitor Removed",
       description: `${competitor?.name} has been removed from your watchlist.`,
     });
+  };
+
+  const handleRemoveAndReplace = (competitorId: number) => {
+    const competitor = competitors.find(c => c.id === competitorId);
+    setCompetitors(prev => prev.filter(c => c.id !== competitorId));
+    
+    toast({
+      title: "Competitor Removed",
+      description: `${competitor?.name} has been removed. Add a new brand to replace it.`,
+    });
+    
+    // Open add brand dialog
+    setShowAddBrandDialog(true);
   };
 
   const handleAddBrandClick = () => {
@@ -463,6 +477,28 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                           </>
                         )}
                       </DropdownMenuItem>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <Repeat className="w-4 h-4 mr-2" />
+                            Remove & Replace
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remove & Replace Competitor</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will remove {competitor.name} from your watchlist and allow you to add a new brand to replace it.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleRemoveAndReplace(competitor.id)}>
+                              Remove & Replace
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
