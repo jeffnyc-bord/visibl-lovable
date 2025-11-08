@@ -389,11 +389,48 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {/* Primary Brand (You) */}
           <Card className="relative overflow-hidden border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-b from-white to-gray-50/30">
-            {/* "You" Badge */}
-            <div className="absolute top-4 right-4 z-10">
+            {/* Actions Menu */}
+            <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
               <Badge className="bg-primary text-white text-xs px-2 py-1 shadow-sm border-none">
                 You
               </Badge>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-gray-100">
+                    <MoreHorizontal className="w-4 h-4 text-gray-600" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-44">
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <Repeat className="w-4 h-4 mr-2" />
+                        Remove & Replace
+                      </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Remove & Replace Your Brand</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will remove {myBrand.name} as your primary brand and allow you to add a new brand to replace it.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => {
+                          toast({
+                            title: "Brand Removed",
+                            description: `${myBrand.name} has been removed. Add a new brand to replace it.`,
+                          });
+                          setShowAddBrandDialog(true);
+                        }}>
+                          Remove & Replace
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             
             <CardContent className="p-5">
