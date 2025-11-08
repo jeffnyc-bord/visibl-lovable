@@ -635,7 +635,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </Card>
 
         {/* Source Quality & Authority */}
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, sourceQuality: false})}>
+        <Card className="group relative self-start" onMouseLeave={() => setShowTooltips({...showTooltips, sourceQuality: false})}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -658,7 +658,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               Analysis of the sources AI platforms reference when mentioning Nike vs competitors like Adidas, Under Armour, and Puma.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="min-h-[250px] flex flex-col">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -681,9 +681,19 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               </TableBody>
             </Table>
             
-            {/* View More and View All Buttons */}
+            {/* View More, View All, and Show Less Buttons */}
             {sourceQuality.length > 3 && (
-              <div className="flex justify-center gap-3 pt-4 border-t mt-4">
+              <div className="flex justify-center gap-3 pt-4 border-t mt-auto">
+                {sourcesDisplayCount > 3 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSourcesDisplayCount(3)}
+                    className="min-w-[120px] transition-all duration-300 hover:scale-105"
+                  >
+                    Show Less
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
