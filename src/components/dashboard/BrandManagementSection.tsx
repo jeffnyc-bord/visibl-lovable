@@ -388,12 +388,56 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {/* Primary Brand (You) */}
-          <Card className="relative overflow-hidden border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-b from-white to-gray-50/30">
-            {/* "You" Badge */}
+          <Card className="relative overflow-hidden border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-b from-white to-gray-50/30 group">
+            {/* "You" Badge with hover transition to settings */}
             <div className="absolute top-4 right-4 z-10">
-              <Badge className="bg-primary text-white text-xs px-2 py-1 shadow-sm border-none">
-                You
-              </Badge>
+              <div className="relative w-auto h-auto">
+                {/* "You" Badge - visible by default, hidden on hover */}
+                <Badge className="bg-primary text-white text-xs px-2 py-1 shadow-sm border-none group-hover:opacity-0 transition-opacity duration-200">
+                  You
+                </Badge>
+                
+                {/* Settings dropdown - hidden by default, visible on hover */}
+                <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-gray-100">
+                        <Settings className="w-4 h-4 text-gray-600" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-44">
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <Repeat className="w-4 h-4 mr-2" />
+                            Remove & Replace
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remove & Replace Primary Brand</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will remove {myBrand.name} as your primary brand and allow you to add a new brand to replace it.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => {
+                              toast({
+                                title: "Primary Brand Removed",
+                                description: `${myBrand.name} has been removed. Add a new brand to replace it.`,
+                              });
+                              setShowAddBrandDialog(true);
+                            }}>
+                              Remove & Replace
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
             </div>
             
             <CardContent className="p-5">
