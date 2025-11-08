@@ -408,7 +408,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex text-sm">
+    <div className="min-h-screen w-full bg-gray-50 flex text-sm">
       {/* Developer Controls */}
       <DeveloperControls 
         states={dashboardStates}
