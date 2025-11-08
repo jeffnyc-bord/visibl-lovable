@@ -681,16 +681,26 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               </TableBody>
             </Table>
             
-            {/* View All Button */}
+            {/* View More and View All Buttons */}
             {sourceQuality.length > 3 && (
-              <div className="flex justify-center pt-4 border-t mt-4">
+              <div className="flex justify-center gap-3 pt-4 border-t mt-4">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowAllSources(!showAllSources)}
+                  onClick={() => setShowAllSources(false)}
                   className="min-w-[120px] transition-all duration-300 hover:scale-105"
+                  disabled={!showAllSources}
                 >
-                  {showAllSources ? "Show less" : `View all (${sourceQuality.length})`}
+                  View More
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAllSources(true)}
+                  className="min-w-[120px] transition-all duration-300 hover:scale-105"
+                  disabled={showAllSources}
+                >
+                  View All ({sourceQuality.length})
                 </Button>
               </div>
             )}
