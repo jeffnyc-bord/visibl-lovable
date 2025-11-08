@@ -338,9 +338,11 @@ export const AgencyAdminSection = () => {
                 className={`relative overflow-hidden border shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer ${
                   client.isScanning 
                     ? 'border-blue-200 bg-gradient-to-b from-blue-50/50 to-white' 
+                    : client.status === "Inactive"
+                    ? 'border-gray-200/40 bg-gradient-to-b from-gray-100/50 to-gray-50/50 opacity-60'
                     : 'border-gray-200/60 bg-gradient-to-b from-white to-gray-50/30'
                 }`}
-                onClick={() => handleViewDashboard(client.id, client.name)}
+                onClick={() => client.status === "Inactive" ? undefined : handleViewDashboard(client.id, client.name)}
               >
                 {/* Three-dot menu - appears on hover */}
                 {!client.isScanning && (
