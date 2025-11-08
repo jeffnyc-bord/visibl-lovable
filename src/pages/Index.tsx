@@ -31,7 +31,9 @@ import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from
 import { BrandLoadingCard } from "@/components/ui/brand-loading-card";
 import { DeveloperControls } from "@/components/ui/developer-controls";
 import { StatusIndicators } from "@/components/ui/status-indicators";
+import { ScheduleScanDialog } from "@/components/ui/schedule-scan-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 import {
   Bell,
   Search,
@@ -211,6 +213,7 @@ const Index = () => {
   const [dataPointsCount, setDataPointsCount] = useState(6);
   const [selectedGradient, setSelectedGradient] = useState("gradient3");
   const [showAddBrandDialog, setShowAddBrandDialog] = useState(false);
+  const [showScheduleScanDialog, setShowScheduleScanDialog] = useState(false);
   const [addBrandStep, setAddBrandStep] = useState(1);
   const [newBrandData, setNewBrandData] = useState({
     name: "",
@@ -238,6 +241,11 @@ const Index = () => {
   const [autoOpenPrompt, setAutoOpenPrompt] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [previousScrollPosition, setPreviousScrollPosition] = useState<number>(0);
+
+  // Scan scheduling state
+  const [nextScanDate, setNextScanDate] = useState<Date>(new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)); // Default: 2 days from now
+  const [nextScanTime, setNextScanTime] = useState<string>("14:00");
+  const [scanFrequency, setScanFrequency] = useState<string>("weekly");
 
   // Check for tab parameter in URL on component mount
   useEffect(() => {
@@ -398,6 +406,16 @@ const Index = () => {
     });
     setShowAddBrandDialog(false);
     setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "", reportFrequency: "" });
+  };
+
+  const handleSaveSchedule = (date: Date, time: string, frequency: string) => {
+    setNextScanDate(date);
+    setNextScanTime(time);
+    setScanFrequency(frequency);
+    toast({
+      title: "Scan Scheduled",
+      description: `Next scan: ${format(date, "EEEE, MMMM d")} at ${format(new Date(`2000-01-01T${time}`), "h:mm a")}`,
+    });
   };
 
   const sidebarItems = getNavigationItems();
@@ -613,12 +631,15 @@ const Index = () => {
                     </div>
 
                     {/* Next Scan Indicator */}
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/40 backdrop-blur-sm border border-border/40 transition-all duration-200 hover:bg-muted/60">
+                    <button
+                      onClick={() => setShowScheduleScanDialog(true)}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/40 backdrop-blur-sm border border-border/40 transition-all duration-200 hover:bg-muted/60 hover:border-border/60 cursor-pointer"
+                    >
                       <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                       <span className="text-xs text-muted-foreground font-medium">
-                        Next scan: <span className="text-foreground">Wed 2:00 PM</span>
+                        Next scan: <span className="text-foreground">{format(nextScanDate, "EEE")} {format(new Date(`2000-01-01T${nextScanTime}`), "h:mm a")}</span>
                       </span>
-                    </div>
+                    </button>
                     
                     <Separator orientation="vertical" className="h-4" />
                     
@@ -1140,6 +1161,16 @@ const Index = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Schedule Scan Dialog */}
+      <ScheduleScanDialog
+        open={showScheduleScanDialog}
+        onOpenChange={setShowScheduleScanDialog}
+        onSave={handleSaveSchedule}
+        currentDate={nextScanDate}
+        currentTime={nextScanTime}
+        currentFrequency={scanFrequency}
+      />
     </div>
   );
 };
