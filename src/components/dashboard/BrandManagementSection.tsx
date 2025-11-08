@@ -33,7 +33,9 @@ import {
   Upload,
   X,
   Zap,
-  Repeat
+  Repeat,
+  Edit,
+  Clock
 } from "lucide-react";
 import boardLabsIcon from "@/assets/board-labs-icon-hex.png";
 
@@ -88,6 +90,11 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [addBrandStep, setAddBrandStep] = useState(1);
   const [isReplacingPrimaryBrand, setIsReplacingPrimaryBrand] = useState(false);
+  const [showEditNameDialog, setShowEditNameDialog] = useState(false);
+  const [showScanFrequencyDialog, setShowScanFrequencyDialog] = useState(false);
+  const [selectedCompetitor, setSelectedCompetitor] = useState<number | null>(null);
+  const [editedName, setEditedName] = useState("");
+  const [selectedFrequency, setSelectedFrequency] = useState("");
   const [newBrandData, setNewBrandData] = useState({
     name: "",
     url: "",
@@ -204,6 +211,58 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
       title: "Competitor Removed",
       description: `${competitor?.name} has been removed from your watchlist.`,
     });
+  };
+
+  const handleEditName = (competitorId: number) => {
+    const competitor = competitors.find(c => c.id === competitorId);
+    if (competitor) {
+      setSelectedCompetitor(competitorId);
+      setEditedName(competitor.name);
+      setShowEditNameDialog(true);
+    }
+  };
+
+  const handleSaveEditedName = () => {
+    if (selectedCompetitor !== null && editedName.trim()) {
+      setCompetitors(prev =>
+        prev.map(competitor =>
+          competitor.id === selectedCompetitor
+            ? { ...competitor, name: editedName.trim() }
+            : competitor
+        )
+      );
+      setShowEditNameDialog(false);
+      setSelectedCompetitor(null);
+      setEditedName("");
+    }
+  };
+
+  const handleChangeScanFrequency = (competitorId: number) => {
+    const competitor = competitors.find(c => c.id === competitorId);
+    if (competitor) {
+      setSelectedCompetitor(competitorId);
+      setSelectedFrequency(competitor.reportFrequency.toLowerCase().replace('-', ''));
+      setShowScanFrequencyDialog(true);
+    }
+  };
+
+  const handleSaveScanFrequency = () => {
+    if (selectedCompetitor !== null && selectedFrequency) {
+      const formattedFrequency = selectedFrequency === "biweekly" 
+        ? "Bi-weekly" 
+        : selectedFrequency.charAt(0).toUpperCase() + selectedFrequency.slice(1) as "Daily" | "Weekly" | "Bi-weekly" | "Monthly";
+      
+      setCompetitors(prev =>
+        prev.map(competitor =>
+          competitor.id === selectedCompetitor
+            ? { ...competitor, reportFrequency: formattedFrequency }
+            : competitor
+        )
+      );
+      setShowScanFrequencyDialog(false);
+      setSelectedCompetitor(null);
+      setSelectedFrequency("");
+    }
   };
 
   const handleRemoveAndReplace = (competitorId: number) => {
@@ -557,7 +616,15 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                         <MoreHorizontal className="w-4 h-4 text-gray-600" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-44">
+                    <DropdownMenuContent align="end" className="w-48 z-50 bg-background">
+                      <DropdownMenuItem onClick={() => handleEditName(competitor.id)}>
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit Name
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleChangeScanFrequency(competitor.id)}>
+                        <Clock className="w-4 h-4 mr-2" />
+                        Change Frequency
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleToggleMonitoring(competitor.id)}>
                         {competitor.status === "Active" ? (
                           <>
@@ -1089,6 +1156,74 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                 Maybe Later
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Name Dialog */}
+      <Dialog open={showEditNameDialog} onOpenChange={setShowEditNameDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Brand Name</DialogTitle>
+            <DialogDescription>
+              Update the display name for this brand in your watchlist.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="brand-name">Brand Name</Label>
+              <Input
+                id="brand-name"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                placeholder="Enter brand name"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setShowEditNameDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEditedName}>
+              Save Changes
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Change Frequency Dialog */}
+      <Dialog open={showScanFrequencyDialog} onOpenChange={setShowScanFrequencyDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Change Frequency</DialogTitle>
+            <DialogDescription>
+              Update how often this brand is scanned.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="scan-frequency">Scan Frequency</Label>
+              <Select value={selectedFrequency} onValueChange={setSelectedFrequency}>
+                <SelectTrigger id="scan-frequency">
+                  <SelectValue placeholder="Select frequency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily (Enterprise only)</SelectItem>
+                  <SelectItem value="weekly">Once a week</SelectItem>
+                  <SelectItem value="twiceweekly">Twice a week</SelectItem>
+                  <SelectItem value="biweekly">Biweekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setShowScanFrequencyDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveScanFrequency}>
+              Save Changes
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
