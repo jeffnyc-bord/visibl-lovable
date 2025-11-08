@@ -89,7 +89,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [listMoreClicked, setListMoreClicked] = useState(false);
   
   // State for Source Quality section
-  const [showAllSources, setShowAllSources] = useState(false);
+  const [sourcesDisplayCount, setSourcesDisplayCount] = useState(3);
 
   const allVisibilityData = [
     { month: "Jul", score: 75 },
@@ -667,7 +667,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(showAllSources ? sourceQuality : sourceQuality.slice(0, 3)).map((source, index) => (
+                {sourceQuality.slice(0, sourcesDisplayCount).map((source, index) => (
                   <TableRow 
                     key={index}
                     onClick={() => window.open(source.url, '_blank')}
@@ -687,18 +687,18 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowAllSources(false)}
+                  onClick={() => setSourcesDisplayCount(Math.min(sourcesDisplayCount + 5, sourceQuality.length))}
                   className="min-w-[120px] transition-all duration-300 hover:scale-105"
-                  disabled={!showAllSources}
+                  disabled={sourcesDisplayCount >= sourceQuality.length}
                 >
                   View More
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowAllSources(true)}
+                  onClick={() => setSourcesDisplayCount(sourceQuality.length)}
                   className="min-w-[120px] transition-all duration-300 hover:scale-105"
-                  disabled={showAllSources}
+                  disabled={sourcesDisplayCount >= sourceQuality.length}
                 >
                   View All ({sourceQuality.length})
                 </Button>
