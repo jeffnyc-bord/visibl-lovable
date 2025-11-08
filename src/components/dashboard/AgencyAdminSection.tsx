@@ -35,7 +35,12 @@ import {
   Clock
 } from "lucide-react";
 
-export const AgencyAdminSection = () => {
+interface AgencyAdminSectionProps {
+  trackedBrands: any[];
+  onBrandAdded: (brand: any) => void;
+}
+
+export const AgencyAdminSection = ({ trackedBrands, onBrandAdded }: AgencyAdminSectionProps) => {
   const { toast } = useToast();
   const [showAddClientDialog, setShowAddClientDialog] = useState(false);
   const [showEditNameDialog, setShowEditNameDialog] = useState(false);
@@ -110,6 +115,27 @@ export const AgencyAdminSection = () => {
 
   const handleClientAdded = (newClient: any) => {
     setClients(prev => [...prev, newClient]);
+    
+    // Create a BrandData object for the tracked brands list
+    const newBrand = {
+      id: newClient.brand,
+      name: newClient.name,
+      logo: "", // Will be set when scanning completes
+      url: newClient.url,
+      visibilityScore: 0,
+      totalMentions: 0,
+      platformCoverage: 0,
+      industryRanking: 0,
+      mentionTrend: "stable",
+      sentimentScore: 0,
+      lastUpdated: new Date().toISOString().split('T')[0],
+      platforms: [],
+      products: [],
+      competitors: []
+    };
+    
+    // Add to tracked brands
+    onBrandAdded(newBrand);
     
     // Simulate completing the scan after 10 seconds
     setTimeout(() => {

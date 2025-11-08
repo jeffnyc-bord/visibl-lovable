@@ -835,7 +835,12 @@ const Index = () => {
           )}
 
           {activeView === "brands" && <BrandManagementSection selectedBrand={selectedBrand} trackedBrands={trackedBrands} loadingDuration={loadingDuration} />}
-          {activeView === "agency" && <AgencyAdminSection />}
+          {activeView === "agency" && (
+            <AgencyAdminSection 
+              trackedBrands={trackedBrands}
+              onBrandAdded={(newBrand) => setTrackedBrands(prev => [...prev, newBrand])}
+            />
+          )}
           {activeView === "settings" && <SettingsPage userRole={userRole} />}
         </main>
       </div>
