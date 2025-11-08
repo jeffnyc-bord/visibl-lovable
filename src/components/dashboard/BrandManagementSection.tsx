@@ -280,11 +280,14 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
         ? "Bi-weekly" 
         : selectedFrequency.charAt(0).toUpperCase() + selectedFrequency.slice(1) as "Daily" | "Weekly" | "Bi-weekly" | "Monthly";
       
+      // Calculate next scan date
+      const nextScanDate = calculateNextScan(selectedFrequency);
+      
       // For primary brand, just show a toast (in a real app, you'd update the database)
       if (selectedCompetitor === 1) {
         toast({
           title: "Frequency Updated",
-          description: `Scan frequency updated to ${formattedFrequency}`,
+          description: `Scan frequency updated to ${formattedFrequency}. Next scan scheduled for ${nextScanDate}.`,
         });
         setShowScanFrequencyDialog(false);
         setSelectedCompetitor(null);
@@ -299,10 +302,43 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
             : competitor
         )
       );
+      
+      toast({
+        title: "Frequency Updated",
+        description: `Next scan scheduled for ${nextScanDate}.`,
+      });
+      
       setShowScanFrequencyDialog(false);
       setSelectedCompetitor(null);
       setSelectedFrequency("");
     }
+  };
+
+  const calculateNextScan = (frequency: string): string => {
+    const now = new Date();
+    let nextScan = new Date(now);
+    
+    switch(frequency) {
+      case 'daily':
+        nextScan.setDate(now.getDate() + 1);
+        break;
+      case 'weekly':
+        nextScan.setDate(now.getDate() + 7);
+        break;
+      case 'twiceweekly':
+        nextScan.setDate(now.getDate() + 3);
+        break;
+      case 'biweekly':
+        nextScan.setDate(now.getDate() + 14);
+        break;
+      case 'monthly':
+        nextScan.setMonth(now.getMonth() + 1);
+        break;
+      default:
+        nextScan.setDate(now.getDate() + 7);
+    }
+    
+    return nextScan.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   const handleRemoveAndReplace = (competitorId: number) => {
@@ -1264,6 +1300,13 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
                 </SelectContent>
               </Select>
             </div>
+            {selectedFrequency && (
+              <div className="rounded-lg bg-muted p-3">
+                <p className="text-sm text-muted-foreground">
+                  Next scan will occur on <span className="font-semibold text-foreground">{calculateNextScan(selectedFrequency)}</span>
+                </p>
+              </div>
+            )}
           </div>
           <div className="flex justify-end gap-3">
             <Button variant="outline" onClick={() => setShowScanFrequencyDialog(false)}>

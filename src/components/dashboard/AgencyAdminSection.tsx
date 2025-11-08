@@ -10,6 +10,7 @@ import { AddClientDialog } from "@/components/ui/add-client-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Users, 
   Plus, 
@@ -35,6 +36,7 @@ import {
 } from "lucide-react";
 
 export const AgencyAdminSection = () => {
+  const { toast } = useToast();
   const [showAddClientDialog, setShowAddClientDialog] = useState(false);
   const [showEditNameDialog, setShowEditNameDialog] = useState(false);
   const [showScanFrequencyDialog, setShowScanFrequencyDialog] = useState(false);
@@ -193,10 +195,47 @@ export const AgencyAdminSection = () => {
             : client
         )
       );
+      
+      // Calculate next scan date
+      const nextScanDate = calculateNextScan(selectedFrequency);
+      
       setShowScanFrequencyDialog(false);
       setSelectedClient(null);
       setSelectedFrequency("");
+      
+      // Show toast with next scan date
+      toast({
+        title: "Frequency Updated",
+        description: `Scan frequency updated. Next scan scheduled for ${nextScanDate}.`,
+      });
     }
+  };
+
+  const calculateNextScan = (frequency: string): string => {
+    const now = new Date();
+    let nextScan = new Date(now);
+    
+    switch(frequency) {
+      case 'daily':
+        nextScan.setDate(now.getDate() + 1);
+        break;
+      case 'weekly':
+        nextScan.setDate(now.getDate() + 7);
+        break;
+      case 'twice-weekly':
+        nextScan.setDate(now.getDate() + 3);
+        break;
+      case 'biweekly':
+        nextScan.setDate(now.getDate() + 14);
+        break;
+      case 'monthly':
+        nextScan.setMonth(now.getMonth() + 1);
+        break;
+      default:
+        nextScan.setDate(now.getDate() + 7);
+    }
+    
+    return nextScan.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   const getStatusColor = (status: string) => {
@@ -535,6 +574,13 @@ export const AgencyAdminSection = () => {
                   </SelectContent>
                 </Select>
               </div>
+              {selectedFrequency && (
+                <div className="rounded-lg bg-muted p-3">
+                  <p className="text-sm text-muted-foreground">
+                    Next scan will occur on <span className="font-semibold text-foreground">{calculateNextScan(selectedFrequency)}</span>
+                  </p>
+                </div>
+              )}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowScanFrequencyDialog(false)}>

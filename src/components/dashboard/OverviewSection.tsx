@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, Eye, FileText, MessageSquare, HelpCircle } from "lucide-react";
+import { TrendingUp, Eye, FileText, MessageSquare, HelpCircle, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
@@ -328,6 +328,30 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           }}
         />
       </div>
+
+      {/* Next Scan Information */}
+      <Card className="border-l-4 border-l-primary bg-primary/5">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-primary/10 p-2">
+                <Calendar className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">Next Scheduled Scan</p>
+                <p className="text-xs text-muted-foreground">Your brand will be re-analyzed on {(() => {
+                  const nextScan = new Date();
+                  nextScan.setDate(nextScan.getDate() + 7); // Default weekly
+                  return nextScan.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+                })()}</p>
+              </div>
+            </div>
+            <Badge variant="secondary" className="bg-primary/10 text-primary">
+              Weekly
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
