@@ -335,15 +335,25 @@ export const AgencyAdminSection = () => {
             {clients.map((client) => (
               <Card 
                 key={client.id} 
-                className={`relative overflow-hidden border shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer ${
+                className={`relative overflow-hidden border shadow-sm transition-all duration-200 cursor-pointer group ${
                   client.isScanning 
-                    ? 'border-blue-200 bg-gradient-to-b from-blue-50/50 to-white' 
+                    ? 'border-blue-200 bg-gradient-to-b from-blue-50/50 to-white hover:shadow-md' 
                     : client.status === "Inactive"
-                    ? 'border-gray-200/40 bg-gradient-to-b from-gray-100/50 to-gray-50/50 opacity-60'
-                    : 'border-gray-200/60 bg-gradient-to-b from-white to-gray-50/30'
+                    ? 'border-gray-200/40 bg-gradient-to-b from-gray-100/50 to-gray-50/50 opacity-60 hover:opacity-80 hover:border-gray-300'
+                    : 'border-gray-200/60 bg-gradient-to-b from-white to-gray-50/30 hover:shadow-md'
                 }`}
-                onClick={() => client.status === "Inactive" ? undefined : handleViewDashboard(client.id, client.name)}
+                onClick={() => client.status === "Inactive" ? handleDisableClient(client.id) : handleViewDashboard(client.id, client.name)}
               >
+                {/* Disabled overlay hint */}
+                {client.status === "Inactive" && (
+                  <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center z-20">
+                    <div className="text-center p-4">
+                      <Eye className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-sm font-medium text-foreground">Click to re-enable</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Three-dot menu - appears on hover */}
                 {!client.isScanning && (
                   <div className="absolute top-4 right-4 z-10" onClick={(e) => e.stopPropagation()}>
