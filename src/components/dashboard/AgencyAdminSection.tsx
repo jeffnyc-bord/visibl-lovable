@@ -372,10 +372,6 @@ export const AgencyAdminSection = () => {
                           <Clock className="w-4 h-4 mr-2" />
                           Change Frequency
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleClientSettings(client.id, client.name)}>
-                          <Settings className="w-4 h-4 mr-2" />
-                          Settings
-                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDisableClient(client.id)}>
                           <Eye className="w-4 h-4 mr-2" />
                           {client.status === "Active" ? "Disable Client" : "Enable Client"}
