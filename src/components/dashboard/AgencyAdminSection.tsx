@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AddClientDialog } from "@/components/ui/add-client-dialog";
 import { 
@@ -243,133 +242,137 @@ export const AgencyAdminSection = () => {
         </Card>
       </div>
 
-      <Card className="shadow-sm border-gray-200">
-        <CardHeader className="pb-4 flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-base text-gray-900">Client Accounts</CardTitle>
-            <CardDescription className="text-sm text-gray-600">
-              Manage all client accounts and their brand tracking configurations
-            </CardDescription>
+      {/* Client Accounts - Grid Card Layout */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-foreground">Client Accounts</h3>
+          <div className="flex items-center gap-3">
+            <p className="text-sm text-muted-foreground">{clients.filter(c => c.status === "Active").length} active client{clients.filter(c => c.status === "Active").length !== 1 ? 's' : ''}</p>
+            <Button 
+              onClick={handleAddNewClient}
+              className="h-9"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add New Client
+            </Button>
           </div>
-          <Button 
-            onClick={handleAddNewClient}
-            className="bg-black hover:bg-gray-800 text-white text-sm h-9"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Client
-          </Button>
-        </CardHeader>
-            <CardContent>
-              <TooltipProvider>
-                <div className="space-y-3">
-                  {clients.map((client) => {
-                    const healthIndicator = getHealthIndicator(client.avgVisibilityScore);
-                    return (
-                      <div 
-                        key={client.id} 
-                        className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors cursor-pointer"
-                        onClick={() => handleViewDashboard(client.id, client.name)}
-                      >
-                        <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-gradient-to-br from-secondary/20 to-secondary/40 rounded-lg flex items-center justify-center border">
-                            {client.isScanning ? (
-                              <Loader2 className="w-5 h-5 text-secondary-foreground animate-spin" />
-                            ) : (
-                              <Building className="w-5 h-5 text-secondary-foreground" />
-                            )}
-                          </div>
-                          
-                          <div>
-                            <div className="flex items-center space-x-2 mb-1">
-                              <h3 className="font-medium text-foreground text-sm">{client.name}</h3>
-                              <ExternalLink className="w-3 h-3 text-muted-foreground" />
-                              {client.isScanning && (
-                                <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
-                                  Scanning...
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-xs text-muted-foreground">{client.url}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-6">
-                          <div className="text-center">
-                            <div className="flex items-center justify-center">
-                              {client.isScanning ? (
-                                <span className="text-sm text-muted-foreground">Setting up...</span>
-                              ) : (
-                                <>
-                                  <span className="text-lg font-bold text-foreground">{client.avgVisibilityScore}%</span>
-                                  <span className={`text-xs ml-1 ${
-                                    client.visibilityTrend.direction === 'up' ? 'text-green-600' : 'text-red-600'
-                                  }`}>
-                                    {client.visibilityTrend.direction === 'up' ? '+' : '-'}{client.visibilityTrend.value}%
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                            <p className="text-xs text-muted-foreground">Visibility Score</p>
-                          </div>
-                          
-                          <div className="text-center">
-                            <Badge 
-                              variant="secondary" 
-                              className={`text-xs ${client.status === 'Scanning' ? 'bg-blue-100 text-blue-700 border-blue-200' : ''}`}
-                            >
-                              {client.status}
-                            </Badge>
-                            <p className="text-xs text-muted-foreground mt-1">{client.tier}</p>
-                          </div>
-                          
-                          <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="h-8 w-8 p-0"
-                                  disabled={client.isScanning}
-                                >
-                                  <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleClientSettings(client.id, client.name)}>
-                                  <Settings className="w-4 h-4 mr-2" />
-                                  Settings
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleDisableClient(client.id)}>
-                                  {client.status === "Active" ? (
-                                    <>
-                                      <Eye className="w-4 h-4 mr-2" />
-                                      Disable Client
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Eye className="w-4 h-4 mr-2" />
-                                      Enable Client
-                                    </>
-                                  )}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={() => handleDeleteClient(client.id)}
-                                  className="text-red-600 focus:text-red-600"
-                                >
-                                  <Trash2 className="w-4 h-4 mr-2" />
-                                  Remove Client
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+          {clients.map((client) => {
+            const healthIndicator = getHealthIndicator(client.avgVisibilityScore);
+            return (
+              <Card 
+                key={client.id} 
+                className="relative overflow-hidden border border-border shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-b from-background to-muted/30 group cursor-pointer"
+                onClick={() => handleViewDashboard(client.id, client.name)}
+              >
+                {/* Status Badge with hover transition to settings */}
+                <div className="absolute top-3 right-3 z-10">
+                  <div className="relative w-auto h-auto">
+                    {/* Status Badge - visible by default, hidden on hover */}
+                    <Badge 
+                      className={`text-xs px-2 py-1 shadow-sm border-none group-hover:opacity-0 transition-opacity duration-200 ${getStatusColor(client.status)}`}
+                    >
+                      {client.status}
+                    </Badge>
+                    
+                    {/* Settings dropdown - hidden by default, visible on hover */}
+                    <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200" onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
+                            <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-44 z-50 bg-background">
+                          <DropdownMenuItem onClick={() => handleClientSettings(client.id, client.name)}>
+                            <Settings className="w-4 h-4 mr-2" />
+                            Settings
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDisableClient(client.id)}>
+                            <Eye className="w-4 h-4 mr-2" />
+                            {client.status === "Active" ? "Disable Client" : "Enable Client"}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteClient(client.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Remove Client
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
                 </div>
-              </TooltipProvider>
-            </CardContent>
-      </Card>
+
+                <CardContent className="p-4 space-y-3">
+                  {/* Logo/Icon */}
+                  <div className="flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/40 rounded-xl flex items-center justify-center border shadow-sm">
+                      {client.isScanning ? (
+                        <Loader2 className="w-8 h-8 text-secondary-foreground animate-spin" />
+                      ) : (
+                        <Building className="w-8 h-8 text-secondary-foreground" />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Brand Name & URL */}
+                  <div className="text-center space-y-1">
+                    <div className="flex items-center justify-center gap-1">
+                      <h4 className="font-semibold text-sm text-foreground truncate">{client.name}</h4>
+                      {client.isScanning && (
+                        <Badge variant="outline" className="text-xs text-blue-600 border-blue-200 ml-1">
+                          Scanning
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate">{client.url}</p>
+                  </div>
+
+                  {/* Visibility Score */}
+                  <div className="text-center pt-2 border-t border-border/50">
+                    {client.isScanning ? (
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Setting up...</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          <span className="text-2xl font-bold text-foreground">{client.avgVisibilityScore}</span>
+                          <span className={`text-xs font-medium ${
+                            client.visibilityTrend.direction === 'up' ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {client.visibilityTrend.direction === 'up' ? <ArrowUp className="w-3 h-3 inline" /> : <ArrowDown className="w-3 h-3 inline" />}
+                            {client.visibilityTrend.value}%
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Visibility Score</p>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Tier & Last Scan */}
+                  <div className="flex items-center justify-between pt-2 border-t border-border/50 text-xs">
+                    <Badge variant="secondary" className={`text-xs ${getTierColor(client.tier)}`}>
+                      {client.tier}
+                    </Badge>
+                    <span className="text-muted-foreground">{client.lastScan}</span>
+                  </div>
+
+                  {/* Brands Count */}
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{client.deepTrackedBrands} deep tracked</span>
+                    <span>{client.competitorBrands} competitors</span>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
 
         <AddClientDialog 
           open={showAddClientDialog} 
