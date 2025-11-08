@@ -274,98 +274,125 @@ export const AgencyAdminSection = () => {
             <p className="text-sm text-muted-foreground">{clients.length} client{clients.length !== 1 ? 's' : ''} tracked</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {clients.map((client) => (
               <Card 
                 key={client.id} 
-                className="relative overflow-hidden border border-border shadow-sm hover:shadow-md transition-all duration-200 group cursor-pointer"
+                className={`relative overflow-hidden border shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer ${
+                  client.isScanning 
+                    ? 'border-blue-200 bg-gradient-to-b from-blue-50/50 to-white' 
+                    : 'border-gray-200/60 bg-gradient-to-b from-white to-gray-50/30'
+                }`}
                 onClick={() => handleViewDashboard(client.id, client.name)}
               >
                 {/* Three-dot menu - appears on hover */}
-                <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" onClick={(e) => e.stopPropagation()}>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
-                        <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-44 z-50 bg-background">
-                      <DropdownMenuItem onClick={() => handleClientSettings(client.id, client.name)}>
-                        <Settings className="w-4 h-4 mr-2" />
-                        Settings
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDisableClient(client.id)}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        {client.status === "Active" ? "Disable Client" : "Enable Client"}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleDeleteClient(client.id)}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Remove Client
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                <CardContent className="p-5 space-y-3">
-                  {/* Logo/Icon */}
-                  <div className="flex items-center justify-center mb-2">
-                    <div className="w-20 h-20 bg-background rounded-lg flex items-center justify-center border border-border">
-                      {client.isScanning ? (
-                        <Loader2 className="w-10 h-10 text-muted-foreground animate-spin" />
-                      ) : (
-                        <Building className="w-10 h-10 text-foreground" />
-                      )}
-                    </div>
+                {!client.isScanning && (
+                  <div className="absolute top-4 right-4 z-10" onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-gray-100">
+                          <MoreHorizontal className="w-4 h-4 text-gray-600" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-44 z-50 bg-background">
+                        <DropdownMenuItem onClick={() => handleClientSettings(client.id, client.name)}>
+                          <Settings className="w-4 h-4 mr-2" />
+                          Settings
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDisableClient(client.id)}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          {client.status === "Active" ? "Disable Client" : "Enable Client"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteClient(client.id)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Remove Client
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
+                )}
 
-                  {/* Brand Name & URL */}
-                  <div className="text-center space-y-0.5">
-                    <h4 className="font-semibold text-base text-foreground">{client.name}</h4>
-                    <p className="text-xs text-muted-foreground">{client.url}</p>
-                  </div>
-
-                  {/* AI Visibility Score */}
-                  <div className="pt-3 border-t border-border">
-                    <div className="flex items-baseline justify-between mb-0.5">
-                      <span className="text-xs text-muted-foreground">AI Visibility</span>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-bold text-foreground">
-                          {client.isScanning ? "--" : `${client.avgVisibilityScore}%`}
-                        </span>
+                <CardContent className="p-5">
+                  {client.isScanning ? (
+                    <>
+                      <div className="flex justify-center mb-3">
+                        <div className="w-16 h-16 rounded-xl bg-blue-100 border border-blue-200 shadow-sm flex items-center justify-center">
+                          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Mentions */}
-                  {!client.isScanning && (
-                    <div className="flex items-baseline justify-between pb-3 border-b border-border">
-                      <span className="text-xs text-muted-foreground">Mentions</span>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-base font-semibold text-foreground">
-                          {client.deepTrackedBrands}.{client.competitorBrands}K
-                        </span>
-                        <span className={`text-xs font-medium ${
-                          client.visibilityTrend.direction === 'up' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {client.visibilityTrend.direction === 'up' ? '+' : '-'}{client.visibilityTrend.value}%
-                        </span>
+                      <div className="text-center mb-3">
+                        <h3 className="font-semibold text-base text-foreground mb-0.5">{client.name}</h3>
+                        <p className="text-xs text-blue-600 font-medium">Setting up...</p>
                       </div>
-                    </div>
+
+                      <div className="h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent mb-3" />
+
+                      <div className="space-y-2.5">
+                        <div className="text-xs text-center text-muted-foreground mb-2">
+                          Analyzing AI visibility...
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex justify-center mb-3">
+                        <div className="w-16 h-16 rounded-xl bg-white border border-gray-200/60 shadow-sm flex items-center justify-center p-2.5">
+                          {client.name === "Nike" ? (
+                            <img src="/lovable-uploads/d296743b-ff18-4da8-8546-d789de582706.png" alt={client.name} className="w-full h-full object-contain" />
+                          ) : client.name === "Adidas" ? (
+                            <img src="/lovable-uploads/443dfdf9-57da-486d-9339-83c684d1c404.png" alt={client.name} className="w-full h-full object-contain" />
+                          ) : client.name === "Apple" ? (
+                            <img src="/lovable-uploads/f7211f59-be5b-4e58-9bfa-3b6653217350.png" alt={client.name} className="w-full h-full object-contain" />
+                          ) : client.name === "Under Armour" ? (
+                            <img src="/lovable-uploads/under-armour-logo.jpg" alt={client.name} className="w-full h-full object-contain" />
+                          ) : client.name === "Puma" ? (
+                            <img src="/lovable-uploads/puma-logo.jpg" alt={client.name} className="w-full h-full object-contain" />
+                          ) : (
+                            <Building className="w-10 h-10 text-gray-400" />
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="text-center mb-3">
+                        <h3 className="font-semibold text-base text-foreground mb-0.5">{client.name}</h3>
+                        <p className="text-xs text-muted-foreground truncate">{client.url}</p>
+                      </div>
+
+                      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-3" />
+
+                      <div className="space-y-2.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">AI Visibility</span>
+                          <span className="text-base font-semibold text-foreground">{client.avgVisibilityScore}%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">Mentions</span>
+                          <div className="flex items-center gap-1">
+                            <span className="text-base font-semibold text-foreground">{client.deepTrackedBrands}.{client.competitorBrands}K</span>
+                            <span className={`text-xs ${
+                              client.visibilityTrend.direction === 'up' ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              {client.visibilityTrend.direction === 'up' ? '+' : '-'}{client.visibilityTrend.value}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                        <Badge 
+                          variant="secondary"
+                          className={client.status === 'Active' ? 'bg-green-50 text-green-700 border-green-100 text-xs' : 'bg-gray-50 text-gray-700 border-gray-100 text-xs'}
+                        >
+                          {client.status}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">{client.tier}</span>
+                      </div>
+                    </>
                   )}
-
-                  {/* Status & Report Frequency */}
-                  <div className="flex items-center justify-between pt-1">
-                    <Badge 
-                      variant="secondary"
-                      className={`text-xs ${client.status === 'Active' ? 'bg-green-100 text-green-700 border-green-200' : client.status === 'Scanning' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-gray-100 text-gray-700 border-gray-200'}`}
-                    >
-                      {client.status}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">{client.tier}</span>
-                  </div>
                 </CardContent>
               </Card>
             ))}
