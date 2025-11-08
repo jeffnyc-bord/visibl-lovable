@@ -611,6 +611,14 @@ const Index = () => {
                         </SelectContent>
                       </Select>
                     </div>
+
+                    {/* Next Scan Indicator */}
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/40 backdrop-blur-sm border border-border/40 transition-all duration-200 hover:bg-muted/60">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                      <span className="text-xs text-muted-foreground font-medium">
+                        Next scan: <span className="text-foreground">Wed 2:00 PM</span>
+                      </span>
+                    </div>
                     
                     <Separator orientation="vertical" className="h-4" />
                     
