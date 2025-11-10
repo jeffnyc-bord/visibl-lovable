@@ -79,6 +79,7 @@ export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) =
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
+  const [newProducts, setNewProducts] = useState<any[]>([]);
 
   // Use brand's product data with enhanced mock structure
   const mockProducts = brandData.products.map((product, index) => ({
@@ -92,15 +93,19 @@ export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) =
     mentions: product.mentions,
     rank: index + 3,
     lastUpdated: `${Math.floor(Math.random() * 6) + 1} hours ago`,
-    isPinned: index < 2
+    isPinned: index < 2,
+    status: "complete"
   }));
 
-  const topProducts = mockProducts.filter(p => p.score >= 90).slice(0, 5);
-  const bottomProducts = mockProducts.filter(p => p.score < 70).slice(0, 5);
+  // Merge new products with existing products, new products first
+  const allProducts = [...newProducts, ...mockProducts];
+
+  const topProducts = allProducts.filter(p => p.score >= 90).slice(0, 5);
+  const bottomProducts = allProducts.filter(p => p.score < 70 && p.status === "complete").slice(0, 5);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedProducts(mockProducts.map(p => p.id));
+      setSelectedProducts(allProducts.map(p => p.id));
     } else {
       setSelectedProducts([]);
     }
@@ -141,10 +146,50 @@ export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) =
   };
 
   const handleProductAdded = (product: any) => {
+    // Add product to the list with "analyzing" status
+    const newProduct = {
+      id: product.id,
+      name: product.name,
+      sku: product.sku,
+      score: null,
+      trend: 0,
+      category: product.category,
+      gaps: "Analyzing...",
+      mentions: 0,
+      rank: null,
+      lastUpdated: "Just now",
+      isPinned: false,
+      status: "analyzing"
+    };
+    
+    setNewProducts(prev => [...prev, newProduct]);
+    
     toast({
       title: "Analysis Started",
       description: `${product.name} has been added and is being analyzed. You'll be notified when complete.`,
     });
+    
+    // Simulate analysis completion after 10 seconds
+    setTimeout(() => {
+      setNewProducts(prev => prev.map(p => 
+        p.id === product.id 
+          ? { 
+              ...p, 
+              status: "complete",
+              score: Math.floor(Math.random() * 30) + 60, // Random score 60-90
+              mentions: Math.floor(Math.random() * 50) + 10,
+              rank: Math.floor(Math.random() * 20) + 5,
+              gaps: "Content clarity",
+              lastUpdated: "Just now"
+            }
+          : p
+      ));
+      
+      toast({
+        title: "Analysis Complete",
+        description: `${product.name} has been analyzed and is now ready.`,
+      });
+    }, 10000);
   };
 
   return (
@@ -439,7 +484,7 @@ export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) =
               <div className="grid grid-cols-12 gap-4 p-3 text-sm font-medium text-gray-700">
                 <div className="col-span-1 flex items-center">
                   <Checkbox
-                    checked={selectedProducts.length === mockProducts.length}
+                    checked={selectedProducts.length === allProducts.length}
                     onCheckedChange={handleSelectAll}
                     className="mr-2"
                   />
@@ -456,45 +501,71 @@ export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) =
               </div>
             </div>
             <div className="divide-y">
-              {mockProducts.map((product) => (
-                <div key={product.id} className="grid grid-cols-12 gap-4 p-3 text-sm hover:bg-gray-50">
+              {allProducts.map((product) => (
+                <div 
+                  key={product.id} 
+                  className={`grid grid-cols-12 gap-4 p-3 text-sm ${
+                    product.status === "analyzing" 
+                      ? "bg-gradient-to-r from-blue-50/50 to-white border-l-4 border-l-blue-500" 
+                      : "hover:bg-gray-50"
+                  }`}
+                >
                   <div className="col-span-1 flex items-center">
                     <Checkbox
                       checked={selectedProducts.includes(product.id)}
                       onCheckedChange={(checked) => handleSelectProduct(product.id, checked as boolean)}
+                      disabled={product.status === "analyzing"}
                     />
                   </div>
                    <div className="col-span-3">
                      <div className="flex items-center space-x-2">
+                       {product.status === "analyzing" && (
+                         <Loader2 className="w-3 h-3 text-blue-600 animate-spin" />
+                       )}
                        <div 
-                         className="font-medium text-blue-600 cursor-pointer hover:underline" 
-                         onClick={() => window.location.href = `/product/${product.id}`}
+                         className={`font-medium ${product.status === "analyzing" ? "text-blue-600" : "text-blue-600 cursor-pointer hover:underline"}`}
+                         onClick={() => product.status !== "analyzing" && (window.location.href = `/product/${product.id}`)}
                        >
                          {product.name}
                        </div>
-                       {product.isPinned && (
+                       {product.status === "analyzing" && (
+                         <Badge className="bg-blue-100 text-blue-700 border-blue-300 text-xs">
+                           Analyzing
+                         </Badge>
+                       )}
+                       {product.isPinned && product.status !== "analyzing" && (
                          <Pin className="w-3 h-3 text-amber-500" />
                        )}
                      </div>
                      <div className="text-xs text-gray-500">{product.sku}</div>
                    </div>
                   <div className="col-span-2 flex items-center space-x-2">
-                    <div className="w-full">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-medium">{product.score}%</span>
-                        {product.score >= 90 ? (
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                        ) : product.score >= 70 ? (
-                          <Eye className="w-4 h-4 text-yellow-600" />
-                        ) : (
-                          <AlertTriangle className="w-4 h-4 text-red-600" />
-                        )}
+                    {product.status === "analyzing" ? (
+                      <div className="w-full">
+                        <div className="flex items-center space-x-2">
+                          <div className="text-xs text-blue-600 font-medium">Analyzing...</div>
+                        </div>
                       </div>
-                      <Progress value={product.score} className="h-1" />
-                    </div>
+                    ) : (
+                      <div className="w-full">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-medium">{product.score}%</span>
+                          {product.score >= 90 ? (
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          ) : product.score >= 70 ? (
+                            <Eye className="w-4 h-4 text-yellow-600" />
+                          ) : (
+                            <AlertTriangle className="w-4 h-4 text-red-600" />
+                          )}
+                        </div>
+                        <Progress value={product.score} className="h-1" />
+                      </div>
+                    )}
                   </div>
                   <div className="col-span-1 flex items-center">
-                    {product.trend > 0 ? (
+                    {product.status === "analyzing" ? (
+                      <span className="text-xs text-gray-400">-</span>
+                    ) : product.trend > 0 ? (
                       <div className="flex items-center text-green-600">
                         <TrendingUp className="w-3 h-3 mr-1" />
                         <span className="text-xs">+{product.trend}%</span>
@@ -509,19 +580,30 @@ export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) =
                    <div className="col-span-1">
                      <span className="text-xs text-gray-600">{product.gaps}</span>
                    </div>
-                  <div className="col-span-1 font-medium">{product.mentions}</div>
-                  <div className="col-span-1 font-medium">#{product.rank}</div>
+                  <div className="col-span-1 font-medium">
+                    {product.status === "analyzing" ? "-" : product.mentions}
+                  </div>
+                  <div className="col-span-1 font-medium">
+                    {product.status === "analyzing" ? "-" : `#${product.rank}`}
+                  </div>
                   <div className="col-span-1 text-xs text-gray-500">{product.lastUpdated}</div>
                   <div className="col-span-1">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="text-xs px-2 py-1"
-                      onClick={() => window.location.href = `/product/${product.id}`}
-                    >
-                      <ExternalLink className="w-3 h-3 mr-1" />
-                      Optimize
-                    </Button>
+                    {product.status === "analyzing" ? (
+                      <div className="text-xs text-blue-600 flex items-center">
+                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                        In Queue
+                      </div>
+                    ) : (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="text-xs px-2 py-1"
+                        onClick={() => window.location.href = `/product/${product.id}`}
+                      >
+                        <ExternalLink className="w-3 h-3 mr-1" />
+                        Optimize
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
