@@ -189,7 +189,7 @@ export function BrandLoadingCard({ userRole = "business_user" }: BrandLoadingCar
                 className="absolute inset-y-0 left-0 w-full rounded-full origin-left"
                 style={{ 
                   background: 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary)/0.6))',
-                  animation: 'progress-flow 3s ease-in-out infinite'
+                  animation: 'progress-flow 6s ease-in-out infinite'
                 }}
               />
             </div>
