@@ -200,7 +200,7 @@ export function BrandLoadingCard({ userRole = "business_user" }: BrandLoadingCar
         </div>
 
         {/* AI Platform Indicators */}
-        <div className="mt-12 grid grid-cols-6 gap-3 w-full max-w-2xl opacity-85">
+        <div className="mt-12 grid grid-cols-6 gap-3 w-full max-w-2xl opacity-95">
           {aiPlatforms.map((platform, index) => (
             <div 
               key={platform.name}
