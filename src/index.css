@@ -246,13 +246,13 @@ All colors MUST be HSL.
 
 @keyframes progress-flow {
   0% {
-    transform: translateX(-100%) scaleX(0.3);
+    transform: translateX(-100%);
   }
   50% {
-    transform: translateX(50%) scaleX(0.6);
+    transform: translateX(200%);
   }
   100% {
-    transform: translateX(200%) scaleX(0.3);
+    transform: translateX(-100%);
   }
 }
 
