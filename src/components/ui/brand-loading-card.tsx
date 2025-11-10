@@ -68,25 +68,16 @@ interface BrandLoadingCardProps {
 
 export function BrandLoadingCard({ userRole = "business_user" }: BrandLoadingCardProps) {
   const [currentMessage, setCurrentMessage] = useState(0)
-  const [progress, setProgress] = useState(0)
   const isAgency = userRole === "agency_admin"
   const loadingMessages = getLoadingMessages(isAgency)
 
   useEffect(() => {
     const messageInterval = setInterval(() => {
       setCurrentMessage((prev) => (prev + 1) % loadingMessages.length)
-    }, 2000)
-
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + 0.5
-        return next >= 100 ? 0 : next
-      })
-    }, 50)
+    }, 3000)
 
     return () => {
       clearInterval(messageInterval)
-      clearInterval(progressInterval)
     }
   }, [])
 
@@ -195,12 +186,10 @@ export function BrandLoadingCard({ userRole = "business_user" }: BrandLoadingCar
           <div className="w-full max-w-md mx-auto space-y-4">
             <div className="relative h-1.5 bg-muted/40 rounded-full overflow-hidden backdrop-blur-sm">
               <div 
-                className="absolute inset-y-0 left-0 rounded-full transition-all duration-1000 ease-out"
+                className="absolute inset-y-0 left-0 w-full rounded-full origin-left"
                 style={{ 
-                  width: `${progress}%`,
                   background: 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary)/0.6))',
-                  backgroundSize: '200% 100%',
-                  animation: 'shimmer 2s ease-in-out infinite'
+                  animation: 'progress-flow 3s ease-in-out infinite'
                 }}
               />
             </div>
