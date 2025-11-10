@@ -192,24 +192,21 @@ export function BrandLoadingCard({ userRole = "business_user" }: BrandLoadingCar
           </div>
 
           {/* Enhanced Progress Bar */}
-          <div className="w-full max-w-md mx-auto space-y-3">
-            <div className="relative h-3 bg-muted/50 rounded-full overflow-hidden">
+          <div className="w-full max-w-md mx-auto space-y-4">
+            <div className="relative h-1.5 bg-muted/40 rounded-full overflow-hidden backdrop-blur-sm">
               <div 
                 className="absolute inset-y-0 left-0 rounded-full transition-all duration-1000 ease-out"
                 style={{ 
                   width: `${progress}%`,
-                  background: 'linear-gradient(to right, #10131d, #0e2d3b, rgba(14, 45, 59, 0.3))',
+                  background: 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary)/0.6))',
                   backgroundSize: '200% 100%',
                   animation: 'shimmer 2s ease-in-out infinite'
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
             </div>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Initializing...</span>
-              <span>{Math.round(progress)}%</span>
-              <span>Almost there!</span>
-            </div>
+            <p className="text-sm text-muted-foreground/80 font-medium">
+              Scans may take up to 15 minutes
+            </p>
           </div>
         </div>
 
