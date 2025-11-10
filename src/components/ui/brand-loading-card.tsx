@@ -79,10 +79,10 @@ export function BrandLoadingCard({ userRole = "business_user" }: BrandLoadingCar
 
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 95) return 10 // Reset to create continuous flow
-        return prev + Math.random() * 15 + 5
+        const next = prev + 0.5
+        return next >= 100 ? 0 : next
       })
-    }, 800)
+    }, 50)
 
     return () => {
       clearInterval(messageInterval)
