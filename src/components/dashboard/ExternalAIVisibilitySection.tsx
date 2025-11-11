@@ -456,7 +456,7 @@ export const ExternalAIVisibilitySection = ({ demoMode = false }: { demoMode?: b
       </Card>
 
       {/* Platform-wise Mentions */}
-      <Card>
+      <Card className={demoMode ? 'demo-card-7' : ''}>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <MessageSquare className="w-5 h-5 text-blue-500" />
@@ -506,7 +506,7 @@ export const ExternalAIVisibilitySection = ({ demoMode = false }: { demoMode?: b
       </Card>
 
       {/* Core Brand Queries */}
-      <Card>
+      <Card className={demoMode ? 'demo-card-8' : ''}>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <MessageSquare className="w-5 h-5 text-blue-500" />
@@ -537,7 +537,7 @@ export const ExternalAIVisibilitySection = ({ demoMode = false }: { demoMode?: b
 
 
       {/* Source Quality Analysis */}
-      <Card>
+      <Card className={demoMode ? 'demo-card-1' : ''}>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <img src="/lovable-uploads/210deded-106c-459a-8f28-05761a09348c.png" alt="Source Quality" className="w-12 h-12" />
