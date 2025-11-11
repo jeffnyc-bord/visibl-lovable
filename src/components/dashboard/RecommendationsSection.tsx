@@ -429,7 +429,7 @@ export const RecommendationsSection = ({ brandData, demoMode = false }: Recommen
   return (
     <div className="space-y-3">
       {/* Minimal Overview */}
-      <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
+      <Card className={`bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20 ${demoMode ? 'demo-card-1' : ''}`}>
         <CardContent className="p-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -475,7 +475,7 @@ export const RecommendationsSection = ({ brandData, demoMode = false }: Recommen
 
       {/* Compact Progress Row */}
       {completedActions.length > 0 && (
-        <div className="bg-primary/5 border border-primary/20 rounded-lg p-2">
+        <div className={`bg-primary/5 border border-primary/20 rounded-lg p-2 ${demoMode ? 'demo-card-2' : ''}`}>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">
               {completedActions.length} of {recommendations.length} completed
@@ -489,7 +489,7 @@ export const RecommendationsSection = ({ brandData, demoMode = false }: Recommen
       )}
 
       {/* Compact Controls */}
-      <div className="flex items-center justify-between gap-3">
+      <div className={`flex items-center justify-between gap-3 ${demoMode ? 'demo-filter-bar' : ''}`}>
         <div className="flex items-center space-x-2">
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-40 h-8 text-xs">
@@ -532,8 +532,8 @@ export const RecommendationsSection = ({ brandData, demoMode = false }: Recommen
       </div>
 
       {/* Compact Recommendations List */}
-      <div className="space-y-2">
-        {filteredRecommendations.map((rec) => (
+      <div className={`space-y-2 ${demoMode ? 'demo-card-3' : ''}`}>
+        {filteredRecommendations.map((rec, index) => (
           <Collapsible key={rec.id} open={expandedCards.includes(rec.id)} onOpenChange={() => toggleCardExpansion(rec.id)}>
             <Card className={`group transition-all duration-300 hover:shadow-md ${completedActions.includes(rec.id) ? 'bg-success/5 border-success/20' : ''}`}>
               <CollapsibleTrigger className="w-full">
@@ -668,7 +668,7 @@ export const RecommendationsSection = ({ brandData, demoMode = false }: Recommen
 
       {/* Quick Wins Section - Only show if there are any */}
       {recommendations.filter(rec => rec.effort === "Low" || rec.timeline.includes("1 week")).length > 0 && (
-        <Card className="bg-success/5 border-success/20">
+        <Card className={`bg-success/5 border-success/20 ${demoMode ? 'demo-card-4' : ''}`}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center space-x-2">
               <Timer className="w-4 h-4 text-success" />
