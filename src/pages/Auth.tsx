@@ -130,6 +130,8 @@ export const Auth = () => {
         onNavigateToAuth={() => navigate('/')}
         demoMode={false}
         onDemoModeChange={() => {}}
+        highlightMode={false}
+        onHighlightModeChange={() => {}}
       />
       
       {/* Left Section - Auth Form */}

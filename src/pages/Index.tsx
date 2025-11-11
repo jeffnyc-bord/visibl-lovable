@@ -274,6 +274,9 @@ const Index = () => {
   
   // Demo mode state
   const [demoMode, setDemoMode] = useState(false);
+  
+  // Highlight mode state
+  const [highlightMode, setHighlightMode] = useState(false);
 
   // Get current selected brand data
   const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];
@@ -429,6 +432,8 @@ const Index = () => {
         onNavigateToAuth={() => navigate('/auth')}
         demoMode={demoMode}
         onDemoModeChange={setDemoMode}
+        highlightMode={highlightMode}
+        onHighlightModeChange={setHighlightMode}
       />
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
@@ -688,7 +693,15 @@ const Index = () => {
 
                   {/* Dashboard Content */}
                   {hasAnalysis && (
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
+                    <Tabs 
+                      value={activeTab} 
+                      onValueChange={setActiveTab} 
+                      className="space-y-3" 
+                      data-highlight-mode={highlightMode ? "true" : "false"}
+                    >
+                      {/* Spotlight Overlay */}
+                      {highlightMode && <div className="spotlight-overlay" id="spotlight-overlay" />}
+                      
                       <TabsList className={`bg-white border border-gray-200 p-0.5 shadow-sm ${demoMode ? 'demo-tabs' : ''}`}>
                         {allSections
                           .filter(section => visibleSections.includes(section.key))

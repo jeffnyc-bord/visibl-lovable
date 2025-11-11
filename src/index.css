@@ -411,3 +411,53 @@ All colors MUST be HSL.
   animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 2.6s forwards;
   opacity: 0;
 }
+
+/* Spotlight Highlight Mode */
+.spotlight-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+[data-highlight-mode="true"] .highlight-card:hover ~ .spotlight-overlay,
+[data-highlight-mode="true"]:has(.highlight-card:hover) .spotlight-overlay {
+  opacity: 1;
+}
+
+[data-highlight-mode="true"] .highlight-card {
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  position: relative;
+}
+
+[data-highlight-mode="true"] .highlight-card:hover {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(1.15) rotateX(5deg) rotateY(-5deg) !important;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  z-index: 50;
+  box-shadow: 
+    0 0 60px 20px hsl(var(--primary) / 0.5),
+    0 0 120px 40px hsl(var(--primary) / 0.3),
+    0 30px 90px -20px rgba(0, 0, 0, 0.8);
+  filter: brightness(1.2);
+  width: auto;
+  max-width: 90vw;
+}
+
+[data-highlight-mode="true"] .highlight-card:hover::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle at center, hsl(var(--primary) / 0.3), transparent 70%);
+  filter: blur(20px);
+  z-index: -1;
+  animation: pulse 2s ease-in-out infinite;
+}
