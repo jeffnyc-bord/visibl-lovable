@@ -336,12 +336,48 @@ All colors MUST be HSL.
   opacity: 0;
 }
 
-.demo-content {
-  animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+.demo-exit-button {
+  animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) 3s forwards;
   opacity: 0;
 }
 
-.demo-exit-button {
-  animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) 2s forwards;
+/* Individual card animations for demo mode */
+.demo-card-1 {
+  animation: slideInFromLeft 1s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+  opacity: 0;
+}
+
+.demo-card-2 {
+  animation: slideInFromRight 1s cubic-bezier(0.16, 1, 0.3, 1) 1.4s forwards;
+  opacity: 0;
+}
+
+.demo-card-3 {
+  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 1.6s forwards;
+  opacity: 0;
+}
+
+.demo-card-4 {
+  animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 1.8s forwards;
+  opacity: 0;
+}
+
+.demo-card-5 {
+  animation: slideInFromLeft 1s cubic-bezier(0.16, 1, 0.3, 1) 2s forwards;
+  opacity: 0;
+}
+
+.demo-card-6 {
+  animation: slideInFromRight 1s cubic-bezier(0.16, 1, 0.3, 1) 2.2s forwards;
+  opacity: 0;
+}
+
+.demo-card-7 {
+  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 2.4s forwards;
+  opacity: 0;
+}
+
+.demo-card-8 {
+  animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 2.6s forwards;
   opacity: 0;
 }

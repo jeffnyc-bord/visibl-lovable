@@ -62,6 +62,7 @@ interface OverviewSectionProps {
   testTopSourceUrl?: string;
   dataPointsCount?: number;
   selectedGradient?: string;
+  demoMode?: boolean;
 }
 
 const GRADIENT_CONFIGS: Record<string, string[]> = {
@@ -77,7 +78,7 @@ const GRADIENT_CONFIGS: Record<string, string[]> = {
   gradient10: ["#84CC16", "#06B6D4", "#8B5CF6"],
 };
 
-export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false, highlightTopSource = false, testTopSourceUrl = "", dataPointsCount = 6, selectedGradient = "gradient1" }: OverviewSectionProps) => {
+export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, onQueryClick, onNavigateToPrompts, userRole = "business_user", showBaseline = false, highlightTopSource = false, testTopSourceUrl = "", dataPointsCount = 6, selectedGradient = "gradient1", demoMode = false }: OverviewSectionProps) => {
   const gradientColors = GRADIENT_CONFIGS[selectedGradient] || GRADIENT_CONFIGS.gradient1;
   const { toast } = useToast();
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
@@ -331,7 +332,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityScore: false})}>
+        <Card className={`group relative ${demoMode ? 'demo-card-1' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, visibilityScore: false})}>
           <CardContent className="p-4">
             <div className="absolute top-4 right-4">
               <HelpCircle 
@@ -354,7 +355,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </CardContent>
         </Card>
 
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, totalMentions: false})}>
+        <Card className={`group relative ${demoMode ? 'demo-card-2' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, totalMentions: false})}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -383,7 +384,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </Card>
 
         <Card 
-          className={`group relative cursor-pointer hover:shadow-lg transition-all duration-300 ${
+          className={`group relative cursor-pointer hover:shadow-lg transition-all duration-300 ${demoMode ? 'demo-card-3' : ''} ${
             highlightTopSource 
               ? 'ring-4 ring-primary ring-offset-2 shadow-2xl animate-pulse' 
               : ''

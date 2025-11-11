@@ -17,7 +17,7 @@ import {
   Zap
 } from "lucide-react";
 
-export const TechnicalCrawlabilitySection = () => {
+export const TechnicalCrawlabilitySection = ({ demoMode = false }: { demoMode?: boolean }) => {
   return (
     <div className="space-y-6">
       {/* Overall Health Score */}

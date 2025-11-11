@@ -50,9 +50,10 @@ interface BrandData {
 
 interface CompetitorSectionProps {
   brandData: BrandData;
+  demoMode?: boolean;
 }
 
-export const CompetitorSection = ({ brandData }: CompetitorSectionProps) => {
+export const CompetitorSection = ({ brandData, demoMode = false }: CompetitorSectionProps) => {
   const [selectedCompetitors, setSelectedCompetitors] = useState<string[]>(["Adidas", "Under Armour", "New Balance"]);
   const [dateRange, setDateRange] = useState("30");
   const [viewMode, setViewMode] = useState<"table" | "charts">("table");

@@ -68,9 +68,10 @@ interface BrandData {
 
 interface BrandAnalysisSectionProps {
   brandData: BrandData;
+  demoMode?: boolean;
 }
 
-export const BrandAnalysisSection = ({ brandData }: BrandAnalysisSectionProps) => {
+export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnalysisSectionProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [scoreFilter, setScoreFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");

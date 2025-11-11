@@ -13,7 +13,48 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Lightbulb, CheckCircle, Clock, AlertTriangle, TrendingUp, Star, Timer, Users, Target, Filter, BarChart3, Gauge, Brain, Sparkles, FileText, Code, Wand2, Bot, ChevronDown, ChevronUp, PlayCircle, Undo2, Calendar, PieChart, HelpCircle, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 
-export const RecommendationsSection = () => {
+interface BrandData {
+  id: string;
+  name: string;
+  logo: string;
+  url: string;
+  visibilityScore: number;
+  totalMentions: number;
+  platformCoverage: number;
+  industryRanking: number;
+  mentionTrend: string;
+  sentimentScore: number;
+  lastUpdated: string;
+  platforms: Array<{
+    name: string;
+    mentions: number;
+    sentiment: string;
+    coverage: number;
+    trend: string;
+  }>;
+  products: Array<{
+    id: number;
+    name: string;
+    category: string;
+    visibilityScore: number;
+    mentions: number;
+    sentiment: string;
+    lastOptimized: string;
+  }>;
+  competitors: Array<{
+    name: string;
+    visibilityScore: number;
+    mentions: number;
+    trend: string;
+  }>;
+}
+
+interface RecommendationsSectionProps {
+  brandData?: BrandData;
+  demoMode?: boolean;
+}
+
+export const RecommendationsSection = ({ brandData, demoMode = false }: RecommendationsSectionProps = {}) => {
   const [completedActions, setCompletedActions] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState("ai-smart");
   const [filterBy, setFilterBy] = useState("all");

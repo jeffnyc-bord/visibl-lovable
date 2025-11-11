@@ -57,9 +57,10 @@ interface QueriesAndPromptsSectionProps {
   prefilledQuery?: string;
   onQueryUsed?: () => void;
   autoOpenPrompt?: string; // Query text to automatically open
+  demoMode?: boolean;
 }
 
-export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUsed, autoOpenPrompt }: QueriesAndPromptsSectionProps) => {
+export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUsed, autoOpenPrompt, demoMode = false }: QueriesAndPromptsSectionProps) => {
   const { toast } = useToast();
   const [customPrompt, setCustomPrompt] = useState(prefilledQuery || "");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);

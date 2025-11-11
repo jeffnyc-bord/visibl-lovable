@@ -727,6 +727,7 @@ const Index = () => {
                               testTopSourceUrl={topSourceUrl}
                               dataPointsCount={dataPointsCount}
                               selectedGradient={selectedGradient}
+                              demoMode={demoMode}
                               onQueryClick={(query) => {
                                 // Store current scroll position
                                 setPreviousScrollPosition(window.scrollY);
@@ -750,7 +751,7 @@ const Index = () => {
                           ) : dashboardStates.widgetLoading ? (
                             <BrandLoadingCard userRole={userRole} />
                           ) : (
-                            <BrandAnalysisSection brandData={selectedBrand} />
+                            <BrandAnalysisSection brandData={selectedBrand} demoMode={demoMode} />
                           )}
                         </TabsContent>
                       )}
@@ -766,6 +767,7 @@ const Index = () => {
                               brandData={selectedBrand} 
                               prefilledQuery={prefilledQuery}
                               autoOpenPrompt={autoOpenPrompt}
+                              demoMode={demoMode}
                               onQueryUsed={() => {
                                 setPrefilledQuery("");
                                 setAutoOpenPrompt("");
@@ -787,7 +789,7 @@ const Index = () => {
                           ) : dashboardStates.widgetLoading ? (
                             <WidgetSkeleton />
                           ) : (
-                            <CompetitorSection brandData={selectedBrand} />
+                            <CompetitorSection brandData={selectedBrand} demoMode={demoMode} />
                           )}
                         </TabsContent>
                       )}
@@ -804,7 +806,7 @@ const Index = () => {
                           ) : dashboardStates.widgetLoading ? (
                             <WidgetSkeleton />
                           ) : (
-                            <TrendsSection />
+                            <TrendsSection demoMode={demoMode} />
                           )}
                         </TabsContent>
                       )}
@@ -816,7 +818,7 @@ const Index = () => {
                           ) : dashboardStates.widgetLoading ? (
                             <WidgetSkeleton />
                           ) : (
-                            <TechnicalCrawlabilitySection />
+                            <TechnicalCrawlabilitySection demoMode={demoMode} />
                           )}
                         </TabsContent>
                       )}
@@ -828,7 +830,7 @@ const Index = () => {
                           ) : dashboardStates.widgetLoading ? (
                             <BrandLoadingCard userRole={userRole} />
                           ) : (
-                            <RecommendationsSection />
+                            <RecommendationsSection brandData={selectedBrand} demoMode={demoMode} />
                           )}
                         </TabsContent>
                       )}

@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { TrendingUp, Brain, Search, HelpCircle } from "lucide-react";
 import { useState } from "react";
 
-export const TrendsSection = () => {
+export const TrendsSection = ({ demoMode = false }: { demoMode?: boolean }) => {
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const trends = [
     {
