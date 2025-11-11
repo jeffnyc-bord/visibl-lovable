@@ -4,17 +4,22 @@ import { cn } from "@/lib/utils"
 
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm highlight-card",
-      className
-    )}
-    {...props}
-  />
-))
+  React.HTMLAttributes<HTMLDivElement> & { 'data-card-id'?: string }
+>(({ className, ...props }, ref) => {
+  const cardId = props['data-card-id'] || `card-${Math.random().toString(36).substr(2, 9)}`;
+  
+  return (
+    <div
+      ref={ref}
+      data-card-id={cardId}
+      className={cn(
+        "rounded-lg border bg-card text-card-foreground shadow-sm highlight-card",
+        className
+      )}
+      {...props}
+    />
+  );
+})
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<
