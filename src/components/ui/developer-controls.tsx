@@ -31,8 +31,6 @@ interface DeveloperControlsProps {
   onNavigateToAuth?: () => void;
   demoMode: boolean;
   onDemoModeChange: (enabled: boolean) => void;
-  highlightMode: boolean;
-  onHighlightModeChange: (enabled: boolean) => void;
 }
 
 const gradientOptions = [
@@ -48,7 +46,7 @@ const gradientOptions = [
   { id: "gradient10", name: "Neon Dreams", colors: ["#84CC16", "#06B6D4", "#8B5CF6"] },
 ];
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange, highlightMode, onHighlightModeChange }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -244,25 +242,6 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                     </Label>
                     <p className="text-xs text-muted-foreground">
                       Animate dashboard with cinematic entrance effects
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <Switch
-                    id="highlightMode"
-                    checked={highlightMode}
-                    onCheckedChange={onHighlightModeChange}
-                  />
-                  <div className="space-y-1 flex-1">
-                    <Label
-                      htmlFor="highlightMode"
-                      className="text-sm font-medium leading-none"
-                    >
-                      Spotlight Highlight Mode
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      Hover over cards to spotlight them with dramatic effects
                     </p>
                   </div>
                 </div>

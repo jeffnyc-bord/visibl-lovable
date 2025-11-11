@@ -274,54 +274,6 @@ const Index = () => {
   
   // Demo mode state
   const [demoMode, setDemoMode] = useState(false);
-  
-  // Highlight mode state
-  const [highlightMode, setHighlightMode] = useState(false);
-  const [spotlightedCard, setSpotlightedCard] = useState<string | null>(null);
-
-  // Handle card spotlight click and apply class
-  useEffect(() => {
-    if (!highlightMode) {
-      setSpotlightedCard(null);
-      // Remove spotlighted class from all cards
-      document.querySelectorAll('.highlight-card.spotlighted').forEach(card => {
-        card.classList.remove('spotlighted');
-      });
-      return;
-    }
-
-    const handleCardClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const card = target.closest('.highlight-card') as HTMLElement;
-      
-      if (card) {
-        const cardId = card.getAttribute('data-card-id');
-        
-        // Remove spotlighted from all cards
-        document.querySelectorAll('.highlight-card.spotlighted').forEach(c => {
-          c.classList.remove('spotlighted');
-        });
-        
-        // Toggle spotlight
-        if (spotlightedCard === cardId) {
-          setSpotlightedCard(null);
-        } else {
-          setSpotlightedCard(cardId);
-          card.classList.add('spotlighted');
-        }
-        e.stopPropagation();
-      } else {
-        // Click outside cards
-        setSpotlightedCard(null);
-        document.querySelectorAll('.highlight-card.spotlighted').forEach(c => {
-          c.classList.remove('spotlighted');
-        });
-      }
-    };
-
-    document.addEventListener('click', handleCardClick);
-    return () => document.removeEventListener('click', handleCardClick);
-  }, [highlightMode, spotlightedCard]);
 
   // Get current selected brand data
   const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];
@@ -477,8 +429,6 @@ const Index = () => {
         onNavigateToAuth={() => navigate('/auth')}
         demoMode={demoMode}
         onDemoModeChange={setDemoMode}
-        highlightMode={highlightMode}
-        onHighlightModeChange={setHighlightMode}
       />
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
@@ -738,16 +688,7 @@ const Index = () => {
 
                   {/* Dashboard Content */}
                   {hasAnalysis && (
-                    <Tabs 
-                      value={activeTab} 
-                      onValueChange={setActiveTab} 
-                      className="space-y-3" 
-                      data-highlight-mode={highlightMode ? "true" : "false"}
-                      data-spotlighted-card={spotlightedCard || ""}
-                    >
-                      {/* Spotlight Overlay */}
-                      {highlightMode && spotlightedCard && <div className="spotlight-overlay active" />}
-                      
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
                       <TabsList className={`bg-white border border-gray-200 p-0.5 shadow-sm ${demoMode ? 'demo-tabs' : ''}`}>
                         {allSections
                           .filter(section => visibleSections.includes(section.key))
