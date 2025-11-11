@@ -303,8 +303,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       {/* Export Report Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">AI Visibility Overview</h2>
-          <p className="text-muted-foreground">Comprehensive AI visibility metrics and platform insights for {brandData.name}</p>
+          <h2 className={`text-2xl font-bold text-foreground ${demoMode ? 'demo-header' : ''}`}>AI Visibility Overview</h2>
+          <p className={`text-muted-foreground ${demoMode ? 'demo-header' : ''}`}>Comprehensive AI visibility metrics and platform insights for {brandData.name}</p>
         </div>
         <ReportExportDialog
           trigger={
