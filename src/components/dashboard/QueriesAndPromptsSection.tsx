@@ -722,7 +722,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
 
       <TabsContent value="blast" className="space-y-6">
         {/* Modern Prompt Blast Workspace */}
-        <Card className="border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors">
+        <Card className={`border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors ${demoMode ? 'demo-card-1' : ''}`}>
           <CardHeader className="bg-gray-50/50">
             <CardTitle className="flex items-center space-x-2">
               <div className="p-2 bg-white rounded-lg shadow-sm">
@@ -939,7 +939,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
 
         {/* Live Results View */}
         {showLiveResults && liveResults.length > 0 && (
-          <Card className="border-l-4 border-l-green-500">
+          <Card className={`border-l-4 border-l-green-500 ${demoMode ? 'demo-card-2' : ''}`}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <MessageSquare className="w-5 h-5 text-green-600" />
@@ -1013,7 +1013,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
         )}
 
         {/* Enhanced Prompt History */}
-        <Card>
+        <Card className={demoMode ? 'demo-card-3' : ''}>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <History className="w-5 h-5 text-orange-500" />
@@ -1098,7 +1098,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
       </TabsContent>
 
       <TabsContent value="prompts" className="space-y-6">
-        <Card>
+        <Card className={demoMode ? 'demo-card-4' : ''}>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
