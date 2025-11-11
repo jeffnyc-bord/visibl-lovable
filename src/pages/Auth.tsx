@@ -128,6 +128,8 @@ export const Auth = () => {
         selectedGradient="gradient3"
         onGradientChange={() => {}}
         onNavigateToAuth={() => navigate('/')}
+        demoMode={false}
+        onDemoModeChange={() => {}}
       />
       
       {/* Left Section - Auth Form */}

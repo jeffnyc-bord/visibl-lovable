@@ -271,6 +271,9 @@ const Index = () => {
     showBaseline: false,
     highlightTopSource: false,
   });
+  
+  // Demo mode state
+  const [demoMode, setDemoMode] = useState(false);
 
   // Get current selected brand data
   const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];
@@ -424,6 +427,8 @@ const Index = () => {
         selectedGradient={selectedGradient}
         onGradientChange={setSelectedGradient}
         onNavigateToAuth={() => navigate('/auth')}
+        demoMode={demoMode}
+        onDemoModeChange={setDemoMode}
       />
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
@@ -580,7 +585,7 @@ const Index = () => {
                 <>
                   {/* Filter Bar */}
                   {hasAnalysis && (
-                    <div className="mb-3 bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm">
+                    <div className={`mb-3 bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm ${demoMode ? 'demo-filter-bar' : ''}`}>
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2">
                       <Select value={selectedBrandId} onValueChange={setSelectedBrandId}>
@@ -684,7 +689,7 @@ const Index = () => {
                   {/* Dashboard Content */}
                   {hasAnalysis && (
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
-                      <TabsList className="bg-white border border-gray-200 p-0.5 shadow-sm">
+                      <TabsList className={`bg-white border border-gray-200 p-0.5 shadow-sm ${demoMode ? 'demo-tabs' : ''}`}>
                         {allSections
                           .filter(section => visibleSections.includes(section.key))
                           .map((section) => (
@@ -704,7 +709,7 @@ const Index = () => {
                       </TabsList>
 
                       {visibleSections.includes("overview") && (
-                        <TabsContent value="overview">
+                        <TabsContent value="overview" className={demoMode ? 'demo-content' : ''}>
                           {dashboardStates.emptyState ? (
                             <NoAIVisibilityEmpty />
                           ) : dashboardStates.widgetError ? (
@@ -739,7 +744,7 @@ const Index = () => {
                       )}
 
                       {visibleSections.includes("brand") && (
-                        <TabsContent value="brand">
+                        <TabsContent value="brand" className={demoMode ? 'demo-content' : ''}>
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
@@ -751,7 +756,7 @@ const Index = () => {
                       )}
 
                       {visibleSections.includes("queries") && (
-                        <TabsContent value="queries">
+                        <TabsContent value="queries" className={demoMode ? 'demo-content' : ''}>
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
@@ -771,7 +776,7 @@ const Index = () => {
                       )}
 
                       {visibleSections.includes("competitors") && (
-                        <TabsContent value="competitors">
+                        <TabsContent value="competitors" className={demoMode ? 'demo-content' : ''}>
                           {dashboardStates.emptyState ? (
                             <EmptyState
                               title="No Competitor Data"
@@ -788,7 +793,7 @@ const Index = () => {
                       )}
 
                       {visibleSections.includes("trends") && (
-                        <TabsContent value="trends">
+                        <TabsContent value="trends" className={demoMode ? 'demo-content' : ''}>
                           {dashboardStates.emptyState ? (
                             <EmptyState
                               title="No Trend Data Available"
@@ -805,7 +810,7 @@ const Index = () => {
                       )}
 
                       {visibleSections.includes("technical") && (
-                        <TabsContent value="technical">
+                        <TabsContent value="technical" className={demoMode ? 'demo-content' : ''}>
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
@@ -817,7 +822,7 @@ const Index = () => {
                       )}
 
                       {visibleSections.includes("recommendations") && (
-                        <TabsContent value="recommendations">
+                        <TabsContent value="recommendations" className={demoMode ? 'demo-content' : ''}>
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
@@ -844,6 +849,20 @@ const Index = () => {
           {activeView === "settings" && <SettingsPage userRole={userRole} />}
         </main>
       </div>
+
+      {/* Demo Mode Exit Button */}
+      {demoMode && (
+        <div className="fixed top-1/2 right-8 -translate-y-1/2 z-50 demo-exit-button">
+          <Button
+            onClick={() => setDemoMode(false)}
+            size="lg"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-2xl rounded-full px-8 py-6 text-lg font-semibold flex items-center gap-3 backdrop-blur-sm border-2 border-border/40"
+          >
+            <X className="w-5 h-5" />
+            Exit Demo Mode
+          </Button>
+        </div>
+      )}
 
       {/* Add New Brand Dialog */}
       <Dialog open={showAddBrandDialog} onOpenChange={(open) => {

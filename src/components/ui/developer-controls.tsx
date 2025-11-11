@@ -29,6 +29,8 @@ interface DeveloperControlsProps {
   selectedGradient: string;
   onGradientChange: (gradient: string) => void;
   onNavigateToAuth?: () => void;
+  demoMode: boolean;
+  onDemoModeChange: (enabled: boolean) => void;
 }
 
 const gradientOptions = [
@@ -44,7 +46,7 @@ const gradientOptions = [
   { id: "gradient10", name: "Neon Dreams", colors: ["#84CC16", "#06B6D4", "#8B5CF6"] },
 ];
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -222,6 +224,27 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                   <p className="text-xs text-muted-foreground">
                   Choose a gradient style for the bar chart
                 </p>
+              </div>
+              
+              <div className="pt-2 border-t space-y-3">
+                <div className="flex items-start space-x-3">
+                  <Switch
+                    id="demoMode"
+                    checked={demoMode}
+                    onCheckedChange={onDemoModeChange}
+                  />
+                  <div className="space-y-1 flex-1">
+                    <Label
+                      htmlFor="demoMode"
+                      className="text-sm font-medium leading-none"
+                    >
+                      Cinematic Demo Mode
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Animate dashboard with cinematic entrance effects
+                    </p>
+                  </div>
+                </div>
               </div>
               
               {onNavigateToAuth && (
