@@ -197,7 +197,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
     <div className="space-y-6">
       {/* Section 1: Overall Product AI Readiness Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <Card className="lg:col-span-2 group relative" onMouseLeave={() => setShowTooltips({...showTooltips, readiness: false})}>
+        <Card className={`lg:col-span-2 group relative ${demoMode ? 'demo-card-1' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, readiness: false})}>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center justify-between">
               <span>Overall Product AI Readiness</span>
@@ -232,7 +232,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
           </CardContent>
         </Card>
 
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, metrics: false})}>
+        <Card className={`group relative ${demoMode ? 'demo-card-2' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, metrics: false})}>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center justify-between">
               <div className="flex items-center">
@@ -268,7 +268,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={demoMode ? 'demo-card-3' : ''}>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center">
               <BarChart3 className="w-4 h-4 mr-2" />
@@ -302,7 +302,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
 
       {/* Section 2: Top / Bottom Performing Products */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className={demoMode ? 'demo-card-4' : ''}>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center text-green-600">
               <Star className="w-4 h-4 mr-2" />
@@ -335,7 +335,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={demoMode ? 'demo-card-5' : ''}>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center text-red-600">
               <AlertTriangle className="w-4 h-4 mr-2" />
@@ -386,7 +386,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
       </div>
 
       {/* Section 3: Detailed Product AI Readiness Table */}
-      <Card>
+      <Card className={demoMode ? 'demo-card-6' : ''}>
         <CardHeader className="pb-3">
           <CardTitle className="text-lg">Product AI Readiness Analysis</CardTitle>
           <CardDescription>Detailed view and management of all product performance</CardDescription>
