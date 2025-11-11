@@ -434,7 +434,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </CardContent>
         </Card>
 
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, platformCoverage: false})}>
+        <Card className={`group relative ${demoMode ? 'demo-card-4' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, platformCoverage: false})}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -502,7 +502,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Visibility Chart */}
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, visibilityTrend: false})}>
+        <Card className={`group relative ${demoMode ? 'demo-card-5' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, visibilityTrend: false})}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -636,7 +636,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </Card>
 
         {/* Source Quality & Authority */}
-        <Card className="group relative self-start" onMouseLeave={() => setShowTooltips({...showTooltips, sourceQuality: false})}>
+        <Card className={`group relative self-start ${demoMode ? 'demo-card-6' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, sourceQuality: false})}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -722,7 +722,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
 
       {/* AI Platform Mention Distribution */}
-      <Card className="mb-6 group relative" onMouseLeave={() => setShowTooltips({...showTooltips, platformDistribution: false})}>
+      <Card className={`mb-6 group relative ${demoMode ? 'demo-card-7' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, platformDistribution: false})}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -932,7 +932,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
 
       {/* Core Brand Queries */}
-      <Card className="mb-6 group relative" onMouseLeave={() => setShowTooltips({...showTooltips, coreQueries: false})}>
+      <Card className={`mb-6 group relative ${demoMode ? 'demo-card-8' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, coreQueries: false})}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">

@@ -6,7 +6,7 @@ import { Eye, TrendingUp, MessageSquare, Link, Calendar, Star, BarChart3, Target
 import { useState } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 
-export const ExternalAIVisibilitySection = () => {
+export const ExternalAIVisibilitySection = ({ demoMode = false }: { demoMode?: boolean }) => {
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
   // Mock data for AI mentions and sources
@@ -133,7 +133,7 @@ export const ExternalAIVisibilitySection = () => {
     <div className="space-y-6">
       {/* Overview Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, totalMentions: false})}>
+        <Card className={`group relative ${demoMode ? 'demo-card-1' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, totalMentions: false})}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -161,7 +161,7 @@ export const ExternalAIVisibilitySection = () => {
           </CardContent>
         </Card>
 
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, sentiment: false})}>
+        <Card className={`group relative ${demoMode ? 'demo-card-2' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, sentiment: false})}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -194,7 +194,7 @@ export const ExternalAIVisibilitySection = () => {
           </CardContent>
         </Card>
 
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, platformCoverage: false})}>
+        <Card className={`group relative ${demoMode ? 'demo-card-3' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, platformCoverage: false})}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -220,7 +220,7 @@ export const ExternalAIVisibilitySection = () => {
           </CardContent>
         </Card>
 
-        <Card className="group relative" onMouseLeave={() => setShowTooltips({...showTooltips, growth: false})}>
+        <Card className={`group relative ${demoMode ? 'demo-card-4' : ''}`} onMouseLeave={() => setShowTooltips({...showTooltips, growth: false})}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -248,7 +248,7 @@ export const ExternalAIVisibilitySection = () => {
       </div>
 
       {/* Overall AI Visibility Trend */}
-      <Card>
+      <Card className={demoMode ? 'demo-card-5' : ''}>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <BarChart3 className="w-5 h-5 text-indigo-500" />
@@ -278,7 +278,7 @@ export const ExternalAIVisibilitySection = () => {
       </Card>
 
       {/* AI Platform Mention Distribution */}
-      <Card>
+      <Card className={demoMode ? 'demo-card-6' : ''}>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <img src="/lovable-uploads/79e7d0e6-2ccc-40a4-a2c4-fa6f2406e0c6.png" alt="AI Platform Mention Distribution" className="w-5 h-5" />
