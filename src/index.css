@@ -260,55 +260,70 @@ All colors MUST be HSL.
 @keyframes slideInFromLeft {
   0% {
     opacity: 0;
-    transform: translateX(-100%);
+    transform: translateX(-100%) rotateY(-25deg) rotateX(10deg);
+  }
+  60% {
+    transform: translateX(5%) rotateY(3deg) rotateX(-2deg);
   }
   100% {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) rotateY(0deg) rotateX(0deg);
   }
 }
 
 @keyframes slideInFromTop {
   0% {
     opacity: 0;
-    transform: translateY(-100%);
+    transform: translateY(-100%) rotateX(-35deg);
+  }
+  60% {
+    transform: translateY(5%) rotateX(5deg);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) rotateX(0deg);
   }
 }
 
 @keyframes fadeInUp {
   0% {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: translateY(60px) scale(0.85) rotateX(25deg);
+  }
+  60% {
+    transform: translateY(-5px) scale(1.02) rotateX(-3deg);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) rotateX(0deg);
   }
 }
 
 @keyframes fadeInScale {
   0% {
     opacity: 0;
-    transform: scale(0.8);
+    transform: scale(0.6) rotateZ(-15deg) rotateY(30deg);
+  }
+  60% {
+    transform: scale(1.05) rotateZ(2deg) rotateY(-3deg);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) rotateZ(0deg) rotateY(0deg);
   }
 }
 
 @keyframes slideInFromRight {
   0% {
     opacity: 0;
-    transform: translateX(100%);
+    transform: translateX(100%) rotateY(25deg) rotateX(-10deg);
+  }
+  60% {
+    transform: translateX(-5%) rotateY(-3deg) rotateX(2deg);
   }
   100% {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) rotateY(0deg) rotateX(0deg);
   }
 }
 
@@ -316,68 +331,94 @@ All colors MUST be HSL.
   animation: pulse-subtle 3s ease-in-out infinite;
 }
 
-/* Demo mode animation classes */
+/* Demo mode animation classes with 3D perspective */
 .demo-sidebar {
   animation: slideInFromLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-header {
   animation: slideInFromTop 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-filter-bar {
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-tabs {
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.9s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-exit-button {
   animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) 3s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
-/* Individual card animations for demo mode */
+/* Individual card animations for demo mode with 3D transforms */
 .demo-card-1 {
   animation: slideInFromLeft 1s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-card-2 {
   animation: slideInFromRight 1s cubic-bezier(0.16, 1, 0.3, 1) 1.4s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-card-3 {
   animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 1.6s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-card-4 {
   animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 1.8s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-card-5 {
   animation: slideInFromLeft 1s cubic-bezier(0.16, 1, 0.3, 1) 2s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-card-6 {
   animation: slideInFromRight 1s cubic-bezier(0.16, 1, 0.3, 1) 2.2s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-card-7 {
   animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 2.4s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .demo-card-8 {
   animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 2.6s forwards;
   opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
