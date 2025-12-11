@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, Eye, FileText, MessageSquare, HelpCircle, Calendar } from "lucide-react";
+import { TrendingUp, Eye, FileText, MessageSquare, HelpCircle, Calendar, ChevronDown, ChevronUp, ExternalLink, Shield, ThumbsUp, ThumbsDown, Minus, Clock, Quote, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
@@ -91,6 +91,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   
   // State for Source Quality section
   const [sourcesDisplayCount, setSourcesDisplayCount] = useState(3);
+  const [expandedSource, setExpandedSource] = useState<number | null>(null);
 
   const allVisibilityData = [
     { month: "Jul", score: 75 },
@@ -202,23 +203,120 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     { query: "Nike React vs Nike ZoomX technology", brand: "Nike", mentions: 134 },
   ];
 
-  // Generate brand-specific source quality data
+  // Generate brand-specific source quality data with expanded details
   const generateBrandSources = () => {
     const brandUrl = brandData.url.startsWith('http') ? brandData.url : `https://${brandData.url}`;
     const brandDomain = brandData.url.replace(/^https?:\/\//, '').replace(/^www\./, '');
     const baseMentions = Math.round(brandData.totalMentions * 0.027); // ~2.7% of total
     
-    // Different source patterns for different brand types
+    const promptExamples = [
+      "Best running shoes for marathon training",
+      "Most comfortable athletic footwear",
+      "Sustainable sneaker brands comparison",
+      "Top basketball shoes for performance",
+      "Athletic shoes with best arch support"
+    ];
+    
     const sources = [
-      { source: `www.${brandDomain}`, url: brandUrl, mentions: Math.round(baseMentions * 1.2) },
-      { source: "www.techcrunch.com", url: "https://www.techcrunch.com", mentions: Math.round(baseMentions * 0.95) },
-      { source: "www.theverge.com", url: "https://www.theverge.com", mentions: Math.round(baseMentions * 0.75) },
-      { source: "www.wired.com", url: "https://www.wired.com", mentions: Math.round(baseMentions * 0.68) },
-      { source: "www.forbes.com", url: "https://www.forbes.com", mentions: Math.round(baseMentions * 0.58) },
-      { source: "www.reddit.com", url: "https://www.reddit.com", mentions: Math.round(baseMentions * 0.45) },
+      { 
+        source: `www.${brandDomain}`, 
+        url: brandUrl, 
+        mentions: Math.round(baseMentions * 1.2),
+        authority: "high" as const,
+        sentiment: "positive" as const,
+        platforms: ["ChatGPT", "Gemini", "Perplexity", "Claude"],
+        lastCited: "2 hours ago",
+        sampleQuote: `"According to ${brandData.name}'s official product specifications, their latest release features innovative cushioning technology..."`,
+        prompts: [promptExamples[0], promptExamples[1], promptExamples[3]],
+        competitorMentioned: false
+      },
+      { 
+        source: "www.techcrunch.com", 
+        url: "https://www.techcrunch.com", 
+        mentions: Math.round(baseMentions * 0.95),
+        authority: "high" as const,
+        sentiment: "positive" as const,
+        platforms: ["ChatGPT", "Gemini", "Grok"],
+        lastCited: "5 hours ago",
+        sampleQuote: `"TechCrunch reports that ${brandData.name} has been leading innovation in the athletic wear space with their new sustainable materials initiative..."`,
+        prompts: [promptExamples[2], promptExamples[0]],
+        competitorMentioned: true
+      },
+      { 
+        source: "www.theverge.com", 
+        url: "https://www.theverge.com", 
+        mentions: Math.round(baseMentions * 0.75),
+        authority: "high" as const,
+        sentiment: "neutral" as const,
+        platforms: ["Perplexity", "Claude"],
+        lastCited: "1 day ago",
+        sampleQuote: `"The Verge's analysis compares ${brandData.name}'s technology stack against industry competitors, noting both strengths and areas for improvement..."`,
+        prompts: [promptExamples[1], promptExamples[4]],
+        competitorMentioned: true
+      },
+      { 
+        source: "www.wired.com", 
+        url: "https://www.wired.com", 
+        mentions: Math.round(baseMentions * 0.68),
+        authority: "high" as const,
+        sentiment: "positive" as const,
+        platforms: ["ChatGPT", "Gemini"],
+        lastCited: "2 days ago",
+        sampleQuote: `"Wired's deep dive into athletic technology highlights ${brandData.name}'s proprietary foam technology as a game-changer..."`,
+        prompts: [promptExamples[3]],
+        competitorMentioned: false
+      },
+      { 
+        source: "www.forbes.com", 
+        url: "https://www.forbes.com", 
+        mentions: Math.round(baseMentions * 0.58),
+        authority: "high" as const,
+        sentiment: "positive" as const,
+        platforms: ["ChatGPT", "Perplexity", "Grok"],
+        lastCited: "3 days ago",
+        sampleQuote: `"Forbes ranks ${brandData.name} among the top brands for customer satisfaction and product quality in their annual industry report..."`,
+        prompts: [promptExamples[0], promptExamples[2]],
+        competitorMentioned: true
+      },
+      { 
+        source: "www.reddit.com", 
+        url: "https://www.reddit.com", 
+        mentions: Math.round(baseMentions * 0.45),
+        authority: "medium" as const,
+        sentiment: "neutral" as const,
+        platforms: ["Perplexity", "Claude", "Gemini"],
+        lastCited: "6 hours ago",
+        sampleQuote: `"Reddit users in r/running frequently recommend ${brandData.name} products for their durability and comfort during long-distance training..."`,
+        prompts: [promptExamples[1], promptExamples[4]],
+        competitorMentioned: true
+      },
     ];
     
     return sources;
+  };
+
+  const getSentimentIcon = (sentiment: "positive" | "neutral" | "negative") => {
+    switch (sentiment) {
+      case "positive": return <ThumbsUp className="w-3.5 h-3.5" />;
+      case "negative": return <ThumbsDown className="w-3.5 h-3.5" />;
+      default: return <Minus className="w-3.5 h-3.5" />;
+    }
+  };
+
+  const getSentimentStyles = (sentiment: "positive" | "neutral" | "negative") => {
+    switch (sentiment) {
+      case "positive": return "bg-green-100 text-green-700 border-green-200";
+      case "negative": return "bg-red-100 text-red-700 border-red-200";
+      default: return "bg-gray-100 text-gray-600 border-gray-200";
+    }
+  };
+
+  const getAuthorityStyles = (authority: "high" | "medium" | "low") => {
+    switch (authority) {
+      case "high": return "bg-blue-100 text-blue-700 border-blue-200";
+      case "medium": return "bg-yellow-100 text-yellow-700 border-yellow-200";
+      default: return "bg-orange-100 text-orange-700 border-orange-200";
+    }
   };
 
   const sourceQuality = generateBrandSources();
@@ -663,21 +761,124 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-8"></TableHead>
                   <TableHead>Source</TableHead>
                   <TableHead>References</TableHead>
+                  <TableHead>Authority</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sourceQuality.slice(0, sourcesDisplayCount).map((source, index) => (
-                  <TableRow 
-                    key={index}
-                    onClick={() => window.open(source.url, '_blank')}
-                    className="animate-fade-in cursor-pointer transition-all duration-200 hover:bg-muted/50"
-                    style={{ animationDelay: `${index * 0.05}s` }}
-                  >
-                    <TableCell className="font-medium">{source.source}</TableCell>
-                    <TableCell>{source.mentions}</TableCell>
-                  </TableRow>
+                  <>
+                    <TableRow 
+                      key={index}
+                      onClick={() => setExpandedSource(expandedSource === index ? null : index)}
+                      className="animate-fade-in cursor-pointer transition-all duration-200 hover:bg-muted/50"
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      <TableCell className="w-8 pr-0">
+                        {expandedSource === index ? (
+                          <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                        )}
+                      </TableCell>
+                      <TableCell className="font-medium">{source.source}</TableCell>
+                      <TableCell>{source.mentions}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={`text-xs ${getAuthorityStyles(source.authority)}`}>
+                          <Shield className="w-3 h-3 mr-1" />
+                          {source.authority}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                    
+                    {/* Expanded Row Details */}
+                    {expandedSource === index && (
+                      <TableRow className="bg-muted/30 hover:bg-muted/30">
+                        <TableCell colSpan={4} className="p-0">
+                          <div className="p-4 space-y-4 animate-fade-in">
+                            {/* Top Row: Sentiment, Platforms, Last Cited */}
+                            <div className="flex flex-wrap gap-4">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-muted-foreground font-medium">Sentiment:</span>
+                                <Badge variant="outline" className={`text-xs ${getSentimentStyles(source.sentiment)}`}>
+                                  {getSentimentIcon(source.sentiment)}
+                                  <span className="ml-1 capitalize">{source.sentiment}</span>
+                                </Badge>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                                <span className="text-xs text-muted-foreground">Last cited: <span className="text-foreground font-medium">{source.lastCited}</span></span>
+                              </div>
+                              
+                              {source.competitorMentioned && (
+                                <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
+                                  <Users className="w-3 h-3 mr-1" />
+                                  Also cites competitors
+                                </Badge>
+                              )}
+                            </div>
+                            
+                            {/* Platforms */}
+                            <div>
+                              <span className="text-xs text-muted-foreground font-medium mb-2 block">AI Platforms using this source:</span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {source.platforms.map((platform, pIdx) => (
+                                  <Badge key={pIdx} variant="secondary" className="text-xs">
+                                    {platform}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {/* Prompts that referenced this source */}
+                            <div>
+                              <span className="text-xs text-muted-foreground font-medium mb-2 block">Prompts that cited this source:</span>
+                              <div className="space-y-1.5">
+                                {source.prompts.map((prompt, pIdx) => (
+                                  <div 
+                                    key={pIdx} 
+                                    className="flex items-center gap-2 text-xs p-2 bg-background rounded-md border cursor-pointer hover:bg-muted/50 transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onQueryClick?.(prompt);
+                                    }}
+                                  >
+                                    <MessageSquare className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                                    <span className="truncate">{prompt}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {/* Sample Quote */}
+                            <div className="bg-background rounded-md p-3 border-l-2 border-primary/40">
+                              <div className="flex items-start gap-2">
+                                <Quote className="w-4 h-4 text-primary/60 flex-shrink-0 mt-0.5" />
+                                <p className="text-xs text-muted-foreground italic leading-relaxed">{source.sampleQuote}</p>
+                              </div>
+                            </div>
+                            
+                            {/* Visit Source Button */}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-xs"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(source.url, '_blank');
+                              }}
+                            >
+                              <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                              Visit Source
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
                 ))}
               </TableBody>
             </Table>
