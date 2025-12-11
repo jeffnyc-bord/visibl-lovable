@@ -643,7 +643,7 @@ const Index = () => {
                                 onClick={() => setActiveView("agency")}
                               >
                                 <Users className="w-4 h-4" />
-                                <span>Switch Client</span>
+                                <span>Switch or Add New Client</span>
                               </div>
                             )}
                           </div>
