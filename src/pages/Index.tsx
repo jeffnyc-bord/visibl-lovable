@@ -595,23 +595,57 @@ const Index = () => {
                             <span className="font-medium text-gray-900 text-sm">{selectedBrand.name}</span>
                           </div>
                         </SelectTrigger>
-                        <SelectContent className="bg-white border shadow-lg z-50">
-                          {trackedBrands.map((brand) => (
-                            <SelectItem key={brand.id} value={brand.id}>
+                        <SelectContent className="bg-white border shadow-lg z-50 min-w-[280px]">
+                          {/* Client Brand Section */}
+                          <div className="px-2 py-1.5">
+                            <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                              {userRole === "agency_admin" ? "Client Brand" : "Your Brand"}
+                            </div>
+                            <SelectItem value={selectedBrand.id} className="rounded-md">
                               <div className="flex items-center space-x-2">
-                                <img src={brand.logo} alt={brand.name} className="w-5 h-5 object-contain" />
-                                <span>{brand.name}</span>
+                                <img src={selectedBrand.logo} alt={selectedBrand.name} className="w-5 h-5 object-contain" />
+                                <span className="font-medium">{selectedBrand.name}</span>
+                                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-auto">Primary</Badge>
                               </div>
                             </SelectItem>
-                          ))}
-                          <div className="border-t border-gray-200 mt-2 pt-2">
+                          </div>
+                          
+                          {/* Competitor Brands Section */}
+                          {selectedBrand.competitors && selectedBrand.competitors.length > 0 && (
+                            <div className="px-2 py-1.5 border-t border-border/50">
+                              <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                                Tracked Competitors
+                              </div>
+                              {trackedBrands.filter(b => b.id !== selectedBrand.id).map((brand) => (
+                                <SelectItem key={brand.id} value={brand.id} className="rounded-md">
+                                  <div className="flex items-center space-x-2">
+                                    <img src={brand.logo} alt={brand.name} className="w-5 h-5 object-contain" />
+                                    <span>{brand.name}</span>
+                                    <span className="text-[10px] text-muted-foreground ml-auto">vs {selectedBrand.name}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {/* Add Competitor Action */}
+                          <div className="border-t border-border/50 mt-1 pt-1 px-2 pb-1">
                             <div 
-                              className="flex items-center space-x-2 px-2 py-1.5 text-sm text-blue-600 hover:bg-blue-50 cursor-pointer rounded-md"
+                              className="flex items-center space-x-2 px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted/50 cursor-pointer rounded-md transition-colors"
                               onClick={() => setShowAddBrandDialog(true)}
                             >
                               <Plus className="w-4 h-4" />
-                              <span>New Brand</span>
+                              <span>Add Competitor to Track</span>
                             </div>
+                            {userRole === "agency_admin" && (
+                              <div 
+                                className="flex items-center space-x-2 px-2 py-1.5 text-sm text-primary hover:bg-primary/10 cursor-pointer rounded-md transition-colors"
+                                onClick={() => setActiveView("agency")}
+                              >
+                                <Users className="w-4 h-4" />
+                                <span>Switch Client</span>
+                              </div>
+                            )}
                           </div>
                         </SelectContent>
                       </Select>
