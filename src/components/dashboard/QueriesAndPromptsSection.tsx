@@ -973,24 +973,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
                 
                 {liveResults.map((result) => (
                   <TabsContent key={result.platform} value={result.platform} className="space-y-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-600">Status:</span>
-                        {result.mentioned ? (
-                          <Badge className="bg-green-100 text-green-800">Mentioned</Badge>
-                        ) : (
-                          <Badge variant="secondary" className="bg-red-100 text-red-800">Not Mentioned</Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-600">Sentiment:</span>
-                        <div className="flex items-center space-x-1">
-                          {getSentimentIcon(result.sentiment)}
-                          <Badge variant="secondary" className={getSentimentColor(result.sentiment)}>
-                            {result.sentiment}
-                          </Badge>
-                        </div>
-                      </div>
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <Timer className="w-4 h-4 text-gray-500" />
                         <span className="text-sm text-gray-600">{result.responseTime}</span>
