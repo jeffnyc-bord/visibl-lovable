@@ -885,35 +885,57 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             
             {/* View More, View All, and Show Less Buttons */}
             {sourceQuality.length > 3 && (
-              <div className="flex justify-center gap-3 pt-4 border-t mt-auto">
-                {sourcesDisplayCount > 3 && (
+              <div className="flex flex-col items-center gap-3 pt-4 border-t mt-auto">
+                {/* Prominent Collapse button when expanded */}
+                {sourcesDisplayCount > 5 && (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => {
+                      setSourcesDisplayCount(3);
+                      setExpandedSource(null);
+                    }}
+                    className="min-w-[200px] transition-all duration-300 hover:scale-105 bg-primary text-primary-foreground shadow-md"
+                  >
+                    <ChevronUp className="w-4 h-4 mr-2" />
+                    Collapse to Top 3
+                  </Button>
+                )}
+                
+                <div className="flex justify-center gap-3">
+                  {sourcesDisplayCount > 3 && sourcesDisplayCount <= 5 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSourcesDisplayCount(3);
+                        setExpandedSource(null);
+                      }}
+                      className="min-w-[120px] transition-all duration-300 hover:scale-105"
+                    >
+                      <ChevronUp className="w-4 h-4 mr-1" />
+                      Show Less
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setSourcesDisplayCount(3)}
+                    onClick={() => setSourcesDisplayCount(Math.min(sourcesDisplayCount + 5, sourceQuality.length))}
                     className="min-w-[120px] transition-all duration-300 hover:scale-105"
+                    disabled={sourcesDisplayCount >= sourceQuality.length}
                   >
-                    Show Less
+                    View More
                   </Button>
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSourcesDisplayCount(Math.min(sourcesDisplayCount + 5, sourceQuality.length))}
-                  className="min-w-[120px] transition-all duration-300 hover:scale-105"
-                  disabled={sourcesDisplayCount >= sourceQuality.length}
-                >
-                  View More
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSourcesDisplayCount(sourceQuality.length)}
-                  className="min-w-[120px] transition-all duration-300 hover:scale-105"
-                  disabled={sourcesDisplayCount >= sourceQuality.length}
-                >
-                  View All ({sourceQuality.length})
-                </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSourcesDisplayCount(sourceQuality.length)}
+                    className="min-w-[120px] transition-all duration-300 hover:scale-105"
+                    disabled={sourcesDisplayCount >= sourceQuality.length}
+                  >
+                    View All ({sourceQuality.length})
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
