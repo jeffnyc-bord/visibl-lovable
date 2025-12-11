@@ -274,6 +274,9 @@ const Index = () => {
   
   // Demo mode state
   const [demoMode, setDemoMode] = useState(false);
+  
+  // Last client warning state (for dev controls)
+  const [showLastClientWarning, setShowLastClientWarning] = useState(false);
 
   // Get current selected brand data
   const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];
@@ -429,6 +432,11 @@ const Index = () => {
         onNavigateToAuth={() => navigate('/auth')}
         demoMode={demoMode}
         onDemoModeChange={setDemoMode}
+        onTriggerLastClientWarning={() => {
+          setUserRole("agency_admin");
+          setActiveView("agency");
+          setShowLastClientWarning(true);
+        }}
       />
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
@@ -880,6 +888,8 @@ const Index = () => {
             <AgencyAdminSection 
               trackedBrands={trackedBrands}
               onBrandAdded={(newBrand) => setTrackedBrands(prev => [...prev, newBrand])}
+              showLastClientWarning={showLastClientWarning}
+              onLastClientWarningChange={setShowLastClientWarning}
             />
           )}
           {activeView === "settings" && <SettingsPage userRole={userRole} />}
