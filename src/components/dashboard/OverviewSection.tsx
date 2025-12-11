@@ -798,16 +798,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       <TableRow className="bg-muted/30 hover:bg-muted/30">
                         <TableCell colSpan={4} className="p-0">
                           <div className="p-4 space-y-4 animate-fade-in">
-                            {/* Top Row: Sentiment, Platforms, Last Cited */}
+                            {/* Top Row: Last Cited, Competitor Badge */}
                             <div className="flex flex-wrap gap-4">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-muted-foreground font-medium">Sentiment:</span>
-                                <Badge variant="outline" className={`text-xs ${getSentimentStyles(source.sentiment)}`}>
-                                  {getSentimentIcon(source.sentiment)}
-                                  <span className="ml-1 capitalize">{source.sentiment}</span>
-                                </Badge>
-                              </div>
-                              
                               <div className="flex items-center gap-2">
                                 <Clock className="w-3.5 h-3.5 text-muted-foreground" />
                                 <span className="text-xs text-muted-foreground">Last cited: <span className="text-foreground font-medium">{source.lastCited}</span></span>
