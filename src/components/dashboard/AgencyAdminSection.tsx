@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,22 +32,38 @@ import {
   Palette,
   Download,
   Loader2,
-  Clock
+  Clock,
+  AlertTriangle
 } from "lucide-react";
 
 interface AgencyAdminSectionProps {
   trackedBrands: any[];
   onBrandAdded: (brand: any) => void;
+  showLastClientWarning?: boolean;
+  onLastClientWarningChange?: (show: boolean) => void;
 }
 
-export const AgencyAdminSection = ({ trackedBrands, onBrandAdded }: AgencyAdminSectionProps) => {
+export const AgencyAdminSection = ({ trackedBrands, onBrandAdded, showLastClientWarning, onLastClientWarningChange }: AgencyAdminSectionProps) => {
   const { toast } = useToast();
   const [showAddClientDialog, setShowAddClientDialog] = useState(false);
+  const [showReplaceClientDialog, setShowReplaceClientDialog] = useState(showLastClientWarning || false);
   const [showEditNameDialog, setShowEditNameDialog] = useState(false);
   const [showScanFrequencyDialog, setShowScanFrequencyDialog] = useState(false);
   const [selectedClient, setSelectedClient] = useState<number | null>(null);
   const [editedName, setEditedName] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState("");
+  
+  // Sync with external prop
+  useEffect(() => {
+    if (showLastClientWarning !== undefined) {
+      setShowReplaceClientDialog(showLastClientWarning);
+    }
+  }, [showLastClientWarning]);
+  
+  const handleReplaceDialogChange = (open: boolean) => {
+    setShowReplaceClientDialog(open);
+    onLastClientWarningChange?.(open);
+  };
   const [clients, setClients] = useState([
     {
       id: 1,
@@ -174,9 +190,20 @@ export const AgencyAdminSection = ({ trackedBrands, onBrandAdded }: AgencyAdminS
   };
 
   const handleDeleteClient = (clientId: number) => {
+    // Check if this is the last client
+    if (clients.length === 1) {
+      setShowReplaceClientDialog(true);
+      return;
+    }
+    
     if (confirm("Are you sure you want to delete this client? This action cannot be undone.")) {
       setClients(clients.filter(client => client.id !== clientId));
     }
+  };
+
+  // Trigger the replace client dialog (for dev controls)
+  const triggerLastClientWarning = () => {
+    setShowReplaceClientDialog(true);
   };
 
   const handleEditName = (clientId: number) => {
@@ -472,6 +499,49 @@ export const AgencyAdminSection = ({ trackedBrands, onBrandAdded }: AgencyAdminS
           currentClientCount={clients.length}
           subscriptionTier="Starter"
         />
+
+        {/* Replace Client Dialog - shown when trying to delete last client */}
+        <Dialog open={showReplaceClientDialog} onOpenChange={handleReplaceDialogChange}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <div className="flex justify-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-amber-600" />
+                </div>
+              </div>
+              <DialogTitle className="text-center">You must have at least 1 brand tracked</DialogTitle>
+              <DialogDescription className="text-center">
+                Your account requires at least one active brand to track. Would you like to replace this brand with a new one instead?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="rounded-lg bg-muted/50 p-4 border border-border">
+                <p className="text-sm text-muted-foreground text-center">
+                  Adding a new brand will allow you to remove the current one. Your tracking history will be preserved.
+                </p>
+              </div>
+            </div>
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => handleReplaceDialogChange(false)}
+                className="w-full sm:w-auto"
+              >
+                Keep Current Brand
+              </Button>
+              <Button 
+                onClick={() => {
+                  handleReplaceDialogChange(false);
+                  setShowAddClientDialog(true);
+                }}
+                className="w-full sm:w-auto"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Replacement Brand
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <Dialog open={showEditNameDialog} onOpenChange={setShowEditNameDialog}>
           <DialogContent className="sm:max-w-md">

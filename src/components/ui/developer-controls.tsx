@@ -31,6 +31,7 @@ interface DeveloperControlsProps {
   onNavigateToAuth?: () => void;
   demoMode: boolean;
   onDemoModeChange: (enabled: boolean) => void;
+  onTriggerLastClientWarning?: () => void;
 }
 
 const gradientOptions = [
@@ -46,7 +47,7 @@ const gradientOptions = [
   { id: "gradient10", name: "Neon Dreams", colors: ["#84CC16", "#06B6D4", "#8B5CF6"] },
 ];
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange, onTriggerLastClientWarning }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -246,6 +247,19 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                   </div>
                 </div>
               </div>
+              
+              {onTriggerLastClientWarning && (
+                <div className="pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={onTriggerLastClientWarning}
+                  >
+                    Trigger Last Client Warning
+                  </Button>
+                </div>
+              )}
               
               {onNavigateToAuth && (
                 <div className="pt-2 border-t">
