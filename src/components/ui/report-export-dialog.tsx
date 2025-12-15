@@ -367,107 +367,127 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
       <DialogTrigger asChild>
         {trigger}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-[800px] max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0 bg-background/95 backdrop-blur-xl border-border/40">
         {!isExporting ? (
           <>
-            <DialogHeader className="pb-2">
-              <DialogTitle className="flex items-center space-x-2">
-                <FileText className="w-5 h-5 text-primary" />
-                <span>Custom Report Builder</span>
-              </DialogTitle>
-              <DialogDescription>
-                Build a fully customized report for {brandName}. Select sections, prompts, products, and sources.
-              </DialogDescription>
-            </DialogHeader>
+            {/* Header */}
+            <div className="px-6 pt-6 pb-4 border-b border-border/40">
+              <DialogHeader className="space-y-1">
+                <DialogTitle className="text-xl font-semibold tracking-tight">
+                  Custom Report Builder
+                </DialogTitle>
+                <DialogDescription className="text-sm text-muted-foreground">
+                  Create a tailored report for {brandName}
+                </DialogDescription>
+              </DialogHeader>
 
-            {/* Step Indicator */}
-            <div className="flex items-center justify-between px-2 py-3 border-b">
-              {steps.map((step, index) => (
-                <div key={step.number} className="flex items-center">
+              {/* Step Indicator - Apple-style segmented control */}
+              <div className="flex items-center gap-1 mt-5 p-1 bg-muted/50 rounded-xl w-fit">
+                {steps.map((step, index) => (
                   <button
+                    key={step.number}
                     onClick={() => setCurrentStep(step.number)}
                     className={cn(
-                      "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200",
                       currentStep === step.number 
-                        ? "bg-primary text-primary-foreground" 
+                        ? "bg-background text-foreground shadow-sm" 
                         : currentStep > step.number
-                          ? "bg-primary/20 text-primary"
-                          : "bg-muted text-muted-foreground hover:bg-muted/80"
+                          ? "text-primary/70 hover:text-primary"
+                          : "text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    <step.icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{step.label}</span>
+                    <step.icon className="w-3.5 h-3.5" />
+                    <span>{step.label}</span>
+                    {currentStep > step.number && (
+                      <CheckCircle className="w-3 h-3 text-primary" />
+                    )}
                   </button>
-                  {index < steps.length - 1 && (
-                    <ChevronRight className="w-4 h-4 mx-1 text-muted-foreground" />
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            <ScrollArea className="flex-1 px-1">
+            <ScrollArea className="flex-1 px-6 py-5">
               {/* Step 1: Sections with Comments */}
               {currentStep === 1 && (
-                <div className="space-y-4 py-4">
+                <div className="space-y-6">
                   {/* Date Range Selection */}
                   <div className="space-y-3">
-                    <Label className="text-base font-medium">Report Period</Label>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-sm text-muted-foreground">From Date</Label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full justify-start text-left font-normal">
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {dateRange.from ? format(dateRange.from, "PPP") : "Pick a date"}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={dateRange.from}
-                              onSelect={(date) => date && setDateRange(prev => ({ ...prev, from: date }))}
-                              initialFocus
-                              className="pointer-events-auto"
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm text-muted-foreground">To Date</Label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full justify-start text-left font-normal">
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {dateRange.to ? format(dateRange.to, "PPP") : "Pick a date"}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={dateRange.to}
-                              onSelect={(date) => date && setDateRange(prev => ({ ...prev, to: date }))}
-                              initialFocus
-                              className="pointer-events-auto"
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </div>
+                    <Label className="text-sm font-medium text-foreground">Report Period</Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            className="w-full justify-start text-left font-normal h-10 bg-muted/30 border-border/40 hover:bg-muted/50"
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                            <span className="text-muted-foreground text-xs mr-1">From:</span>
+                            {dateRange.from ? format(dateRange.from, "MMM d, yyyy") : "Pick date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateRange.from}
+                            onSelect={(date) => date && setDateRange(prev => ({ ...prev, from: date }))}
+                            initialFocus
+                            className="pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            className="w-full justify-start text-left font-normal h-10 bg-muted/30 border-border/40 hover:bg-muted/50"
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                            <span className="text-muted-foreground text-xs mr-1">To:</span>
+                            {dateRange.to ? format(dateRange.to, "MMM d, yyyy") : "Pick date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateRange.to}
+                            onSelect={(date) => date && setDateRange(prev => ({ ...prev, to: date }))}
+                            initialFocus
+                            className="pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
                   </div>
 
-                  {/* Report Sections with Comments */}
+                  {/* Report Sections with Notes */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <Label className="text-base font-medium">Report Sections</Label>
-                      <span className="text-xs text-muted-foreground">
-                        Add custom comments to each section
-                      </span>
+                      <Label className="text-sm font-medium text-foreground">Report Sections</Label>
+                      <Badge variant="outline" className="text-xs font-normal bg-muted/30 border-border/40">
+                        {reportSections.filter(s => s.enabled).length} of {reportSections.length} selected
+                      </Badge>
                     </div>
-                    <div className="space-y-2 border rounded-lg p-3 bg-muted/20">
+                    
+                    {/* Hint about notes */}
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/5 border border-primary/10">
+                      <Edit2 className="w-3.5 h-3.5 text-primary/70 flex-shrink-0" />
+                      <p className="text-xs text-primary/80">
+                        Click "Add Note" on any section to include custom commentary in your report
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
                       {reportSections.map((section) => (
-                        <div key={section.id} className="border rounded-lg bg-background p-3 space-y-2">
-                          <div className="flex items-start space-x-3">
+                        <div 
+                          key={section.id} 
+                          className={cn(
+                            "group rounded-xl border bg-background/50 transition-all duration-200",
+                            section.enabled 
+                              ? "border-border/60 shadow-sm" 
+                              : "border-border/30 opacity-60"
+                          )}
+                        >
+                          <div className="flex items-start gap-3 p-4">
                             <Checkbox
                               id={section.id}
                               checked={section.enabled}
@@ -475,47 +495,77 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
                               className="mt-0.5"
                             />
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center justify-between gap-2">
                                 <label
                                   htmlFor={section.id}
-                                  className="text-sm font-medium leading-none cursor-pointer"
+                                  className="text-sm font-medium leading-tight cursor-pointer text-foreground"
                                 >
                                   {section.label}
                                 </label>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-7 px-2 text-muted-foreground hover:text-foreground"
+                                  className={cn(
+                                    "h-7 px-2.5 text-xs rounded-lg transition-all",
+                                    section.comment 
+                                      ? "text-primary bg-primary/10 hover:bg-primary/15" 
+                                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                  )}
                                   onClick={() => setEditingCommentId(editingCommentId === section.id ? null : section.id)}
                                 >
-                                  <Edit2 className="w-3.5 h-3.5 mr-1" />
+                                  <Edit2 className="w-3 h-3 mr-1" />
                                   {section.comment ? "Edit Note" : "Add Note"}
                                 </Button>
                               </div>
-                              <p className="text-xs text-muted-foreground mt-0.5">
+                              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                                 {section.description}
                               </p>
+                              
+                              {/* Existing note display */}
                               {section.comment && editingCommentId !== section.id && (
-                                <div className="mt-2 p-2 bg-primary/5 rounded text-xs text-muted-foreground border-l-2 border-primary/30">
-                                  {section.comment}
+                                <div className="mt-3 p-3 rounded-lg bg-muted/40 border border-border/30">
+                                  <div className="flex items-center gap-1.5 mb-1.5">
+                                    <MessageSquare className="w-3 h-3 text-primary/70" />
+                                    <span className="text-[10px] font-medium text-primary/70 uppercase tracking-wide">Your Note</span>
+                                  </div>
+                                  <p className="text-xs text-foreground/80 leading-relaxed">
+                                    {section.comment}
+                                  </p>
                                 </div>
                               )}
+                              
+                              {/* Note editor */}
                               {editingCommentId === section.id && (
-                                <div className="mt-2 space-y-2">
+                                <div className="mt-3 space-y-2">
                                   <Textarea
                                     placeholder="Add your custom notes or commentary for this section..."
                                     value={section.comment}
                                     onChange={(e) => handleSectionComment(section.id, e.target.value)}
-                                    className="text-sm min-h-[60px]"
+                                    className="text-sm min-h-[80px] bg-muted/30 border-border/40 resize-none"
+                                    autoFocus
                                   />
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => setEditingCommentId(null)}
-                                    className="h-7"
-                                  >
-                                    Done
-                                  </Button>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => setEditingCommentId(null)}
+                                      className="h-7 px-3 text-xs"
+                                    >
+                                      Save Note
+                                    </Button>
+                                    {section.comment && (
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => {
+                                          handleSectionComment(section.id, "");
+                                          setEditingCommentId(null);
+                                        }}
+                                        className="h-7 px-3 text-xs text-muted-foreground hover:text-destructive"
+                                      >
+                                        Remove Note
+                                      </Button>
+                                    )}
+                                  </div>
                                 </div>
                               )}
                             </div>
@@ -529,29 +579,38 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
 
               {/* Step 2: Prompts Selection */}
               {currentStep === 2 && (
-                <div className="space-y-4 py-4">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label className="text-base font-medium">Select Prompts</Label>
+                      <Label className="text-sm font-medium text-foreground">Select Prompts</Label>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         Choose which prompts from Prompt Blast to include
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{selectedPromptsCount} selected</Badge>
-                      <Button variant="outline" size="sm" onClick={handleSelectAllPrompts}>
+                      <Badge variant="outline" className="text-xs font-normal bg-muted/30 border-border/40">
+                        {selectedPromptsCount} selected
+                      </Badge>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleSelectAllPrompts}
+                        className="h-7 text-xs text-muted-foreground hover:text-foreground"
+                      >
                         {prompts.every(p => p.selected) ? "Deselect All" : "Select All"}
                       </Button>
                     </div>
                   </div>
 
-                  <div className="space-y-2 border rounded-lg p-3 bg-muted/20 max-h-[400px] overflow-y-auto">
+                  <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
                     {prompts.map((prompt) => (
                       <div
                         key={prompt.id}
                         className={cn(
-                          "flex items-start space-x-3 p-3 rounded-lg border bg-background transition-all cursor-pointer hover:border-primary/50",
-                          prompt.selected && "border-primary/50 bg-primary/5"
+                          "flex items-start gap-3 p-3.5 rounded-xl border bg-background/50 transition-all cursor-pointer",
+                          prompt.selected 
+                            ? "border-primary/40 bg-primary/5 shadow-sm" 
+                            : "border-border/40 hover:border-border/60 hover:bg-muted/20"
                         )}
                         onClick={() => handlePromptToggle(prompt.id)}
                       >
@@ -561,10 +620,10 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
                           className="mt-0.5"
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium leading-snug">{prompt.text}</p>
-                          <div className="flex items-center gap-2 mt-1.5">
-                            <Badge variant="outline" className="text-xs">{prompt.platform}</Badge>
-                            <span className="text-xs text-muted-foreground">{prompt.mentions} mentions</span>
+                          <p className="text-sm font-medium leading-snug text-foreground">{prompt.text}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="text-[10px] bg-muted/30 border-border/40">{prompt.platform}</Badge>
+                            <span className="text-[10px] text-muted-foreground">{prompt.mentions} mentions</span>
                           </div>
                         </div>
                       </div>
@@ -575,29 +634,38 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
 
               {/* Step 3: Products Selection */}
               {currentStep === 3 && (
-                <div className="space-y-4 py-4">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label className="text-base font-medium">Select Products</Label>
+                      <Label className="text-sm font-medium text-foreground">Select Products</Label>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         Choose which products to include in the analysis
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{selectedProductsCount} selected</Badge>
-                      <Button variant="outline" size="sm" onClick={handleSelectAllProducts}>
+                      <Badge variant="outline" className="text-xs font-normal bg-muted/30 border-border/40">
+                        {selectedProductsCount} selected
+                      </Badge>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleSelectAllProducts}
+                        className="h-7 text-xs text-muted-foreground hover:text-foreground"
+                      >
                         {products.every(p => p.selected) ? "Deselect All" : "Select All"}
                       </Button>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 border rounded-lg p-3 bg-muted/20 max-h-[400px] overflow-y-auto">
+                  <div className="grid grid-cols-2 gap-2 max-h-[380px] overflow-y-auto pr-1">
                     {products.map((product) => (
                       <div
                         key={product.id}
                         className={cn(
-                          "flex items-center space-x-3 p-3 rounded-lg border bg-background transition-all cursor-pointer hover:border-primary/50",
-                          product.selected && "border-primary/50 bg-primary/5"
+                          "flex items-center gap-3 p-3.5 rounded-xl border bg-background/50 transition-all cursor-pointer",
+                          product.selected 
+                            ? "border-primary/40 bg-primary/5 shadow-sm" 
+                            : "border-border/40 hover:border-border/60 hover:bg-muted/20"
                         )}
                         onClick={() => handleProductToggle(product.id)}
                       >
@@ -606,10 +674,10 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
                           onCheckedChange={() => handleProductToggle(product.id)}
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium">{product.name}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="text-xs">{product.category}</Badge>
-                            <span className="text-xs text-muted-foreground">Score: {product.score}</span>
+                          <p className="text-sm font-medium text-foreground">{product.name}</p>
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <Badge variant="outline" className="text-[10px] bg-muted/30 border-border/40">{product.category}</Badge>
+                            <span className="text-[10px] text-muted-foreground">Score: {product.score}</span>
                           </div>
                         </div>
                       </div>
@@ -620,51 +688,62 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
 
               {/* Step 4: Sources Management */}
               {currentStep === 4 && (
-                <div className="space-y-4 py-4">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label className="text-base font-medium">Manage Sources</Label>
+                      <Label className="text-sm font-medium text-foreground">Manage Sources</Label>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         Select, add, or remove sources for your report
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{selectedSourcesCount} selected</Badge>
-                      <Button variant="outline" size="sm" onClick={handleSelectAllSources}>
+                      <Badge variant="outline" className="text-xs font-normal bg-muted/30 border-border/40">
+                        {selectedSourcesCount} selected
+                      </Badge>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleSelectAllSources}
+                        className="h-7 text-xs text-muted-foreground hover:text-foreground"
+                      >
                         {sources.every(s => s.selected) ? "Deselect All" : "Select All"}
                       </Button>
                     </div>
                   </div>
 
                   {/* Add Custom Source */}
-                  <div className="border rounded-lg p-3 bg-muted/20 space-y-3">
-                    <Label className="text-sm font-medium">Add Custom Source</Label>
+                  <div className="rounded-xl border border-border/40 bg-muted/20 p-4 space-y-3">
+                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Add Custom Source</Label>
                     <div className="grid grid-cols-2 gap-2">
                       <Input
                         placeholder="Source URL"
                         value={newSourceUrl}
                         onChange={(e) => setNewSourceUrl(e.target.value)}
+                        className="h-9 text-sm bg-background/50 border-border/40"
                       />
                       <Input
                         placeholder="Source Title (optional)"
                         value={newSourceTitle}
                         onChange={(e) => setNewSourceTitle(e.target.value)}
+                        className="h-9 text-sm bg-background/50 border-border/40"
                       />
                     </div>
-                    <Button size="sm" onClick={handleAddSource} disabled={!newSourceUrl.trim()}>
-                      <Plus className="w-4 h-4 mr-1" />
+                    <Button size="sm" onClick={handleAddSource} disabled={!newSourceUrl.trim()} className="h-8">
+                      <Plus className="w-3.5 h-3.5 mr-1" />
                       Add Source
                     </Button>
                   </div>
 
                   {/* Sources List */}
-                  <div className="space-y-2 border rounded-lg p-3 bg-muted/20 max-h-[300px] overflow-y-auto">
+                  <div className="space-y-2 max-h-[260px] overflow-y-auto pr-1">
                     {sources.map((source) => (
                       <div
                         key={source.id}
                         className={cn(
-                          "flex items-center space-x-3 p-3 rounded-lg border bg-background transition-all",
-                          source.selected && "border-primary/50 bg-primary/5"
+                          "flex items-center gap-3 p-3.5 rounded-xl border bg-background/50 transition-all",
+                          source.selected 
+                            ? "border-primary/40 bg-primary/5 shadow-sm" 
+                            : "border-border/40"
                         )}
                       >
                         <Checkbox
@@ -673,23 +752,23 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
                         />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-medium truncate">{source.title}</p>
+                            <p className="text-sm font-medium truncate text-foreground">{source.title}</p>
                             {source.isCustom && (
-                              <Badge variant="outline" className="text-xs">Custom</Badge>
+                              <Badge variant="outline" className="text-[10px] bg-primary/10 border-primary/20 text-primary">Custom</Badge>
                             )}
                           </div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge className={cn("text-xs", getAuthorityColor(source.authority))}>
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <Badge className={cn("text-[10px] border", getAuthorityColor(source.authority))}>
                               {source.authority} authority
                             </Badge>
                             <a 
                               href={source.url} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
+                              className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <ExternalLink className="w-3 h-3" />
+                              <ExternalLink className="w-2.5 h-2.5" />
                               View
                             </a>
                           </div>
@@ -698,149 +777,166 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                            className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
                             onClick={() => handleRemoveSource(source.id)}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </Button>
                         )}
                       </div>
                     ))}
                   </div>
+
+                  {/* Export format for non-agency users */}
+                  {userRole !== "agency_admin" && (
+                    <div className="space-y-3 pt-4 border-t border-border/40">
+                      <Label className="text-sm font-medium text-foreground">Export Format</Label>
+                      <div className="flex gap-2">
+                        {exportFormats.map((format) => (
+                          <button
+                            key={format.id}
+                            onClick={() => handleFormatToggle(format.id, !selectedFormats.includes(format.id))}
+                            className={cn(
+                              "flex-1 p-3 rounded-xl border text-left transition-all",
+                              selectedFormats.includes(format.id)
+                                ? "border-primary/40 bg-primary/5 shadow-sm"
+                                : "border-border/40 bg-background/50 hover:border-border/60"
+                            )}
+                          >
+                            <p className="text-sm font-medium text-foreground">{format.label}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{format.description}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Step 5: Format & Branding (Agency only) */}
               {currentStep === 5 && userRole === "agency_admin" && (
-                <div className="space-y-6 py-4">
+                <div className="space-y-5">
                   {/* Report Title */}
                   <div className="space-y-2">
-                    <Label className="text-base font-medium">Report Title</Label>
+                    <Label className="text-sm font-medium text-foreground">Report Title</Label>
                     <Input
                       value={reportTitle}
                       onChange={(e) => setReportTitle(e.target.value)}
                       placeholder="Enter custom report title"
+                      className="h-10 bg-muted/30 border-border/40"
                     />
                   </div>
 
                   {/* Export Formats */}
                   <div className="space-y-3">
-                    <Label className="text-base font-medium">Export Formats</Label>
-                    <div className="space-y-2 border rounded-lg p-3">
+                    <Label className="text-sm font-medium text-foreground">Export Formats</Label>
+                    <div className="flex gap-2">
                       {exportFormats.map((format) => (
-                        <div key={format.id} className="flex items-start space-x-3">
-                          <Checkbox
-                            id={format.id}
-                            checked={selectedFormats.includes(format.id)}
-                            onCheckedChange={(checked) => handleFormatToggle(format.id, checked as boolean)}
-                          />
-                          <div className="grid gap-1 leading-none">
-                            <label htmlFor={format.id} className="text-sm font-medium cursor-pointer">
-                              {format.label}
-                            </label>
-                            <p className="text-xs text-muted-foreground">{format.description}</p>
-                          </div>
-                        </div>
+                        <button
+                          key={format.id}
+                          onClick={() => handleFormatToggle(format.id, !selectedFormats.includes(format.id))}
+                          className={cn(
+                            "flex-1 p-3.5 rounded-xl border text-left transition-all",
+                            selectedFormats.includes(format.id)
+                              ? "border-primary/40 bg-primary/5 shadow-sm"
+                              : "border-border/40 bg-background/50 hover:border-border/60"
+                          )}
+                        >
+                          <p className="text-sm font-medium text-foreground">{format.label}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">{format.description}</p>
+                        </button>
                       ))}
                     </div>
                   </div>
 
                   {/* Agency Branding */}
-                  <div className="space-y-4 p-4 border rounded-lg bg-muted/20">
-                    <div className="flex items-center space-x-2">
-                      <Building2 className="w-4 h-4 text-primary" />
-                      <Label className="text-base font-medium">White-Label Options</Label>
+                  <div className="space-y-4 p-4 rounded-xl border border-border/40 bg-muted/20">
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-primary/70" />
+                      <Label className="text-sm font-medium text-foreground">White-Label Options</Label>
                     </div>
                     
-                    <div className="space-y-3">
-                      <div>
-                        <Label className="text-sm font-medium">Agency Name</Label>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-xs text-muted-foreground">Agency Name</Label>
                         <Input
                           value={agencyName}
                           onChange={(e) => setAgencyName(e.target.value)}
                           placeholder="Your agency name (for report branding)"
+                          className="h-9 bg-background/50 border-border/40"
                         />
                       </div>
                       
-                      <div>
-                        <Label className="text-sm font-medium">Agency Logo</Label>
-                        <div className="mt-2">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
-                            className="hidden"
-                            id="agency-logo"
-                          />
-                          <label htmlFor="agency-logo" className="cursor-pointer">
-                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
-                              <Upload className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
-                              <p className="text-xs text-muted-foreground">
-                                {agencyLogo ? agencyLogo.name : "Upload agency logo"}
-                              </p>
-                            </div>
-                          </label>
-                        </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs text-muted-foreground">Agency Logo</Label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                          className="hidden"
+                          id="agency-logo"
+                        />
+                        <label htmlFor="agency-logo" className="cursor-pointer block">
+                          <div className="border border-dashed border-border/60 rounded-xl p-4 text-center hover:border-primary/40 hover:bg-primary/5 transition-all">
+                            <Upload className="w-5 h-5 mx-auto mb-2 text-muted-foreground" />
+                            <p className="text-xs text-muted-foreground">
+                              {agencyLogo ? agencyLogo.name : "Upload agency logo"}
+                            </p>
+                          </div>
+                        </label>
                       </div>
                     </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Export format for non-agency users on last step */}
-              {currentStep === 4 && userRole !== "agency_admin" && (
-                <div className="space-y-3 pt-4 border-t mt-4">
-                  <Label className="text-base font-medium">Export Format</Label>
-                  <div className="space-y-2 border rounded-lg p-3">
-                    {exportFormats.map((format) => (
-                      <div key={format.id} className="flex items-start space-x-3">
-                        <Checkbox
-                          id={`format-${format.id}`}
-                          checked={selectedFormats.includes(format.id)}
-                          onCheckedChange={(checked) => handleFormatToggle(format.id, checked as boolean)}
-                        />
-                        <div className="grid gap-1 leading-none">
-                          <label htmlFor={`format-${format.id}`} className="text-sm font-medium cursor-pointer">
-                            {format.label}
-                          </label>
-                          <p className="text-xs text-muted-foreground">{format.description}</p>
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 </div>
               )}
             </ScrollArea>
 
             {/* Navigation Footer */}
-            <div className="flex items-center justify-between pt-4 border-t mt-2">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-border/40 bg-muted/20">
               <div className="flex items-center gap-2">
                 {currentStep > 1 && (
-                  <Button variant="outline" onClick={() => setCurrentStep(currentStep - 1)}>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setCurrentStep(currentStep - 1)}
+                    className="h-9 text-muted-foreground hover:text-foreground"
+                  >
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Back
                   </Button>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>{selectedPromptsCount} prompts</span>
-                <span>•</span>
-                <span>{selectedProductsCount} products</span>
-                <span>•</span>
-                <span>{selectedSourcesCount} sources</span>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <MessageSquare className="w-3 h-3" />
+                  {selectedPromptsCount}
+                </span>
+                <span className="w-px h-3 bg-border/60" />
+                <span className="flex items-center gap-1">
+                  <Package className="w-3 h-3" />
+                  {selectedProductsCount}
+                </span>
+                <span className="w-px h-3 bg-border/60" />
+                <span className="flex items-center gap-1">
+                  <Link className="w-3 h-3" />
+                  {selectedSourcesCount}
+                </span>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="outline" onClick={() => setIsOpen(false)}>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setIsOpen(false)}
+                  className="h-9 text-muted-foreground hover:text-foreground"
+                >
                   Cancel
                 </Button>
                 {currentStep < totalSteps ? (
-                  <Button onClick={() => setCurrentStep(currentStep + 1)}>
+                  <Button onClick={() => setCurrentStep(currentStep + 1)} className="h-9">
                     Next
                     <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 ) : (
-                  <Button onClick={handleExport} className="bg-gradient-to-r from-primary to-primary/80">
-                    <Sparkles className="w-4 h-4 mr-2" />
+                  <Button onClick={handleExport} className="h-9 bg-primary hover:bg-primary/90">
+                    <Sparkles className="w-3.5 h-3.5 mr-1.5" />
                     Generate Report
                   </Button>
                 )}
@@ -848,34 +944,34 @@ export const ReportExportDialog = ({ trigger, brandName = "Tesla", reportType = 
             </div>
           </>
         ) : (
-          <div className="space-y-6 py-8">
+          <div className="space-y-6 py-12 px-6">
             <div className="text-center space-y-4">
-              <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 bg-muted/40 rounded-2xl flex items-center justify-center mx-auto">
                 {exportProgress === 100 ? (
-                  <CheckCircle className="w-10 h-10 text-green-600" />
+                  <CheckCircle className="w-8 h-8 text-green-500" />
                 ) : (
-                  <FileText className="w-10 h-10 text-primary animate-pulse" />
+                  <FileText className="w-8 h-8 text-primary animate-pulse" />
                 )}
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">
-                  {exportProgress === 100 ? "Report Ready!" : "Generating Report..."}
+                <h3 className="text-lg font-semibold text-foreground mb-1">
+                  {exportProgress === 100 ? "Report Ready" : "Generating Report..."}
                 </h3>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   {exportProgress === 100 
-                    ? "Your custom report has been generated and will download shortly."
-                    : "Building your custom report with selected prompts, products, and sources..."
+                    ? "Your custom report will download shortly."
+                    : "Building your custom report..."
                   }
                 </p>
               </div>
-              <div className="space-y-2 max-w-xs mx-auto">
-                <div className="w-full bg-muted rounded-full h-2">
+              <div className="space-y-2 max-w-[200px] mx-auto">
+                <div className="w-full bg-muted/40 rounded-full h-1.5 overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-primary to-primary/80 h-2 rounded-full transition-all duration-300 ease-out"
+                    className="bg-primary h-1.5 rounded-full transition-all duration-300 ease-out"
                     style={{ width: `${Math.min(exportProgress, 100)}%` }}
                   />
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {Math.round(exportProgress)}% complete
                 </p>
               </div>
