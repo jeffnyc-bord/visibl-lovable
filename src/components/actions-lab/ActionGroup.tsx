@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
 import { ActionCard } from './ActionCard';
 import { Recommendation } from './types';
 
@@ -14,6 +12,7 @@ interface ActionGroupProps {
   showStepNumbers?: boolean;
   defaultExpanded?: boolean;
   maxVisible?: number;
+  isPriorityGroup?: boolean;
 }
 
 export const ActionGroup = ({
@@ -26,8 +25,8 @@ export const ActionGroup = ({
   showStepNumbers = false,
   defaultExpanded = true,
   maxVisible = 5,
+  isPriorityGroup = false,
 }: ActionGroupProps) => {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [showAll, setShowAll] = useState(false);
 
   const completedCount = recommendations.filter(r => completedIds.includes(r.id)).length;
@@ -37,51 +36,40 @@ export const ActionGroup = ({
   if (recommendations.length === 0) return null;
 
   return (
-    <div className="space-y-2">
+    <div className={`${isPriorityGroup ? 'bg-muted/30 -mx-6 px-6 py-4 rounded-2xl' : ''}`}>
       {/* Header */}
-      <button 
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center gap-2 w-full text-left group"
-      >
-        <ChevronDown 
-          className={`w-4 h-4 text-muted-foreground transition-transform ${
-            isExpanded ? '' : '-rotate-90'
-          }`}
-        />
-        <h3 className="text-sm font-medium text-foreground">{title}</h3>
+      <div className="flex items-baseline gap-3 mb-2">
+        <h3 className="text-lg font-semibold text-foreground tracking-tight">{title}</h3>
         <span className="text-xs text-muted-foreground">
-          {completedCount}/{recommendations.length}
+          {completedCount}/{recommendations.length} completed
         </span>
         {subtitle && (
           <span className="text-xs text-muted-foreground">· {subtitle}</span>
         )}
-      </button>
+      </div>
 
-      {/* Cards */}
-      {isExpanded && (
-        <div className="space-y-1.5 pl-6">
-          {displayedRecs.map((rec, index) => (
-            <ActionCard
-              key={rec.id}
-              recommendation={rec}
-              isCompleted={completedIds.includes(rec.id)}
-              onToggleComplete={onToggleComplete}
-              onOpenStudio={onOpenStudio}
-              stepNumber={showStepNumbers && !completedIds.includes(rec.id) ? index + 1 : undefined}
-            />
-          ))}
-          
-          {hasMore && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full h-8 text-xs text-muted-foreground hover:text-foreground"
-              onClick={() => setShowAll(!showAll)}
-            >
-              {showAll ? 'Show less' : `View ${recommendations.length - maxVisible} more`}
-            </Button>
-          )}
-        </div>
+      {/* List with dividers */}
+      <div className="divide-y divide-border/60">
+        {displayedRecs.map((rec, index) => (
+          <ActionCard
+            key={rec.id}
+            recommendation={rec}
+            isCompleted={completedIds.includes(rec.id)}
+            onToggleComplete={onToggleComplete}
+            onOpenStudio={onOpenStudio}
+            stepNumber={showStepNumbers && !completedIds.includes(rec.id) ? index + 1 : undefined}
+            isPriority={isPriorityGroup && showStepNumbers}
+          />
+        ))}
+      </div>
+      
+      {hasMore && (
+        <button
+          className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          onClick={() => setShowAll(!showAll)}
+        >
+          {showAll ? 'Show less' : `View ${recommendations.length - maxVisible} more`}
+        </button>
       )}
     </div>
   );

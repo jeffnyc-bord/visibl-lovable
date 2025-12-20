@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Globe, Link2, Megaphone } from "lucide-react";
 import { StrategyOverview } from './StrategyOverview';
 import { FilterBar } from './FilterBar';
@@ -61,7 +60,6 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
     return filtered;
   };
 
-  // Separate into "This Week" (quick-wins) vs "Later" (foundations + advanced)
   const getThisWeekRecs = (category: TabType) => {
     return getFilteredRecommendations(category).filter(r => r.subcategory === 'quick-wins');
   };
@@ -72,8 +70,6 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
 
   const completedCount = completedIds.length;
   const totalCount = recommendations.length;
-
-  // Mock draft count - in real app, track which items have drafts
   const draftCount = 3;
 
   const tabConfig = [
@@ -83,8 +79,8 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
   ];
 
   return (
-    <div className={`space-y-4 ${demoMode ? 'demo-card-1' : ''}`}>
-      {/* Strategy Overview - Hero Section */}
+    <div className={`${demoMode ? 'demo-card-1' : ''}`}>
+      {/* Strategy Overview */}
       <StrategyOverview 
         summary={strategySummary}
         kpis={strategyKPIs}
@@ -93,65 +89,64 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
         totalCount={totalCount}
       />
 
-      {/* Content Queue Bar */}
+      {/* Tabs Row */}
+      <div ref={contentRef} className="flex items-center justify-between gap-4 border-b border-border/40 mb-6">
+        <div className="flex items-center gap-1">
+          {tabConfig.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                activeTab === tab.id
+                  ? 'text-foreground border-foreground'
+                  : 'text-muted-foreground border-transparent hover:text-foreground'
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              <span className="hidden sm:inline">{tab.label}</span>
+              <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+            </button>
+          ))}
+        </div>
+
+        <FilterBar 
+          filters={filters}
+          onFilterChange={setFilters}
+        />
+      </div>
+
+      {/* Content Queue */}
       <ContentQueueBar draftCount={draftCount} onViewDrafts={handleViewDrafts} />
 
-      {/* Main Content */}
-      <div ref={contentRef}>
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)}>
-          {/* Tabs + Filters Row */}
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <TabsList className="h-9 p-1 bg-muted/50 rounded-lg">
-              {tabConfig.map((tab) => (
-                <TabsTrigger
-                  key={tab.id}
-                  value={tab.id}
-                  className="flex items-center gap-1.5 h-7 px-3 text-xs font-medium rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm"
-                >
-                  <tab.icon className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">{tab.label}</span>
-                  <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
+      {/* Actions List */}
+      <div className="mt-6 space-y-8">
+        {/* This Week - Priority Group */}
+        <ActionGroup
+          title="This Week"
+          subtitle="High-impact quick wins"
+          recommendations={getThisWeekRecs(activeTab)}
+          completedIds={completedIds}
+          onToggleComplete={handleToggleComplete}
+          onOpenStudio={handleOpenStudio}
+          showStepNumbers={true}
+          defaultExpanded={true}
+          maxVisible={5}
+          isPriorityGroup={true}
+        />
 
-            <FilterBar 
-              filters={filters}
-              onFilterChange={setFilters}
-            />
-          </div>
-
-          {/* Tab Content */}
-          {tabConfig.map((tab) => (
-            <TabsContent key={tab.id} value={tab.id} className="mt-0 space-y-6">
-              {/* This Week */}
-              <ActionGroup
-                title="This week"
-                subtitle="High-impact quick wins"
-                recommendations={getThisWeekRecs(tab.id)}
-                completedIds={completedIds}
-                onToggleComplete={handleToggleComplete}
-                onOpenStudio={handleOpenStudio}
-                showStepNumbers={true}
-                defaultExpanded={true}
-                maxVisible={5}
-              />
-
-              {/* Later */}
-              <ActionGroup
-                title="Later"
-                subtitle="Foundations & advanced"
-                recommendations={getLaterRecs(tab.id)}
-                completedIds={completedIds}
-                onToggleComplete={handleToggleComplete}
-                onOpenStudio={handleOpenStudio}
-                showStepNumbers={false}
-                defaultExpanded={true}
-                maxVisible={4}
-              />
-            </TabsContent>
-          ))}
-        </Tabs>
+        {/* Later */}
+        <ActionGroup
+          title="Later"
+          subtitle="Foundations & advanced"
+          recommendations={getLaterRecs(activeTab)}
+          completedIds={completedIds}
+          onToggleComplete={handleToggleComplete}
+          onOpenStudio={handleOpenStudio}
+          showStepNumbers={false}
+          defaultExpanded={true}
+          maxVisible={4}
+          isPriorityGroup={false}
+        />
       </div>
     </div>
   );

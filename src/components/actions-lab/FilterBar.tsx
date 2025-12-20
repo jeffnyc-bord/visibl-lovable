@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Target, Globe, Zap, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, ChevronDown, X } from "lucide-react";
 import { FilterState } from './types';
 
 interface FilterBarProps {
@@ -21,10 +20,12 @@ export const FilterBar = ({
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className={`h-8 text-xs gap-1.5 ${hasActiveFilters ? 'text-primary' : 'text-muted-foreground'}`}
+        <button 
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+            hasActiveFilters 
+              ? 'text-primary bg-primary/5' 
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+          }`}
         >
           <SlidersHorizontal className="w-3.5 h-3.5" />
           Filters
@@ -32,17 +33,16 @@ export const FilterBar = ({
             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
           )}
           <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-        </Button>
+        </button>
       </CollapsibleTrigger>
 
       <CollapsibleContent>
-        <div className="flex items-center gap-2 mt-2 p-3 rounded-lg bg-muted/30 border border-border/40">
+        <div className="flex items-center gap-2 mt-3 py-3 border-t border-border/40">
           <Select 
             value={filters.goal} 
             onValueChange={(value) => onFilterChange({ ...filters, goal: value as FilterState['goal'] })}
           >
-            <SelectTrigger className="h-8 w-[120px] text-xs bg-background border-border/60">
-              <Target className="w-3 h-3 mr-1.5 text-muted-foreground" />
+            <SelectTrigger className="h-8 w-auto min-w-[100px] text-xs border-0 bg-muted/50 hover:bg-muted transition-colors">
               <SelectValue placeholder="Goal" />
             </SelectTrigger>
             <SelectContent>
@@ -57,8 +57,7 @@ export const FilterBar = ({
             value={filters.channel} 
             onValueChange={(value) => onFilterChange({ ...filters, channel: value as FilterState['channel'] })}
           >
-            <SelectTrigger className="h-8 w-[120px] text-xs bg-background border-border/60">
-              <Globe className="w-3 h-3 mr-1.5 text-muted-foreground" />
+            <SelectTrigger className="h-8 w-auto min-w-[100px] text-xs border-0 bg-muted/50 hover:bg-muted transition-colors">
               <SelectValue placeholder="Channel" />
             </SelectTrigger>
             <SelectContent>
@@ -73,8 +72,7 @@ export const FilterBar = ({
             value={filters.effort} 
             onValueChange={(value) => onFilterChange({ ...filters, effort: value as FilterState['effort'] })}
           >
-            <SelectTrigger className="h-8 w-[100px] text-xs bg-background border-border/60">
-              <Zap className="w-3 h-3 mr-1.5 text-muted-foreground" />
+            <SelectTrigger className="h-8 w-auto min-w-[90px] text-xs border-0 bg-muted/50 hover:bg-muted transition-colors">
               <SelectValue placeholder="Effort" />
             </SelectTrigger>
             <SelectContent>
@@ -86,14 +84,13 @@ export const FilterBar = ({
           </Select>
 
           {hasActiveFilters && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 text-xs text-muted-foreground"
+            <button 
+              className="inline-flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => onFilterChange({ goal: 'all', channel: 'all', effort: 'all' })}
             >
+              <X className="w-3 h-3" />
               Clear
-            </Button>
+            </button>
           )}
         </div>
       </CollapsibleContent>
