@@ -20,6 +20,8 @@ export interface Recommendation {
   tags: string[];
   aiVisibilityIncrease: number;
   contentStudioTemplate?: string;
+  priority?: 'do-first' | 'this-week' | 'later';
+  hasDraft?: boolean;
 }
 
 export interface StrategyKPI {

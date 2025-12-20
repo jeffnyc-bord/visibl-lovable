@@ -3,7 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Globe, Link2, Megaphone } from "lucide-react";
 import { StrategyOverview } from './StrategyOverview';
 import { FilterBar } from './FilterBar';
-import { CategorySection } from './CategorySection';
+import { ActionGroup } from './ActionGroup';
+import { ContentQueueBar } from './ContentQueueBar';
 import { recommendations, strategyKPIs, strategySummary } from './data';
 import { FilterState, TabType, Recommendation } from './types';
 import { toast } from "@/hooks/use-toast";
@@ -36,11 +37,18 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
       title: "Opening Content Studio",
       description: `Loading ${templateId} template...`,
     });
-    // TODO: Navigate to content studio with template
   };
 
-  const handleViewPlan = () => {
+  const handleStartQuickWins = () => {
+    setActiveTab('on-site');
     contentRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleViewDrafts = () => {
+    toast({
+      title: "Content Studio",
+      description: "Opening your drafts...",
+    });
   };
 
   const getFilteredRecommendations = (category: TabType): Recommendation[] => {
@@ -53,85 +61,94 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
     return filtered;
   };
 
-  const getRecommendationsBySubcategory = (category: TabType, subcategory: 'quick-wins' | 'foundations' | 'advanced') => {
-    return getFilteredRecommendations(category).filter(r => r.subcategory === subcategory);
+  // Separate into "This Week" (quick-wins) vs "Later" (foundations + advanced)
+  const getThisWeekRecs = (category: TabType) => {
+    return getFilteredRecommendations(category).filter(r => r.subcategory === 'quick-wins');
   };
 
-  const totalImpact = recommendations.reduce((sum, r) => sum + r.aiVisibilityIncrease, 0);
+  const getLaterRecs = (category: TabType) => {
+    return getFilteredRecommendations(category).filter(r => r.subcategory !== 'quick-wins');
+  };
+
   const completedCount = completedIds.length;
   const totalCount = recommendations.length;
+
+  // Mock draft count - in real app, track which items have drafts
+  const draftCount = 3;
 
   const tabConfig = [
     { id: 'on-site' as TabType, label: 'On-site AI & SEO', icon: Globe },
     { id: 'off-site' as TabType, label: 'Off-site & Authority', icon: Link2 },
-    { id: 'pr-social' as TabType, label: 'PR & Social Visibility', icon: Megaphone },
-  ];
-
-  const subcategoryConfig = [
-    { id: 'quick-wins' as const, title: 'Quick Wins' },
-    { id: 'foundations' as const, title: 'Foundations' },
-    { id: 'advanced' as const, title: 'Advanced' },
+    { id: 'pr-social' as TabType, label: 'PR & Social', icon: Megaphone },
   ];
 
   return (
-    <div className={`space-y-6 ${demoMode ? 'demo-card-1' : ''}`}>
-      {/* Strategy Overview */}
+    <div className={`space-y-4 ${demoMode ? 'demo-card-1' : ''}`}>
+      {/* Strategy Overview - Hero Section */}
       <StrategyOverview 
         summary={strategySummary}
         kpis={strategyKPIs}
-        onViewPlan={handleViewPlan}
+        onStartQuickWins={handleStartQuickWins}
+        completedCount={completedCount}
+        totalCount={totalCount}
       />
 
-      {/* Main Tabs */}
+      {/* Content Queue Bar */}
+      <ContentQueueBar draftCount={draftCount} onViewDrafts={handleViewDrafts} />
+
+      {/* Main Content */}
       <div ref={contentRef}>
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)}>
-          <TabsList className="w-full h-auto p-1 bg-muted/50 rounded-xl grid grid-cols-3 gap-1">
-            {tabConfig.map((tab) => (
-              <TabsTrigger
-                key={tab.id}
-                value={tab.id}
-                className="flex items-center gap-2 py-2.5 px-4 text-xs font-medium rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
-              >
-                <tab.icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
-                <span className="sm:hidden">
-                  {tab.label.split(' ')[0]}
-                </span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          {/* Tabs + Filters Row */}
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <TabsList className="h-9 p-1 bg-muted/50 rounded-lg">
+              {tabConfig.map((tab) => (
+                <TabsTrigger
+                  key={tab.id}
+                  value={tab.id}
+                  className="flex items-center gap-1.5 h-7 px-3 text-xs font-medium rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                >
+                  <tab.icon className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-          {/* Filter Bar */}
-          <div className="mt-4">
             <FilterBar 
               filters={filters}
               onFilterChange={setFilters}
-              completedCount={completedCount}
-              totalCount={totalCount}
-              totalImpact={totalImpact}
             />
           </div>
 
           {/* Tab Content */}
           {tabConfig.map((tab) => (
-            <TabsContent key={tab.id} value={tab.id} className="mt-4 space-y-4">
-              {subcategoryConfig.map((subcat, index) => {
-                const recs = getRecommendationsBySubcategory(tab.id, subcat.id);
-                if (recs.length === 0) return null;
-                
-                return (
-                  <CategorySection
-                    key={subcat.id}
-                    title={subcat.title}
-                    subcategory={subcat.id}
-                    recommendations={recs}
-                    completedIds={completedIds}
-                    onToggleComplete={handleToggleComplete}
-                    onOpenStudio={handleOpenStudio}
-                    defaultExpanded={index === 0}
-                  />
-                );
-              })}
+            <TabsContent key={tab.id} value={tab.id} className="mt-0 space-y-6">
+              {/* This Week */}
+              <ActionGroup
+                title="This week"
+                subtitle="High-impact quick wins"
+                recommendations={getThisWeekRecs(tab.id)}
+                completedIds={completedIds}
+                onToggleComplete={handleToggleComplete}
+                onOpenStudio={handleOpenStudio}
+                showStepNumbers={true}
+                defaultExpanded={true}
+                maxVisible={5}
+              />
+
+              {/* Later */}
+              <ActionGroup
+                title="Later"
+                subtitle="Foundations & advanced"
+                recommendations={getLaterRecs(tab.id)}
+                completedIds={completedIds}
+                onToggleComplete={handleToggleComplete}
+                onOpenStudio={handleOpenStudio}
+                showStepNumbers={false}
+                defaultExpanded={true}
+                maxVisible={4}
+              />
             </TabsContent>
           ))}
         </Tabs>
