@@ -1,86 +1,82 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { TrendingUp, TrendingDown, Minus, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Minus, ArrowRight, Sparkles } from "lucide-react";
 import { StrategyKPI } from './types';
 
 interface StrategyOverviewProps {
   summary: string;
   kpis: StrategyKPI[];
-  onViewPlan: () => void;
+  onStartQuickWins: () => void;
+  completedCount: number;
+  totalCount: number;
 }
 
-export const StrategyOverview = ({ summary, kpis, onViewPlan }: StrategyOverviewProps) => {
+export const StrategyOverview = ({ 
+  summary, 
+  kpis, 
+  onStartQuickWins,
+  completedCount,
+  totalCount
+}: StrategyOverviewProps) => {
   const getTrendIcon = (trend: 'up' | 'down' | 'stable') => {
     switch (trend) {
       case 'up':
-        return <TrendingUp className="w-4 h-4 text-success" />;
+        return <TrendingUp className="w-3.5 h-3.5 text-success" />;
       case 'down':
-        return <TrendingDown className="w-4 h-4 text-destructive" />;
+        return <TrendingDown className="w-3.5 h-3.5 text-destructive" />;
       case 'stable':
-        return <Minus className="w-4 h-4 text-muted-foreground" />;
+        return <Minus className="w-3.5 h-3.5 text-muted-foreground" />;
     }
   };
 
   const getScoreColor = (score: number) => {
     if (score >= 75) return 'text-success';
-    if (score >= 50) return 'text-warning';
+    if (score >= 50) return 'text-primary';
     return 'text-destructive';
   };
 
   return (
-    <Card className="border-0 bg-gradient-to-br from-primary/5 via-background to-accent/5 shadow-sm">
-      <CardContent className="p-6">
-        <div className="flex items-start gap-4 mb-6">
-          <div className="p-2.5 rounded-xl bg-primary/10">
-            <Sparkles className="w-5 h-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <h2 className="text-lg font-semibold text-foreground">Strategy Overview</h2>
-              <Badge variant="secondary" className="text-xs">AI-Powered</Badge>
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {summary}
-            </p>
-          </div>
+    <div className="bg-gradient-to-br from-primary/8 via-background to-primary/4 rounded-2xl p-6 border border-primary/10">
+      {/* Narrative + KPIs Row */}
+      <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+        {/* Left: Narrative */}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {summary}
+          </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        {/* Right: KPIs */}
+        <div className="flex items-center gap-6 flex-shrink-0">
           {kpis.map((kpi) => (
-            <div 
-              key={kpi.label} 
-              className="p-4 rounded-xl bg-background/60 border border-border/50"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  {kpi.label}
+            <div key={kpi.label} className="text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <span className={`text-xl font-bold ${getScoreColor(kpi.score)}`}>
+                  {kpi.score}
                 </span>
                 {getTrendIcon(kpi.trend)}
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className={`text-2xl font-bold ${getScoreColor(kpi.score)}`}>
-                  {kpi.score}
-                </span>
-                <span className="text-sm text-muted-foreground">/100</span>
-                {kpi.change && (
-                  <span className={`text-xs font-medium ${kpi.trend === 'up' ? 'text-success' : 'text-destructive'}`}>
-                    {kpi.trend === 'up' ? '+' : '-'}{kpi.change}%
-                  </span>
-                )}
-              </div>
+              <span className="text-[11px] text-muted-foreground uppercase tracking-wide">
+                {kpi.label}
+              </span>
             </div>
           ))}
         </div>
+      </div>
 
+      {/* CTA Row */}
+      <div className="flex items-center justify-between mt-5 pt-5 border-t border-primary/10">
+        <div className="text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">{completedCount}</span> of {totalCount} high-impact actions completed
+        </div>
         <Button 
-          onClick={onViewPlan}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+          onClick={onStartQuickWins}
+          size="sm"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
         >
-          View your 14-day action plan
-          <ArrowRight className="w-4 h-4 ml-2" />
+          <Zap className="w-3.5 h-3.5" />
+          Start with Quick Wins
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
