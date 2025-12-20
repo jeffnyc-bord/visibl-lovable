@@ -19,6 +19,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
+				'sans': ['Google Sans Flex', 'system-ui', 'sans-serif'],
 				'terminal': ['DM Mono', 'monospace'],
 			},
 			colors: {
