@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Globe, Link2, Megaphone } from "lucide-react";
+import { Globe, Link2, Megaphone, Zap, LayoutList, Clock, CheckCircle2 } from "lucide-react";
 import { StrategyOverview } from './StrategyOverview';
 import { FilterBar } from './FilterBar';
 import { ActionGroup } from './ActionGroup';
@@ -73,80 +73,178 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
   const draftCount = 3;
 
   const tabConfig = [
-    { id: 'on-site' as TabType, label: 'On-site AI & SEO', icon: Globe },
-    { id: 'off-site' as TabType, label: 'Off-site & Authority', icon: Link2 },
-    { id: 'pr-social' as TabType, label: 'PR & Social', icon: Megaphone },
+    { id: 'on-site' as TabType, label: 'On-site AI & SEO', shortLabel: 'On-site', icon: Globe },
+    { id: 'off-site' as TabType, label: 'Off-site & Authority', shortLabel: 'Off-site', icon: Link2 },
+    { id: 'pr-social' as TabType, label: 'PR & Social', shortLabel: 'PR/Social', icon: Megaphone },
+  ];
+
+  const quickActions = [
+    { icon: Zap, label: 'Quick Wins', count: getThisWeekRecs(activeTab).length },
+    { icon: LayoutList, label: 'All Actions', count: recommendations.filter(r => r.category === activeTab).length },
+    { icon: Clock, label: 'Snoozed', count: 0 },
+    { icon: CheckCircle2, label: 'Completed', count: completedIds.length },
   ];
 
   return (
-    <div className={`${demoMode ? 'demo-card-1' : ''}`}>
-      {/* Strategy Overview */}
-      <StrategyOverview 
-        summary={strategySummary}
-        kpis={strategyKPIs}
-        onStartQuickWins={handleStartQuickWins}
-        completedCount={completedCount}
-        totalCount={totalCount}
-      />
+    <div className={`flex gap-6 ${demoMode ? 'demo-card-1' : ''}`}>
+      {/* Glassmorphism Sidebar */}
+      <aside className="hidden lg:flex flex-col w-56 flex-shrink-0 sticky top-6 self-start">
+        <div className="rounded-2xl border border-border/50 bg-background/60 backdrop-blur-xl shadow-sm overflow-hidden">
+          {/* Navigation */}
+          <nav className="p-3">
+            <span className="px-3 text-[10px] uppercase tracking-widest text-muted-foreground/60 font-medium">
+              Categories
+            </span>
+            <div className="mt-2 space-y-0.5">
+              {tabConfig.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    activeTab === tab.id
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  {tab.shortLabel}
+                </button>
+              ))}
+            </div>
+          </nav>
 
-      {/* Tabs Row */}
-      <div ref={contentRef} className="flex items-center justify-between gap-4 border-b border-border/40 mb-6">
-        <div className="flex items-center gap-1">
-          {tabConfig.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
-                activeTab === tab.id
-                  ? 'text-foreground border-foreground'
-                  : 'text-muted-foreground border-transparent hover:text-foreground'
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
-            </button>
-          ))}
+          {/* Divider */}
+          <div className="mx-3 border-t border-border/40" />
+
+          {/* Quick Actions */}
+          <nav className="p-3">
+            <span className="px-3 text-[10px] uppercase tracking-widest text-muted-foreground/60 font-medium">
+              Views
+            </span>
+            <div className="mt-2 space-y-0.5">
+              {quickActions.map((action, index) => (
+                <button
+                  key={index}
+                  className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground rounded-lg transition-all duration-200"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <action.icon className="w-4 h-4" />
+                    {action.label}
+                  </span>
+                  {action.count > 0 && (
+                    <span className="text-xs text-muted-foreground/60">{action.count}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </nav>
+
+          {/* Divider */}
+          <div className="mx-3 border-t border-border/40" />
+
+          {/* Progress Section */}
+          <div className="p-4">
+            <div className="text-center">
+              <div className="text-3xl font-semibold text-foreground tracking-tight">
+                {Math.round((completedCount / totalCount) * 100)}%
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {completedCount} of {totalCount} complete
+              </div>
+              <div className="w-full h-1 rounded-full bg-muted mt-3 overflow-hidden">
+                <div 
+                  className="h-full rounded-full bg-primary transition-all duration-500"
+                  style={{ width: `${(completedCount / totalCount) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <div className="flex-1 min-w-0">
+        {/* Strategy Overview */}
+        <StrategyOverview 
+          summary={strategySummary}
+          kpis={strategyKPIs}
+          onStartQuickWins={handleStartQuickWins}
+          completedCount={completedCount}
+          totalCount={totalCount}
+        />
+
+        {/* Mobile Tabs */}
+        <div ref={contentRef} className="lg:hidden flex items-center justify-between gap-4 border-b border-border/40 mb-6">
+          <div className="flex items-center gap-1">
+            {tabConfig.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                  activeTab === tab.id
+                    ? 'text-foreground border-foreground'
+                    : 'text-muted-foreground border-transparent hover:text-foreground'
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                <span>{tab.shortLabel}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        <FilterBar 
-          filters={filters}
-          onFilterChange={setFilters}
-        />
-      </div>
+        {/* Desktop Header */}
+        <div className="hidden lg:flex items-center justify-between gap-4 mb-6">
+          <h2 className="text-xl font-semibold text-foreground tracking-tight">
+            {tabConfig.find(t => t.id === activeTab)?.label}
+          </h2>
+          <FilterBar 
+            filters={filters}
+            onFilterChange={setFilters}
+          />
+        </div>
 
-      {/* Content Queue */}
-      <ContentQueueBar draftCount={draftCount} onViewDrafts={handleViewDrafts} />
+        {/* Mobile Filter */}
+        <div className="lg:hidden mb-4">
+          <FilterBar 
+            filters={filters}
+            onFilterChange={setFilters}
+          />
+        </div>
 
-      {/* Actions List */}
-      <div className="mt-6 space-y-8">
-        {/* This Week - Priority Group */}
-        <ActionGroup
-          title="This Week"
-          subtitle="High-impact quick wins"
-          recommendations={getThisWeekRecs(activeTab)}
-          completedIds={completedIds}
-          onToggleComplete={handleToggleComplete}
-          onOpenStudio={handleOpenStudio}
-          showStepNumbers={true}
-          defaultExpanded={true}
-          maxVisible={5}
-          isPriorityGroup={true}
-        />
+        {/* Content Queue */}
+        <ContentQueueBar draftCount={draftCount} onViewDrafts={handleViewDrafts} />
 
-        {/* Later */}
-        <ActionGroup
-          title="Later"
-          subtitle="Foundations & advanced"
-          recommendations={getLaterRecs(activeTab)}
-          completedIds={completedIds}
-          onToggleComplete={handleToggleComplete}
-          onOpenStudio={handleOpenStudio}
-          showStepNumbers={false}
-          defaultExpanded={true}
-          maxVisible={4}
-          isPriorityGroup={false}
-        />
+        {/* Actions List */}
+        <div className="mt-6 space-y-8">
+          {/* This Week - Priority Group */}
+          <ActionGroup
+            title="This Week"
+            subtitle="High-impact quick wins"
+            recommendations={getThisWeekRecs(activeTab)}
+            completedIds={completedIds}
+            onToggleComplete={handleToggleComplete}
+            onOpenStudio={handleOpenStudio}
+            showStepNumbers={true}
+            defaultExpanded={true}
+            maxVisible={5}
+            isPriorityGroup={true}
+          />
+
+          {/* Later */}
+          <ActionGroup
+            title="Later"
+            subtitle="Foundations & advanced"
+            recommendations={getLaterRecs(activeTab)}
+            completedIds={completedIds}
+            onToggleComplete={handleToggleComplete}
+            onOpenStudio={handleOpenStudio}
+            showStepNumbers={false}
+            defaultExpanded={true}
+            maxVisible={4}
+            isPriorityGroup={false}
+          />
+        </div>
       </div>
     </div>
   );
