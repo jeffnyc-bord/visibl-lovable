@@ -24,7 +24,7 @@ export const SerpPreviewPanel = ({
   const domain = 'yourbrand.com';
 
   return (
-    <aside className="w-80 flex-shrink-0 sticky top-6 self-start">
+    <div className="w-full">
       <div className="rounded-2xl border border-border/50 bg-background/60 backdrop-blur-xl shadow-sm overflow-hidden">
         {/* Header */}
         <div className="p-4 border-b border-border/40">
@@ -158,6 +158,6 @@ export const SerpPreviewPanel = ({
           </p>
         </div>
       </div>
-    </aside>
+    </div>
   );
 };
