@@ -14,7 +14,8 @@ import {
   MoreHorizontal,
   CheckCircle2,
   ArrowRight,
-  Clock
+  Clock,
+  Trash2
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -311,6 +312,11 @@ export function ActionsLog() {
     }
     
     setShowEditCompleteDatePicker(false);
+  };
+
+  const deleteAction = (actionId: string) => {
+    setActions(prev => prev.filter(action => action.id !== actionId));
+    setSelectedAction(null);
   };
 
   return (
@@ -862,6 +868,17 @@ export function ActionsLog() {
                     <p className="text-[13px] font-medium mt-1">{selectedAction.campaign}</p>
                   </div>
                 )}
+
+                {/* Delete Action */}
+                <div className="pt-4 mt-4 border-t border-border/30">
+                  <button
+                    onClick={() => deleteAction(selectedAction.id)}
+                    className="flex items-center gap-2 px-3 py-2 w-full rounded-md text-[12px] font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete Action
+                  </button>
+                </div>
               </div>
             </>
           )}
