@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { format } from 'date-fns';
 import { 
   Share, 
   Sparkles, 
@@ -7,14 +8,18 @@ import {
   Globe,
   Megaphone,
   FileText,
-  Calendar,
+  Calendar as CalendarIcon,
   TrendingUp,
   Check,
   MoreHorizontal,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  Clock
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
 type ActionStatus = 'live' | 'pending' | 'in-progress';
 type ActionType = 'on-site' | 'off-site' | 'social' | 'pr';
@@ -249,9 +254,9 @@ export function ActionsLog() {
     }
   };
 
-  const updateActionStatus = (actionId: string, newStatus: ActionStatus) => {
-    const now = new Date().toISOString();
-    const nowFormatted = new Date().toLocaleString('en-US', { 
+  const updateActionStatus = (actionId: string, newStatus: ActionStatus, customDate?: Date) => {
+    const completedDateValue = customDate ? customDate.toISOString() : new Date().toISOString();
+    const nowFormatted = (customDate || new Date()).toLocaleString('en-US', { 
       month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' 
     });
 
@@ -267,7 +272,7 @@ export function ActionsLog() {
       return { 
         ...action, 
         status: newStatus,
-        completedDate: newStatus === 'live' ? now : action.completedDate,
+        completedDate: newStatus === 'live' ? completedDateValue : action.completedDate,
         statusHistory: [...(action.statusHistory || []), statusChange]
       };
     }));
@@ -282,11 +287,16 @@ export function ActionsLog() {
       setSelectedAction(prev => prev ? { 
         ...prev, 
         status: newStatus,
-        completedDate: newStatus === 'live' ? now : prev.completedDate,
+        completedDate: newStatus === 'live' ? completedDateValue : prev.completedDate,
         statusHistory: [...(prev.statusHistory || []), statusChange]
       } : null);
     }
+    
+    setShowCompleteDatePicker(false);
   };
+
+  const [showCompleteDatePicker, setShowCompleteDatePicker] = useState(false);
+  const [customCompleteDate, setCustomCompleteDate] = useState<Date | undefined>(new Date());
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -596,22 +606,72 @@ export function ActionsLog() {
                 <div>
                   <span className="text-[10px] font-medium text-muted-foreground uppercase">Status</span>
                   <div className="mt-2 flex items-center gap-2">
-                    {(Object.keys(statusConfig) as ActionStatus[]).map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => updateActionStatus(selectedAction.id, status)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-all ${
-                          selectedAction.status === status
-                            ? 'bg-foreground text-background'
-                            : 'bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground'
-                        }`}
-                      >
-                        <div className={`w-2 h-2 rounded-full ${statusConfig[status].bgColor} ${
-                          selectedAction.status === status && statusConfig[status].glow ? 'shadow-[0_0_4px_1px_rgba(16,185,129,0.5)]' : ''
-                        }`} />
-                        {statusConfig[status].label}
-                      </button>
-                    ))}
+                    {(Object.keys(statusConfig) as ActionStatus[]).map((status) => {
+                      // For "Live" status, show a popover with date picker
+                      if (status === 'live' && selectedAction.status !== 'live') {
+                        return (
+                          <Popover key={status} open={showCompleteDatePicker} onOpenChange={setShowCompleteDatePicker}>
+                            <PopoverTrigger asChild>
+                              <button
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-all bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                              >
+                                <div className={`w-2 h-2 rounded-full ${statusConfig[status].bgColor}`} />
+                                {statusConfig[status].label}
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <div className="p-3 border-b border-border/40">
+                                <p className="text-[12px] font-medium text-foreground">When was this completed?</p>
+                                <div className="mt-2 flex gap-2">
+                                  <button
+                                    onClick={() => updateActionStatus(selectedAction.id, 'live')}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-white text-[11px] font-medium rounded-md hover:bg-emerald-600 transition-colors"
+                                  >
+                                    <Clock className="w-3 h-3" />
+                                    Now
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      if (customCompleteDate) {
+                                        updateActionStatus(selectedAction.id, 'live', customCompleteDate);
+                                      }
+                                    }}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-foreground text-background text-[11px] font-medium rounded-md hover:opacity-90 transition-opacity"
+                                  >
+                                    <Check className="w-3 h-3" />
+                                    Use selected date
+                                  </button>
+                                </div>
+                              </div>
+                              <Calendar
+                                mode="single"
+                                selected={customCompleteDate}
+                                onSelect={setCustomCompleteDate}
+                                initialFocus
+                                className={cn("p-3 pointer-events-auto")}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        );
+                      }
+                      
+                      return (
+                        <button
+                          key={status}
+                          onClick={() => updateActionStatus(selectedAction.id, status)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-all ${
+                            selectedAction.status === status
+                              ? 'bg-foreground text-background'
+                              : 'bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                          }`}
+                        >
+                          <div className={`w-2 h-2 rounded-full ${statusConfig[status].bgColor} ${
+                            selectedAction.status === status && statusConfig[status].glow ? 'shadow-[0_0_4px_1px_rgba(16,185,129,0.5)]' : ''
+                          }`} />
+                          {statusConfig[status].label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
