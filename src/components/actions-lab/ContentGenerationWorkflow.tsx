@@ -20,6 +20,7 @@ const mockProducts: ProductSource[] = [
     category: 'Running Shoes',
     visibilityScore: 78,
     mentions: 203,
+    source: 'catalog',
   },
   {
     id: '2',
@@ -27,6 +28,7 @@ const mockProducts: ProductSource[] = [
     category: 'Performance Running',
     visibilityScore: 65,
     mentions: 145,
+    source: 'catalog',
   },
   {
     id: '3',
@@ -34,6 +36,7 @@ const mockProducts: ProductSource[] = [
     category: 'Lifestyle',
     visibilityScore: 82,
     mentions: 312,
+    source: 'catalog',
   },
   {
     id: '4',
@@ -41,6 +44,7 @@ const mockProducts: ProductSource[] = [
     category: 'Lifestyle',
     visibilityScore: 91,
     mentions: 456,
+    source: 'manual',
   },
 ];
 
@@ -54,6 +58,7 @@ const mockPrompts: PromptSource[] = [
     sentiment: 'positive',
     platforms: ['ChatGPT', 'Gemini', 'Perplexity', 'Grok'],
     lastTested: '2024-01-14',
+    source: 'blast-lab',
   },
   {
     id: '2',
@@ -63,6 +68,7 @@ const mockPrompts: PromptSource[] = [
     sentiment: 'positive',
     platforms: ['ChatGPT', 'Gemini', 'Perplexity'],
     lastTested: '2024-01-20',
+    source: 'blast-lab',
   },
   {
     id: '3',
@@ -72,6 +78,7 @@ const mockPrompts: PromptSource[] = [
     sentiment: 'neutral',
     platforms: ['ChatGPT', 'Gemini', 'Grok', 'Perplexity'],
     lastTested: '2024-01-13',
+    source: 'library',
   },
   {
     id: '4',
@@ -81,6 +88,7 @@ const mockPrompts: PromptSource[] = [
     sentiment: 'positive',
     platforms: ['ChatGPT', 'Grok', 'Perplexity'],
     lastTested: '2024-01-12',
+    source: 'manual',
   },
 ];
 

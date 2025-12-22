@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronRight, Zap, Check, ChevronDown } from 'lucide-react';
+import { ChevronRight, Zap, Check, ChevronDown, FlaskConical, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface PromptSource {
@@ -10,6 +10,7 @@ export interface PromptSource {
   sentiment: 'positive' | 'neutral' | 'negative';
   platforms: string[];
   lastTested: string;
+  source?: 'blast-lab' | 'library' | 'manual';
 }
 
 interface PromptSourceSelectorProps {
@@ -88,13 +89,43 @@ export const PromptSourceSelector = ({
                 )}
               </div>
 
-              {/* Prompt Text */}
-              <span className={cn(
-                "flex-1 text-sm line-clamp-1",
-                selectedPrompt?.id === prompt.id ? "text-foreground font-medium" : "text-foreground/80"
-              )}>
-                {prompt.prompt}
-              </span>
+              {/* Prompt Text & Source */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className={cn(
+                    "text-sm line-clamp-1",
+                    selectedPrompt?.id === prompt.id ? "text-foreground font-medium" : "text-foreground/80"
+                  )}>
+                    {prompt.prompt}
+                  </span>
+                  {/* Source Badge */}
+                  <span className={cn(
+                    "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium uppercase tracking-wide flex-shrink-0",
+                    prompt.source === 'blast-lab' 
+                      ? "bg-orange-500/10 text-orange-600 dark:text-orange-400" 
+                      : prompt.source === 'library'
+                        ? "bg-primary/10 text-primary"
+                        : "bg-muted text-muted-foreground"
+                  )}>
+                    {prompt.source === 'blast-lab' ? (
+                      <>
+                        <FlaskConical className="w-2.5 h-2.5" />
+                        Blast Lab
+                      </>
+                    ) : prompt.source === 'library' ? (
+                      <>
+                        <FileText className="w-2.5 h-2.5" />
+                        Library
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-2.5 h-2.5" />
+                        Manual
+                      </>
+                    )}
+                  </span>
+                </div>
+              </div>
 
               {/* Metadata */}
               <span className="text-xs text-muted-foreground hidden sm:block">
