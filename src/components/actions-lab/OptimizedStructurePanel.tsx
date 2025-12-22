@@ -14,6 +14,7 @@ interface TitleSuggestion {
 interface OptimizedStructure {
   urlSlug: string;
   seoTitle: string;
+  metaDescription: string;
   titleSuggestions: TitleSuggestion[];
   headers: HeaderItem[];
   schemaEnabled: boolean;
@@ -62,6 +63,7 @@ export const OptimizedStructurePanel = ({
   const [isVisible, setIsVisible] = useState(false);
   const [urlSlug, setUrlSlug] = useState('');
   const [seoTitle, setSeoTitle] = useState('');
+  const [metaDescription, setMetaDescription] = useState('');
   const [selectedTitleIndex, setSelectedTitleIndex] = useState(0);
   const [schemaEnabled, setSchemaEnabled] = useState(contentType === 'faq');
   const [expandedHeaders, setExpandedHeaders] = useState(true);
@@ -81,6 +83,7 @@ export const OptimizedStructurePanel = ({
     const slug = prompt.prompt.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 50);
     setUrlSlug(slug);
     setSeoTitle(titleSuggestions[0].title);
+    setMetaDescription(`Discover everything you need to know about ${prompt.prompt.toLowerCase()}. Our comprehensive guide covers key insights, expert recommendations, and actionable tips.`);
     setHeaders(generateDefaultHeaders(contentType, prompt.prompt));
   }, [prompt, contentType]);
 
@@ -101,6 +104,10 @@ export const OptimizedStructurePanel = ({
   const maxTitleLength = 60;
   const titleProgress = (seoTitle.length / maxTitleLength) * 100;
   const isTitleOptimal = seoTitle.length >= 50 && seoTitle.length <= 60;
+
+  const maxDescLength = 155;
+  const descProgress = (metaDescription.length / maxDescLength) * 100;
+  const isDescOptimal = metaDescription.length >= 120 && metaDescription.length <= 155;
 
   return (
     <section className={cn(
@@ -187,6 +194,46 @@ export const OptimizedStructurePanel = ({
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Meta Description Row */}
+      <div className="py-3 border-b border-border/30">
+        <div className="flex items-start gap-4">
+          <div className="w-24 flex-shrink-0 pt-1">
+            <span className="text-xs text-muted-foreground">Meta Desc</span>
+          </div>
+          <div className="flex-1">
+            <textarea
+              value={metaDescription}
+              onChange={(e) => setMetaDescription(e.target.value)}
+              className="w-full bg-transparent text-sm resize-none focus:outline-none min-h-[60px]"
+              placeholder="Write a compelling meta description (120-155 characters)..."
+              rows={2}
+            />
+            {/* Description Progress */}
+            <div className="mt-2 h-0.5 rounded-full bg-muted overflow-hidden max-w-xs">
+              <div 
+                className={cn(
+                  "h-full rounded-full transition-all duration-300",
+                  isDescOptimal ? "bg-success" : descProgress > 100 ? "bg-destructive" : "bg-primary/50"
+                )}
+                style={{ width: `${Math.min(descProgress, 100)}%` }}
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={cn(
+              "text-[10px] font-mono",
+              isDescOptimal ? "text-success" : descProgress > 100 ? "text-destructive" : "text-muted-foreground"
+            )}>
+              {metaDescription.length}/{maxDescLength}
+            </span>
+            {isDescOptimal && <div className="w-1.5 h-1.5 rounded-full bg-success" />}
+          </div>
+        </div>
+        <p className="mt-2 ml-28 text-[10px] text-muted-foreground/60">
+          Include primary keyword naturally. Aim for 120-155 characters for optimal display.
+        </p>
       </div>
 
       {/* Headers */}
