@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ProductSourceSelector, ProductSource } from './ProductSourceSelector';
 import { PromptSourceSelector, PromptSource } from './PromptSourceSelector';
 import { ContentTypeSelector, ContentType } from './ContentTypeSelector';
-import { OptimizedStructurePanel } from './OptimizedStructurePanel';
+import { OptimizedStructurePanel, OptimizedStructure } from './OptimizedStructurePanel';
 import { SerpPreviewPanel } from './SerpPreviewPanel';
 import { ContextNotesPanel } from './ContextNotesPanel';
 import { toast } from '@/hooks/use-toast';
@@ -94,6 +94,7 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
   const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
   const [seoTitle, setSeoTitle] = useState('');
   const [urlSlug, setUrlSlug] = useState('');
+  const [metaDescription, setMetaDescription] = useState('');
   const [schemaEnabled, setSchemaEnabled] = useState(false);
   const [productNotes, setProductNotes] = useState('');
   const [sessionContext, setSessionContext] = useState<ContextNote[]>([]);
@@ -116,9 +117,10 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
     setSchemaEnabled(type === 'faq');
   };
 
-  const handleStructureChange = (structure: any) => {
+  const handleStructureChange = (structure: OptimizedStructure) => {
     setSeoTitle(structure.seoTitle);
     setUrlSlug(structure.urlSlug);
+    setMetaDescription(structure.metaDescription);
     setSchemaEnabled(structure.schemaEnabled);
   };
 
@@ -129,9 +131,6 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
     });
   };
 
-  const description = selectedPrompt 
-    ? `Comprehensive guide covering ${selectedPrompt.prompt}. Expert analysis and recommendations based on extensive research and testing.`
-    : '';
 
   // Check if we've completed all required steps
   const isReadyForStructure = selectedProduct && selectedPrompt && selectedContentType;
@@ -221,7 +220,7 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
         <SerpPreviewPanel
           title={seoTitle}
           urlSlug={urlSlug}
-          description={description}
+          description={metaDescription}
           contentType={selectedContentType}
           schemaEnabled={schemaEnabled}
           ratingEnabled={false}

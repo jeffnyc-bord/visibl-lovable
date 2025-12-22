@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Sparkles, Check, ChevronDown, ChevronRight, Link, ArrowRight } from 'lucide-react';
+import { Sparkles, Check, ChevronDown, ChevronRight, Link, ArrowRight, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ContentType } from './ContentTypeSelector';
 import { PromptSource } from './PromptSourceSelector';
 import { EditableHeadersPanel, HeaderItem, HeaderTemplate } from './EditableHeadersPanel';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 interface TitleSuggestion {
   title: string;
@@ -11,7 +13,7 @@ interface TitleSuggestion {
   isOptimal: boolean;
 }
 
-interface OptimizedStructure {
+export interface OptimizedStructure {
   urlSlug: string;
   seoTitle: string;
   metaDescription: string;
@@ -71,6 +73,7 @@ export const OptimizedStructurePanel = ({
     generateDefaultHeaders(contentType, prompt.prompt)
   );
   const [templates, setTemplates] = useState<HeaderTemplate[]>([]);
+  const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
 
   const titleSuggestions: TitleSuggestion[] = [
     { title: `${prompt.prompt} - Complete Guide for 2024`, score: 94, isOptimal: true },
@@ -83,9 +86,66 @@ export const OptimizedStructurePanel = ({
     const slug = prompt.prompt.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 50);
     setUrlSlug(slug);
     setSeoTitle(titleSuggestions[0].title);
-    setMetaDescription(`Discover everything you need to know about ${prompt.prompt.toLowerCase()}. Our comprehensive guide covers key insights, expert recommendations, and actionable tips.`);
+    const defaultDesc = `Discover everything you need to know about ${prompt.prompt.toLowerCase()}. Our comprehensive guide covers key insights, expert recommendations, and actionable tips.`;
+    setMetaDescription(defaultDesc);
     setHeaders(generateDefaultHeaders(contentType, prompt.prompt));
+    
+    // Notify parent of initial structure
+    onStructureChange({
+      urlSlug: slug,
+      seoTitle: titleSuggestions[0].title,
+      metaDescription: defaultDesc,
+      titleSuggestions,
+      headers: generateDefaultHeaders(contentType, prompt.prompt),
+      schemaEnabled: contentType === 'faq',
+      ratingEnabled: false,
+    });
   }, [prompt, contentType]);
+
+  // Notify parent when values change
+  useEffect(() => {
+    onStructureChange({
+      urlSlug,
+      seoTitle,
+      metaDescription,
+      titleSuggestions,
+      headers,
+      schemaEnabled,
+      ratingEnabled: false,
+    });
+  }, [urlSlug, seoTitle, metaDescription, headers, schemaEnabled]);
+
+  const handleGenerateMetaDescription = async () => {
+    setIsGeneratingDesc(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-meta-description', {
+        body: {
+          title: seoTitle,
+          contentType,
+          prompt: prompt.prompt,
+        },
+      });
+
+      if (error) throw error;
+      
+      if (data?.metaDescription) {
+        setMetaDescription(data.metaDescription);
+        toast({
+          title: "Meta description generated",
+          description: "AI-optimized description created successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('Error generating meta description:', error);
+      toast({
+        title: "Generation failed",
+        description: "Could not generate meta description. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingDesc(false);
+    }
+  };
 
   const handleSaveTemplate = (name: string) => {
     const newTemplate: HeaderTemplate = {
@@ -221,7 +281,19 @@ export const OptimizedStructurePanel = ({
               />
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleGenerateMetaDescription}
+              disabled={isGeneratingDesc}
+              className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 disabled:opacity-50"
+            >
+              {isGeneratingDesc ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Sparkles className="w-3 h-3" />
+              )}
+              Auto
+            </button>
             <span className={cn(
               "text-[10px] font-mono",
               isDescOptimal ? "text-success" : descProgress > 100 ? "text-destructive" : "text-muted-foreground"
