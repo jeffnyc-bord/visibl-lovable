@@ -25,6 +25,7 @@ import { QueriesAndPromptsSection } from "@/components/dashboard/QueriesAndPromp
 import { ExternalAIVisibilitySection } from "@/components/dashboard/ExternalAIVisibilitySection";
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
 import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
+import { ActionsLog } from "@/components/actions-log";
 import { Settings as SettingsPage } from "@/pages/Settings";
 import { DashboardSkeleton, ChartWidgetSkeleton, ScorecardSkeleton, TableSkeleton, WidgetSkeleton } from "@/components/ui/dashboard-skeleton";
 import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from "@/components/ui/error-states";
@@ -288,7 +289,8 @@ const Index = () => {
     { key: "overview", label: "AI Visibility Overview", icon: Home },
     { key: "brand", label: "Brand & Products Visibility", icon: Building },
     { key: "queries", label: "Prompt Blast Lab", icon: Zap },
-    { key: "recommendations", label: "Actions Lab", icon: Lightbulb }
+    { key: "recommendations", label: "Actions Lab", icon: Lightbulb },
+    { key: "actionslog", label: "Actions Log", icon: FileText }
   ];
   
   const allSections = [...mainSections];
@@ -919,6 +921,12 @@ const Index = () => {
                             <RecommendationsSection brandData={selectedBrand} demoMode={demoMode} activeSubTab={recommendationsSubTab} />
                           )}
                         </>
+                      )}
+
+                      {activeTab === "actionslog" && (
+                        <div className="h-[calc(100vh-12rem)]">
+                          <ActionsLog />
+                        </div>
                       )}
                     </div>
                   )}
