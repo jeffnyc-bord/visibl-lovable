@@ -58,9 +58,9 @@ export const ActionsLab = ({ demoMode = false, activeTab = 'on-site' }: ActionsL
             </>
           )}
 
-          {/* Authority Lab: Full width */}
+          {/* Authority Lab: Full height */}
           {activeTab === 'authority' && (
-            <div className="h-[calc(100vh-180px)] -mx-6 -mt-2 -mb-6">
+            <div className="h-[calc(100vh-7rem)] -mx-6 -mt-2 -mb-6">
               <UnifiedAuthorityLab />
             </div>
           )}
