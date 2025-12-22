@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { ProductSourceSelector, ProductSource } from './ProductSourceSelector';
 import { PromptSourceSelector, PromptSource } from './PromptSourceSelector';
 import { ContentTypeSelector, ContentType } from './ContentTypeSelector';
@@ -6,6 +6,8 @@ import { OptimizedStructurePanel, OptimizedStructure } from './OptimizedStructur
 import { SerpPreviewPanel } from './SerpPreviewPanel';
 import { ContextNotesPanel } from './ContextNotesPanel';
 import { WorkflowModeSelector, WorkflowMode } from './WorkflowModeSelector';
+import { ContextualTransitionModal } from './ContextualTransitionModal';
+import { AEOContentStudio } from './AEOContentStudio';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -139,10 +141,27 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
     setSchemaEnabled(structure.schemaEnabled);
   };
 
+  // Studio state
+  const [showTransitionModal, setShowTransitionModal] = useState(false);
+  const [showStudio, setShowStudio] = useState(false);
+
   const handleGenerate = () => {
+    setShowTransitionModal(true);
+  };
+
+  const handleTransitionComplete = useCallback(() => {
+    setShowTransitionModal(false);
+    setShowStudio(true);
+  }, []);
+
+  const handleCloseStudio = () => {
+    setShowStudio(false);
+  };
+
+  const handlePublish = () => {
     toast({
-      title: "Generating Content",
-      description: `Creating ${selectedContentType} content for "${selectedProduct?.name}" from "${selectedPrompt?.prompt.slice(0, 30)}..."`,
+      title: "Content Published",
+      description: "Your content has been synced to the site successfully.",
     });
   };
 
@@ -283,6 +302,25 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
           </div>
         </div>
       )}
+
+      {/* Contextual Transition Modal */}
+      <ContextualTransitionModal
+        isOpen={showTransitionModal}
+        onComplete={handleTransitionComplete}
+        prompt={selectedPrompt}
+        contentType={selectedContentType}
+        productName={selectedProduct?.name}
+      />
+
+      {/* AEO Content Studio */}
+      <AEOContentStudio
+        isOpen={showStudio}
+        onClose={handleCloseStudio}
+        prompt={selectedPrompt}
+        contentType={selectedContentType}
+        productName={selectedProduct?.name}
+        onPublish={handlePublish}
+      />
     </div>
   );
 };
