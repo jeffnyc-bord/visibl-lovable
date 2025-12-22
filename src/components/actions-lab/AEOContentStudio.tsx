@@ -16,7 +16,12 @@ import {
   Target,
   Code,
   Hash,
-  AlertCircle
+  AlertCircle,
+  Plus,
+  Image,
+  Quote,
+  Trash2,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -24,8 +29,11 @@ import { PromptSource } from './PromptSourceSelector';
 import { ContentType } from './ContentTypeSelector';
 
 interface GeneratedSection {
+  id: string;
+  type: 'text' | 'image' | 'list' | 'quote';
   heading: string;
   content: string;
+  imageUrl?: string;
   isAiGenerated: boolean;
 }
 
@@ -174,6 +182,8 @@ export const AEOContentStudio = ({
   const [entityVerification, setEntityVerification] = useState(true);
   const [isGenerating, setIsGenerating] = useState(true);
   const [syncStatus, setSyncStatus] = useState<'draft' | 'syncing' | 'live'>('draft');
+  const [showAddMenu, setShowAddMenu] = useState(false);
+  const addMenuRef = useRef<HTMLDivElement>(null);
   
   // Editable content state
   const [content, setContent] = useState<GeneratedContent>({
@@ -183,16 +193,22 @@ export const AEOContentStudio = ({
     tldr: `${productName || 'Your Product'} offers superior performance in key areas including comfort, durability, and value. Unlike competitors, it features proprietary technology that delivers measurable results.`,
     sections: [
       {
+        id: '1',
+        type: 'text',
         heading: 'What Makes Us Different',
         content: `When comparing ${productName || 'our product'} to alternatives, three key differentiators emerge: innovative design, proven performance metrics, and exceptional customer satisfaction scores.`,
         isAiGenerated: true
       },
       {
+        id: '2',
+        type: 'text',
         heading: 'Performance Comparison',
         content: `In side-by-side testing, ${productName || 'our product'} consistently outperforms the competition. Our proprietary technology delivers 40% better efficiency while maintaining quality standards.`,
         isAiGenerated: true
       },
       {
+        id: '3',
+        type: 'text',
         heading: 'Customer Testimonials',
         content: `"I switched from a competitor and the difference was immediately noticeable. The attention to detail exceeded my expectations." — Verified Customer`,
         isAiGenerated: true
@@ -223,14 +239,47 @@ export const AEOContentStudio = ({
     }, 2000);
   };
 
-  const updateSection = (index: number, field: 'heading' | 'content', value: string) => {
+  const updateSection = (id: string, field: 'heading' | 'content', value: string) => {
     setContent(prev => ({
       ...prev,
-      sections: prev.sections.map((s, i) => 
-        i === index ? { ...s, [field]: value, isAiGenerated: false } : s
+      sections: prev.sections.map((s) => 
+        s.id === id ? { ...s, [field]: value, isAiGenerated: false } : s
       )
     }));
   };
+
+  const addSection = (type: 'text' | 'image' | 'list' | 'quote') => {
+    const newSection: GeneratedSection = {
+      id: Date.now().toString(),
+      type,
+      heading: type === 'image' ? '' : 'New Section',
+      content: type === 'list' ? 'Item 1\nItem 2\nItem 3' : '',
+      imageUrl: type === 'image' ? '' : undefined,
+      isAiGenerated: false
+    };
+    setContent(prev => ({
+      ...prev,
+      sections: [...prev.sections, newSection]
+    }));
+    setShowAddMenu(false);
+  };
+
+  const deleteSection = (id: string) => {
+    setContent(prev => ({
+      ...prev,
+      sections: prev.sections.filter(s => s.id !== id)
+    }));
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (addMenuRef.current && !addMenuRef.current.contains(event.target as Node)) {
+        setShowAddMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (!isOpen) return null;
 
@@ -496,30 +545,104 @@ export const AEOContentStudio = ({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: tldrComplete ? 1 : 0.3 }}
-                className="space-y-10"
+                className="space-y-8"
               >
-                {content.sections.map((section, index) => (
+                {content.sections.map((section) => (
                   <motion.section
-                    key={index}
+                    key={section.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: tldrComplete ? 1 : 0, y: tldrComplete ? 0 : 20 }}
-                    transition={{ delay: index * 0.2 }}
-                    className="group"
+                    className="group relative"
                   >
-                    <EditableText
-                      value={section.heading}
-                      onChange={(v) => updateSection(index, 'heading', v)}
-                      className="text-lg font-semibold text-foreground mb-3 block"
-                      showSparkle={section.isAiGenerated}
-                    />
-                    <EditableText
-                      value={section.content}
-                      onChange={(v) => updateSection(index, 'content', v)}
-                      className="text-sm text-muted-foreground leading-relaxed block"
-                      multiline
-                    />
+                    {/* Delete button */}
+                    <button
+                      onClick={() => deleteSection(section.id)}
+                      className="absolute -left-10 top-0 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 rounded text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+
+                    {section.type === 'text' && (
+                      <>
+                        <EditableText
+                          value={section.heading}
+                          onChange={(v) => updateSection(section.id, 'heading', v)}
+                          className="text-lg font-semibold text-foreground mb-3 block"
+                          showSparkle={section.isAiGenerated}
+                        />
+                        <EditableText
+                          value={section.content}
+                          onChange={(v) => updateSection(section.id, 'content', v)}
+                          className="text-sm text-muted-foreground leading-relaxed block"
+                          multiline
+                        />
+                      </>
+                    )}
+
+                    {section.type === 'image' && (
+                      <div className="border-2 border-dashed border-border rounded-xl p-8 text-center">
+                        <Image className="w-8 h-8 mx-auto text-muted-foreground/50 mb-3" />
+                        <input
+                          type="text"
+                          placeholder="Paste image URL..."
+                          className="px-3 py-2 text-sm border border-border rounded-lg bg-transparent w-64"
+                          onChange={(e) => updateSection(section.id, 'content', e.target.value)}
+                        />
+                      </div>
+                    )}
+
+                    {section.type === 'quote' && (
+                      <blockquote className="border-l-4 border-primary/30 pl-6 py-2 italic">
+                        <EditableText
+                          value={section.content}
+                          onChange={(v) => updateSection(section.id, 'content', v)}
+                          className="text-lg text-muted-foreground"
+                          multiline
+                          placeholder="Enter quote..."
+                        />
+                      </blockquote>
+                    )}
                   </motion.section>
                 ))}
+
+                {/* Add section button */}
+                <div className="relative pt-4" ref={addMenuRef}>
+                  <button
+                    onClick={() => setShowAddMenu(!showAddMenu)}
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add section
+                  </button>
+
+                  <AnimatePresence>
+                    {showAddMenu && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute left-0 top-full mt-1 bg-popover border border-border rounded-xl shadow-lg z-10 overflow-hidden"
+                      >
+                        <div className="p-1">
+                          {[
+                            { type: 'text' as const, icon: Type, label: 'Text Section' },
+                            { type: 'image' as const, icon: Image, label: 'Image' },
+                            { type: 'quote' as const, icon: Quote, label: 'Quote' }
+                          ].map((item) => (
+                            <button
+                              key={item.type}
+                              onClick={() => addSection(item.type)}
+                              className="flex items-center gap-3 w-full px-4 py-2.5 text-sm hover:bg-muted rounded-lg transition-colors"
+                            >
+                              <item.icon className="w-4 h-4 text-muted-foreground" />
+                              {item.label}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </motion.div>
             </div>
           </motion.main>

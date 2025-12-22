@@ -154,6 +154,10 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
     setShowStudio(true);
   }, []);
 
+  const handleTransitionCancel = useCallback(() => {
+    setShowTransitionModal(false);
+  }, []);
+
   const handleCloseStudio = () => {
     setShowStudio(false);
   };
@@ -307,6 +311,7 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
       <ContextualTransitionModal
         isOpen={showTransitionModal}
         onComplete={handleTransitionComplete}
+        onCancel={handleTransitionCancel}
         prompt={selectedPrompt}
         contentType={selectedContentType}
         productName={selectedProduct?.name}
