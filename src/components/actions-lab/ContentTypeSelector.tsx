@@ -1,7 +1,7 @@
-import { FileText, Star, HelpCircle, Briefcase, GitCompare, Check } from 'lucide-react';
+import { FileText, HelpCircle, Briefcase, GitCompare, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export type ContentType = 'blog' | 'review' | 'faq' | 'case-study' | 'comparison';
+export type ContentType = 'blog' | 'faq' | 'case-study' | 'comparison';
 
 interface ContentTypeOption {
   id: ContentType;
@@ -11,7 +11,6 @@ interface ContentTypeOption {
 
 const contentTypes: ContentTypeOption[] = [
   { id: 'blog', label: 'Blog Post', icon: FileText },
-  { id: 'review', label: 'Review', icon: Star },
   { id: 'faq', label: 'FAQ', icon: HelpCircle },
   { id: 'case-study', label: 'Case Study', icon: Briefcase },
   { id: 'comparison', label: 'Comparison', icon: GitCompare },
@@ -21,23 +20,35 @@ interface ContentTypeSelectorProps {
   selectedType: ContentType | null;
   onSelectType: (type: ContentType) => void;
   disabled?: boolean;
+  stepNumber?: number;
 }
 
 export const ContentTypeSelector = ({
   selectedType,
   onSelectType,
   disabled = false,
+  stepNumber = 3,
 }: ContentTypeSelectorProps) => {
   return (
     <section className={cn("relative py-4", disabled && "opacity-40 pointer-events-none")}>
       {/* Section Header */}
       <div className="flex items-center gap-3 mb-3">
-        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-muted text-muted-foreground text-[10px] font-semibold">
-          2
+        <div className={cn(
+          "flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold transition-colors",
+          selectedType 
+            ? "bg-foreground text-background" 
+            : "bg-muted text-muted-foreground"
+        )}>
+          {selectedType ? <Check className="w-3 h-3" /> : stepNumber}
         </div>
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
           Content Format
         </span>
+        {selectedType && (
+          <span className="text-xs text-foreground/60 normal-case tracking-normal">
+            — {contentTypes.find(t => t.id === selectedType)?.label}
+          </span>
+        )}
       </div>
 
       {/* Inline Pill Selector */}

@@ -64,8 +64,8 @@ export const SerpPreviewPanel = ({
               {truncatedTitle || 'Your SEO Title Will Appear Here'}
             </a>
 
-            {/* Rich Snippets */}
-            {schemaEnabled && contentType === 'review' && ratingEnabled && (
+            {/* Rich Snippets - Rating (only shown if enabled) */}
+            {ratingEnabled && (
               <div className="flex items-center gap-2 mt-1">
                 <div className="flex items-center gap-0.5">
                   {[1, 2, 3, 4, 5].map((star) => (

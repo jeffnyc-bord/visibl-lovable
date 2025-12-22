@@ -42,7 +42,7 @@ export const OptimizedStructurePanel = ({
   const [urlSlug, setUrlSlug] = useState('');
   const [seoTitle, setSeoTitle] = useState('');
   const [selectedTitleIndex, setSelectedTitleIndex] = useState(0);
-  const [schemaEnabled, setSchemaEnabled] = useState(contentType === 'faq' || contentType === 'review');
+  const [schemaEnabled, setSchemaEnabled] = useState(contentType === 'faq');
   const [expandedHeaders, setExpandedHeaders] = useState(true);
 
   const titleSuggestions: TitleSuggestion[] = [
@@ -201,24 +201,24 @@ export const OptimizedStructurePanel = ({
         )}
       </div>
 
-      {/* Schema Toggle (for FAQ/Review) */}
-      {(contentType === 'faq' || contentType === 'review') && (
+      {/* Schema Toggle (for FAQ) */}
+      {contentType === 'faq' && (
         <div className="flex items-center justify-between py-3 border-b border-border/30">
           <div className="flex items-center gap-4">
             <div className="w-24 flex-shrink-0">
               <span className="text-xs text-muted-foreground">Schema</span>
             </div>
-            <span className="text-sm">{contentType === 'faq' ? 'FAQ Schema' : 'Review Schema'}</span>
+            <span className="text-sm">FAQ Schema</span>
           </div>
           <button
             onClick={() => setSchemaEnabled(!schemaEnabled)}
             className={cn(
               "relative w-9 h-5 rounded-full transition-colors",
-              schemaEnabled ? "bg-primary" : "bg-muted"
+              schemaEnabled ? "bg-foreground" : "bg-muted"
             )}
           >
             <div className={cn(
-              "absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform",
+              "absolute top-0.5 w-4 h-4 rounded-full bg-background shadow transition-transform",
               schemaEnabled ? "translate-x-4" : "translate-x-0.5"
             )} />
           </button>
