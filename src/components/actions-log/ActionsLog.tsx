@@ -239,6 +239,16 @@ export function ActionsLog() {
     }
   };
 
+  const updateActionStatus = (actionId: string, newStatus: ActionStatus) => {
+    setActions(prev => prev.map(action => 
+      action.id === actionId ? { ...action, status: newStatus } : action
+    ));
+    // Also update selectedAction if it's the one being changed
+    if (selectedAction?.id === actionId) {
+      setSelectedAction(prev => prev ? { ...prev, status: newStatus } : null);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
@@ -543,6 +553,29 @@ export function ActionsLog() {
               </SheetHeader>
 
               <div className="space-y-5">
+                {/* Status Selector */}
+                <div>
+                  <span className="text-[10px] font-medium text-muted-foreground uppercase">Status</span>
+                  <div className="mt-2 flex items-center gap-2">
+                    {(Object.keys(statusConfig) as ActionStatus[]).map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => updateActionStatus(selectedAction.id, status)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-all ${
+                          selectedAction.status === status
+                            ? 'bg-foreground text-background'
+                            : 'bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                        }`}
+                      >
+                        <div className={`w-2 h-2 rounded-full ${statusConfig[status].bgColor} ${
+                          selectedAction.status === status && statusConfig[status].glow ? 'shadow-[0_0_4px_1px_rgba(16,185,129,0.5)]' : ''
+                        }`} />
+                        {statusConfig[status].label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Meta Info */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-secondary/20 rounded-lg">
