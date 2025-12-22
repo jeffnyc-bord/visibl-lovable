@@ -204,7 +204,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     <TooltipProvider>
       <div className="space-y-0">
         {/* Header */}
-        <div className={`flex items-center justify-between pb-6 border-b border-border/50 ${demoMode ? 'demo-header' : ''}`}>
+        <div 
+          className={`flex items-center justify-between pb-6 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-header' : ''}`}
+          style={{ animationDelay: '0ms', animationFillMode: 'backwards' }}
+        >
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">AI Visibility</h1>
             <p className="text-sm text-muted-foreground mt-0.5">Performance overview for {brandData.name}</p>
@@ -234,7 +237,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </div>
 
         {/* Primary Metrics - Compact Layout */}
-        <div className={`py-6 border-b border-border/50 ${demoMode ? 'demo-card-1' : ''}`}>
+        <div 
+          className={`py-6 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-1' : ''}`}
+          style={{ animationDelay: '50ms', animationFillMode: 'backwards' }}
+        >
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Score */}
             <div className="flex flex-col">
@@ -327,7 +333,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </div>
 
         {/* Visibility Trend */}
-        <div className={`py-8 border-b border-border/50 ${demoMode ? 'demo-card-2' : ''}`}>
+        <div 
+          className={`py-8 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-2' : ''}`}
+          style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-foreground">Visibility Trend</h2>
           </div>
@@ -384,7 +393,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </div>
 
         {/* Platform Distribution */}
-        <div className={`py-8 border-b border-border/50 ${demoMode ? 'demo-card-3' : ''}`}>
+        <div 
+          className={`py-8 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-3' : ''}`}
+          style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-foreground">Platform Distribution</h2>
             <Button
@@ -487,7 +499,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </div>
 
         {/* Top Prompts */}
-        <div className={`py-8 border-b border-border/50 ${demoMode ? 'demo-card-4' : ''}`}>
+        <div 
+          className={`py-8 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-4' : ''}`}
+          style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-foreground">Top Prompts</h2>
             {onNavigateToPrompts && (
@@ -532,7 +547,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </div>
 
         {/* Source Quality */}
-        <div className={`py-8 ${demoMode ? 'demo-card-5' : ''}`}>
+        <div 
+          className={`py-8 animate-fade-in ${demoMode ? 'demo-card-5' : ''}`}
+          style={{ animationDelay: '250ms', animationFillMode: 'backwards' }}
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-foreground">Source Quality</h2>
           </div>
