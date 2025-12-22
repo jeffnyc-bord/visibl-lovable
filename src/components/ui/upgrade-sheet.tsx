@@ -2,6 +2,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFo
 import { Button } from "@/components/ui/button";
 import { Check, Zap, ArrowRight, Sparkles, TrendingUp, Eye, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 export type UpgradeType = 
   | "prompt_fidelity" 
@@ -17,6 +18,48 @@ interface UpgradeSheetProps {
   maxValue?: number;
 }
 
+// Sparkle particle component
+const SparkleParticle = ({ delay, x, size, color }: { delay: number; x: number; size: number; color: string }) => (
+  <div
+    className="absolute animate-sparkle-float pointer-events-none"
+    style={{
+      left: `${x}%`,
+      top: '-10px',
+      animationDelay: `${delay}ms`,
+      opacity: 0,
+    }}
+  >
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className="animate-sparkle-spin"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <path
+        d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"
+        fill={color}
+      />
+    </svg>
+  </div>
+);
+
+// Confetti particle component
+const ConfettiParticle = ({ delay, x, color, rotation }: { delay: number; x: number; color: string; rotation: number }) => (
+  <div
+    className="absolute w-2 h-3 rounded-sm animate-confetti-fall pointer-events-none"
+    style={{
+      left: `${x}%`,
+      top: '-20px',
+      backgroundColor: color,
+      transform: `rotate(${rotation}deg)`,
+      animationDelay: `${delay}ms`,
+      opacity: 0,
+    }}
+  />
+);
+
 const UPGRADE_CONTENT: Record<UpgradeType, {
   title: string;
   subtitle: string;
@@ -28,6 +71,7 @@ const UPGRADE_CONTENT: Record<UpgradeType, {
   gradientFrom: string;
   gradientTo: string;
   accentColor: string;
+  sparkleColors: string[];
 }> = {
   prompt_fidelity: {
     title: "Unlock Full Discovery",
@@ -45,6 +89,7 @@ const UPGRADE_CONTENT: Record<UpgradeType, {
     gradientFrom: "from-violet-500",
     gradientTo: "to-fuchsia-500",
     accentColor: "violet",
+    sparkleColors: ["#8B5CF6", "#D946EF", "#A855F7", "#E879F9"],
   },
   product_coverage: {
     title: "Expand Your Footprint",
@@ -62,6 +107,7 @@ const UPGRADE_CONTENT: Record<UpgradeType, {
     gradientFrom: "from-emerald-500",
     gradientTo: "to-cyan-500",
     accentColor: "emerald",
+    sparkleColors: ["#10B981", "#06B6D4", "#34D399", "#22D3EE"],
   },
   chatbot_coverage: {
     title: "See What the World Sees",
@@ -79,6 +125,7 @@ const UPGRADE_CONTENT: Record<UpgradeType, {
     gradientFrom: "from-blue-500",
     gradientTo: "to-indigo-500",
     accentColor: "blue",
+    sparkleColors: ["#3B82F6", "#6366F1", "#60A5FA", "#818CF8"],
   },
   general: {
     title: "Upgrade Your Intelligence",
@@ -96,6 +143,7 @@ const UPGRADE_CONTENT: Record<UpgradeType, {
     gradientFrom: "from-amber-500",
     gradientTo: "to-orange-500",
     accentColor: "amber",
+    sparkleColors: ["#F59E0B", "#F97316", "#FBBF24", "#FB923C"],
   },
 };
 
@@ -107,6 +155,34 @@ export const UpgradeSheet = ({
   maxValue,
 }: UpgradeSheetProps) => {
   const content = UPGRADE_CONTENT[type];
+  const [showParticles, setShowParticles] = useState(false);
+
+  // Trigger particles when sheet opens
+  useEffect(() => {
+    if (open) {
+      setShowParticles(true);
+      // Reset particles after animation completes
+      const timer = setTimeout(() => setShowParticles(false), 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
+
+  // Generate random particles
+  const sparkles = Array.from({ length: 12 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    delay: Math.random() * 600,
+    size: 12 + Math.random() * 12,
+    color: content.sparkleColors[i % content.sparkleColors.length],
+  }));
+
+  const confetti = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    delay: Math.random() * 800,
+    color: content.sparkleColors[i % content.sparkleColors.length],
+    rotation: Math.random() * 360,
+  }));
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -114,6 +190,30 @@ export const UpgradeSheet = ({
         side="bottom" 
         className="rounded-t-3xl max-h-[85vh] overflow-y-auto border-t-0 p-0"
       >
+        {/* Sparkle and confetti particles */}
+        {showParticles && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-50">
+            {sparkles.map((sparkle) => (
+              <SparkleParticle
+                key={`sparkle-${sparkle.id}`}
+                x={sparkle.x}
+                delay={sparkle.delay}
+                size={sparkle.size}
+                color={sparkle.color}
+              />
+            ))}
+            {confetti.map((piece) => (
+              <ConfettiParticle
+                key={`confetti-${piece.id}`}
+                x={piece.x}
+                delay={piece.delay}
+                color={piece.color}
+                rotation={piece.rotation}
+              />
+            ))}
+          </div>
+        )}
+
         {/* Gradient header background */}
         <div className={cn(
           "absolute inset-x-0 top-0 h-40 bg-gradient-to-b opacity-20 pointer-events-none",
