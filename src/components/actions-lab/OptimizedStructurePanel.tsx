@@ -3,17 +3,12 @@ import { Sparkles, Check, ChevronDown, ChevronRight, Link, ArrowRight } from 'lu
 import { cn } from '@/lib/utils';
 import { ContentType } from './ContentTypeSelector';
 import { PromptSource } from './PromptSourceSelector';
+import { EditableHeadersPanel, HeaderItem, HeaderTemplate } from './EditableHeadersPanel';
 
 interface TitleSuggestion {
   title: string;
   score: number;
   isOptimal: boolean;
-}
-
-interface HeaderItem {
-  level: 'h1' | 'h2' | 'h3';
-  text: string;
-  isOptimized: boolean;
 }
 
 interface OptimizedStructure {
@@ -32,6 +27,32 @@ interface OptimizedStructurePanelProps {
   onGenerate: () => void;
 }
 
+const generateDefaultHeaders = (contentType: ContentType, promptText: string): HeaderItem[] => {
+  if (contentType === 'faq') {
+    return [
+      { id: 'h-1', level: 'h1', text: `FAQ: ${promptText.slice(0, 40)}`, isOptimized: true },
+      { id: 'h-2', level: 'h2', text: 'What are the key differences?', isOptimized: true },
+      { id: 'h-3', level: 'h2', text: 'Which option is best for beginners?', isOptimized: true },
+      { id: 'h-4', level: 'h2', text: 'What do experts recommend?', isOptimized: false },
+    ];
+  }
+  if (contentType === 'comparison') {
+    return [
+      { id: 'h-1', level: 'h1', text: `${promptText.slice(0, 50)}`, isOptimized: true },
+      { id: 'h-2', level: 'h2', text: 'Quick Comparison', isOptimized: true },
+      { id: 'h-3', level: 'h2', text: 'Feature Breakdown', isOptimized: true },
+      { id: 'h-4', level: 'h3', text: 'Performance', isOptimized: true },
+      { id: 'h-5', level: 'h2', text: 'Our Verdict', isOptimized: true },
+    ];
+  }
+  return [
+    { id: 'h-1', level: 'h1', text: `${promptText.slice(0, 50)}`, isOptimized: true },
+    { id: 'h-2', level: 'h2', text: 'Introduction', isOptimized: true },
+    { id: 'h-3', level: 'h2', text: 'Key Insights', isOptimized: true },
+    { id: 'h-4', level: 'h2', text: 'Recommendations', isOptimized: true },
+  ];
+};
+
 export const OptimizedStructurePanel = ({
   contentType,
   prompt,
@@ -44,6 +65,10 @@ export const OptimizedStructurePanel = ({
   const [selectedTitleIndex, setSelectedTitleIndex] = useState(0);
   const [schemaEnabled, setSchemaEnabled] = useState(contentType === 'faq');
   const [expandedHeaders, setExpandedHeaders] = useState(true);
+  const [headers, setHeaders] = useState<HeaderItem[]>(() => 
+    generateDefaultHeaders(contentType, prompt.prompt)
+  );
+  const [templates, setTemplates] = useState<HeaderTemplate[]>([]);
 
   const titleSuggestions: TitleSuggestion[] = [
     { title: `${prompt.prompt} - Complete Guide for 2024`, score: 94, isOptimal: true },
@@ -51,34 +76,27 @@ export const OptimizedStructurePanel = ({
     { title: `Understanding ${prompt.prompt} - What You Need to Know`, score: 82, isOptimal: false },
   ];
 
-  const headers: HeaderItem[] = contentType === 'faq' 
-    ? [
-        { level: 'h1', text: `FAQ: ${prompt.prompt.slice(0, 40)}`, isOptimized: true },
-        { level: 'h2', text: 'What are the key differences?', isOptimized: true },
-        { level: 'h2', text: 'Which option is best for beginners?', isOptimized: true },
-        { level: 'h2', text: 'What do experts recommend?', isOptimized: false },
-      ]
-    : contentType === 'comparison'
-    ? [
-        { level: 'h1', text: `${prompt.prompt.slice(0, 50)}`, isOptimized: true },
-        { level: 'h2', text: 'Quick Comparison', isOptimized: true },
-        { level: 'h2', text: 'Feature Breakdown', isOptimized: true },
-        { level: 'h3', text: 'Performance', isOptimized: true },
-        { level: 'h2', text: 'Our Verdict', isOptimized: true },
-      ]
-    : [
-        { level: 'h1', text: `${prompt.prompt.slice(0, 50)}`, isOptimized: true },
-        { level: 'h2', text: 'Introduction', isOptimized: true },
-        { level: 'h2', text: 'Key Insights', isOptimized: true },
-        { level: 'h2', text: 'Recommendations', isOptimized: true },
-      ];
-
   useEffect(() => {
     setIsVisible(true);
     const slug = prompt.prompt.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 50);
     setUrlSlug(slug);
     setSeoTitle(titleSuggestions[0].title);
-  }, [prompt]);
+    setHeaders(generateDefaultHeaders(contentType, prompt.prompt));
+  }, [prompt, contentType]);
+
+  const handleSaveTemplate = (name: string) => {
+    const newTemplate: HeaderTemplate = {
+      id: `template-${Date.now()}`,
+      name,
+      contentType,
+      headers: [...headers],
+    };
+    setTemplates(prev => [...prev, newTemplate]);
+  };
+
+  const handleLoadTemplate = (template: HeaderTemplate) => {
+    setHeaders(template.headers.map((h, i) => ({ ...h, id: `h-loaded-${i}` })));
+  };
 
   const maxTitleLength = 60;
   const titleProgress = (seoTitle.length / maxTitleLength) * 100;
@@ -92,7 +110,7 @@ export const OptimizedStructurePanel = ({
       {/* Section Header */}
       <div className="flex items-center gap-3 py-3">
         <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold">
-          3
+          5
         </div>
         <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
           Optimized Structure
@@ -185,18 +203,15 @@ export const OptimizedStructurePanel = ({
         </button>
 
         {expandedHeaders && (
-          <div className="mt-2 ml-28 space-y-1">
-            {headers.map((h, i) => (
-              <div key={i} className={cn(
-                "flex items-center gap-2 text-sm",
-                h.level === 'h2' && "pl-3",
-                h.level === 'h3' && "pl-6 text-muted-foreground"
-              )}>
-                <span className="text-[9px] font-mono uppercase text-muted-foreground/60 w-5">{h.level}</span>
-                <span className="truncate">{h.text}</span>
-                {h.isOptimized && <div className="w-1.5 h-1.5 rounded-full bg-success flex-shrink-0" />}
-              </div>
-            ))}
+          <div className="mt-3">
+            <EditableHeadersPanel
+              headers={headers}
+              onHeadersChange={setHeaders}
+              templates={templates}
+              onSaveTemplate={handleSaveTemplate}
+              onLoadTemplate={handleLoadTemplate}
+              contentType={contentType}
+            />
           </div>
         )}
       </div>
