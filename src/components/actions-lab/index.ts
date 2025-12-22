@@ -5,6 +5,7 @@ export { ActionGroup } from './ActionGroup';
 export { FilterBar } from './FilterBar';
 export { ContentQueueBar } from './ContentQueueBar';
 export { ContentGenerationWorkflow } from './ContentGenerationWorkflow';
+export { ProductSourceSelector } from './ProductSourceSelector';
 export { PromptSourceSelector } from './PromptSourceSelector';
 export { ContentTypeSelector } from './ContentTypeSelector';
 export { OptimizedStructurePanel } from './OptimizedStructurePanel';
