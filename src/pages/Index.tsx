@@ -617,9 +617,9 @@ const Index = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <header className="bg-background border-b border-border px-6 py-4">
+        <header className="bg-background border-b border-border px-6 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
                 size="sm"
@@ -628,26 +628,158 @@ const Index = () => {
               >
                 <Menu className="w-4 h-4" />
               </Button>
-              {dashboardStates.fullDashboardLoading ? (
+              
+              {/* Brand Selector - moved to header */}
+              {activeView === "dashboard" && hasAnalysis && !dashboardStates.fullDashboardLoading && (
+                <Select value={selectedBrandId} onValueChange={setSelectedBrandId}>
+                  <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent focus:ring-0 hover:bg-muted/50 rounded-md px-2 py-1.5">
+                    <div className="flex items-center space-x-2">
+                      <img src={selectedBrand.logo} alt={selectedBrand.name} className="w-6 h-6 object-contain" />
+                      <span className="font-medium text-foreground text-sm">{selectedBrand.name}</span>
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border shadow-lg z-50 min-w-[280px]">
+                    <div className="px-2 py-1.5">
+                      <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                        {userRole === "agency_admin" ? "Client Brand" : "Your Brand"}
+                      </div>
+                      <SelectItem value={selectedBrand.id} className="rounded-md">
+                        <div className="flex items-center space-x-2">
+                          <img src={selectedBrand.logo} alt={selectedBrand.name} className="w-5 h-5 object-contain" />
+                          <span className="font-medium">{selectedBrand.name}</span>
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-auto">Primary</Badge>
+                        </div>
+                      </SelectItem>
+                    </div>
+                    
+                    {selectedBrand.competitors && selectedBrand.competitors.length > 0 && (
+                      <div className="px-2 py-1.5 border-t border-border/50">
+                        <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                          Tracked Competitors
+                        </div>
+                        {trackedBrands.filter(b => b.id !== selectedBrand.id).map((brand) => (
+                          <SelectItem key={brand.id} value={brand.id} className="rounded-md">
+                            <div className="flex items-center space-x-2">
+                              <img src={brand.logo} alt={brand.name} className="w-5 h-5 object-contain" />
+                              <span>{brand.name}</span>
+                              <span className="text-[10px] text-muted-foreground ml-auto">vs {selectedBrand.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <div className="border-t border-border/50 mt-1 pt-1 px-2 pb-1">
+                      <div 
+                        className="flex items-center space-x-2 px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted/50 cursor-pointer rounded-md transition-colors"
+                        onClick={() => setShowAddBrandDialog(true)}
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Add Competitor to Track</span>
+                      </div>
+                      {userRole === "agency_admin" && (
+                        <div 
+                          className="flex items-center space-x-2 px-2 py-1.5 text-sm text-foreground hover:bg-muted/50 cursor-pointer rounded-md transition-colors"
+                          onClick={() => setActiveView("agency")}
+                        >
+                          <Users className="w-4 h-4" />
+                          <span>Switch or Add New Client</span>
+                        </div>
+                      )}
+                    </div>
+                  </SelectContent>
+                </Select>
+              )}
+              
+              {dashboardStates.fullDashboardLoading && (
                 <div>
                   <h2 className="text-lg font-medium text-foreground">Loading your AI Visibility Dashboard</h2>
                   <p className="text-sm text-muted-foreground">Gathering real-time insights from across the AI ecosystem...</p>
                 </div>
-              ) : (
-                <div>
-                  <h2 className="text-lg font-medium text-foreground">
-                    {activeView === "dashboard" 
-                      ? allSections.find(s => s.key === activeTab)?.label || "Dashboard"
-                      : activeView === "brands" ? "Watchlist"
-                      : activeView === "agency" ? "Agency Admin"
-                      : activeView === "settings" ? "Settings" 
-                      : "Dashboard"}
-                  </h2>
-                </div>
+              )}
+              
+              {activeView !== "dashboard" && (
+                <h2 className="text-lg font-medium text-foreground">
+                  {activeView === "brands" ? "Watchlist"
+                    : activeView === "agency" ? "Agency Admin"
+                    : activeView === "settings" ? "Settings" 
+                    : "Dashboard"}
+                </h2>
               )}
             </div>
             
             <div className="flex items-center space-x-3">
+              {/* Next Scan & Model Filters - moved to header */}
+              {activeView === "dashboard" && hasAnalysis && !dashboardStates.fullDashboardLoading && (
+                <>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/40 border border-border/40">
+                    <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                    <span className="text-xs text-muted-foreground">
+                      Next scan: <span className="text-foreground font-medium">Wed 2:00 PM</span>
+                    </span>
+                  </div>
+                  
+                  <Separator orientation="vertical" className="h-5" />
+                  
+                  <Popover onOpenChange={(open) => {
+                    if (!open && selectedModels.length === 0) {
+                      setSelectedModels(["All models"]);
+                    }
+                  }}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="sm" className="flex items-center space-x-1 text-xs h-8 px-3">
+                        <span>
+                          {selectedModels.includes("All models") 
+                            ? "All models" 
+                            : selectedModels.length === 1 
+                              ? selectedModels[0] 
+                              : selectedModels.length === 0
+                                ? "Select models"
+                                : `${selectedModels.length} models`}
+                        </span>
+                        <ChevronDown className="w-3 h-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-3" align="end">
+                      <div className="space-y-2">
+                        <div className="text-sm font-medium text-foreground mb-2">Select AI Models</div>
+                        {["All models", "ChatGPT", "Gemini", "Grok", "Perplexity"].map((model) => (
+                          <div key={model} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={model}
+                              checked={selectedModels.includes(model)}
+                              onCheckedChange={(checked) => {
+                                if (model === "All models") {
+                                  if (checked) {
+                                    setSelectedModels(["All models"]);
+                                  } else {
+                                    setSelectedModels([]);
+                                  }
+                                } else {
+                                  if (checked) {
+                                    const newModels = selectedModels.includes("All models") 
+                                      ? [model] 
+                                      : [...selectedModels.filter(m => m !== "All models"), model];
+                                    setSelectedModels(newModels);
+                                  } else {
+                                    setSelectedModels(selectedModels.filter(m => m !== model));
+                                  }
+                                }
+                              }}
+                            />
+                            <label htmlFor={model} className="text-sm text-muted-foreground cursor-pointer">
+                              {model}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  
+                  <Separator orientation="vertical" className="h-5" />
+                </>
+              )}
+              
               <StatusIndicators
                 visibleSections={visibleSectionsCount}
                 totalSections={totalSectionsCount}
@@ -672,143 +804,6 @@ const Index = () => {
                 <DashboardSkeleton />
               ) : (
                 <>
-                  {/* Filter Bar */}
-                  {hasAnalysis && (
-                    <div className={`mb-4 bg-background p-3 rounded-lg border border-border ${demoMode ? 'demo-filter-bar' : ''}`}>
-                      <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-2">
-                      <Select value={selectedBrandId} onValueChange={setSelectedBrandId}>
-                        <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent focus:ring-0 hover:bg-gray-50 rounded-md px-2 py-1">
-                          <div className="flex items-center space-x-2">
-                            <img src={selectedBrand.logo} alt={selectedBrand.name} className="w-6 h-6 object-contain" />
-                            <span className="font-medium text-foreground text-sm">{selectedBrand.name}</span>
-                          </div>
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border shadow-lg z-50 min-w-[280px]">
-                          {/* Client Brand Section */}
-                          <div className="px-2 py-1.5">
-                            <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                              {userRole === "agency_admin" ? "Client Brand" : "Your Brand"}
-                            </div>
-                            <SelectItem value={selectedBrand.id} className="rounded-md">
-                              <div className="flex items-center space-x-2">
-                                <img src={selectedBrand.logo} alt={selectedBrand.name} className="w-5 h-5 object-contain" />
-                                <span className="font-medium">{selectedBrand.name}</span>
-                                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-auto">Primary</Badge>
-                              </div>
-                            </SelectItem>
-                          </div>
-                          
-                          {/* Competitor Brands Section */}
-                          {selectedBrand.competitors && selectedBrand.competitors.length > 0 && (
-                            <div className="px-2 py-1.5 border-t border-border/50">
-                              <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                                Tracked Competitors
-                              </div>
-                              {trackedBrands.filter(b => b.id !== selectedBrand.id).map((brand) => (
-                                <SelectItem key={brand.id} value={brand.id} className="rounded-md">
-                                  <div className="flex items-center space-x-2">
-                                    <img src={brand.logo} alt={brand.name} className="w-5 h-5 object-contain" />
-                                    <span>{brand.name}</span>
-                                    <span className="text-[10px] text-muted-foreground ml-auto">vs {selectedBrand.name}</span>
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </div>
-                          )}
-                          
-                          {/* Add Competitor Action */}
-                          <div className="border-t border-border/50 mt-1 pt-1 px-2 pb-1">
-                            <div 
-                              className="flex items-center space-x-2 px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted/50 cursor-pointer rounded-md transition-colors"
-                              onClick={() => setShowAddBrandDialog(true)}
-                            >
-                              <Plus className="w-4 h-4" />
-                              <span>Add Competitor to Track</span>
-                            </div>
-                            {userRole === "agency_admin" && (
-                              <div 
-                                className="flex items-center space-x-2 px-2 py-1.5 text-sm text-primary hover:bg-primary/10 cursor-pointer rounded-md transition-colors"
-                                onClick={() => setActiveView("agency")}
-                              >
-                                <Users className="w-4 h-4" />
-                                <span>Switch or Add New Client</span>
-                              </div>
-                            )}
-                          </div>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Next Scan Indicator */}
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/40 backdrop-blur-sm border border-border/40 transition-all duration-200 hover:bg-muted/60">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                      <span className="text-xs text-muted-foreground font-medium">
-                        Next scan: <span className="text-foreground">Wed 2:00 PM</span>
-                      </span>
-                    </div>
-                    
-                    <Separator orientation="vertical" className="h-4" />
-                    
-                    <Popover onOpenChange={(open) => {
-                      // If closing the popover and no models are selected, default to "All models"
-                      if (!open && selectedModels.length === 0) {
-                        setSelectedModels(["All models"]);
-                      }
-                    }}>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" size="sm" className="flex items-center space-x-1 text-xs h-auto px-3 py-1.5">
-                          <span>
-                            {selectedModels.includes("All models") 
-                              ? "All models" 
-                              : selectedModels.length === 1 
-                                ? selectedModels[0] 
-                                : selectedModels.length === 0
-                                  ? "Select models"
-                                  : `${selectedModels.length} models`}
-                          </span>
-                          <ChevronDown className="w-3 h-3" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-64 p-3" align="start">
-                        <div className="space-y-2">
-                          <div className="text-sm font-medium text-gray-900 mb-2">Select AI Models</div>
-                          {["All models", "ChatGPT", "Gemini", "Grok", "Perplexity"].map((model) => (
-                            <div key={model} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={model}
-                                checked={selectedModels.includes(model)}
-                                onCheckedChange={(checked) => {
-                                  if (model === "All models") {
-                                    if (checked) {
-                                      setSelectedModels(["All models"]);
-                                    } else {
-                                      setSelectedModels([]);
-                                    }
-                                  } else {
-                                    if (checked) {
-                                      const newModels = selectedModels.includes("All models") 
-                                        ? [model] 
-                                        : [...selectedModels.filter(m => m !== "All models"), model];
-                                      setSelectedModels(newModels);
-                                    } else {
-                                      setSelectedModels(selectedModels.filter(m => m !== model));
-                                    }
-                                  }
-                                }}
-                              />
-                              <label htmlFor={model} className="text-sm text-gray-700 cursor-pointer">
-                                {model}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                      </div>
-                    </div>
-                  )}
-
                   {/* Dashboard Content - Direct rendering based on activeTab */}
                   {hasAnalysis && (
                     <div className={`space-y-4 ${demoMode ? 'demo-content' : ''}`}>
