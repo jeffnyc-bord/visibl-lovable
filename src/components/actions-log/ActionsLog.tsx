@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { format } from 'date-fns';
 import { 
   Share, 
   Sparkles, 
@@ -10,17 +9,12 @@ import {
   FileText,
   Calendar as CalendarIcon,
   TrendingUp,
-  Check,
   MoreHorizontal,
   CheckCircle2,
   ArrowRight,
-  Clock,
   Trash2
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
 
 type ActionStatus = 'live' | 'pending' | 'in-progress';
 type ActionType = 'on-site' | 'off-site' | 'social' | 'pr';
@@ -292,27 +286,8 @@ export function ActionsLog() {
         statusHistory: [...(prev.statusHistory || []), statusChange]
       } : null);
     }
-    
-    setShowCompleteDatePicker(false);
   };
 
-  const [showCompleteDatePicker, setShowCompleteDatePicker] = useState(false);
-  const [showEditCompleteDatePicker, setShowEditCompleteDatePicker] = useState(false);
-  const [customCompleteDate, setCustomCompleteDate] = useState<Date | undefined>(new Date());
-
-  const updateCompletedDate = (actionId: string, newDate: Date) => {
-    const dateValue = newDate.toISOString();
-    
-    setActions(prev => prev.map(action => 
-      action.id === actionId ? { ...action, completedDate: dateValue } : action
-    ));
-    
-    if (selectedAction?.id === actionId) {
-      setSelectedAction(prev => prev ? { ...prev, completedDate: dateValue } : null);
-    }
-    
-    setShowEditCompleteDatePicker(false);
-  };
 
   const deleteAction = (actionId: string) => {
     setActions(prev => prev.filter(action => action.id !== actionId));
@@ -627,130 +602,49 @@ export function ActionsLog() {
                 <div>
                   <span className="text-[10px] font-medium text-muted-foreground uppercase">Status</span>
                   <div className="mt-2 flex items-center gap-2">
-                    {(Object.keys(statusConfig) as ActionStatus[]).map((status) => {
-                      // For "Live" status, show a popover with date picker
-                      if (status === 'live' && selectedAction.status !== 'live') {
-                        return (
-                          <Popover key={status} open={showCompleteDatePicker} onOpenChange={setShowCompleteDatePicker}>
-                            <PopoverTrigger asChild>
-                              <button
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-all bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground"
-                              >
-                                <div className={`w-2 h-2 rounded-full ${statusConfig[status].bgColor}`} />
-                                {statusConfig[status].label}
-                              </button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <div className="p-3 border-b border-border/40">
-                                <p className="text-[12px] font-medium text-foreground">When was this completed?</p>
-                                <div className="mt-2 flex gap-2">
-                                  <button
-                                    onClick={() => updateActionStatus(selectedAction.id, 'live')}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-white text-[11px] font-medium rounded-md hover:bg-emerald-600 transition-colors"
-                                  >
-                                    <Clock className="w-3 h-3" />
-                                    Now
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      if (customCompleteDate) {
-                                        updateActionStatus(selectedAction.id, 'live', customCompleteDate);
-                                      }
-                                    }}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-foreground text-background text-[11px] font-medium rounded-md hover:opacity-90 transition-opacity"
-                                  >
-                                    <Check className="w-3 h-3" />
-                                    Use selected date
-                                  </button>
-                                </div>
-                              </div>
-                              <Calendar
-                                mode="single"
-                                selected={customCompleteDate}
-                                onSelect={setCustomCompleteDate}
-                                initialFocus
-                                className={cn("p-3 pointer-events-auto")}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        );
-                      }
-                      
-                      return (
-                        <button
-                          key={status}
-                          onClick={() => updateActionStatus(selectedAction.id, status)}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-all ${
-                            selectedAction.status === status
-                              ? 'bg-foreground text-background'
-                              : 'bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground'
-                          }`}
-                        >
-                          <div className={`w-2 h-2 rounded-full ${statusConfig[status].bgColor} ${
-                            selectedAction.status === status && statusConfig[status].glow ? 'shadow-[0_0_4px_1px_rgba(16,185,129,0.5)]' : ''
-                          }`} />
-                          {statusConfig[status].label}
-                        </button>
-                      );
-                    })}
+                    {(Object.keys(statusConfig) as ActionStatus[]).map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => updateActionStatus(selectedAction.id, status)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-all ${
+                          selectedAction.status === status
+                            ? 'bg-foreground text-background'
+                            : 'bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                        }`}
+                      >
+                        <div className={`w-2 h-2 rounded-full ${statusConfig[status].bgColor} ${
+                          selectedAction.status === status && statusConfig[status].glow ? 'shadow-[0_0_4px_1px_rgba(16,185,129,0.5)]' : ''
+                        }`} />
+                        {statusConfig[status].label}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
                 {/* Completed Date (shown when status is live) */}
                 {selectedAction.status === 'live' && selectedAction.completedDate && (
-                  <Popover open={showEditCompleteDatePicker} onOpenChange={setShowEditCompleteDatePicker}>
-                    <PopoverTrigger asChild>
-                      <button className="w-full p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-left hover:bg-emerald-500/15 transition-colors group">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                            <span className="text-[10px] font-medium text-emerald-600 uppercase">Completed</span>
-                          </div>
-                          <span className="text-[10px] text-emerald-600/60 opacity-0 group-hover:opacity-100 transition-opacity">Click to edit</span>
-                        </div>
-                        <p className="text-[13px] font-medium font-mono text-emerald-700">
-                          {new Date(selectedAction.completedDate).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric',
-                            year: 'numeric',
-                            hour: 'numeric',
-                            minute: '2-digit'
-                          })}
-                        </p>
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <div className="p-3 border-b border-border/40">
-                        <p className="text-[12px] font-medium text-foreground">Edit completion date</p>
-                        <button
-                          onClick={() => {
-                            if (customCompleteDate) {
-                              updateCompletedDate(selectedAction.id, customCompleteDate);
-                            }
-                          }}
-                          className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-white text-[11px] font-medium rounded-md hover:bg-emerald-600 transition-colors"
-                        >
-                          <Check className="w-3 h-3" />
-                          Update date
-                        </button>
-                      </div>
-                      <Calendar
-                        mode="single"
-                        selected={customCompleteDate}
-                        onSelect={setCustomCompleteDate}
-                        defaultMonth={selectedAction.completedDate ? new Date(selectedAction.completedDate) : undefined}
-                        initialFocus
-                        className={cn("p-3 pointer-events-auto")}
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-[10px] font-medium text-emerald-600 uppercase">Completed</span>
+                    </div>
+                    <p className="text-[13px] font-medium font-mono text-emerald-700">
+                      {new Date(selectedAction.completedDate).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
                 )}
 
                 {/* Meta Info */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-secondary/20 rounded-lg">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                      <CalendarIcon className="w-3.5 h-3.5 text-muted-foreground" />
                       <span className="text-[10px] font-medium text-muted-foreground uppercase">Created</span>
                     </div>
                     <p className="text-[13px] font-medium font-mono">
