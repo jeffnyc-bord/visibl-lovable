@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -514,117 +515,140 @@ const Index = () => {
                       <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
                       <span className="flex-1">{section.label}</span>
                       {hasSubItems && (
-                        <ChevronDown 
-                          className={`w-4 h-4 flex-shrink-0 text-muted-foreground/60 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                        <motion.div
+                          animate={{ rotate: isExpanded ? 90 : 0 }}
+                          transition={{ duration: 0.2, ease: "easeInOut" }}
                           onClick={(e) => {
                             e.stopPropagation();
                             setExpandedSections(prev => ({ ...prev, [section.key]: !prev[section.key] }));
                           }}
-                        />
+                        >
+                          <ChevronRight className="w-4 h-4 flex-shrink-0 text-muted-foreground/60" />
+                        </motion.div>
                       )}
                     </div>
                     
                     {/* Sub-items for Prompt Blast Lab */}
-                    {section.key === 'queries' && isExpanded && (
-                      <div className="ml-7 border-l border-border/50 pl-2 mb-1 animate-fade-in">
-                        <div
-                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            activeTab === 'queries' && queriesSubTab === 'generate'
-                              ? 'text-foreground font-medium bg-muted/50' 
-                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
-                          }`}
-                          onClick={() => {
-                            setActiveView("dashboard");
-                            setActiveTab('queries');
-                            setQueriesSubTab('generate');
-                          }}
+                    <AnimatePresence initial={false}>
+                      {section.key === 'queries' && isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2, ease: "easeInOut" }}
+                          className="overflow-hidden"
                         >
-                          <Sparkles className="w-4 h-4 flex-shrink-0" />
-                          <span>Generate</span>
-                        </div>
-                        <div
-                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            activeTab === 'queries' && queriesSubTab === 'monitor'
-                              ? 'text-foreground font-medium bg-muted/50' 
-                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
-                          }`}
-                          onClick={() => {
-                            setActiveView("dashboard");
-                            setActiveTab('queries');
-                            setQueriesSubTab('monitor');
-                          }}
-                        >
-                          <Activity className="w-4 h-4 flex-shrink-0" />
-                          <span>Monitor</span>
-                        </div>
-                        <div
-                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            activeTab === 'queries' && queriesSubTab === 'test'
-                              ? 'text-foreground font-medium bg-muted/50' 
-                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
-                          }`}
-                          onClick={() => {
-                            setActiveView("dashboard");
-                            setActiveTab('queries');
-                            setQueriesSubTab('test');
-                          }}
-                        >
-                          <FlaskConical className="w-4 h-4 flex-shrink-0" />
-                          <span>Test</span>
-                        </div>
-                      </div>
-                    )}
+                          <div className="ml-7 border-l border-border/50 pl-2 mb-1">
+                            <div
+                              className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                                activeTab === 'queries' && queriesSubTab === 'generate'
+                                  ? 'text-foreground font-medium bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                              }`}
+                              onClick={() => {
+                                setActiveView("dashboard");
+                                setActiveTab('queries');
+                                setQueriesSubTab('generate');
+                              }}
+                            >
+                              <Sparkles className="w-4 h-4 flex-shrink-0" />
+                              <span>Generate</span>
+                            </div>
+                            <div
+                              className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                                activeTab === 'queries' && queriesSubTab === 'monitor'
+                                  ? 'text-foreground font-medium bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                              }`}
+                              onClick={() => {
+                                setActiveView("dashboard");
+                                setActiveTab('queries');
+                                setQueriesSubTab('monitor');
+                              }}
+                            >
+                              <Activity className="w-4 h-4 flex-shrink-0" />
+                              <span>Monitor</span>
+                            </div>
+                            <div
+                              className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                                activeTab === 'queries' && queriesSubTab === 'test'
+                                  ? 'text-foreground font-medium bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                              }`}
+                              onClick={() => {
+                                setActiveView("dashboard");
+                                setActiveTab('queries');
+                                setQueriesSubTab('test');
+                              }}
+                            >
+                              <FlaskConical className="w-4 h-4 flex-shrink-0" />
+                              <span>Test</span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     {/* Sub-items for Actions Lab */}
-                    {section.key === 'recommendations' && isExpanded && (
-                      <div className="ml-7 border-l border-border/50 pl-2 mb-1 animate-fade-in">
-                        <div
-                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            activeTab === 'recommendations' && recommendationsSubTab === 'on-site'
-                              ? 'text-foreground font-medium bg-muted/50' 
-                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
-                          }`}
-                          onClick={() => {
-                            setActiveView("dashboard");
-                            setActiveTab('recommendations');
-                            setRecommendationsSubTab('on-site');
-                          }}
+                    <AnimatePresence initial={false}>
+                      {section.key === 'recommendations' && isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2, ease: "easeInOut" }}
+                          className="overflow-hidden"
                         >
-                          <Sparkles className="w-4 h-4 flex-shrink-0" />
-                          <span>Generate</span>
-                        </div>
-                        <div
-                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            activeTab === 'recommendations' && recommendationsSubTab === 'authority'
-                              ? 'text-foreground font-medium bg-muted/50' 
-                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
-                          }`}
-                          onClick={() => {
-                            setActiveView("dashboard");
-                            setActiveTab('recommendations');
-                            setRecommendationsSubTab('authority');
-                          }}
-                        >
-                          <Activity className="w-4 h-4 flex-shrink-0" />
-                          <span>Monitor</span>
-                        </div>
-                        <div
-                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            activeTab === 'recommendations' && recommendationsSubTab === 'actionslog'
-                              ? 'text-foreground font-medium bg-muted/50' 
-                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
-                          }`}
-                          onClick={() => {
-                            setActiveView("dashboard");
-                            setActiveTab('recommendations');
-                            setRecommendationsSubTab('actionslog');
-                          }}
-                        >
-                          <FlaskConical className="w-4 h-4 flex-shrink-0" />
-                          <span>Test</span>
-                        </div>
-                      </div>
-                    )}
+                          <div className="ml-7 border-l border-border/50 pl-2 mb-1">
+                            <div
+                              className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                                activeTab === 'recommendations' && recommendationsSubTab === 'on-site'
+                                  ? 'text-foreground font-medium bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                              }`}
+                              onClick={() => {
+                                setActiveView("dashboard");
+                                setActiveTab('recommendations');
+                                setRecommendationsSubTab('on-site');
+                              }}
+                            >
+                              <Sparkles className="w-4 h-4 flex-shrink-0" />
+                              <span>Generate</span>
+                            </div>
+                            <div
+                              className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                                activeTab === 'recommendations' && recommendationsSubTab === 'authority'
+                                  ? 'text-foreground font-medium bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                              }`}
+                              onClick={() => {
+                                setActiveView("dashboard");
+                                setActiveTab('recommendations');
+                                setRecommendationsSubTab('authority');
+                              }}
+                            >
+                              <Activity className="w-4 h-4 flex-shrink-0" />
+                              <span>Monitor</span>
+                            </div>
+                            <div
+                              className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                                activeTab === 'recommendations' && recommendationsSubTab === 'actionslog'
+                                  ? 'text-foreground font-medium bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                              }`}
+                              onClick={() => {
+                                setActiveView("dashboard");
+                                setActiveTab('recommendations');
+                                setRecommendationsSubTab('actionslog');
+                              }}
+                            >
+                              <FlaskConical className="w-4 h-4 flex-shrink-0" />
+                              <span>Test</span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })}
