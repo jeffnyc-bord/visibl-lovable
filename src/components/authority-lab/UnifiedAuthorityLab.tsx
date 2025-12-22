@@ -113,7 +113,7 @@ export function UnifiedAuthorityLab() {
         {/* Right Panel: Source Details */}
         <div className="flex-1 overflow-y-auto p-6">
           {selectedSource ? (
-            <div className="max-w-2xl space-y-6 animate-fade-in">
+            <div className="w-full space-y-6 animate-fade-in">
               {/* Source Header */}
               <div className="space-y-1">
                 <div className="flex items-center gap-3">
