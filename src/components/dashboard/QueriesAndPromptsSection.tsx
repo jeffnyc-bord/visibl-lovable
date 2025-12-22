@@ -58,9 +58,10 @@ interface QueriesAndPromptsSectionProps {
   onQueryUsed?: () => void;
   autoOpenPrompt?: string; // Query text to automatically open
   demoMode?: boolean;
+  activeSubTab?: 'generate' | 'monitor' | 'test';
 }
 
-export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUsed, autoOpenPrompt, demoMode = false }: QueriesAndPromptsSectionProps) => {
+export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUsed, autoOpenPrompt, demoMode = false, activeSubTab = 'generate' }: QueriesAndPromptsSectionProps) => {
   const { toast } = useToast();
   const [customPrompt, setCustomPrompt] = useState(prefilledQuery || "");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -714,13 +715,37 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
         </div>
       )}
 
-    <Tabs defaultValue="prompts" className="space-y-6">
-      <TabsList className={`grid w-full grid-cols-2 ${demoMode ? 'demo-tabs' : ''}`}>
-        <TabsTrigger value="prompts">Prompts</TabsTrigger>
-        <TabsTrigger value="blast">Prompt Blast Lab</TabsTrigger>
-      </TabsList>
+    {/* Generate Tab - Placeholder for future prompt generation features */}
+    {activeSubTab === 'generate' && (
+      <Card className={`border-2 border-dashed border-gray-200 ${demoMode ? 'demo-card-1' : ''}`}>
+        <CardHeader className="bg-gray-50/50">
+          <CardTitle className="flex items-center space-x-2">
+            <div className="p-2 bg-white rounded-lg shadow-sm">
+              <Zap className="w-5 h-5 text-primary" />
+            </div>
+            <span>Prompt Generation</span>
+          </CardTitle>
+          <CardDescription>
+            Generate AI-optimized prompts for your brand visibility testing.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Zap className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Prompt Generation Coming Soon</h3>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              AI-powered prompt generation will help you create optimized queries to test your brand's visibility across AI platforms.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    )}
 
-      <TabsContent value="blast" className="space-y-6">
+    {/* Test Tab - AI Testing Workspace */}
+    {activeSubTab === 'test' && (
+      <>
         {/* Modern Prompt Blast Workspace */}
         <Card className={`border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors ${demoMode ? 'demo-card-1' : ''}`}>
           <CardHeader className="bg-gray-50/50">
@@ -1078,9 +1103,11 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
             </div>
           </CardContent>
         </Card>
-      </TabsContent>
+      </>
+    )}
 
-      <TabsContent value="prompts" className="space-y-6">
+    {/* Monitor Tab - Prompts Analysis */}
+    {activeSubTab === 'monitor' && (
         <Card className={demoMode ? 'demo-card-4' : ''}>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -1439,8 +1466,7 @@ export const QueriesAndPromptsSection = ({ brandData, prefilledQuery, onQueryUse
 
           </CardContent>
         </Card>
-      </TabsContent>
-    </Tabs>
+    )}
 
     {/* Prompt Details Panel */}
     <PromptDetailsPanel
