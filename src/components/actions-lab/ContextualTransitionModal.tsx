@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, FileText, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Sparkles, FileText, Zap, X, Check } from 'lucide-react';
 import { PromptSource } from './PromptSourceSelector';
 import { ContentType } from './ContentTypeSelector';
 
 interface ContextualTransitionModalProps {
   isOpen: boolean;
   onComplete: () => void;
+  onCancel: () => void;
   prompt: PromptSource | null;
   contentType: ContentType | null;
   productName?: string;
@@ -16,6 +16,7 @@ interface ContextualTransitionModalProps {
 export const ContextualTransitionModal = ({
   isOpen,
   onComplete,
+  onCancel,
   prompt,
   contentType,
   productName
@@ -47,6 +48,17 @@ export const ContextualTransitionModal = ({
     }
   }, [isOpen, onComplete, steps.length]);
 
+  // Handle Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onCancel();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onCancel]);
+
   const getContentTypeLabel = (type: ContentType | null) => {
     const labels: Record<ContentType, string> = {
       'blog': 'Blog Post',
@@ -64,151 +76,139 @@ export const ContextualTransitionModal = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-xl"
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)'
+          }}
         >
-          {/* Radial gradient background */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
-          
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: -20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="relative max-w-lg w-full mx-4"
+          {/* Cancel button - top right */}
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            onClick={onCancel}
+            className="absolute top-8 right-8 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all group"
           >
-            {/* Main Card */}
-            <div className="rounded-2xl border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl overflow-hidden">
-              {/* Header */}
-              <div className="p-6 pb-4 border-b border-border/30">
-                <div className="flex items-center gap-3 mb-4">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                    className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center"
-                  >
-                    <Sparkles className="w-5 h-5 text-white" />
-                  </motion.div>
-                  <div>
-                    <h2 className="text-lg font-semibold text-foreground">
-                      Generating {getContentTypeLabel(contentType)}
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      Based on your prompt analysis
-                    </p>
-                  </div>
-                </div>
+            <X className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
+          </motion.button>
 
-                {/* Context Summary */}
-                <div className="p-4 rounded-xl bg-muted/30 border border-border/30">
-                  <p className="text-sm text-foreground leading-relaxed">
-                    Creating an{' '}
-                    <span className="font-medium text-primary">
-                      {getContentTypeLabel(contentType)?.toLowerCase()}
-                    </span>
-                    {productName && (
-                      <>
-                        {' '}for{' '}
-                        <span className="font-medium">{productName}</span>
-                      </>
-                    )}
-                    {' '}addressing:{' '}
-                    <span className="italic text-muted-foreground">
-                      &quot;{prompt?.prompt || 'your selected prompt'}&quot;
-                    </span>
-                  </p>
-                </div>
-              </div>
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: -10 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="relative max-w-md w-full mx-6"
+          >
+            {/* Centered content */}
+            <div className="text-center mb-12">
+              {/* Animated icon */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
+                className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-8"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2)'
+                }}
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                >
+                  <Sparkles className="w-10 h-10 text-white" />
+                </motion.div>
+              </motion.div>
 
-              {/* Progress Steps */}
-              <div className="p-6">
-                <div className="space-y-3">
-                  {steps.map((step, index) => {
-                    const Icon = step.icon;
-                    const isComplete = currentStep > index;
-                    const isActive = currentStep === index;
+              <motion.h2
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-2xl font-medium text-white mb-2"
+                style={{ fontFamily: '-apple-system, BlinkMacSystemFont, SF Pro Display, sans-serif' }}
+              >
+                Generating {getContentTypeLabel(contentType)}
+              </motion.h2>
 
-                    return (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className={cn(
-                          "flex items-center gap-3 p-3 rounded-lg transition-all duration-300",
-                          isComplete && "bg-emerald-500/10",
-                          isActive && "bg-primary/10 border border-primary/20"
-                        )}
-                      >
-                        <div className={cn(
-                          "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300",
-                          isComplete && "bg-emerald-500/20",
-                          isActive && "bg-primary/20",
-                          !isComplete && !isActive && "bg-muted/50"
-                        )}>
-                          {isComplete ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                          ) : (
-                            <Icon className={cn(
-                              "w-4 h-4 transition-colors",
-                              isActive ? "text-primary animate-pulse" : "text-muted-foreground"
-                            )} />
-                          )}
-                        </div>
-                        <span className={cn(
-                          "text-sm font-medium transition-colors",
-                          isComplete && "text-emerald-600",
-                          isActive && "text-foreground",
-                          !isComplete && !isActive && "text-muted-foreground"
-                        )}>
-                          {step.label}
-                        </span>
-                        {isActive && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="ml-auto flex items-center gap-1"
-                          >
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 0.6, repeat: Infinity }}
-                              className="w-1.5 h-1.5 rounded-full bg-primary"
-                            />
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
-                              className="w-1.5 h-1.5 rounded-full bg-primary"
-                            />
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
-                              className="w-1.5 h-1.5 rounded-full bg-primary"
-                            />
-                          </motion.div>
-                        )}
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="px-6 py-4 bg-muted/20 border-t border-border/30">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    <span>AEO Content Studio loading...</span>
-                  </div>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: currentStep >= steps.length ? 1 : 0 }}
-                    className="flex items-center gap-1 text-sm font-medium text-primary"
-                  >
-                    <span>Opening Studio</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </motion.div>
-                </div>
-              </div>
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-white/50 text-sm"
+              >
+                {productName ? `for ${productName}` : 'Based on your prompt analysis'}
+              </motion.p>
             </div>
+
+            {/* Progress steps - minimal design */}
+            <div className="space-y-4">
+              {steps.map((step, index) => {
+                const Icon = step.icon;
+                const isComplete = currentStep > index;
+                const isActive = currentStep === index;
+
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + index * 0.1 }}
+                    className="flex items-center gap-4"
+                  >
+                    <div
+                      className={`
+                        w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
+                        ${isComplete ? 'bg-white/20' : isActive ? 'bg-white/10' : 'bg-white/5'}
+                      `}
+                    >
+                      {isComplete ? (
+                        <Check className="w-4 h-4 text-white" />
+                      ) : (
+                        <Icon className={`w-4 h-4 transition-all ${isActive ? 'text-white' : 'text-white/30'}`} />
+                      )}
+                    </div>
+
+                    <span
+                      className={`
+                        text-sm transition-colors duration-500
+                        ${isComplete ? 'text-white/70' : isActive ? 'text-white' : 'text-white/30'}
+                      `}
+                    >
+                      {step.label}
+                    </span>
+
+                    {isActive && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="ml-auto flex gap-1"
+                      >
+                        {[0, 1, 2].map((i) => (
+                          <motion.div
+                            key={i}
+                            className="w-1.5 h-1.5 rounded-full bg-white/50"
+                            animate={{ opacity: [0.3, 1, 0.3] }}
+                            transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                          />
+                        ))}
+                      </motion.div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Escape hint */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+              className="text-center text-white/25 text-xs mt-12"
+            >
+              Press <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-white/40 font-mono text-[10px]">Esc</kbd> to cancel
+            </motion.p>
           </motion.div>
         </motion.div>
       )}
