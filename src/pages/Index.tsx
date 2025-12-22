@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -496,7 +497,7 @@ const Index = () => {
                       className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
                         isActive
                           ? 'text-foreground font-normal' 
-                          : 'text-muted-foreground/80 hover:text-foreground font-normal'
+                          : 'text-muted-foreground hover:text-foreground font-normal'
                       }`}
                       onClick={() => {
                         setActiveView("dashboard");
@@ -542,26 +543,27 @@ const Index = () => {
                           className="overflow-hidden"
                         >
                           <div className="ml-7 border-l border-border/50 pl-2 mb-1">
-                            <div
-                              className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                                activeTab === 'queries' && queriesSubTab === 'generate'
-                                  ? 'text-foreground font-normal bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
-                              }`}
-                              onClick={() => {
-                                setActiveView("dashboard");
-                                setActiveTab('queries');
-                                setQueriesSubTab('generate');
-                              }}
-                            >
-                              <Sparkles className="w-4 h-4 flex-shrink-0" />
-                              <span>Generate</span>
-                            </div>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div
+                                  className="relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-not-allowed transition-colors duration-150 text-sm text-muted-foreground/50 font-normal"
+                                >
+                                  <Sparkles className="w-4 h-4 flex-shrink-0" />
+                                  <span>Generate</span>
+                                  <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 h-4 border-muted-foreground/30 text-muted-foreground/50">
+                                    Soon
+                                  </Badge>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="right">
+                                <p>Coming Soon</p>
+                              </TooltipContent>
+                            </Tooltip>
                             <div
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'queries' && queriesSubTab === 'monitor'
                                   ? 'text-foreground font-normal bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
@@ -576,7 +578,7 @@ const Index = () => {
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'queries' && queriesSubTab === 'test'
                                   ? 'text-foreground font-normal bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
@@ -607,7 +609,7 @@ const Index = () => {
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'recommendations' && recommendationsSubTab === 'on-site'
                                   ? 'text-foreground font-normal bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
@@ -622,7 +624,7 @@ const Index = () => {
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'recommendations' && recommendationsSubTab === 'authority'
                                   ? 'text-foreground font-normal bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
@@ -637,7 +639,7 @@ const Index = () => {
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'recommendations' && recommendationsSubTab === 'actionslog'
                                   ? 'text-foreground font-normal bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
