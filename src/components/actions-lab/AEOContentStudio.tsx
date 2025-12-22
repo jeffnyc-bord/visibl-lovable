@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import {
   Sparkles,
-  ToggleLeft,
-  ToggleRight,
-  FileCode,
   Link2,
   Type,
   List,
@@ -13,15 +10,18 @@ import {
   Globe,
   Zap,
   Brain,
-  Target,
-  Code,
   Hash,
   AlertCircle,
   Plus,
   Image,
   Quote,
   Trash2,
-  X
+  GripVertical,
+  Bold,
+  Italic,
+  Underline,
+  Heading1,
+  Heading2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -35,6 +35,12 @@ interface GeneratedSection {
   content: string;
   imageUrl?: string;
   isAiGenerated: boolean;
+  style?: {
+    bold?: boolean;
+    italic?: boolean;
+    underline?: boolean;
+    headingLevel?: 'h2' | 'h3';
+  };
 }
 
 interface GeneratedContent {
@@ -271,6 +277,35 @@ export const AEOContentStudio = ({
     }));
   };
 
+  const reorderSections = (newOrder: GeneratedSection[]) => {
+    setContent(prev => ({
+      ...prev,
+      sections: newOrder
+    }));
+  };
+
+  const toggleSectionStyle = (id: string, style: 'bold' | 'italic' | 'underline') => {
+    setContent(prev => ({
+      ...prev,
+      sections: prev.sections.map(s => 
+        s.id === id 
+          ? { ...s, style: { ...s.style, [style]: !s.style?.[style] }, isAiGenerated: false }
+          : s
+      )
+    }));
+  };
+
+  const setSectionHeadingLevel = (id: string, level: 'h2' | 'h3') => {
+    setContent(prev => ({
+      ...prev,
+      sections: prev.sections.map(s => 
+        s.id === id 
+          ? { ...s, style: { ...s.style, headingLevel: s.style?.headingLevel === level ? undefined : level }, isAiGenerated: false }
+          : s
+      )
+    }));
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (addMenuRef.current && !addMenuRef.current.contains(event.target as Node)) {
@@ -372,45 +407,6 @@ export const AEOContentStudio = ({
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span className="text-xs font-medium">AEO Optimized</span>
                 </div>
-              </div>
-
-              {/* Schema Toggles */}
-              <div className="space-y-2">
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-medium mb-2">
-                  Schema
-                </div>
-                <button
-                  onClick={() => setSchemaEnabled(!schemaEnabled)}
-                  className="w-full flex items-center justify-between py-2 text-sm"
-                >
-                  <div className="flex items-center gap-2">
-                    <FileCode className={cn("w-4 h-4", schemaEnabled ? "text-primary" : "text-muted-foreground")} />
-                    <span className={schemaEnabled ? "text-foreground" : "text-muted-foreground"}>
-                      {contentType === 'faq' ? 'FAQPage' : 'HowTo'}
-                    </span>
-                  </div>
-                  {schemaEnabled ? (
-                    <ToggleRight className="w-5 h-5 text-primary" />
-                  ) : (
-                    <ToggleLeft className="w-5 h-5 text-muted-foreground" />
-                  )}
-                </button>
-                <button
-                  onClick={() => setEntityVerification(!entityVerification)}
-                  className="w-full flex items-center justify-between py-2 text-sm"
-                >
-                  <div className="flex items-center gap-2">
-                    <Target className={cn("w-4 h-4", entityVerification ? "text-primary" : "text-muted-foreground")} />
-                    <span className={entityVerification ? "text-foreground" : "text-muted-foreground"}>
-                      Entities
-                    </span>
-                  </div>
-                  {entityVerification ? (
-                    <ToggleRight className="w-5 h-5 text-primary" />
-                  ) : (
-                    <ToggleLeft className="w-5 h-5 text-muted-foreground" />
-                  )}
-                </button>
               </div>
 
               {/* Document Structure */}
@@ -541,69 +537,159 @@ export const AEOContentStudio = ({
                 )}
               </motion.div>
 
-              {/* Sections */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: tldrComplete ? 1 : 0.3 }}
-                className="space-y-8"
+              {/* Sections - Reorderable */}
+              <Reorder.Group
+                axis="y"
+                values={content.sections}
+                onReorder={reorderSections}
+                className="space-y-6"
               >
-                {content.sections.map((section) => (
-                  <motion.section
-                    key={section.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: tldrComplete ? 1 : 0, y: tldrComplete ? 0 : 20 }}
-                    className="group relative"
-                  >
-                    {/* Delete button */}
-                    <button
-                      onClick={() => deleteSection(section.id)}
-                      className="absolute -left-10 top-0 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 rounded text-destructive"
+                <AnimatePresence>
+                  {content.sections.map((section) => (
+                    <Reorder.Item
+                      key={section.id}
+                      value={section}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: tldrComplete ? 1 : 0, y: tldrComplete ? 0 : 20 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="group relative"
                     >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-
-                    {section.type === 'text' && (
-                      <>
-                        <EditableText
-                          value={section.heading}
-                          onChange={(v) => updateSection(section.id, 'heading', v)}
-                          className="text-lg font-semibold text-foreground mb-3 block"
-                          showSparkle={section.isAiGenerated}
-                        />
-                        <EditableText
-                          value={section.content}
-                          onChange={(v) => updateSection(section.id, 'content', v)}
-                          className="text-sm text-muted-foreground leading-relaxed block"
-                          multiline
-                        />
-                      </>
-                    )}
-
-                    {section.type === 'image' && (
-                      <div className="border-2 border-dashed border-border rounded-xl p-8 text-center">
-                        <Image className="w-8 h-8 mx-auto text-muted-foreground/50 mb-3" />
-                        <input
-                          type="text"
-                          placeholder="Paste image URL..."
-                          className="px-3 py-2 text-sm border border-border rounded-lg bg-transparent w-64"
-                          onChange={(e) => updateSection(section.id, 'content', e.target.value)}
-                        />
+                      {/* Controls bar - appears on hover */}
+                      <div className="absolute -left-12 top-0 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {/* Drag handle */}
+                        <div className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-muted rounded text-muted-foreground">
+                          <GripVertical className="w-4 h-4" />
+                        </div>
+                        {/* Delete button */}
+                        <button
+                          onClick={() => deleteSection(section.id)}
+                          className="p-1.5 hover:bg-destructive/10 rounded text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
-                    )}
 
-                    {section.type === 'quote' && (
-                      <blockquote className="border-l-4 border-primary/30 pl-6 py-2 italic">
-                        <EditableText
-                          value={section.content}
-                          onChange={(v) => updateSection(section.id, 'content', v)}
-                          className="text-lg text-muted-foreground"
-                          multiline
-                          placeholder="Enter quote..."
-                        />
-                      </blockquote>
-                    )}
-                  </motion.section>
-                ))}
+                      {section.type === 'text' && (
+                        <div className="space-y-3">
+                          {/* Styling toolbar */}
+                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => toggleSectionStyle(section.id, 'bold')}
+                              className={cn(
+                                "p-1.5 rounded hover:bg-muted transition-colors",
+                                section.style?.bold && "bg-muted text-primary"
+                              )}
+                              title="Bold"
+                            >
+                              <Bold className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => toggleSectionStyle(section.id, 'italic')}
+                              className={cn(
+                                "p-1.5 rounded hover:bg-muted transition-colors",
+                                section.style?.italic && "bg-muted text-primary"
+                              )}
+                              title="Italic"
+                            >
+                              <Italic className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => toggleSectionStyle(section.id, 'underline')}
+                              className={cn(
+                                "p-1.5 rounded hover:bg-muted transition-colors",
+                                section.style?.underline && "bg-muted text-primary"
+                              )}
+                              title="Underline"
+                            >
+                              <Underline className="w-3.5 h-3.5" />
+                            </button>
+                            <div className="w-px h-4 bg-border mx-1" />
+                            <button
+                              onClick={() => setSectionHeadingLevel(section.id, 'h2')}
+                              className={cn(
+                                "p-1.5 rounded hover:bg-muted transition-colors",
+                                section.style?.headingLevel === 'h2' && "bg-muted text-primary"
+                              )}
+                              title="Heading 2"
+                            >
+                              <Heading1 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => setSectionHeadingLevel(section.id, 'h3')}
+                              className={cn(
+                                "p-1.5 rounded hover:bg-muted transition-colors",
+                                section.style?.headingLevel === 'h3' && "bg-muted text-primary"
+                              )}
+                              title="Heading 3"
+                            >
+                              <Heading2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+
+                          <EditableText
+                            value={section.heading}
+                            onChange={(v) => updateSection(section.id, 'heading', v)}
+                            className={cn(
+                              "font-semibold text-foreground block",
+                              section.style?.headingLevel === 'h2' ? "text-xl" : 
+                              section.style?.headingLevel === 'h3' ? "text-base" : "text-lg"
+                            )}
+                            showSparkle={section.isAiGenerated}
+                          />
+                          <EditableText
+                            value={section.content}
+                            onChange={(v) => updateSection(section.id, 'content', v)}
+                            className={cn(
+                              "text-sm text-muted-foreground leading-relaxed block",
+                              section.style?.bold && "font-semibold",
+                              section.style?.italic && "italic",
+                              section.style?.underline && "underline"
+                            )}
+                            multiline
+                          />
+                        </div>
+                      )}
+
+                      {section.type === 'image' && (
+                        <div className="border-2 border-dashed border-border rounded-xl p-8 text-center">
+                          {section.content ? (
+                            <img 
+                              src={section.content} 
+                              alt="Content" 
+                              className="max-w-full rounded-lg mx-auto"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <>
+                              <Image className="w-8 h-8 mx-auto text-muted-foreground/50 mb-3" />
+                              <input
+                                type="text"
+                                placeholder="Paste image URL..."
+                                className="px-3 py-2 text-sm border border-border rounded-lg bg-transparent w-64"
+                                onChange={(e) => updateSection(section.id, 'content', e.target.value)}
+                              />
+                            </>
+                          )}
+                        </div>
+                      )}
+
+                      {section.type === 'quote' && (
+                        <blockquote className="border-l-4 border-primary/30 pl-6 py-2 italic">
+                          <EditableText
+                            value={section.content}
+                            onChange={(v) => updateSection(section.id, 'content', v)}
+                            className="text-lg text-muted-foreground"
+                            multiline
+                            placeholder="Enter quote..."
+                          />
+                        </blockquote>
+                      )}
+                    </Reorder.Item>
+                  ))}
+                </AnimatePresence>
+              </Reorder.Group>
 
                 {/* Add section button */}
                 <div className="relative pt-4" ref={addMenuRef}>
@@ -643,7 +729,6 @@ export const AEOContentStudio = ({
                     )}
                   </AnimatePresence>
                 </div>
-              </motion.div>
             </div>
           </motion.main>
 
@@ -711,21 +796,6 @@ export const AEOContentStudio = ({
                 </div>
               </div>
 
-              {/* Schema Preview */}
-              {schemaEnabled && (
-                <div className="pt-4 border-t border-border/30">
-                  <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground/70 font-medium mb-3">
-                    <Code className="w-3 h-3" />
-                    Schema
-                  </div>
-                  <div className="p-2 rounded-md bg-zinc-900 font-mono text-[9px] text-zinc-400 overflow-x-auto">
-                    <pre className="whitespace-pre-wrap">{`{
-  "@type": "${contentType === 'faq' ? 'FAQPage' : 'HowTo'}",
-  "name": "..."
-}`}</pre>
-                  </div>
-                </div>
-              )}
             </div>
           </motion.aside>
         </div>
