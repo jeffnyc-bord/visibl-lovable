@@ -8,6 +8,7 @@ export interface ProductSource {
   category: string;
   visibilityScore: number;
   mentions: number;
+  brandLogo?: string;
 }
 
 interface ProductSourceSelectorProps {
