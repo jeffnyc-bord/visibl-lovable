@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { OverviewSection } from "@/components/dashboard/OverviewSection";
@@ -281,16 +281,21 @@ const Index = () => {
   // Get current selected brand data
   const selectedBrand = trackedBrands.find(brand => brand.id === selectedBrandId) || trackedBrands[0];
 
-  // Available dashboard sections
-  const allSections = [
-    { key: "overview", label: "AI Visibility Overview", icon: "/lovable-uploads/bbadd30d-d143-4dae-b889-4797029e56f6.png" },
-    { key: "brand", label: "Brand & Product Visibility", icon: "/lovable-uploads/832f6ab2-ba5c-404b-bc1f-53b82819bbca.png" },
-    { key: "queries", label: "Prompt Blast Lab", icon: "/lovable-uploads/a89301fe-f6cc-44ec-80c8-e563e07e8f0c.png" },
-    { key: "competitors", label: "Competitors", icon: "/lovable-uploads/6a43d419-c4e3-47a9-bd9d-d88e81f33fee.png" },
-    { key: "trends", label: "AI Trends", icon: "/lovable-uploads/6b8b51ad-58c7-43a9-a4ea-c0097921f79f.png" },
-    { key: "technical", label: "Technical Health", icon: "/lovable-uploads/768d3c42-b4d4-4542-8ca5-d73e44b8c475.png" },
-    { key: "recommendations", label: "Recommendations", icon: "/lovable-uploads/aa7e3f0d-b714-499a-b96f-f48edabf1de9.png" }
+  // Available dashboard sections - now organized into groups
+  const mainSections = [
+    { key: "overview", label: "AI Visibility Overview", icon: Eye },
+    { key: "brand", label: "Brand & Products Visibility", icon: Building },
+    { key: "queries", label: "Prompt Blast Lab", icon: Zap },
+    { key: "recommendations", label: "Recommendations", icon: Lightbulb }
   ];
+  
+  const analyticsSections = [
+    { key: "competitors", label: "Competitors", icon: Users },
+    { key: "trends", label: "AI Trends", icon: TrendingUp },
+    { key: "technical", label: "Technical Health", icon: Shield }
+  ];
+  
+  const allSections = [...mainSections, ...analyticsSections];
 
   // Calculate visible sections and pending tasks
   const visibleSectionsCount = visibleSections.length;
@@ -438,65 +443,147 @@ const Index = () => {
           setShowLastClientWarning(true);
         }}
       />
-      {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? 'w-14' : 'w-56'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
-        {/* Logo/Brand */}
-        <div className="p-3 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
-            <img 
-              src={boardLabsLogo} 
-              alt="Board Labs logo" 
-              className="w-12 h-12"
-            />
+      {/* Sidebar - Cloudflare-inspired design */}
+      <div className={`${sidebarCollapsed ? 'w-14' : 'w-72'} bg-background border-r border-border flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
+        {/* Logo/Brand Header */}
+        <div className="px-4 py-4 border-b border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <img 
+                src={boardLabsLogo} 
+                alt="Board Labs logo" 
+                className="w-8 h-8"
+              />
+              {!sidebarCollapsed && (
+                <span className="font-semibold text-foreground text-base">visibl</span>
+              )}
+            </div>
             {!sidebarCollapsed && (
-              <div>
-                <h1 className="font-semibold text-gray-900 text-sm font-mono tracking-wide">visibl</h1>
-                <div className="text-xs text-gray-500">AI Brand Visibility</div>
-              </div>
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+              </Button>
             )}
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-3">
-          <div className="space-y-1">
-            <div className={`${sidebarCollapsed ? 'hidden' : 'block'} text-xs font-medium text-gray-500 uppercase tracking-wider mb-2`}>
-              General
+        {/* Quick Search */}
+        {!sidebarCollapsed && (
+          <div className="px-3 py-3">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-muted/30 text-muted-foreground text-sm cursor-pointer hover:bg-muted/50 transition-colors">
+              <Search className="w-4 h-4" />
+              <span>Quick search...</span>
+              <kbd className="ml-auto text-xs bg-background px-1.5 py-0.5 rounded border border-border">⌘K</kbd>
             </div>
-            {sidebarItems.map((item, index) => (
-              <div 
-                key={index} 
-                className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] transform-gpu text-sm ${
-                  item.active 
-                    ? 'bg-gray-100 text-gray-900 shadow-sm scale-[1.02]' 
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-                onClick={() => setActiveView(item.view)}
-              >
-                <item.icon className="w-4 h-4" />
-                {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
-              </div>
-            ))}
           </div>
+        )}
+
+        {/* Main Navigation */}
+        <nav className="flex-1 px-3 py-2 overflow-y-auto">
+          {/* Dashboard Home */}
+          <div 
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 mb-1 ${
+              activeView === "dashboard" && activeTab === "overview"
+                ? 'bg-primary/10 text-foreground border-l-2 border-primary' 
+                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+            }`}
+            onClick={() => {
+              setActiveView("dashboard");
+              setActiveTab("overview");
+            }}
+          >
+            <BarChart3 className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && <span className="font-medium">Dashboard home</span>}
+          </div>
+
+          {/* Main Sections Group */}
+          {!sidebarCollapsed && (
+            <div className="mt-4">
+              {mainSections.map((section) => (
+                <div
+                  key={section.key}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+                    activeView === "dashboard" && activeTab === section.key
+                      ? 'bg-primary/10 text-foreground border-l-2 border-primary' 
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                  }`}
+                  onClick={() => {
+                    setActiveView("dashboard");
+                    setActiveTab(section.key);
+                  }}
+                >
+                  <section.icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="font-medium">{section.label}</span>
+                  {section.key === "recommendations" && (
+                    <ChevronRight className="w-4 h-4 ml-auto text-muted-foreground" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Analytics Group */}
+          {!sidebarCollapsed && (
+            <div className="mt-6">
+              <div className="px-3 mb-2">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Analytics</span>
+              </div>
+              {analyticsSections.map((section) => (
+                <div
+                  key={section.key}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+                    activeView === "dashboard" && activeTab === section.key
+                      ? 'bg-primary/10 text-foreground border-l-2 border-primary' 
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                  }`}
+                  onClick={() => {
+                    setActiveView("dashboard");
+                    setActiveTab(section.key);
+                  }}
+                >
+                  <section.icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="font-medium">{section.label}</span>
+                  <ChevronRight className="w-4 h-4 ml-auto text-muted-foreground" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Management Group */}
+          {!sidebarCollapsed && (
+            <div className="mt-6">
+              <div className="px-3 mb-2">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Manage</span>
+              </div>
+              {sidebarItems.filter(item => item.view !== "dashboard").map((item, index) => (
+                <div 
+                  key={index}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+                    activeView === item.view
+                      ? 'bg-primary/10 text-foreground border-l-2 border-primary' 
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                  }`}
+                  onClick={() => setActiveView(item.view)}
+                >
+                  <item.icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="font-medium">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </nav>
 
         {/* Settings - Pinned to Bottom */}
-        <div className="p-3 border-t border-gray-200">
-          <div className={`${sidebarCollapsed ? 'hidden' : 'block'} text-xs font-medium text-gray-500 uppercase tracking-wider mb-2`}>
-            Settings
-          </div>
-          <div className="space-y-1">
-            <div 
-              className={`flex items-center space-x-2 px-2 py-1.5 rounded-md cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] transform-gpu text-sm ${
-                activeView === "settings" 
-                  ? 'bg-gray-100 text-gray-900 shadow-sm scale-[1.02]' 
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
-              onClick={() => setActiveView("settings")}
-            >
-              <Settings className="w-4 h-4" />
-              {!sidebarCollapsed && <span className="font-medium">Settings</span>}
-            </div>
+        <div className="px-3 py-3 border-t border-border">
+          <div 
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+              activeView === "settings" 
+                ? 'bg-primary/10 text-foreground border-l-2 border-primary' 
+                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+            }`}
+            onClick={() => setActiveView("settings")}
+          >
+            <Settings className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && <span className="font-medium">Settings</span>}
           </div>
         </div>
       </div>
@@ -504,7 +591,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <header className="bg-white border-b border-gray-200 px-4 py-3">
+        <header className="bg-background border-b border-border px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Button
@@ -515,58 +602,26 @@ const Index = () => {
               >
                 <Menu className="w-4 h-4" />
               </Button>
-                {dashboardStates.fullDashboardLoading ? (
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900">Loading your AI Visibility Dashboard</h2>
-                    <p className="text-sm text-gray-600">Gathering real-time insights from across the AI ecosystem. This may take a moment...</p>
-                  </div>
-                ) : (
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {activeView === "dashboard" ? "Dashboard" : 
-                     activeView === "brands" ? "Watchlist" :
-                     activeView === "agency" ? "Agency Admin" :
-                     activeView === "settings" ? "Settings" : "Dashboard"}
+              {dashboardStates.fullDashboardLoading ? (
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground">Loading your AI Visibility Dashboard</h2>
+                  <p className="text-sm text-muted-foreground">Gathering real-time insights from across the AI ecosystem...</p>
+                </div>
+              ) : (
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground">
+                    {activeView === "dashboard" 
+                      ? allSections.find(s => s.key === activeTab)?.label || "Dashboard"
+                      : activeView === "brands" ? "Watchlist"
+                      : activeView === "agency" ? "Agency Admin"
+                      : activeView === "settings" ? "Settings" 
+                      : "Dashboard"}
                   </h2>
-                )}
+                </div>
+              )}
             </div>
             
             <div className="flex items-center space-x-3">
-              {/* Section Visibility Toggle */}
-              <div className="flex items-center space-x-2">
-                <span className="text-xs text-gray-600">Visible Sections:</span>
-                <Select>
-                  <SelectTrigger className="w-36 h-7 text-xs">
-                    <SelectValue placeholder={`${visibleSections.length} of ${allSections.length} visible`} />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border shadow-lg z-50">
-                    <div className="p-2 max-h-64 overflow-y-auto">
-                      {allSections.map((section) => (
-                        <div 
-                          key={section.key}
-                          className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
-                          onClick={() => toggleSectionVisibility(section.key)}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={visibleSections.includes(section.key)}
-                            onChange={() => {}} // Handled by parent onClick
-                            className="w-4 h-4 text-blue-600"
-                          />
-                          <div className="flex items-center space-x-2">
-                            {typeof section.icon === 'string' ? (
-                              <img src={section.icon} alt={section.label} className="w-5 h-5" />
-                            ) : (
-                              React.createElement(section.icon as any, { className: "w-5 h-5" })
-                            )}
-                            <span className="text-sm">{section.label}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </SelectContent>
-                </Select>
-              </div>
-              
               <StatusIndicators
                 visibleSections={visibleSectionsCount}
                 totalSections={totalSectionsCount}
@@ -583,7 +638,7 @@ const Index = () => {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 p-3 overflow-auto">
+        <main className="flex-1 p-6 overflow-auto bg-muted/20">
           {activeView === "dashboard" && (
             <>
               {/* Show skeleton if full dashboard loading */}
@@ -593,8 +648,8 @@ const Index = () => {
                 <>
                   {/* Filter Bar */}
                   {hasAnalysis && (
-                    <div className={`mb-3 bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm ${demoMode ? 'demo-filter-bar' : ''}`}>
-                  <div className="flex items-center space-x-3">
+                    <div className={`mb-4 bg-background p-3 rounded-lg border border-border ${demoMode ? 'demo-filter-bar' : ''}`}>
+                      <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2">
                       <Select value={selectedBrandId} onValueChange={setSelectedBrandId}>
                         <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent focus:ring-0 hover:bg-gray-50 rounded-md px-2 py-1">
@@ -724,34 +779,15 @@ const Index = () => {
                         </div>
                       </PopoverContent>
                     </Popover>
-                  </div>
-                </div>
-              )}
+                      </div>
+                    </div>
+                  )}
 
-                  {/* Dashboard Content */}
+                  {/* Dashboard Content - Direct rendering based on activeTab */}
                   {hasAnalysis && (
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
-                      <TabsList className={`bg-white border border-gray-200 p-0.5 shadow-sm ${demoMode ? 'demo-tabs' : ''}`}>
-                        {allSections
-                          .filter(section => visibleSections.includes(section.key))
-                          .map((section) => (
-                            <TabsTrigger 
-                              key={section.key}
-                              value={section.key} 
-                              className="flex items-center space-x-1.5 data-[state=active]:bg-gray-100 text-sm px-3 py-1.5"
-                            >
-                              {typeof section.icon === 'string' ? (
-                                <img src={section.icon} alt={section.label} className="w-5 h-5" />
-                              ) : (
-                                React.createElement(section.icon as any, { className: "w-5 h-5" })
-                              )}
-                              <span>{section.label}</span>
-                            </TabsTrigger>
-                          ))}
-                      </TabsList>
-
-                      {visibleSections.includes("overview") && (
-                        <TabsContent value="overview" className={demoMode ? 'demo-content' : ''}>
+                    <div className={`space-y-4 ${demoMode ? 'demo-content' : ''}`}>
+                      {activeTab === "overview" && (
+                        <>
                           {dashboardStates.emptyState ? (
                             <NoAIVisibilityEmpty />
                           ) : dashboardStates.widgetError ? (
@@ -771,23 +807,21 @@ const Index = () => {
                               selectedGradient={selectedGradient}
                               demoMode={demoMode}
                               onQueryClick={(query) => {
-                                // Store current scroll position
                                 setPreviousScrollPosition(window.scrollY);
                                 setAutoOpenPrompt(query);
                                 setActiveTab("queries");
                               }}
                               onNavigateToPrompts={() => {
-                                // Store current scroll position
                                 setPreviousScrollPosition(window.scrollY);
                                 setActiveTab("queries");
                               }}
                             />
                           )}
-                        </TabsContent>
+                        </>
                       )}
 
-                      {visibleSections.includes("brand") && (
-                        <TabsContent value="brand" className={demoMode ? 'demo-content' : ''}>
+                      {activeTab === "brand" && (
+                        <>
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
@@ -795,11 +829,11 @@ const Index = () => {
                           ) : (
                             <BrandAnalysisSection brandData={selectedBrand} demoMode={demoMode} />
                           )}
-                        </TabsContent>
+                        </>
                       )}
 
-                      {visibleSections.includes("queries") && (
-                        <TabsContent value="queries" className={demoMode ? 'demo-content' : ''}>
+                      {activeTab === "queries" && (
+                        <>
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
@@ -816,15 +850,15 @@ const Index = () => {
                               }}
                             />
                           )}
-                        </TabsContent>
+                        </>
                       )}
 
-                      {visibleSections.includes("competitors") && (
-                        <TabsContent value="competitors" className={demoMode ? 'demo-content' : ''}>
+                      {activeTab === "competitors" && (
+                        <>
                           {dashboardStates.emptyState ? (
                             <EmptyState
                               title="No Competitor Data"
-                              description="No competitor information is available for this brand. Data may still be processing or competitors may need to be configured."
+                              description="No competitor information is available for this brand."
                             />
                           ) : dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
@@ -833,15 +867,15 @@ const Index = () => {
                           ) : (
                             <CompetitorSection brandData={selectedBrand} demoMode={demoMode} />
                           )}
-                        </TabsContent>
+                        </>
                       )}
 
-                      {visibleSections.includes("trends") && (
-                        <TabsContent value="trends" className={demoMode ? 'demo-content' : ''}>
+                      {activeTab === "trends" && (
+                        <>
                           {dashboardStates.emptyState ? (
                             <EmptyState
                               title="No Trend Data Available"
-                              description="Trend analysis requires at least 7 days of data. Please check back once more data has been collected."
+                              description="Trend analysis requires at least 7 days of data."
                             />
                           ) : dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
@@ -850,11 +884,11 @@ const Index = () => {
                           ) : (
                             <TrendsSection demoMode={demoMode} />
                           )}
-                        </TabsContent>
+                        </>
                       )}
 
-                      {visibleSections.includes("technical") && (
-                        <TabsContent value="technical" className={demoMode ? 'demo-content' : ''}>
+                      {activeTab === "technical" && (
+                        <>
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
@@ -862,11 +896,11 @@ const Index = () => {
                           ) : (
                             <TechnicalCrawlabilitySection demoMode={demoMode} />
                           )}
-                        </TabsContent>
+                        </>
                       )}
 
-                      {visibleSections.includes("recommendations") && (
-                        <TabsContent value="recommendations" className={demoMode ? 'demo-content' : ''}>
+                      {activeTab === "recommendations" && (
+                        <>
                           {dashboardStates.widgetError ? (
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
@@ -874,9 +908,9 @@ const Index = () => {
                           ) : (
                             <RecommendationsSection brandData={selectedBrand} demoMode={demoMode} />
                           )}
-                        </TabsContent>
+                        </>
                       )}
-                    </Tabs>
+                    </div>
                   )}
                 </>
               )}
