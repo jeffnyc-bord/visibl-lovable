@@ -44,65 +44,12 @@ const SparkleParticle = ({ delay, x, size }: { delay: number; x: number; size: n
   </div>
 );
 
-// Upgrade option card component
-const UpgradeOption = ({ 
-  icon, 
-  title, 
-  description, 
-  current, 
-  upgraded,
-  isSelected,
-  onClick 
-}: { 
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  current: string;
-  upgraded: string;
-  isSelected: boolean;
-  onClick: () => void;
-}) => (
-  <button
-    onClick={onClick}
-    className={`w-full p-4 rounded-xl text-left transition-all duration-200 ${
-      isSelected 
-        ? 'bg-white/10 border-2 border-cyan-400/50 ring-1 ring-cyan-400/20' 
-        : 'bg-white/5 border border-white/10 hover:bg-white/8 hover:border-white/20'
-    }`}
-  >
-    <div className="flex items-start gap-3">
-      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-        isSelected ? 'bg-gradient-to-br from-cyan-400 to-teal-400' : 'bg-white/10'
-      }`}>
-        <div className={isSelected ? 'text-[#0D0D12]' : 'text-white/70'}>
-          {icon}
-        </div>
-      </div>
-      <div className="flex-1 min-w-0">
-        <h4 className="text-white font-medium text-base">{title}</h4>
-        <p className="text-[#9CA3AF] text-sm mt-0.5">{description}</p>
-        <div className="flex items-center gap-2 mt-2">
-          <span className="text-xs text-[#6B7280]">{current}</span>
-          <ArrowRight className="w-3 h-3 text-cyan-400" />
-          <span className="text-xs text-cyan-400 font-medium">{upgraded}</span>
-        </div>
-      </div>
-      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-1 ${
-        isSelected ? 'border-cyan-400 bg-cyan-400' : 'border-white/30'
-      }`}>
-        {isSelected && <Check className="w-3 h-3 text-[#0D0D12]" />}
-      </div>
-    </div>
-  </button>
-);
-
 export const UpgradeSheet = ({
   open,
   onOpenChange,
   type,
 }: UpgradeSheetProps) => {
   const [showParticles, setShowParticles] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(['prompts', 'platforms']);
 
   // Trigger particles when sheet opens
   useEffect(() => {
@@ -112,14 +59,6 @@ export const UpgradeSheet = ({
       return () => clearTimeout(timer);
     }
   }, [open]);
-
-  const toggleOption = (option: string) => {
-    setSelectedOptions(prev => 
-      prev.includes(option) 
-        ? prev.filter(o => o !== option)
-        : [...prev, option]
-    );
-  };
 
   // Generate random sparkle particles
   const sparkles = Array.from({ length: 8 }, (_, i) => ({
@@ -169,26 +108,32 @@ export const UpgradeSheet = ({
             </SheetDescription>
           </SheetHeader>
 
-          {/* Upgrade options */}
-          <div className="space-y-3 mb-8">
-            <UpgradeOption
-              icon={<MessageSquare className="w-5 h-5" />}
-              title="Increase Prompt Allowance"
-              description="Add more prompts to boost confidence scoring"
-              current="5 prompts"
-              upgraded="Unlimited prompts"
-              isSelected={selectedOptions.includes('prompts')}
-              onClick={() => toggleOption('prompts')}
-            />
-            <UpgradeOption
-              icon={<Sparkles className="w-5 h-5" />}
-              title="Unlock More Chatbots"
-              description="Monitor your brand across all AI platforms"
-              current="2 platforms"
-              upgraded="6+ platforms"
-              isSelected={selectedOptions.includes('platforms')}
-              onClick={() => toggleOption('platforms')}
-            />
+          {/* Upgrade benefits - simple list with divider */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between py-4">
+              <div className="flex items-center gap-3">
+                <MessageSquare className="w-5 h-5 text-cyan-400" />
+                <div>
+                  <p className="text-white text-sm font-medium">Increase Prompt Allowance</p>
+                  <p className="text-[#6B7280] text-xs">5 prompts → Unlimited prompts</p>
+                </div>
+              </div>
+              <Check className="w-4 h-4 text-cyan-400" />
+            </div>
+            
+            {/* Horizontal divider */}
+            <div className="h-px bg-white/10" />
+            
+            <div className="flex items-center justify-between py-4">
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-5 h-5 text-cyan-400" />
+                <div>
+                  <p className="text-white text-sm font-medium">Unlock More Chatbots</p>
+                  <p className="text-[#6B7280] text-xs">2 platforms → 6+ platforms</p>
+                </div>
+              </div>
+              <Check className="w-4 h-4 text-cyan-400" />
+            </div>
           </div>
 
           {/* What's included */}
@@ -220,7 +165,7 @@ export const UpgradeSheet = ({
               onClick={() => {
                 window.location.href = "/settings?tab=billing";
               }}
-              disabled={selectedOptions.length === 0}
+              
             >
               <Zap className="w-4 h-4 mr-2" />
               Upgrade Now
