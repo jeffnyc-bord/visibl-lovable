@@ -39,8 +39,9 @@ interface BrandData {
 interface RecommendationsSectionProps {
   brandData?: BrandData;
   demoMode?: boolean;
+  activeSubTab?: 'on-site' | 'authority';
 }
 
-export const RecommendationsSection = ({ brandData, demoMode = false }: RecommendationsSectionProps = {}) => {
-  return <ActionsLab demoMode={demoMode} />;
+export const RecommendationsSection = ({ brandData, demoMode = false, activeSubTab = 'on-site' }: RecommendationsSectionProps = {}) => {
+  return <ActionsLab demoMode={demoMode} activeTab={activeSubTab} />;
 };

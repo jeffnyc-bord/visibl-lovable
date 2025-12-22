@@ -1,50 +1,22 @@
-import { useState, useRef } from 'react';
-import { Globe, Shield } from "lucide-react";
+import { useRef } from 'react';
 import { ContentGenerationWorkflow } from './ContentGenerationWorkflow';
 import { UnifiedAuthorityLab } from '@/components/authority-lab';
 import { recommendations } from './data';
 import { TabType } from './types';
-import { cn } from '@/lib/utils';
 
 interface ActionsLabProps {
   demoMode?: boolean;
+  activeTab?: TabType;
 }
 
-export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
-  const [activeTab, setActiveTab] = useState<TabType>('on-site');
-  const [completedIds, setCompletedIds] = useState<string[]>([]);
-  
+export const ActionsLab = ({ demoMode = false, activeTab = 'on-site' }: ActionsLabProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const completedCount = completedIds.length;
+  const completedCount = 0;
   const totalCount = recommendations.length;
-
-  const tabConfig = [
-    { id: 'on-site' as TabType, label: 'On-site Content', shortLabel: 'On-site', icon: Globe },
-    { id: 'authority' as TabType, label: 'Authority Lab', shortLabel: 'Authority', icon: Shield },
-  ];
 
   return (
     <div className={`flex flex-col ${demoMode ? 'demo-card-1' : ''}`}>
-      {/* Persistent Tab Navigation - Always visible */}
-      <div className="flex items-center gap-1 border-b border-border/40 mb-6">
-        {tabConfig.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              "flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap",
-              activeTab === tab.id
-                ? 'text-foreground border-foreground'
-                : 'text-muted-foreground border-transparent hover:text-foreground'
-            )}
-          >
-            <tab.icon className="w-4 h-4" />
-            <span>{tab.shortLabel}</span>
-          </button>
-        ))}
-      </div>
-
       {/* Content Area */}
       <div className="flex gap-6">
         {/* Glassmorphism Sidebar - Only show for on-site */}
@@ -76,7 +48,7 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
             <>
               <div className="hidden lg:block mb-6">
                 <h2 className="text-xl font-medium text-foreground tracking-tight">
-                  {tabConfig.find(t => t.id === activeTab)?.label}
+                  On-site Content
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   Generate AI-optimized content from your Prompt Blast Lab insights

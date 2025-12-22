@@ -238,6 +238,7 @@ const Index = () => {
   const [prefilledQuery, setPrefilledQuery] = useState<string>("");
   const [autoOpenPrompt, setAutoOpenPrompt] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [recommendationsSubTab, setRecommendationsSubTab] = useState<'on-site' | 'authority'>('on-site');
   const [previousScrollPosition, setPreviousScrollPosition] = useState<number>(0);
 
   // Check for tab parameter in URL on component mount
@@ -479,30 +480,61 @@ const Index = () => {
             <div>
               {mainSections.map((section) => {
                 const isActive = activeView === "dashboard" && activeTab === section.key;
+                const hasSubItems = section.key === 'recommendations';
+                
                 return (
-                  <div
-                    key={section.key}
-                    className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
-                      isActive
-                        ? 'text-foreground font-medium' 
-                        : 'text-muted-foreground/80 hover:text-foreground'
-                    }`}
-                    onClick={() => {
-                      setActiveView("dashboard");
-                      setActiveTab(section.key);
-                    }}
-                  >
-                    {/* Rainbow gradient accent bar */}
-                    <div 
-                      className={`absolute left-0 top-1/2 -translate-y-1/2 w-[2px] rounded-full transition-all duration-300 ease-out ${
-                        isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
+                  <div key={section.key}>
+                    <div
+                      className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
+                        isActive
+                          ? 'text-foreground font-medium' 
+                          : 'text-muted-foreground/80 hover:text-foreground'
                       }`}
-                      style={{
-                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #34a0a4 33%, #52b788 66%, #e9c46a 100%)' : undefined,
+                      onClick={() => {
+                        setActiveView("dashboard");
+                        setActiveTab(section.key);
                       }}
-                    />
-                    <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
-                    <span>{section.label}</span>
+                    >
+                      {/* Rainbow gradient accent bar */}
+                      <div 
+                        className={`absolute left-0 top-1/2 -translate-y-1/2 w-[2px] rounded-full transition-all duration-300 ease-out ${
+                          isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
+                        }`}
+                        style={{
+                          background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #34a0a4 33%, #52b788 66%, #e9c46a 100%)' : undefined,
+                        }}
+                      />
+                      <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
+                      <span>{section.label}</span>
+                    </div>
+                    
+                    {/* Sub-items for Recommendations */}
+                    {hasSubItems && activeTab === 'recommendations' && (
+                      <div className="ml-7 border-l border-border/50 pl-2 mb-1">
+                        <div
+                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                            recommendationsSubTab === 'on-site'
+                              ? 'text-foreground font-medium bg-muted/50' 
+                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                          }`}
+                          onClick={() => setRecommendationsSubTab('on-site')}
+                        >
+                          <Globe className="w-4 h-4 flex-shrink-0" />
+                          <span>On-site Content</span>
+                        </div>
+                        <div
+                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                            recommendationsSubTab === 'authority'
+                              ? 'text-foreground font-medium bg-muted/50' 
+                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                          }`}
+                          onClick={() => setRecommendationsSubTab('authority')}
+                        >
+                          <Shield className="w-4 h-4 flex-shrink-0" />
+                          <span>Authority Lab</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -884,7 +916,7 @@ const Index = () => {
                           ) : dashboardStates.widgetLoading ? (
                             <BrandLoadingCard userRole={userRole} />
                           ) : (
-                            <RecommendationsSection brandData={selectedBrand} demoMode={demoMode} />
+                            <RecommendationsSection brandData={selectedBrand} demoMode={demoMode} activeSubTab={recommendationsSubTab} />
                           )}
                         </>
                       )}
