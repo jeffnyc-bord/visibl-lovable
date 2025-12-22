@@ -1,4 +1,4 @@
-import { Package, MessageSquareText } from 'lucide-react';
+import { Package, MessageSquareText, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export type WorkflowMode = 'product' | 'prompt';
@@ -22,25 +22,30 @@ export const WorkflowModeSelector = ({
     {
       id: 'prompt' as WorkflowMode,
       label: 'Start with Prompt',
-      description: 'Select a prompt from Prompt Blast Lab, then match products',
+      description: 'Select from Prompt Blast Lab, then match products',
       icon: MessageSquareText,
     },
   ];
 
   return (
-    <section className="animate-fade-in">
+    <section className="animate-fade-in pb-6 border-b border-border/30">
       {/* Section Header */}
-      <div className="flex items-center gap-3 py-3 mb-2">
-        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold">
-          0
+      <div className="flex items-center gap-3 py-3 mb-3">
+        <div className={cn(
+          "flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold transition-colors",
+          selectedMode 
+            ? "bg-foreground text-background" 
+            : "bg-muted text-muted-foreground"
+        )}>
+          {selectedMode ? <Check className="w-3 h-3" /> : '0'}
         </div>
         <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Choose Your Starting Point
+          Starting Point
         </span>
       </div>
 
-      {/* Mode Options */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Mode Options - Clean inline style */}
+      <div className="flex gap-6 ml-8">
         {modes.map((mode) => {
           const Icon = mode.icon;
           const isSelected = selectedMode === mode.id;
@@ -49,38 +54,38 @@ export const WorkflowModeSelector = ({
             <button
               key={mode.id}
               onClick={() => onSelectMode(mode.id)}
-              className={cn(
-                "group relative flex flex-col items-start gap-3 p-5 rounded-xl border transition-all duration-200 text-left",
-                isSelected
-                  ? "border-foreground bg-foreground/5"
-                  : "border-border/50 hover:border-border hover:bg-muted/30"
-              )}
+              className="group flex items-center gap-3 text-left transition-colors"
             >
-              {/* Icon */}
+              {/* Radio indicator */}
               <div className={cn(
-                "flex items-center justify-center w-10 h-10 rounded-lg transition-colors",
-                isSelected ? "bg-foreground text-background" : "bg-muted text-muted-foreground"
+                "w-4 h-4 rounded-full border-2 transition-all flex items-center justify-center",
+                isSelected 
+                  ? "border-foreground" 
+                  : "border-muted-foreground/40 group-hover:border-muted-foreground"
               )}>
-                <Icon className="w-5 h-5" />
+                {isSelected && (
+                  <div className="w-2 h-2 rounded-full bg-foreground" />
+                )}
               </div>
 
-              {/* Content */}
-              <div>
-                <h3 className={cn(
-                  "text-sm font-medium mb-1",
-                  isSelected ? "text-foreground" : "text-foreground/80"
-                )}>
-                  {mode.label}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {mode.description}
-                </p>
+              {/* Icon + Label */}
+              <div className="flex items-center gap-2">
+                <Icon className={cn(
+                  "w-4 h-4 transition-colors",
+                  isSelected ? "text-foreground" : "text-muted-foreground"
+                )} />
+                <div>
+                  <span className={cn(
+                    "text-sm transition-colors",
+                    isSelected ? "text-foreground font-medium" : "text-muted-foreground"
+                  )}>
+                    {mode.label}
+                  </span>
+                  <p className="text-[11px] text-muted-foreground/60 mt-0.5 hidden sm:block">
+                    {mode.description}
+                  </p>
+                </div>
               </div>
-
-              {/* Selected Indicator */}
-              {isSelected && (
-                <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-foreground" />
-              )}
             </button>
           );
         })}
