@@ -514,7 +514,7 @@ const Index = () => {
                     </div>
                     
                     {/* Sub-items for Prompt Blast Lab */}
-                    {hasSubItems && activeTab === 'queries' && (
+                    {section.key === 'queries' && activeTab === 'queries' && (
                       <div className="ml-7 border-l border-border/50 pl-2 mb-1">
                         <div
                           className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
@@ -552,8 +552,8 @@ const Index = () => {
                       </div>
                     )}
 
-                    {/* Sub-items for Recommendations */}
-                    {hasSubItems && activeTab === 'recommendations' && (
+                    {/* Sub-items for Actions Lab */}
+                    {section.key === 'recommendations' && activeTab === 'recommendations' && (
                       <div className="ml-7 border-l border-border/50 pl-2 mb-1">
                         <div
                           className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
