@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, FileText, Zap, X, Check } from 'lucide-react';
 import { PromptSource } from './PromptSourceSelector';
 import { ContentType } from './ContentTypeSelector';
+import boardLabsLogo from '@/assets/board-labs-logo.png';
 
 interface ContextualTransitionModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface ContextualTransitionModalProps {
   prompt: PromptSource | null;
   contentType: ContentType | null;
   productName?: string;
+  brandLogo?: string;
 }
 
 export const ContextualTransitionModal = ({
@@ -19,9 +21,11 @@ export const ContextualTransitionModal = ({
   onCancel,
   prompt,
   contentType,
-  productName
+  productName,
+  brandLogo
 }: ContextualTransitionModalProps) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [logoError, setLogoError] = useState(false);
 
   const steps = [
     { label: 'Analyzing prompt context', icon: Sparkles },
@@ -32,6 +36,7 @@ export const ContextualTransitionModal = ({
   useEffect(() => {
     if (isOpen) {
       setCurrentStep(0);
+      setLogoError(false);
       
       const stepTimers = steps.map((_, index) => 
         setTimeout(() => setCurrentStep(index + 1), (index + 1) * 800)
@@ -49,6 +54,18 @@ export const ContextualTransitionModal = ({
   }, [isOpen, onComplete, steps.length]);
 
   // Handle Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onCancel();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onCancel]);
+
+  // Determine which logo to show
+  const logoSrc = (!logoError && brandLogo) ? brandLogo : boardLabsLogo;
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -103,23 +120,25 @@ export const ContextualTransitionModal = ({
           >
             {/* Centered content */}
             <div className="text-center mb-12">
-              {/* Animated icon */}
+              {/* Brand logo */}
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-                className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-8"
+                className="inline-flex items-center justify-center w-24 h-24 rounded-2xl mb-8 overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2)'
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.5)'
                 }}
               >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                >
-                  <Sparkles className="w-10 h-10 text-white" />
-                </motion.div>
+                <motion.img
+                  src={logoSrc}
+                  alt={productName || 'Brand'}
+                  className="w-16 h-16 object-contain"
+                  onError={() => setLogoError(true)}
+                  animate={{ scale: [1, 1.02, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                />
               </motion.div>
 
               <motion.h2
