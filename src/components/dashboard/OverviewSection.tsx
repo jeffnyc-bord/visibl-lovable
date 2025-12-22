@@ -17,6 +17,9 @@ import { PromptInsightsSheet, PromptInsight } from "@/components/ui/prompt-insig
 import { SourceInsightsSheet, SourceInsight } from "@/components/ui/source-insights-sheet";
 import { cn } from "@/lib/utils";
 import grokLogo from "@/assets/grok_logo_new.png";
+import chatGPTLogo from "@/assets/chatGPT_logo.png";
+import perplexityLogo from "@/assets/perplexity_logo.png";
+import geminiLogo from "@/assets/gemini_logo.png";
 
 interface BrandData {
   id: string;
@@ -164,14 +167,14 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
   // Active platforms for lowest tier (ChatGPT & Gemini only)
   const activePlatformMentions = [
-    { platform: "ChatGPT", mentions: 456, sentiment: "positive", coverage: 85, trend: "+12%", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png" },
-    { platform: "Gemini", mentions: 287, sentiment: "neutral", coverage: 72, trend: "+18%", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png" },
+    { platform: "ChatGPT", mentions: 456, sentiment: "positive", coverage: 85, trend: "+12%", logo: chatGPTLogo },
+    { platform: "Gemini", mentions: 287, sentiment: "neutral", coverage: 72, trend: "+18%", logo: geminiLogo },
   ];
 
   // Locked platforms (require upgrade)
   const lockedPlatforms = [
     { platform: "Grok", mentions: 324, sentiment: "positive", coverage: 78, trend: "+8%", logo: grokLogo },
-    { platform: "Perplexity", mentions: 180, sentiment: "positive", coverage: 65, trend: "+22%", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" },
+    { platform: "Perplexity", mentions: 180, sentiment: "positive", coverage: 65, trend: "+22%", logo: perplexityLogo },
   ];
 
   const allPlatformMentions = [...activePlatformMentions, ...lockedPlatforms];
@@ -192,10 +195,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       query: "Nike Air Max vs Adidas Ultraboost", 
       mentions: 203,
       platforms: [
-        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "positive", position: 1 },
+        { name: "ChatGPT", logo: chatGPTLogo, mentioned: true, sentiment: "positive", position: 1 },
         { name: "Grok", logo: grokLogo, mentioned: true, sentiment: "positive", position: 2 },
-        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: true, sentiment: "neutral", position: 3 },
-        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: false, sentiment: "neutral" },
+        { name: "Gemini", logo: geminiLogo, mentioned: true, sentiment: "neutral", position: 3 },
+        { name: "Perplexity", logo: perplexityLogo, mentioned: false, sentiment: "neutral" },
       ],
       sources: [
         { name: "Nike.com", url: "https://nike.com", citations: 47, authority: "high" },
@@ -211,10 +214,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       query: "Most comfortable athletic shoes for daily wear", 
       mentions: 167,
       platforms: [
-        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "positive", position: 2 },
+        { name: "ChatGPT", logo: chatGPTLogo, mentioned: true, sentiment: "positive", position: 2 },
         { name: "Grok", logo: grokLogo, mentioned: true, sentiment: "positive", position: 1 },
-        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: true, sentiment: "positive", position: 2 },
-        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: true, sentiment: "neutral", position: 4 },
+        { name: "Gemini", logo: geminiLogo, mentioned: true, sentiment: "positive", position: 2 },
+        { name: "Perplexity", logo: perplexityLogo, mentioned: true, sentiment: "neutral", position: 4 },
       ],
       sources: [
         { name: "Nike.com", url: "https://nike.com", citations: 38, authority: "high" },
@@ -229,10 +232,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       query: "Best basketball shoes for performance", 
       mentions: 89,
       platforms: [
-        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "positive", position: 1 },
+        { name: "ChatGPT", logo: chatGPTLogo, mentioned: true, sentiment: "positive", position: 1 },
         { name: "Grok", logo: grokLogo, mentioned: false, sentiment: "neutral" },
-        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: true, sentiment: "positive", position: 1 },
-        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: true, sentiment: "positive", position: 2 },
+        { name: "Gemini", logo: geminiLogo, mentioned: true, sentiment: "positive", position: 1 },
+        { name: "Perplexity", logo: perplexityLogo, mentioned: true, sentiment: "positive", position: 2 },
       ],
       sources: [
         { name: "Nike.com", url: "https://nike.com", citations: 52, authority: "high" },
@@ -247,10 +250,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       query: "Running shoes for marathon training", 
       mentions: 145,
       platforms: [
-        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "positive", position: 3 },
+        { name: "ChatGPT", logo: chatGPTLogo, mentioned: true, sentiment: "positive", position: 3 },
         { name: "Grok", logo: grokLogo, mentioned: true, sentiment: "neutral", position: 4 },
-        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: true, sentiment: "positive", position: 2 },
-        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: true, sentiment: "positive", position: 1 },
+        { name: "Gemini", logo: geminiLogo, mentioned: true, sentiment: "positive", position: 2 },
+        { name: "Perplexity", logo: perplexityLogo, mentioned: true, sentiment: "positive", position: 1 },
       ],
       sources: [
         { name: "Runner's World", url: "https://runnersworld.com", citations: 44, authority: "high" },
@@ -265,10 +268,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       query: "Sustainable athletic footwear options", 
       mentions: 112,
       platforms: [
-        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "neutral", position: 4 },
+        { name: "ChatGPT", logo: chatGPTLogo, mentioned: true, sentiment: "neutral", position: 4 },
         { name: "Grok", logo: grokLogo, mentioned: false, sentiment: "neutral" },
-        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: true, sentiment: "positive", position: 3 },
-        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: true, sentiment: "positive", position: 2 },
+        { name: "Gemini", logo: geminiLogo, mentioned: true, sentiment: "positive", position: 3 },
+        { name: "Perplexity", logo: perplexityLogo, mentioned: true, sentiment: "positive", position: 2 },
       ],
       sources: [
         { name: "Nike Sustainability", url: "https://nike.com/sustainability", citations: 28, authority: "high" },
@@ -283,10 +286,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       query: "Best cross-training shoes for gym workouts", 
       mentions: 98,
       platforms: [
-        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "positive", position: 2 },
+        { name: "ChatGPT", logo: chatGPTLogo, mentioned: true, sentiment: "positive", position: 2 },
         { name: "Grok", logo: grokLogo, mentioned: true, sentiment: "positive", position: 1 },
-        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: false, sentiment: "neutral" },
-        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: true, sentiment: "neutral", position: 3 },
+        { name: "Gemini", logo: geminiLogo, mentioned: false, sentiment: "neutral" },
+        { name: "Perplexity", logo: perplexityLogo, mentioned: true, sentiment: "neutral", position: 3 },
       ],
       sources: [
         { name: "Nike.com", url: "https://nike.com", citations: 31, authority: "high" },
