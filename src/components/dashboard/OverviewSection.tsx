@@ -412,7 +412,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           style={{ animationDelay: '0ms', animationFillMode: 'backwards' }}
         >
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">AI Visibility</h1>
+            <h1 className="text-2xl font-light tracking-tight text-foreground">AI Visibility Overview</h1>
             <p className="text-sm text-muted-foreground mt-0.5">Performance overview for {brandData.name}</p>
           </div>
           <ReportExportDialog
@@ -535,70 +535,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </div>
         </div>
 
-        {/* Visibility Trend */}
+        {/* Platform Distribution */}
         <div 
           className={`py-8 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-2' : ''}`}
           style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-foreground">Visibility Trend</h2>
-          </div>
-
-          {visibilityTrendData.length === 1 ? (
-            <div className="flex items-center justify-center h-48 rounded-xl bg-muted/30">
-              <div className="text-center space-y-2">
-                <div className="w-3 h-3 rounded-full bg-primary/60 mx-auto animate-pulse" />
-                <p className="text-sm text-muted-foreground">
-                  Baseline captured: <span className="font-medium text-foreground">{visibilityTrendData[0].mentions}</span> mentions
-                </p>
-                <p className="text-xs text-muted-foreground">Waiting for next scan</p>
-              </div>
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={visibilityTrendData} barSize={32}>
-                <defs>
-                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={gradientColors[0]} stopOpacity={1} />
-                    <stop offset="100%" stopColor={gradientColors[2]} stopOpacity={0.8} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis 
-                  dataKey="month" 
-                  stroke="hsl(var(--muted-foreground))"
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis 
-                  stroke="hsl(var(--muted-foreground))"
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                  width={40}
-                />
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--popover))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    padding: '8px 12px'
-                  }}
-                  labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}
-                  itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
-                />
-                <Bar dataKey="mentions" fill="url(#barGradient)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-
-        {/* Platform Distribution */}
-        <div 
-          className={`py-8 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-3' : ''}`}
-          style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-foreground">Platform Distribution</h2>
@@ -699,6 +639,66 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Visibility Trend */}
+        <div 
+          className={`py-8 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-3' : ''}`}
+          style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-foreground">Visibility Trend</h2>
+          </div>
+
+          {visibilityTrendData.length === 1 ? (
+            <div className="flex items-center justify-center h-48 rounded-xl bg-muted/30">
+              <div className="text-center space-y-2">
+                <div className="w-3 h-3 rounded-full bg-primary/60 mx-auto animate-pulse" />
+                <p className="text-sm text-muted-foreground">
+                  Baseline captured: <span className="font-medium text-foreground">{visibilityTrendData[0].mentions}</span> mentions
+                </p>
+                <p className="text-xs text-muted-foreground">Waiting for next scan</p>
+              </div>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={visibilityTrendData} barSize={32}>
+                <defs>
+                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={gradientColors[0]} stopOpacity={1} />
+                    <stop offset="100%" stopColor={gradientColors[2]} stopOpacity={0.8} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="hsl(var(--muted-foreground))"
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis 
+                  stroke="hsl(var(--muted-foreground))"
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={40}
+                />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--popover))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    padding: '8px 12px'
+                  }}
+                  labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}
+                  itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                />
+                <Bar dataKey="mentions" fill="url(#barGradient)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
         {/* Top Prompts */}
