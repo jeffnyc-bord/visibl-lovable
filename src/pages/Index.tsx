@@ -244,6 +244,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [recommendationsSubTab, setRecommendationsSubTab] = useState<'on-site' | 'authority' | 'actionslog'>('on-site');
   const [queriesSubTab, setQueriesSubTab] = useState<'generate' | 'monitor' | 'test'>('generate');
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ queries: true, recommendations: true });
   const [previousScrollPosition, setPreviousScrollPosition] = useState<number>(0);
 
   // Check for tab parameter in URL on component mount
@@ -486,6 +487,7 @@ const Index = () => {
               {mainSections.map((section) => {
                 const isActive = activeView === "dashboard" && activeTab === section.key;
                 const hasSubItems = section.key === 'recommendations' || section.key === 'queries';
+                const isExpanded = expandedSections[section.key] ?? false;
                 
                 return (
                   <div key={section.key}>
@@ -510,41 +512,62 @@ const Index = () => {
                         }}
                       />
                       <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
-                      <span>{section.label}</span>
+                      <span className="flex-1">{section.label}</span>
+                      {hasSubItems && (
+                        <ChevronDown 
+                          className={`w-4 h-4 flex-shrink-0 text-muted-foreground/60 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedSections(prev => ({ ...prev, [section.key]: !prev[section.key] }));
+                          }}
+                        />
+                      )}
                     </div>
                     
                     {/* Sub-items for Prompt Blast Lab */}
-                    {section.key === 'queries' && activeTab === 'queries' && (
-                      <div className="ml-7 border-l border-border/50 pl-2 mb-1">
+                    {section.key === 'queries' && isExpanded && (
+                      <div className="ml-7 border-l border-border/50 pl-2 mb-1 animate-fade-in">
                         <div
                           className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            queriesSubTab === 'generate'
+                            activeTab === 'queries' && queriesSubTab === 'generate'
                               ? 'text-foreground font-medium bg-muted/50' 
                               : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
                           }`}
-                          onClick={() => setQueriesSubTab('generate')}
+                          onClick={() => {
+                            setActiveView("dashboard");
+                            setActiveTab('queries');
+                            setQueriesSubTab('generate');
+                          }}
                         >
                           <Sparkles className="w-4 h-4 flex-shrink-0" />
                           <span>Generate</span>
                         </div>
                         <div
                           className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            queriesSubTab === 'monitor'
+                            activeTab === 'queries' && queriesSubTab === 'monitor'
                               ? 'text-foreground font-medium bg-muted/50' 
                               : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
                           }`}
-                          onClick={() => setQueriesSubTab('monitor')}
+                          onClick={() => {
+                            setActiveView("dashboard");
+                            setActiveTab('queries');
+                            setQueriesSubTab('monitor');
+                          }}
                         >
                           <Activity className="w-4 h-4 flex-shrink-0" />
                           <span>Monitor</span>
                         </div>
                         <div
                           className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            queriesSubTab === 'test'
+                            activeTab === 'queries' && queriesSubTab === 'test'
                               ? 'text-foreground font-medium bg-muted/50' 
                               : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
                           }`}
-                          onClick={() => setQueriesSubTab('test')}
+                          onClick={() => {
+                            setActiveView("dashboard");
+                            setActiveTab('queries');
+                            setQueriesSubTab('test');
+                          }}
                         >
                           <FlaskConical className="w-4 h-4 flex-shrink-0" />
                           <span>Test</span>
@@ -553,40 +576,52 @@ const Index = () => {
                     )}
 
                     {/* Sub-items for Actions Lab */}
-                    {section.key === 'recommendations' && activeTab === 'recommendations' && (
-                      <div className="ml-7 border-l border-border/50 pl-2 mb-1">
+                    {section.key === 'recommendations' && isExpanded && (
+                      <div className="ml-7 border-l border-border/50 pl-2 mb-1 animate-fade-in">
                         <div
                           className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            recommendationsSubTab === 'on-site'
+                            activeTab === 'recommendations' && recommendationsSubTab === 'on-site'
                               ? 'text-foreground font-medium bg-muted/50' 
                               : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
                           }`}
-                          onClick={() => setRecommendationsSubTab('on-site')}
+                          onClick={() => {
+                            setActiveView("dashboard");
+                            setActiveTab('recommendations');
+                            setRecommendationsSubTab('on-site');
+                          }}
                         >
-                          <Globe className="w-4 h-4 flex-shrink-0" />
-                          <span>On-Site Optimization</span>
+                          <Sparkles className="w-4 h-4 flex-shrink-0" />
+                          <span>Generate</span>
                         </div>
                         <div
                           className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            recommendationsSubTab === 'authority'
+                            activeTab === 'recommendations' && recommendationsSubTab === 'authority'
                               ? 'text-foreground font-medium bg-muted/50' 
                               : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
                           }`}
-                          onClick={() => setRecommendationsSubTab('authority')}
+                          onClick={() => {
+                            setActiveView("dashboard");
+                            setActiveTab('recommendations');
+                            setRecommendationsSubTab('authority');
+                          }}
                         >
-                          <Shield className="w-4 h-4 flex-shrink-0" />
-                          <span>Authority Lab</span>
+                          <Activity className="w-4 h-4 flex-shrink-0" />
+                          <span>Monitor</span>
                         </div>
                         <div
                           className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
-                            recommendationsSubTab === 'actionslog'
+                            activeTab === 'recommendations' && recommendationsSubTab === 'actionslog'
                               ? 'text-foreground font-medium bg-muted/50' 
                               : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
                           }`}
-                          onClick={() => setRecommendationsSubTab('actionslog')}
+                          onClick={() => {
+                            setActiveView("dashboard");
+                            setActiveTab('recommendations');
+                            setRecommendationsSubTab('actionslog');
+                          }}
                         >
-                          <FileText className="w-4 h-4 flex-shrink-0" />
-                          <span>Actions Log</span>
+                          <FlaskConical className="w-4 h-4 flex-shrink-0" />
+                          <span>Test</span>
                         </div>
                       </div>
                     )}
