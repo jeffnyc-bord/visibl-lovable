@@ -498,10 +498,16 @@ const Index = () => {
                       setActiveTab(section.key);
                     }}
                   >
-                    {/* Animated accent bar */}
-                    <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-primary transition-all duration-200 ease-out ${
-                      isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
-                    }`} />
+                    {/* Rainbow gradient accent bar */}
+                    <div 
+                      className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full transition-all duration-300 ease-out ${
+                        isActive ? 'h-5 opacity-100' : 'h-0 opacity-0'
+                      }`}
+                      style={{
+                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #9b72cb 25%, #d96570 50%, #d96570 50%, #ffc857 75%, #9b72cb 100%)' : undefined,
+                        backgroundSize: '100% 200%',
+                      }}
+                    />
                     <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
                     <span>{section.label}</span>
                   </div>
@@ -531,10 +537,16 @@ const Index = () => {
                       setActiveTab(section.key);
                     }}
                   >
-                    {/* Animated accent bar */}
-                    <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-primary transition-all duration-200 ease-out ${
-                      isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
-                    }`} />
+                    {/* Rainbow gradient accent bar */}
+                    <div 
+                      className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full transition-all duration-300 ease-out ${
+                        isActive ? 'h-5 opacity-100' : 'h-0 opacity-0'
+                      }`}
+                      style={{
+                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #9b72cb 25%, #d96570 50%, #d96570 50%, #ffc857 75%, #9b72cb 100%)' : undefined,
+                        backgroundSize: '100% 200%',
+                      }}
+                    />
                     <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
                     <span>{section.label}</span>
                   </div>
@@ -561,10 +573,16 @@ const Index = () => {
                     }`}
                     onClick={() => setActiveView(item.view)}
                   >
-                    {/* Animated accent bar */}
-                    <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-primary transition-all duration-200 ease-out ${
-                      isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
-                    }`} />
+                    {/* Rainbow gradient accent bar */}
+                    <div 
+                      className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full transition-all duration-300 ease-out ${
+                        isActive ? 'h-5 opacity-100' : 'h-0 opacity-0'
+                      }`}
+                      style={{
+                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #9b72cb 25%, #d96570 50%, #d96570 50%, #ffc857 75%, #9b72cb 100%)' : undefined,
+                        backgroundSize: '100% 200%',
+                      }}
+                    />
                     <item.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
                     <span>{item.label}</span>
                   </div>
@@ -584,10 +602,16 @@ const Index = () => {
             }`}
             onClick={() => setActiveView("settings")}
           >
-            {/* Animated accent bar */}
-            <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-primary transition-all duration-200 ease-out ${
-              activeView === "settings" ? 'h-4 opacity-100' : 'h-0 opacity-0'
-            }`} />
+            {/* Rainbow gradient accent bar */}
+            <div 
+              className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full transition-all duration-300 ease-out ${
+                activeView === "settings" ? 'h-5 opacity-100' : 'h-0 opacity-0'
+              }`}
+              style={{
+                background: activeView === "settings" ? 'linear-gradient(180deg, #4285f4 0%, #9b72cb 25%, #d96570 50%, #d96570 50%, #ffc857 75%, #9b72cb 100%)' : undefined,
+                backgroundSize: '100% 200%',
+              }}
+            />
             <Settings className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "settings" ? 'text-foreground' : ''}`} />
             {!sidebarCollapsed && <span>Settings</span>}
           </div>
