@@ -722,6 +722,31 @@ const Index = () => {
                   </div>
                 );
               })}
+
+              {/* Divider */}
+              <div className="w-6 h-px bg-border/50 my-2" />
+
+              {/* Export - Reports - Collapsed */}
+              <div 
+                className={`relative flex items-center justify-center w-10 h-10 rounded-md cursor-pointer transition-colors duration-150 ${
+                  activeView === "reports"
+                    ? 'text-foreground bg-muted/50' 
+                    : 'text-muted-foreground/80 hover:text-foreground hover:bg-muted/30'
+                }`}
+                onClick={() => navigate('/reports')}
+                title="Reports"
+              >
+                {/* Rainbow gradient accent bar */}
+                <div 
+                  className={`absolute left-0 top-1/2 -translate-y-1/2 w-[2px] rounded-full transition-all duration-300 ease-out ${
+                    activeView === "reports" ? 'h-4 opacity-100' : 'h-0 opacity-0'
+                  }`}
+                  style={{
+                    background: activeView === "reports" ? 'linear-gradient(180deg, #4285f4 0%, #34a0a4 33%, #52b788 66%, #e9c46a 100%)' : undefined,
+                  }}
+                />
+                <FileText className={`w-[18px] h-[18px] ${activeView === "reports" ? 'text-foreground' : ''}`} />
+              </div>
             </div>
           )}
 
@@ -757,6 +782,35 @@ const Index = () => {
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* Export Group - Expanded */}
+          {!sidebarCollapsed && (
+            <div className="mt-5">
+              <div className="px-3 mb-1.5">
+                <span className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider">Export</span>
+              </div>
+              <div 
+                className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
+                  activeView === "reports"
+                    ? 'text-foreground font-medium' 
+                    : 'text-muted-foreground/80 hover:text-foreground'
+                }`}
+                onClick={() => navigate('/reports')}
+              >
+                {/* Rainbow gradient accent bar */}
+                <div 
+                  className={`absolute left-0 top-1/2 -translate-y-1/2 w-[2px] rounded-full transition-all duration-300 ease-out ${
+                    activeView === "reports" ? 'h-4 opacity-100' : 'h-0 opacity-0'
+                  }`}
+                  style={{
+                    background: activeView === "reports" ? 'linear-gradient(180deg, #4285f4 0%, #34a0a4 33%, #52b788 66%, #e9c46a 100%)' : undefined,
+                  }}
+                />
+                <FileText className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "reports" ? 'text-foreground' : ''}`} />
+                <span>Reports</span>
+              </div>
             </div>
           )}
         </nav>

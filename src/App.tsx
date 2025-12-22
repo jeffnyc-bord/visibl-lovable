@@ -8,6 +8,7 @@ import { ProductDetail } from "./pages/ProductDetail";
 import NotFound from "./pages/NotFound";
 import { Settings } from "./pages/Settings";
 import { Auth } from "./pages/Auth";
+import Reports from "./pages/Reports";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { SubscriptionProvider } from "./contexts/SubscriptionContext";
 
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/product/:productId" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings userRole="business_user" /></ProtectedRoute>} />
+              <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
