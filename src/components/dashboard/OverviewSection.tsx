@@ -13,6 +13,9 @@ import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ScoreDial } from "@/components/ui/score-dial";
+import { ConfidenceBadge } from "@/components/ui/confidence-badge";
+import { LockedPlatformIndicator } from "@/components/ui/locked-platform-indicator";
+import { UpgradeSheet, UpgradeType } from "@/components/ui/upgrade-sheet";
 
 interface BrandData {
   id: string;
@@ -86,12 +89,24 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
   
+  // Upgrade sheet state
+  const [upgradeSheetOpen, setUpgradeSheetOpen] = useState(false);
+  const [upgradeType, setUpgradeType] = useState<UpgradeType>("general");
+  
+  // Mock prompt count for confidence display (in real app, this would come from props/context)
+  const promptCount = 5;
+  
   // State for Top Prompts section
   const [listMoreClicked, setListMoreClicked] = useState(false);
   
   // State for Source Quality section
   const [sourcesDisplayCount, setSourcesDisplayCount] = useState(3);
   const [expandedSource, setExpandedSource] = useState<number | null>(null);
+  
+  const handleUpgradeClick = (type: UpgradeType) => {
+    setUpgradeType(type);
+    setUpgradeSheetOpen(true);
+  };
 
   const allVisibilityData = [
     { month: "Jul", score: 75 },
@@ -450,6 +465,14 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               label="AI Visibility Score"
               icon={<img src="/lovable-uploads/b3896000-028e-49c5-b74f-04e22725b257.png" alt="AI Visibility Score" className="w-4 h-4" />}
             />
+            {/* Confidence nudge */}
+            <div className="mt-2">
+              <ConfidenceBadge 
+                promptCount={promptCount} 
+                minForHighConfidence={10}
+                onClick={() => handleUpgradeClick("prompt_fidelity")}
+              />
+            </div>
           </CardContent>
         </Card>
 
@@ -591,6 +614,19 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       />
                     </div>
                   </div>
+                </div>
+                {/* Locked platform nudge */}
+                <div className="flex items-center gap-1.5 mt-2">
+                  <LockedPlatformIndicator
+                    platformName="Claude"
+                    platformIcon={<img src="/lovable-uploads/7c83c89c-25ba-4bd6-ac2d-3bfa6cd098db.png" alt="Claude" className="w-full h-full" />}
+                    onClick={() => handleUpgradeClick("chatbot_coverage")}
+                  />
+                  <LockedPlatformIndicator
+                    platformName="Copilot"
+                    platformIcon={<img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="Copilot" className="w-full h-full" />}
+                    onClick={() => handleUpgradeClick("chatbot_coverage")}
+                  />
                 </div>
             </div>
           </CardContent>
@@ -1234,6 +1270,15 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       </Card>
 
       </div>
+      
+      {/* Upgrade Sheet */}
+      <UpgradeSheet
+        open={upgradeSheetOpen}
+        onOpenChange={setUpgradeSheetOpen}
+        type={upgradeType}
+        currentValue={promptCount}
+        maxValue={10}
+      />
     </TooltipProvider>
   );
 };
