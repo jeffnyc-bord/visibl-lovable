@@ -10,12 +10,20 @@ import {
   Calendar,
   TrendingUp,
   Check,
-  MoreHorizontal
+  MoreHorizontal,
+  CheckCircle2,
+  ArrowRight
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 type ActionStatus = 'live' | 'pending' | 'in-progress';
 type ActionType = 'on-site' | 'off-site' | 'social' | 'pr';
+
+interface StatusChange {
+  from: ActionStatus | null;
+  to: ActionStatus;
+  date: string;
+}
 
 interface ActionItem {
   id: string;
@@ -27,11 +35,13 @@ interface ActionItem {
   author?: string;
   authorAvatar?: string;
   date: string;
+  completedDate?: string;
   impactChange?: number;
   campaign?: string;
   description?: string;
   promptUsed?: string;
   history?: { date: string; event: string }[];
+  statusHistory?: StatusChange[];
 }
 
 const mockActions: ActionItem[] = [
@@ -240,12 +250,41 @@ export function ActionsLog() {
   };
 
   const updateActionStatus = (actionId: string, newStatus: ActionStatus) => {
-    setActions(prev => prev.map(action => 
-      action.id === actionId ? { ...action, status: newStatus } : action
-    ));
+    const now = new Date().toISOString();
+    const nowFormatted = new Date().toLocaleString('en-US', { 
+      month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' 
+    });
+
+    setActions(prev => prev.map(action => {
+      if (action.id !== actionId) return action;
+      
+      const statusChange: StatusChange = {
+        from: action.status,
+        to: newStatus,
+        date: nowFormatted
+      };
+
+      return { 
+        ...action, 
+        status: newStatus,
+        completedDate: newStatus === 'live' ? now : action.completedDate,
+        statusHistory: [...(action.statusHistory || []), statusChange]
+      };
+    }));
+
     // Also update selectedAction if it's the one being changed
     if (selectedAction?.id === actionId) {
-      setSelectedAction(prev => prev ? { ...prev, status: newStatus } : null);
+      const statusChange: StatusChange = {
+        from: selectedAction.status,
+        to: newStatus,
+        date: nowFormatted
+      };
+      setSelectedAction(prev => prev ? { 
+        ...prev, 
+        status: newStatus,
+        completedDate: newStatus === 'live' ? now : prev.completedDate,
+        statusHistory: [...(prev.statusHistory || []), statusChange]
+      } : null);
     }
   };
 
@@ -576,12 +615,31 @@ export function ActionsLog() {
                   </div>
                 </div>
 
+                {/* Completed Date (shown when status is live) */}
+                {selectedAction.status === 'live' && selectedAction.completedDate && (
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-[10px] font-medium text-emerald-600 uppercase">Completed</span>
+                    </div>
+                    <p className="text-[13px] font-medium font-mono text-emerald-700">
+                      {new Date(selectedAction.completedDate).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                )}
+
                 {/* Meta Info */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-secondary/20 rounded-lg">
                     <div className="flex items-center gap-1.5 mb-1">
                       <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                      <span className="text-[10px] font-medium text-muted-foreground uppercase">Date</span>
+                      <span className="text-[10px] font-medium text-muted-foreground uppercase">Created</span>
                     </div>
                     <p className="text-[13px] font-medium font-mono">
                       {new Date(selectedAction.date).toLocaleDateString('en-US', { 
@@ -646,10 +704,32 @@ export function ActionsLog() {
                   </div>
                 )}
 
+                {/* Status History */}
+                {selectedAction.statusHistory && selectedAction.statusHistory.length > 0 && (
+                  <div>
+                    <h4 className="text-[10px] font-medium text-muted-foreground uppercase mb-3">Status Changes</h4>
+                    <div className="space-y-2">
+                      {selectedAction.statusHistory.map((change, index) => (
+                        <div key={index} className="flex items-center gap-2 text-[12px]">
+                          <span className="text-muted-foreground font-mono text-[11px]">{change.date}</span>
+                          <span className="text-muted-foreground">—</span>
+                          {change.from && (
+                            <>
+                              <span className={statusConfig[change.from].color}>{statusConfig[change.from].label}</span>
+                              <ArrowRight className="w-3 h-3 text-muted-foreground/50" />
+                            </>
+                          )}
+                          <span className={statusConfig[change.to].color}>{statusConfig[change.to].label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* History */}
                 {selectedAction.history && (
                   <div>
-                    <h4 className="text-[10px] font-medium text-muted-foreground uppercase mb-3">History</h4>
+                    <h4 className="text-[10px] font-medium text-muted-foreground uppercase mb-3">Activity</h4>
                     <div className="space-y-3">
                       {selectedAction.history.map((item, index) => (
                         <div key={index} className="flex gap-3">
