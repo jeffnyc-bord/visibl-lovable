@@ -713,7 +713,7 @@ export function ActionsLog() {
                         </p>
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 z-[100] bg-background border shadow-lg" align="end" side="left" sideOffset={8}>
+                    <PopoverContent className="w-auto p-0" align="start">
                       <div className="p-3 border-b border-border/40">
                         <p className="text-[12px] font-medium text-foreground">Edit completion date</p>
                         <button
