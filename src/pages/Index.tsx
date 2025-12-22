@@ -478,44 +478,41 @@ const Index = () => {
         )}
 
         {/* Main Navigation */}
-        <nav className="flex-1 px-3 py-2 overflow-y-auto">
+        <nav className="flex-1 px-2 py-2 overflow-y-auto">
           {/* Dashboard Home */}
           <div 
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 mb-1 ${
+            className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
               activeView === "dashboard" && activeTab === "overview"
-                ? 'bg-primary/10 text-foreground border-l-2 border-primary' 
-                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                ? 'bg-foreground/[0.06] text-foreground font-medium' 
+                : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
             }`}
             onClick={() => {
               setActiveView("dashboard");
               setActiveTab("overview");
             }}
           >
-            <BarChart3 className="w-4 h-4 flex-shrink-0" />
-            {!sidebarCollapsed && <span className="font-medium">Dashboard home</span>}
+            <BarChart3 className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "dashboard" && activeTab === "overview" ? 'text-foreground' : ''}`} />
+            {!sidebarCollapsed && <span>Dashboard home</span>}
           </div>
 
           {/* Main Sections Group */}
           {!sidebarCollapsed && (
-            <div className="mt-4">
+            <div className="mt-3">
               {mainSections.map((section) => (
                 <div
                   key={section.key}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
                     activeView === "dashboard" && activeTab === section.key
-                      ? 'bg-primary/10 text-foreground border-l-2 border-primary' 
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      ? 'bg-foreground/[0.06] text-foreground font-medium' 
+                      : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
                   }`}
                   onClick={() => {
                     setActiveView("dashboard");
                     setActiveTab(section.key);
                   }}
                 >
-                  <section.icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="font-medium">{section.label}</span>
-                  {section.key === "recommendations" && (
-                    <ChevronRight className="w-4 h-4 ml-auto text-muted-foreground" />
-                  )}
+                  <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "dashboard" && activeTab === section.key ? 'text-foreground' : ''}`} />
+                  <span>{section.label}</span>
                 </div>
               ))}
             </div>
@@ -523,26 +520,25 @@ const Index = () => {
 
           {/* Analytics Group */}
           {!sidebarCollapsed && (
-            <div className="mt-6">
-              <div className="px-3 mb-2">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Analytics</span>
+            <div className="mt-5">
+              <div className="px-3 mb-1.5">
+                <span className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider">Analytics</span>
               </div>
               {analyticsSections.map((section) => (
                 <div
                   key={section.key}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
                     activeView === "dashboard" && activeTab === section.key
-                      ? 'bg-primary/10 text-foreground border-l-2 border-primary' 
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      ? 'bg-foreground/[0.06] text-foreground font-medium' 
+                      : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
                   }`}
                   onClick={() => {
                     setActiveView("dashboard");
                     setActiveTab(section.key);
                   }}
                 >
-                  <section.icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="font-medium">{section.label}</span>
-                  <ChevronRight className="w-4 h-4 ml-auto text-muted-foreground" />
+                  <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "dashboard" && activeTab === section.key ? 'text-foreground' : ''}`} />
+                  <span>{section.label}</span>
                 </div>
               ))}
             </div>
@@ -550,22 +546,22 @@ const Index = () => {
 
           {/* Management Group */}
           {!sidebarCollapsed && (
-            <div className="mt-6">
-              <div className="px-3 mb-2">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Manage</span>
+            <div className="mt-5">
+              <div className="px-3 mb-1.5">
+                <span className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider">Manage</span>
               </div>
               {sidebarItems.filter(item => item.view !== "dashboard").map((item, index) => (
                 <div 
                   key={index}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
                     activeView === item.view
-                      ? 'bg-primary/10 text-foreground border-l-2 border-primary' 
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      ? 'bg-foreground/[0.06] text-foreground font-medium' 
+                      : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
                   }`}
                   onClick={() => setActiveView(item.view)}
                 >
-                  <item.icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="font-medium">{item.label}</span>
+                  <item.icon className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === item.view ? 'text-foreground' : ''}`} />
+                  <span>{item.label}</span>
                 </div>
               ))}
             </div>
@@ -573,17 +569,17 @@ const Index = () => {
         </nav>
 
         {/* Settings - Pinned to Bottom */}
-        <div className="px-3 py-3 border-t border-border">
+        <div className="px-2 py-3 border-t border-border/50">
           <div 
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+            className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 ${
               activeView === "settings" 
-                ? 'bg-primary/10 text-foreground border-l-2 border-primary' 
-                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                ? 'bg-foreground/[0.06] text-foreground font-medium' 
+                : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
             }`}
             onClick={() => setActiveView("settings")}
           >
-            <Settings className="w-4 h-4 flex-shrink-0" />
-            {!sidebarCollapsed && <span className="font-medium">Settings</span>}
+            <Settings className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "settings" ? 'text-foreground' : ''}`} />
+            {!sidebarCollapsed && <span>Settings</span>}
           </div>
         </div>
       </div>
