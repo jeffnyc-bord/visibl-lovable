@@ -4,10 +4,15 @@ import { PromptSourceSelector, PromptSource } from './PromptSourceSelector';
 import { ContentTypeSelector, ContentType } from './ContentTypeSelector';
 import { OptimizedStructurePanel } from './OptimizedStructurePanel';
 import { SerpPreviewPanel } from './SerpPreviewPanel';
+import { ContextNotesPanel } from './ContextNotesPanel';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
-// Mock product data
+interface ContextNote {
+  id: string;
+  type: 'feature' | 'differentiator' | 'tone' | 'avoid' | 'custom';
+  content: string;
+}
 const mockProducts: ProductSource[] = [
   {
     id: '1',
@@ -90,6 +95,8 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
   const [seoTitle, setSeoTitle] = useState('');
   const [urlSlug, setUrlSlug] = useState('');
   const [schemaEnabled, setSchemaEnabled] = useState(false);
+  const [productNotes, setProductNotes] = useState('');
+  const [sessionContext, setSessionContext] = useState<ContextNote[]>([]);
 
   const handleSelectProduct = (product: ProductSource) => {
     setSelectedProduct(product);
@@ -158,7 +165,20 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
           stepNumber={3}
         />
 
-        {/* Step 4: Optimized Structure */}
+        {/* Step 4: Context & Notes (Optional) */}
+        {selectedContentType && (
+          <ContextNotesPanel
+            product={selectedProduct}
+            productNotes={productNotes}
+            onProductNotesChange={setProductNotes}
+            sessionContext={sessionContext}
+            onSessionContextChange={setSessionContext}
+            disabled={!selectedContentType}
+            stepNumber={4}
+          />
+        )}
+
+        {/* Step 5: Optimized Structure */}
         {isReadyForStructure && (
           <OptimizedStructurePanel
             contentType={selectedContentType}

@@ -10,5 +10,7 @@ export { PromptSourceSelector } from './PromptSourceSelector';
 export { ContentTypeSelector } from './ContentTypeSelector';
 export { OptimizedStructurePanel } from './OptimizedStructurePanel';
 export { SerpPreviewPanel } from './SerpPreviewPanel';
+export { EditableHeadersPanel } from './EditableHeadersPanel';
+export { ContextNotesPanel } from './ContextNotesPanel';
 export * from './types';
 export * from './data';
