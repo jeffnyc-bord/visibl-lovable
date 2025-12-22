@@ -14,6 +14,7 @@ import { ConfidenceBadge } from "@/components/ui/confidence-badge";
 import { LockedPlatformIndicator } from "@/components/ui/locked-platform-indicator";
 import { UpgradeSheet, UpgradeType } from "@/components/ui/upgrade-sheet";
 import { cn } from "@/lib/utils";
+import grokLogo from "@/assets/grok_logo_new.png";
 
 interface BrandData {
   id: string;
@@ -153,10 +154,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
   const allPlatformMentions = [
     { platform: "ChatGPT", mentions: 456, sentiment: "positive", coverage: 85, trend: "+12%", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png" },
-    { platform: "Claude", mentions: 324, sentiment: "positive", coverage: 78, trend: "+8%", logo: "/lovable-uploads/7c83c89c-25ba-4bd6-ac2d-3bfa6cd098db.png" },
+    { platform: "Grok", mentions: 324, sentiment: "positive", coverage: 78, trend: "+8%", logo: grokLogo },
     { platform: "Gemini", mentions: 287, sentiment: "neutral", coverage: 72, trend: "+18%", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png" },
     { platform: "Perplexity", mentions: 180, sentiment: "positive", coverage: 65, trend: "+22%", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" },
-    { platform: "Grok", mentions: 145, sentiment: "positive", coverage: 58, trend: "+15%", logo: "/lovable-uploads/771fa115-94bb-4581-ae07-0733d1e93498.png" },
+    { platform: "Claude", mentions: 145, sentiment: "positive", coverage: 58, trend: "+15%", logo: "/lovable-uploads/7c83c89c-25ba-4bd6-ac2d-3bfa6cd098db.png" },
     { platform: "Copilot", mentions: 123, sentiment: "neutral", coverage: 52, trend: "+9%", logo: "/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" },
   ];
 
@@ -318,8 +319,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               />
               <div className="flex items-center gap-1.5 mt-3">
                 <LockedPlatformIndicator
-                  platformName="Claude"
-                  platformIcon={<img src="/lovable-uploads/7c83c89c-25ba-4bd6-ac2d-3bfa6cd098db.png" alt="Claude" className="w-full h-full" />}
+                  platformName="Grok"
+                  platformIcon={<img src={grokLogo} alt="Grok" className="w-full h-full" />}
                   onClick={() => handleUpgradeClick("chatbot_coverage")}
                 />
                 <LockedPlatformIndicator
