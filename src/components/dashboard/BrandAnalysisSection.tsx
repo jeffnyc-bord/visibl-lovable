@@ -388,10 +388,49 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
       {/* Section 3: Detailed Product AI Readiness Table */}
       <Card className={demoMode ? 'demo-card-6' : ''}>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Product AI Readiness Analysis</CardTitle>
-          <CardDescription>Detailed view and management of all product performance</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg">Product AI Readiness Analysis</CardTitle>
+              <CardDescription>Detailed view and management of all product performance</CardDescription>
+            </div>
+            <AddProductDialog 
+              onProductAdded={handleProductAdded}
+              trigger={
+                <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90">
+                  <Plus className="w-4 h-4" />
+                  <span>Add Product</span>
+                </Button>
+              }
+            />
+          </div>
         </CardHeader>
         <CardContent>
+          {/* Inline Add Product CTA - shows when products exist */}
+          {allProducts.length > 0 && (
+            <div className="mb-6 p-4 rounded-lg border-2 border-dashed border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-primary/10">
+                    <Package className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">Track more products</p>
+                    <p className="text-sm text-muted-foreground">Add products to monitor their AI visibility and optimize their discoverability</p>
+                  </div>
+                </div>
+                <AddProductDialog 
+                  onProductAdded={handleProductAdded}
+                  trigger={
+                    <Button variant="outline" className="flex items-center gap-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                      <Plus className="w-4 h-4" />
+                      <span>Add Product</span>
+                    </Button>
+                  }
+                />
+              </div>
+            </div>
+          )}
+
           {/* Search and Filters */}
           <div className="flex flex-col lg:flex-row gap-4 mb-6">
             <div className="flex-1 relative">
@@ -404,15 +443,6 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
               />
             </div>
             <div className="flex gap-2">
-              <AddProductDialog 
-                onProductAdded={handleProductAdded}
-                trigger={
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <Plus className="w-4 h-4" />
-                    <span>Add Product/Service</span>
-                  </Button>
-                }
-              />
               {selectedProducts.length > 0 && (
                 <Button
                   variant="outline"
@@ -480,29 +510,54 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
           </div>
 
           {/* Product Table */}
-          <div className="border rounded-lg overflow-hidden">
-            <div className="bg-gray-50 border-b">
-              <div className="grid grid-cols-12 gap-4 p-3 text-sm font-medium text-gray-700">
-                <div className="col-span-1 flex items-center">
-                  <Checkbox
-                    checked={selectedProducts.length === allProducts.length}
-                    onCheckedChange={handleSelectAll}
-                    className="mr-2"
-                  />
-                  Select
+          {allProducts.length === 0 ? (
+            /* Empty State - No Products */
+            <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-12 text-center">
+              <div className="flex flex-col items-center gap-4">
+                <div className="p-4 rounded-full bg-primary/10">
+                  <Package className="w-10 h-10 text-primary" />
                 </div>
-                <div className="col-span-3">Product / SKU</div>
-                <div className="col-span-2">AI Readiness</div>
-                <div className="col-span-1">Trend</div>
-                <div className="col-span-1">Key Gaps</div>
-                <div className="col-span-1">AI Mentions</div>
-                <div className="col-span-1">Avg Rank</div>
-                <div className="col-span-1">Updated</div>
-                <div className="col-span-1">Action</div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">No products added yet</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto mb-6">
+                    Add your first product to start tracking its AI visibility across ChatGPT, Perplexity, Claude, and other AI platforms.
+                  </p>
+                </div>
+                <AddProductDialog 
+                  onProductAdded={handleProductAdded}
+                  trigger={
+                    <Button size="lg" className="flex items-center gap-2">
+                      <Plus className="w-5 h-5" />
+                      <span>Add Your First Product</span>
+                    </Button>
+                  }
+                />
               </div>
             </div>
-            <div className="divide-y">
-              {allProducts.map((product) => (
+          ) : (
+            <div className="border rounded-lg overflow-hidden">
+              <div className="bg-gray-50 border-b">
+                <div className="grid grid-cols-12 gap-4 p-3 text-sm font-medium text-gray-700">
+                  <div className="col-span-1 flex items-center">
+                    <Checkbox
+                      checked={selectedProducts.length === allProducts.length}
+                      onCheckedChange={handleSelectAll}
+                      className="mr-2"
+                    />
+                    Select
+                  </div>
+                  <div className="col-span-3">Product / SKU</div>
+                  <div className="col-span-2">AI Readiness</div>
+                  <div className="col-span-1">Trend</div>
+                  <div className="col-span-1">Key Gaps</div>
+                  <div className="col-span-1">AI Mentions</div>
+                  <div className="col-span-1">Avg Rank</div>
+                  <div className="col-span-1">Updated</div>
+                  <div className="col-span-1">Action</div>
+                </div>
+              </div>
+              <div className="divide-y">
+                {allProducts.map((product) => (
                 <div 
                   key={product.id} 
                   className={`grid grid-cols-12 gap-4 p-3 text-sm ${
@@ -608,17 +663,20 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
                   </div>
                 </div>
               ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Table Footer */}
-          <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
-            <div>Showing 6 of 1,247 products</div>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm">Previous</Button>
-              <Button variant="outline" size="sm">Next</Button>
+          {allProducts.length > 0 && (
+            <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
+              <div>Showing 6 of 1,247 products</div>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm">Previous</Button>
+                <Button variant="outline" size="sm">Next</Button>
+              </div>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>
