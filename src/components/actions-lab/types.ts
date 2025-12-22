@@ -37,5 +37,5 @@ export interface FilterState {
   effort: 'all' | 'low' | 'medium' | 'high';
 }
 
-export type TabType = 'on-site' | 'off-site' | 'pr-social';
+export type TabType = 'on-site' | 'off-site' | 'pr-social' | 'authority';
 export type SubcategoryType = 'quick-wins' | 'foundations' | 'advanced';
