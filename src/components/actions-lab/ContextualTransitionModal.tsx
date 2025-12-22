@@ -26,6 +26,7 @@ export const ContextualTransitionModal = ({
 }: ContextualTransitionModalProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [logoError, setLogoError] = useState(false);
+  const [logoLoaded, setLogoLoaded] = useState(false);
 
   const steps = [
     { label: 'Analyzing prompt context', icon: Sparkles },
@@ -37,6 +38,7 @@ export const ContextualTransitionModal = ({
     if (isOpen) {
       setCurrentStep(0);
       setLogoError(false);
+      setLogoLoaded(false);
       
       const stepTimers = steps.map((_, index) => 
         setTimeout(() => setCurrentStep(index + 1), (index + 1) * 800)
@@ -120,24 +122,51 @@ export const ContextualTransitionModal = ({
           >
             {/* Centered content */}
             <div className="text-center mb-12">
-              {/* Brand logo */}
+              {/* Brand logo with loading animation */}
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-                className="inline-flex items-center justify-center w-24 h-24 rounded-2xl mb-8 overflow-hidden"
+                className="relative inline-flex items-center justify-center w-28 h-28 rounded-3xl mb-8 overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.5)'
+                  background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(245,245,247,0.95) 100%)',
+                  boxShadow: '0 12px 40px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.8)'
                 }}
               >
+                {/* Loading shimmer overlay */}
+                {!logoLoaded && (
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent"
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                  />
+                )}
+                
+                {/* Pulse ring animation */}
+                <motion.div
+                  className="absolute inset-0 rounded-3xl border-2 border-white/30"
+                  animate={{ 
+                    scale: [1, 1.1, 1],
+                    opacity: [0.5, 0, 0.5]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                />
+                
                 <motion.img
                   src={logoSrc}
                   alt={productName || 'Brand'}
-                  className="w-16 h-16 object-contain"
+                  className="w-20 h-20 object-contain relative z-10"
+                  onLoad={() => setLogoLoaded(true)}
                   onError={() => setLogoError(true)}
-                  animate={{ scale: [1, 1.02, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  initial={{ opacity: 0 }}
+                  animate={{ 
+                    opacity: logoLoaded ? 1 : 0,
+                    scale: logoLoaded ? [1, 1.03, 1] : 1
+                  }}
+                  transition={{ 
+                    opacity: { duration: 0.3 },
+                    scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' }
+                  }}
                 />
               </motion.div>
 
