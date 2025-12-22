@@ -296,7 +296,22 @@ export function ActionsLog() {
   };
 
   const [showCompleteDatePicker, setShowCompleteDatePicker] = useState(false);
+  const [showEditCompleteDatePicker, setShowEditCompleteDatePicker] = useState(false);
   const [customCompleteDate, setCustomCompleteDate] = useState<Date | undefined>(new Date());
+
+  const updateCompletedDate = (actionId: string, newDate: Date) => {
+    const dateValue = newDate.toISOString();
+    
+    setActions(prev => prev.map(action => 
+      action.id === actionId ? { ...action, completedDate: dateValue } : action
+    ));
+    
+    if (selectedAction?.id === actionId) {
+      setSelectedAction(prev => prev ? { ...prev, completedDate: dateValue } : null);
+    }
+    
+    setShowEditCompleteDatePicker(false);
+  };
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -677,21 +692,52 @@ export function ActionsLog() {
 
                 {/* Completed Date (shown when status is live) */}
                 {selectedAction.status === 'live' && selectedAction.completedDate && (
-                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      <span className="text-[10px] font-medium text-emerald-600 uppercase">Completed</span>
-                    </div>
-                    <p className="text-[13px] font-medium font-mono text-emerald-700">
-                      {new Date(selectedAction.completedDate).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        year: 'numeric',
-                        hour: 'numeric',
-                        minute: '2-digit'
-                      })}
-                    </p>
-                  </div>
+                  <Popover open={showEditCompleteDatePicker} onOpenChange={setShowEditCompleteDatePicker}>
+                    <PopoverTrigger asChild>
+                      <button className="w-full p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-left hover:bg-emerald-500/15 transition-colors group">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                            <span className="text-[10px] font-medium text-emerald-600 uppercase">Completed</span>
+                          </div>
+                          <span className="text-[10px] text-emerald-600/60 opacity-0 group-hover:opacity-100 transition-opacity">Click to edit</span>
+                        </div>
+                        <p className="text-[13px] font-medium font-mono text-emerald-700">
+                          {new Date(selectedAction.completedDate).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <div className="p-3 border-b border-border/40">
+                        <p className="text-[12px] font-medium text-foreground">Edit completion date</p>
+                        <button
+                          onClick={() => {
+                            if (customCompleteDate) {
+                              updateCompletedDate(selectedAction.id, customCompleteDate);
+                            }
+                          }}
+                          className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-white text-[11px] font-medium rounded-md hover:bg-emerald-600 transition-colors"
+                        >
+                          <Check className="w-3 h-3" />
+                          Update date
+                        </button>
+                      </div>
+                      <Calendar
+                        mode="single"
+                        selected={customCompleteDate}
+                        onSelect={setCustomCompleteDate}
+                        defaultMonth={selectedAction.completedDate ? new Date(selectedAction.completedDate) : undefined}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 )}
 
                 {/* Meta Info */}
