@@ -40,7 +40,7 @@ export const StrategyOverview = ({
       <div className="flex items-center gap-8 mt-6">
         {kpis.map((kpi) => (
           <div key={kpi.label} className="flex items-center gap-2">
-            <span className="text-2xl font-semibold text-foreground tracking-tight">
+            <span className="text-2xl font-medium text-foreground tracking-tight">
               {kpi.score}
             </span>
             {getTrendIcon(kpi.trend)}

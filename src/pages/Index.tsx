@@ -630,12 +630,12 @@ const Index = () => {
               </Button>
               {dashboardStates.fullDashboardLoading ? (
                 <div>
-                  <h2 className="text-lg font-semibold text-foreground">Loading your AI Visibility Dashboard</h2>
+                  <h2 className="text-lg font-medium text-foreground">Loading your AI Visibility Dashboard</h2>
                   <p className="text-sm text-muted-foreground">Gathering real-time insights from across the AI ecosystem...</p>
                 </div>
               ) : (
                 <div>
-                  <h2 className="text-lg font-semibold text-foreground">
+                  <h2 className="text-lg font-medium text-foreground">
                     {activeView === "dashboard" 
                       ? allSections.find(s => s.key === activeTab)?.label || "Dashboard"
                       : activeView === "brands" ? "Watchlist"
@@ -681,7 +681,7 @@ const Index = () => {
                         <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent focus:ring-0 hover:bg-gray-50 rounded-md px-2 py-1">
                           <div className="flex items-center space-x-2">
                             <img src={selectedBrand.logo} alt={selectedBrand.name} className="w-6 h-6 object-contain" />
-                            <span className="font-medium text-gray-900 text-sm">{selectedBrand.name}</span>
+                            <span className="font-medium text-foreground text-sm">{selectedBrand.name}</span>
                           </div>
                         </SelectTrigger>
                         <SelectContent className="bg-white border shadow-lg z-50 min-w-[280px]">
