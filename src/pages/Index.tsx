@@ -616,7 +616,7 @@ const Index = () => {
                               }}
                             >
                               <Sparkles className="w-4 h-4 flex-shrink-0" />
-                              <span>Generate</span>
+                              <span>On-site Optimization</span>
                             </div>
                             <div
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
@@ -631,7 +631,7 @@ const Index = () => {
                               }}
                             >
                               <Activity className="w-4 h-4 flex-shrink-0" />
-                              <span>Monitor</span>
+                              <span>Authority Lab</span>
                             </div>
                             <div
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
@@ -646,7 +646,7 @@ const Index = () => {
                               }}
                             >
                               <FlaskConical className="w-4 h-4 flex-shrink-0" />
-                              <span>Test</span>
+                              <span>Actions Log</span>
                             </div>
                           </div>
                         </motion.div>
