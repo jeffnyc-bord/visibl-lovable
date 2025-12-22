@@ -10,6 +10,7 @@ import { ContextualTransitionModal } from './ContextualTransitionModal';
 import { AEOContentStudio } from './AEOContentStudio';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import nikeLogo from '@/assets/nike-logo.png';
 
 interface ContextNote {
   id: string;
@@ -23,7 +24,7 @@ const mockProducts: ProductSource[] = [
     category: 'Running Shoes',
     visibilityScore: 78,
     mentions: 203,
-    brandLogo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/1200px-Logo_NIKE.svg.png',
+    brandLogo: nikeLogo,
   },
   {
     id: '2',
@@ -31,7 +32,7 @@ const mockProducts: ProductSource[] = [
     category: 'Performance Running',
     visibilityScore: 65,
     mentions: 145,
-    brandLogo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/1200px-Logo_NIKE.svg.png',
+    brandLogo: nikeLogo,
   },
   {
     id: '3',
@@ -39,7 +40,7 @@ const mockProducts: ProductSource[] = [
     category: 'Lifestyle',
     visibilityScore: 82,
     mentions: 312,
-    brandLogo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/1200px-Logo_NIKE.svg.png',
+    brandLogo: nikeLogo,
   },
   {
     id: '4',
@@ -47,7 +48,7 @@ const mockProducts: ProductSource[] = [
     category: 'Lifestyle',
     visibilityScore: 91,
     mentions: 456,
-    brandLogo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/1200px-Logo_NIKE.svg.png',
+    brandLogo: nikeLogo,
   },
 ];
 
