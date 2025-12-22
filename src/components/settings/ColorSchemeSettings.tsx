@@ -2,6 +2,7 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export const ColorSchemeSettings = () => {
   const [settings, setSettings] = useState({
@@ -9,6 +10,20 @@ export const ColorSchemeSettings = () => {
     reducedMotion: false,
     colorBlindMode: false
   });
+  const { toast } = useToast();
+
+  const handleSettingChange = (key: keyof typeof settings, value: boolean) => {
+    setSettings(prev => ({ ...prev, [key]: value }));
+    const settingNames = {
+      highContrast: "High contrast",
+      reducedMotion: "Reduced motion",
+      colorBlindMode: "Color blind mode"
+    };
+    toast({
+      title: "Settings Updated",
+      description: `${settingNames[key]} ${value ? "enabled" : "disabled"}.`,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -30,7 +45,7 @@ export const ColorSchemeSettings = () => {
           <Switch
             id="highContrast"
             checked={settings.highContrast}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, highContrast: checked }))}
+            onCheckedChange={(checked) => handleSettingChange("highContrast", checked)}
           />
         </div>
 
@@ -42,7 +57,7 @@ export const ColorSchemeSettings = () => {
           <Switch
             id="reducedMotion"
             checked={settings.reducedMotion}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, reducedMotion: checked }))}
+            onCheckedChange={(checked) => handleSettingChange("reducedMotion", checked)}
           />
         </div>
 
@@ -54,7 +69,7 @@ export const ColorSchemeSettings = () => {
           <Switch
             id="colorBlindMode"
             checked={settings.colorBlindMode}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, colorBlindMode: checked }))}
+            onCheckedChange={(checked) => handleSettingChange("colorBlindMode", checked)}
           />
         </div>
       </div>

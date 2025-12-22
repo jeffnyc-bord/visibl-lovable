@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Camera } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export const ProfileSettings = () => {
   const [profileData, setProfileData] = useState({
@@ -13,9 +14,13 @@ export const ProfileSettings = () => {
     bio: "",
     company: "Acme Inc"
   });
+  const { toast } = useToast();
 
   const handleSave = () => {
-    console.log("Profile saved:", profileData);
+    toast({
+      title: "Profile Updated",
+      description: "Your profile changes have been saved successfully.",
+    });
   };
 
   const initials = profileData.displayName

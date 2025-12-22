@@ -3,9 +3,19 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export const AppearanceSettings = () => {
   const [theme, setTheme] = useState("system");
+  const { toast } = useToast();
+
+  const handleThemeChange = (value: string) => {
+    setTheme(value);
+    toast({
+      title: "Appearance Updated",
+      description: `Theme changed to ${value}.`,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -20,7 +30,7 @@ export const AppearanceSettings = () => {
 
       <div className="space-y-4">
         <Label className="text-sm font-medium">Theme</Label>
-        <RadioGroup value={theme} onValueChange={setTheme} className="grid grid-cols-3 gap-4 max-w-md">
+        <RadioGroup value={theme} onValueChange={handleThemeChange} className="grid grid-cols-3 gap-4 max-w-md">
           <Label
             htmlFor="light"
             className={`flex flex-col items-center justify-center gap-2 p-4 border rounded-lg cursor-pointer transition-colors ${
