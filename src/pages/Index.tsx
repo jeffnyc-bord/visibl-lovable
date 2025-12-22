@@ -247,6 +247,7 @@ const Index = () => {
   const [recommendationsSubTab, setRecommendationsSubTab] = useState<'on-site' | 'authority' | 'actionslog'>('on-site');
   const [queriesSubTab, setQueriesSubTab] = useState<'generate' | 'monitor' | 'test'>('generate');
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ queries: true, recommendations: true });
+  const [preselectedProductId, setPreselectedProductId] = useState<string | null>(null);
   const [previousScrollPosition, setPreviousScrollPosition] = useState<number>(0);
 
   // Check for tab parameter in URL on component mount
@@ -1020,7 +1021,15 @@ const Index = () => {
                           ) : dashboardStates.widgetLoading ? (
                             <BrandLoadingCard userRole={userRole} />
                           ) : (
-                            <BrandAnalysisSection brandData={selectedBrand} demoMode={demoMode} />
+                            <BrandAnalysisSection 
+                              brandData={selectedBrand} 
+                              demoMode={demoMode} 
+                              onOptimizeProduct={(productId, productName) => {
+                                setPreselectedProductId(productId);
+                                setActiveTab('recommendations');
+                                setRecommendationsSubTab('on-site');
+                              }}
+                            />
                           )}
                         </>
                       )}
@@ -1104,7 +1113,13 @@ const Index = () => {
                               <ActionsLog />
                             </div>
                           ) : (
-                            <RecommendationsSection brandData={selectedBrand} demoMode={demoMode} activeSubTab={recommendationsSubTab} />
+                            <RecommendationsSection 
+                              brandData={selectedBrand} 
+                              demoMode={demoMode} 
+                              activeSubTab={recommendationsSubTab} 
+                              preselectedProductId={preselectedProductId}
+                              onProductUsed={() => setPreselectedProductId(null)}
+                            />
                           )}
                         </>
                       )}

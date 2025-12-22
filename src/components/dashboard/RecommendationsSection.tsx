@@ -40,8 +40,10 @@ interface RecommendationsSectionProps {
   brandData?: BrandData;
   demoMode?: boolean;
   activeSubTab?: 'on-site' | 'authority';
+  preselectedProductId?: string | null;
+  onProductUsed?: () => void;
 }
 
-export const RecommendationsSection = ({ brandData, demoMode = false, activeSubTab = 'on-site' }: RecommendationsSectionProps = {}) => {
-  return <ActionsLab demoMode={demoMode} activeTab={activeSubTab} />;
+export const RecommendationsSection = ({ brandData, demoMode = false, activeSubTab = 'on-site', preselectedProductId, onProductUsed }: RecommendationsSectionProps = {}) => {
+  return <ActionsLab demoMode={demoMode} activeTab={activeSubTab} preselectedProductId={preselectedProductId} onProductUsed={onProductUsed} />;
 };

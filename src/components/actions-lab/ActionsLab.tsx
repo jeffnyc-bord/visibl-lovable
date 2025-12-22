@@ -7,9 +7,11 @@ import { TabType } from './types';
 interface ActionsLabProps {
   demoMode?: boolean;
   activeTab?: TabType;
+  preselectedProductId?: string | null;
+  onProductUsed?: () => void;
 }
 
-export const ActionsLab = ({ demoMode = false, activeTab = 'on-site' }: ActionsLabProps) => {
+export const ActionsLab = ({ demoMode = false, activeTab = 'on-site', preselectedProductId, onProductUsed }: ActionsLabProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const completedCount = 0;
@@ -54,7 +56,7 @@ export const ActionsLab = ({ demoMode = false, activeTab = 'on-site' }: ActionsL
                   Generate AI-optimized content from your Prompt Blast Lab insights
                 </p>
               </div>
-              <ContentGenerationWorkflow demoMode={demoMode} />
+              <ContentGenerationWorkflow demoMode={demoMode} preselectedProductId={preselectedProductId} onProductUsed={onProductUsed} />
             </>
           )}
 
