@@ -1,6 +1,6 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Check, Zap, ArrowRight, Sparkles, TrendingUp, Eye, BarChart3 } from "lucide-react";
+import { Check, ArrowRight, Sparkles, TrendingUp, Eye, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
@@ -19,7 +19,7 @@ interface UpgradeSheetProps {
 }
 
 // Sparkle particle component
-const SparkleParticle = ({ delay, x, size, color }: { delay: number; x: number; size: number; color: string }) => (
+const SparkleParticle = ({ delay, x, size }: { delay: number; x: number; size: number }) => (
   <div
     className="absolute animate-sparkle-float pointer-events-none"
     style={{
@@ -39,44 +39,26 @@ const SparkleParticle = ({ delay, x, size, color }: { delay: number; x: number; 
     >
       <path
         d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"
-        fill={color}
+        fill="#22D3EE"
       />
     </svg>
   </div>
 );
 
-// Confetti particle component
-const ConfettiParticle = ({ delay, x, color, rotation }: { delay: number; x: number; color: string; rotation: number }) => (
-  <div
-    className="absolute w-2 h-3 rounded-sm animate-confetti-fall pointer-events-none"
-    style={{
-      left: `${x}%`,
-      top: '-20px',
-      backgroundColor: color,
-      transform: `rotate(${rotation}deg)`,
-      animationDelay: `${delay}ms`,
-      opacity: 0,
-    }}
-  />
-);
-
 const UPGRADE_CONTENT: Record<UpgradeType, {
-  title: string;
+  titleStart: string;
+  titleAccent: string;
+  titleEnd: string;
   subtitle: string;
-  benefit: string;
   features: string[];
   ctaLabel: string;
-  ctaAction: string;
   icon: React.ReactNode;
-  gradientFrom: string;
-  gradientTo: string;
-  accentColor: string;
-  sparkleColors: string[];
 }> = {
   prompt_fidelity: {
-    title: "Unlock Full Discovery",
-    subtitle: "Increase your visibility depth",
-    benefit: "See every brand mention across all platforms with 100% fidelity benchmarking.",
+    titleStart: "Unlock Full",
+    titleAccent: "Discovery",
+    titleEnd: ".",
+    subtitle: "See every brand mention across all platforms with complete fidelity benchmarking.",
     features: [
       "Complete prompt coverage across all AI platforms",
       "Real-time sentiment analysis",
@@ -84,17 +66,13 @@ const UPGRADE_CONTENT: Record<UpgradeType, {
       "Historical trend analysis",
     ],
     ctaLabel: "Upgrade Coverage",
-    ctaAction: "View Plans",
-    icon: <Eye className="w-6 h-6" />,
-    gradientFrom: "from-violet-500",
-    gradientTo: "to-fuchsia-500",
-    accentColor: "violet",
-    sparkleColors: ["#8B5CF6", "#D946EF", "#A855F7", "#E879F9"],
+    icon: <Eye className="w-5 h-5" />,
   },
   product_coverage: {
-    title: "Expand Your Footprint",
-    subtitle: "Prepare more products for AI discovery",
-    benefit: "Track additional products across all AI platforms to maximize your brand's visibility.",
+    titleStart: "Expand Your",
+    titleAccent: "Footprint",
+    titleEnd: ".",
+    subtitle: "Track additional products across all AI platforms to maximize your brand's visibility.",
     features: [
       "AI readiness scoring for each product",
       "Optimization recommendations",
@@ -102,17 +80,13 @@ const UPGRADE_CONTENT: Record<UpgradeType, {
       "Cross-product analytics",
     ],
     ctaLabel: "Add More Products",
-    ctaAction: "View Plans",
-    icon: <BarChart3 className="w-6 h-6" />,
-    gradientFrom: "from-emerald-500",
-    gradientTo: "to-cyan-500",
-    accentColor: "emerald",
-    sparkleColors: ["#10B981", "#06B6D4", "#34D399", "#22D3EE"],
+    icon: <BarChart3 className="w-5 h-5" />,
   },
   chatbot_coverage: {
-    title: "See What the World Sees",
-    subtitle: "Unlock full chatbot coverage",
-    benefit: "Monitor your brand presence across all major AI assistants, not just the basics.",
+    titleStart: "See What the",
+    titleAccent: "World",
+    titleEnd: " Sees.",
+    subtitle: "Monitor your brand presence across all major AI assistants, not just the basics.",
     features: [
       "ChatGPT, Claude, Gemini, and more",
       "Platform-specific insights",
@@ -120,17 +94,13 @@ const UPGRADE_CONTENT: Record<UpgradeType, {
       "Cross-platform comparison",
     ],
     ctaLabel: "Unlock All Platforms",
-    ctaAction: "View Plans",
-    icon: <Sparkles className="w-6 h-6" />,
-    gradientFrom: "from-blue-500",
-    gradientTo: "to-indigo-500",
-    accentColor: "blue",
-    sparkleColors: ["#3B82F6", "#6366F1", "#60A5FA", "#818CF8"],
+    icon: <Sparkles className="w-5 h-5" />,
   },
   general: {
-    title: "Upgrade Your Intelligence",
-    subtitle: "Level up your brand monitoring",
-    benefit: "Get the complete picture of your brand's AI visibility.",
+    titleStart: "Lead with",
+    titleAccent: "AI",
+    titleEnd: ".",
+    subtitle: "Get the complete picture of your brand's AI visibility and outpace the competition.",
     features: [
       "Extended tracking limits",
       "Priority support",
@@ -138,12 +108,7 @@ const UPGRADE_CONTENT: Record<UpgradeType, {
       "Team collaboration",
     ],
     ctaLabel: "Upgrade Now",
-    ctaAction: "View Plans",
-    icon: <TrendingUp className="w-6 h-6" />,
-    gradientFrom: "from-amber-500",
-    gradientTo: "to-orange-500",
-    accentColor: "amber",
-    sparkleColors: ["#F59E0B", "#F97316", "#FBBF24", "#FB923C"],
+    icon: <TrendingUp className="w-5 h-5" />,
   },
 };
 
@@ -161,36 +126,26 @@ export const UpgradeSheet = ({
   useEffect(() => {
     if (open) {
       setShowParticles(true);
-      // Reset particles after animation completes
       const timer = setTimeout(() => setShowParticles(false), 3500);
       return () => clearTimeout(timer);
     }
   }, [open]);
 
-  // Generate random particles
-  const sparkles = Array.from({ length: 12 }, (_, i) => ({
+  // Generate random sparkle particles
+  const sparkles = Array.from({ length: 8 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     delay: Math.random() * 600,
-    size: 12 + Math.random() * 12,
-    color: content.sparkleColors[i % content.sparkleColors.length],
-  }));
-
-  const confetti = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    delay: Math.random() * 800,
-    color: content.sparkleColors[i % content.sparkleColors.length],
-    rotation: Math.random() * 360,
+    size: 10 + Math.random() * 10,
   }));
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent 
         side="bottom" 
-        className="rounded-t-3xl max-h-[85vh] overflow-y-auto border-t-0 p-0"
+        className="rounded-t-3xl max-h-[85vh] overflow-y-auto border-t-0 p-0 bg-[#0D0D12]"
       >
-        {/* Sparkle and confetti particles */}
+        {/* Sparkle particles */}
         {showParticles && (
           <div className="absolute inset-0 overflow-hidden pointer-events-none z-50">
             {sparkles.map((sparkle) => (
@@ -199,128 +154,78 @@ export const UpgradeSheet = ({
                 x={sparkle.x}
                 delay={sparkle.delay}
                 size={sparkle.size}
-                color={sparkle.color}
-              />
-            ))}
-            {confetti.map((piece) => (
-              <ConfettiParticle
-                key={`confetti-${piece.id}`}
-                x={piece.x}
-                delay={piece.delay}
-                color={piece.color}
-                rotation={piece.rotation}
               />
             ))}
           </div>
         )}
 
-        {/* Gradient header background */}
-        <div className={cn(
-          "absolute inset-x-0 top-0 h-40 bg-gradient-to-b opacity-20 pointer-events-none",
-          content.gradientFrom,
-          content.gradientTo
-        )} />
-        
-        {/* Animated gradient orbs */}
+        {/* Subtle gradient glow */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className={cn(
-            "absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl opacity-30 animate-pulse",
-            `bg-gradient-to-br ${content.gradientFrom} ${content.gradientTo}`
-          )} />
-          <div className={cn(
-            "absolute -bottom-10 -left-10 w-40 h-40 rounded-full blur-2xl opacity-20 animate-pulse",
-            `bg-gradient-to-tr ${content.gradientTo} ${content.gradientFrom}`
-          )} style={{ animationDelay: '1s' }} />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px] opacity-20 bg-cyan-500" />
         </div>
 
-        <div className="relative max-w-lg mx-auto px-6 py-8">
-          <SheetHeader className="text-center pb-6">
-            {/* Icon with gradient background */}
-            <div className={cn(
-              "mx-auto w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-lg",
-              `bg-gradient-to-br ${content.gradientFrom} ${content.gradientTo}`
-            )}>
-              <div className="text-white">
-                {content.icon}
-              </div>
-            </div>
-            
-            {/* Gradient title */}
-            <SheetTitle className={cn(
-              "text-2xl font-bold bg-clip-text text-transparent",
-              `bg-gradient-to-r ${content.gradientFrom} ${content.gradientTo}`
-            )}>
-              {content.title}
+        <div className="relative max-w-xl mx-auto px-8 py-12">
+          <SheetHeader className="text-left pb-8">
+            {/* Large headline with accent color */}
+            <SheetTitle className="text-4xl md:text-5xl font-light tracking-tight text-white leading-tight">
+              {content.titleStart}{" "}
+              <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">
+                {content.titleAccent}
+              </span>
+              {content.titleEnd}
             </SheetTitle>
-            <SheetDescription className="text-muted-foreground text-base mt-1">
+            <SheetDescription className="text-[#9CA3AF] text-lg mt-4 leading-relaxed max-w-md">
               {content.subtitle}
             </SheetDescription>
           </SheetHeader>
 
           {/* Current status indicator */}
           {currentValue !== undefined && maxValue !== undefined && (
-            <div className="my-4 p-4 rounded-2xl bg-muted/30 border border-border/50 backdrop-blur-sm">
+            <div className="my-6 p-4 rounded-xl bg-white/5 border border-white/10">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">Current Usage</span>
-                <span className="text-sm font-medium">
+                <span className="text-sm text-[#9CA3AF]">Current Usage</span>
+                <span className="text-sm font-medium text-white">
                   {currentValue} / {maxValue}
                 </span>
               </div>
-              <div className="h-2 rounded-full bg-muted overflow-hidden">
+              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
                 <div 
-                  className={cn(
-                    "h-full rounded-full transition-all duration-500",
-                    `bg-gradient-to-r ${content.gradientFrom} ${content.gradientTo}`
-                  )}
+                  className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-teal-400 transition-all duration-500"
                   style={{ width: `${(currentValue / maxValue) * 100}%` }}
                 />
               </div>
             </div>
           )}
 
-          {/* Benefit statement */}
-          <p className="text-center text-base text-foreground/80 mb-6 leading-relaxed">
-            {content.benefit}
-          </p>
-
-          {/* Features list with gradient accents */}
-          <div className="space-y-3 mb-8">
+          {/* Features list */}
+          <div className="space-y-4 mb-10">
             {content.features.map((feature, index) => (
               <div 
                 key={index}
-                className="flex items-center gap-3 text-sm group"
+                className="flex items-center gap-3"
               >
-                <div className={cn(
-                  "w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300",
-                  `bg-gradient-to-br ${content.gradientFrom} ${content.gradientTo}`
-                )}>
-                  <Check className="w-3.5 h-3.5 text-white" />
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-400 to-teal-400 flex items-center justify-center flex-shrink-0">
+                  <Check className="w-3 h-3 text-[#0D0D12]" />
                 </div>
-                <span className="text-foreground/80 group-hover:text-foreground transition-colors">
-                  {feature}
-                </span>
+                <span className="text-[#D1D5DB] text-base">{feature}</span>
               </div>
             ))}
           </div>
 
-          <SheetFooter className="flex-col gap-3 sm:flex-col">
-            {/* Gradient CTA button */}
+          <SheetFooter className="flex-row gap-3 sm:flex-row justify-start">
+            {/* Primary CTA - outlined style matching hero */}
             <Button 
-              className={cn(
-                "w-full h-14 text-base font-semibold text-white border-0 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl",
-                `bg-gradient-to-r ${content.gradientFrom} ${content.gradientTo}`
-              )}
+              className="h-12 px-6 text-base font-medium bg-transparent border border-white/20 text-white hover:bg-white/5 hover:border-white/30 transition-all duration-300 rounded-lg"
               onClick={() => {
                 window.location.href = "/settings?tab=billing";
               }}
             >
-              <Zap className="w-5 h-5 mr-2" />
               {content.ctaLabel}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
+            {/* Secondary CTA - solid dark style */}
             <Button 
-              variant="ghost" 
-              className="w-full text-muted-foreground hover:text-foreground"
+              className="h-12 px-6 text-base font-medium bg-[#1F2937] text-white hover:bg-[#374151] border-0 transition-all duration-300 rounded-lg"
               onClick={() => onOpenChange(false)}
             >
               Maybe Later
