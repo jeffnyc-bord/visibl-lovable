@@ -13,6 +13,7 @@ import { ScoreDial } from "@/components/ui/score-dial";
 import { ConfidenceBadge } from "@/components/ui/confidence-badge";
 import { LockedPlatformIndicator } from "@/components/ui/locked-platform-indicator";
 import { UpgradeSheet, UpgradeType } from "@/components/ui/upgrade-sheet";
+import { PromptInsightsSheet, PromptInsight } from "@/components/ui/prompt-insights-sheet";
 import { cn } from "@/lib/utils";
 import grokLogo from "@/assets/grok_logo_new.png";
 
@@ -97,6 +98,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const [expandedSources, setExpandedSources] = useState(false);
   const [expandedPrompts, setExpandedPrompts] = useState(false);
   
+  // State for prompt insights sheet
+  const [promptInsightsOpen, setPromptInsightsOpen] = useState(false);
+  const [selectedPromptInsight, setSelectedPromptInsight] = useState<PromptInsight | null>(null);
+  
   const handleUpgradeClick = (type: UpgradeType) => {
     setUpgradeType(type);
     setUpgradeSheetOpen(true);
@@ -170,14 +175,126 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         });
       });
 
-  const coreQueries = [
-    { query: "Nike Air Max vs Adidas Ultraboost", mentions: 203 },
-    { query: "Most comfortable athletic shoes for daily wear", mentions: 167 },
-    { query: "Best basketball shoes for performance", mentions: 89 },
-    { query: "Running shoes for marathon training", mentions: 145 },
-    { query: "Sustainable athletic footwear options", mentions: 112 },
-    { query: "Best cross-training shoes for gym workouts", mentions: 98 },
+  // Enhanced prompt data with insights
+  const promptInsightsData: PromptInsight[] = [
+    { 
+      id: "1",
+      query: "Nike Air Max vs Adidas Ultraboost", 
+      mentions: 203,
+      platforms: [
+        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "positive", position: 1 },
+        { name: "Grok", logo: grokLogo, mentioned: true, sentiment: "positive", position: 2 },
+        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: true, sentiment: "neutral", position: 3 },
+        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: false, sentiment: "neutral" },
+      ],
+      sources: [
+        { name: "Nike.com", url: "https://nike.com", citations: 47, authority: "high" },
+        { name: "Runner's World", url: "https://runnersworld.com", citations: 32, authority: "high" },
+        { name: "Reddit r/Sneakers", url: "https://reddit.com/r/sneakers", citations: 18, authority: "medium" },
+      ],
+      trafficEstimate: { impressions: 45000, clicks: 2800, trend: "+24%" },
+      competitorsMentioned: ["Adidas", "New Balance", "ASICS"],
+      lastUpdated: "2 hours ago"
+    },
+    { 
+      id: "2",
+      query: "Most comfortable athletic shoes for daily wear", 
+      mentions: 167,
+      platforms: [
+        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "positive", position: 2 },
+        { name: "Grok", logo: grokLogo, mentioned: true, sentiment: "positive", position: 1 },
+        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: true, sentiment: "positive", position: 2 },
+        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: true, sentiment: "neutral", position: 4 },
+      ],
+      sources: [
+        { name: "Nike.com", url: "https://nike.com", citations: 38, authority: "high" },
+        { name: "Wirecutter", url: "https://nytimes.com/wirecutter", citations: 29, authority: "high" },
+      ],
+      trafficEstimate: { impressions: 38000, clicks: 2100, trend: "+18%" },
+      competitorsMentioned: ["Adidas", "Allbirds", "Brooks"],
+      lastUpdated: "3 hours ago"
+    },
+    { 
+      id: "3",
+      query: "Best basketball shoes for performance", 
+      mentions: 89,
+      platforms: [
+        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "positive", position: 1 },
+        { name: "Grok", logo: grokLogo, mentioned: false, sentiment: "neutral" },
+        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: true, sentiment: "positive", position: 1 },
+        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: true, sentiment: "positive", position: 2 },
+      ],
+      sources: [
+        { name: "Nike.com", url: "https://nike.com", citations: 52, authority: "high" },
+        { name: "ESPN", url: "https://espn.com", citations: 21, authority: "high" },
+      ],
+      trafficEstimate: { impressions: 22000, clicks: 1400, trend: "+12%" },
+      competitorsMentioned: ["Adidas", "Under Armour"],
+      lastUpdated: "5 hours ago"
+    },
+    { 
+      id: "4",
+      query: "Running shoes for marathon training", 
+      mentions: 145,
+      platforms: [
+        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "positive", position: 3 },
+        { name: "Grok", logo: grokLogo, mentioned: true, sentiment: "neutral", position: 4 },
+        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: true, sentiment: "positive", position: 2 },
+        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: true, sentiment: "positive", position: 1 },
+      ],
+      sources: [
+        { name: "Runner's World", url: "https://runnersworld.com", citations: 44, authority: "high" },
+        { name: "Nike.com", url: "https://nike.com", citations: 36, authority: "high" },
+      ],
+      trafficEstimate: { impressions: 31000, clicks: 1900, trend: "+8%" },
+      competitorsMentioned: ["ASICS", "Brooks", "Hoka"],
+      lastUpdated: "4 hours ago"
+    },
+    { 
+      id: "5",
+      query: "Sustainable athletic footwear options", 
+      mentions: 112,
+      platforms: [
+        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "neutral", position: 4 },
+        { name: "Grok", logo: grokLogo, mentioned: false, sentiment: "neutral" },
+        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: true, sentiment: "positive", position: 3 },
+        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: true, sentiment: "positive", position: 2 },
+      ],
+      sources: [
+        { name: "Nike Sustainability", url: "https://nike.com/sustainability", citations: 28, authority: "high" },
+        { name: "Forbes", url: "https://forbes.com", citations: 19, authority: "high" },
+      ],
+      trafficEstimate: { impressions: 18000, clicks: 950, trend: "+32%" },
+      competitorsMentioned: ["Allbirds", "Adidas", "Veja"],
+      lastUpdated: "6 hours ago"
+    },
+    { 
+      id: "6",
+      query: "Best cross-training shoes for gym workouts", 
+      mentions: 98,
+      platforms: [
+        { name: "ChatGPT", logo: "/lovable-uploads/84b583a1-fe3d-4393-ae0a-df3ec0dbd01d.png", mentioned: true, sentiment: "positive", position: 2 },
+        { name: "Grok", logo: grokLogo, mentioned: true, sentiment: "positive", position: 1 },
+        { name: "Gemini", logo: "/lovable-uploads/20ab85cf-422a-46f0-a62a-26fe3db14680.png", mentioned: false, sentiment: "neutral" },
+        { name: "Perplexity", logo: "/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png", mentioned: true, sentiment: "neutral", position: 3 },
+      ],
+      sources: [
+        { name: "Nike.com", url: "https://nike.com", citations: 31, authority: "high" },
+        { name: "Men's Health", url: "https://menshealth.com", citations: 24, authority: "high" },
+      ],
+      trafficEstimate: { impressions: 15000, clicks: 820, trend: "+15%" },
+      competitorsMentioned: ["Reebok", "Under Armour", "Nobull"],
+      lastUpdated: "1 day ago"
+    },
   ];
+
+  const handlePromptClick = (promptId: string) => {
+    const insight = promptInsightsData.find(p => p.id === promptId);
+    if (insight) {
+      setSelectedPromptInsight(insight);
+      setPromptInsightsOpen(true);
+    }
+  };
 
   const generateBrandSources = () => {
     const brandUrl = brandData.url.startsWith('http') ? brandData.url : `https://${brandData.url}`;
@@ -514,22 +631,22 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </div>
 
           <div className="space-y-1">
-            {(expandedPrompts ? coreQueries : coreQueries.slice(0, 4)).map((query, index) => (
+            {(expandedPrompts ? promptInsightsData : promptInsightsData.slice(0, 4)).map((prompt) => (
               <div 
-                key={index}
-                onClick={() => onQueryClick?.(query.query)}
+                key={prompt.id}
+                onClick={() => handlePromptClick(prompt.id)}
                 className="flex items-center justify-between py-2.5 px-3 -mx-3 rounded-md hover:bg-muted/40 cursor-pointer transition-colors group"
               >
-                <p className="text-sm text-foreground group-hover:text-primary transition-colors">{query.query}</p>
+                <p className="text-sm text-foreground group-hover:text-primary transition-colors">{prompt.query}</p>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">{query.mentions}</span>
+                  <span className="text-xs text-muted-foreground">{prompt.mentions}</span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             ))}
           </div>
 
-          {coreQueries.length > 4 && (
+          {promptInsightsData.length > 4 && (
             <div className="flex justify-center mt-4">
               <Button 
                 variant="ghost" 
@@ -602,6 +719,13 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           open={upgradeSheetOpen} 
           onOpenChange={setUpgradeSheetOpen}
           type={upgradeType}
+        />
+
+        {/* Prompt Insights Sheet */}
+        <PromptInsightsSheet
+          open={promptInsightsOpen}
+          onOpenChange={setPromptInsightsOpen}
+          prompt={selectedPromptInsight}
         />
       </div>
     </TooltipProvider>

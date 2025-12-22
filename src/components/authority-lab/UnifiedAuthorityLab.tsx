@@ -6,22 +6,24 @@ import {
   TrendingUp,
   Users,
   Globe,
-  BarChart3
+  BarChart3,
+  MessageSquare
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 // Mock data for sources with estimated traffic
 const mockSources = [
-  { id: 1, name: 'TechCrunch', favicon: '🔵', priority: 94, category: 'Tech News', llmCitations: 847, estimatedTraffic: '12.4M', domain: 'techcrunch.com' },
-  { id: 2, name: 'Forbes', favicon: '📰', priority: 91, category: 'Business', llmCitations: 723, estimatedTraffic: '89.2M', domain: 'forbes.com' },
-  { id: 3, name: 'Wired', favicon: '🔴', priority: 88, category: 'Tech Culture', llmCitations: 612, estimatedTraffic: '8.7M', domain: 'wired.com' },
-  { id: 4, name: 'The Verge', favicon: '🟣', priority: 85, category: 'Tech News', llmCitations: 589, estimatedTraffic: '24.1M', domain: 'theverge.com' },
-  { id: 5, name: 'Reddit r/technology', favicon: '🟠', priority: 82, category: 'Community', llmCitations: 534, estimatedTraffic: '1.2B', domain: 'reddit.com/r/technology' },
-  { id: 6, name: 'Hacker News', favicon: '🟧', priority: 79, category: 'Developer', llmCitations: 478, estimatedTraffic: '5.8M', domain: 'news.ycombinator.com' },
-  { id: 7, name: 'VentureBeat', favicon: '🔷', priority: 76, category: 'AI/ML', llmCitations: 423, estimatedTraffic: '4.2M', domain: 'venturebeat.com' },
-  { id: 8, name: 'Ars Technica', favicon: '⬛', priority: 74, category: 'Deep Tech', llmCitations: 398, estimatedTraffic: '6.1M', domain: 'arstechnica.com' },
-  { id: 9, name: 'Product Hunt', favicon: '🐱', priority: 71, category: 'Launches', llmCitations: 356, estimatedTraffic: '3.4M', domain: 'producthunt.com' },
-  { id: 10, name: 'LinkedIn Pulse', favicon: '🔵', priority: 68, category: 'Professional', llmCitations: 312, estimatedTraffic: '310M', domain: 'linkedin.com' },
+  { id: 1, name: 'TechCrunch', favicon: '🔵', priority: 94, category: 'Tech News', llmCitations: 847, estimatedTraffic: '12.4M', domain: 'techcrunch.com', promptsTriggered: ['Best tech products 2024', 'Startup funding news', 'Innovation in AI'] },
+  { id: 2, name: 'Forbes', favicon: '📰', priority: 91, category: 'Business', llmCitations: 723, estimatedTraffic: '89.2M', domain: 'forbes.com', promptsTriggered: ['Top business leaders', 'Investment strategies', 'Market trends'] },
+  { id: 3, name: 'Wired', favicon: '🔴', priority: 88, category: 'Tech Culture', llmCitations: 612, estimatedTraffic: '8.7M', domain: 'wired.com', promptsTriggered: ['Future of technology', 'Gadget reviews', 'Science news'] },
+  { id: 4, name: 'The Verge', favicon: '🟣', priority: 85, category: 'Tech News', llmCitations: 589, estimatedTraffic: '24.1M', domain: 'theverge.com', promptsTriggered: ['Consumer electronics', 'Tech reviews', 'Gaming news'] },
+  { id: 5, name: 'Reddit r/technology', favicon: '🟠', priority: 82, category: 'Community', llmCitations: 534, estimatedTraffic: '1.2B', domain: 'reddit.com/r/technology', promptsTriggered: ['Community recommendations', 'Tech discussions', 'Product comparisons'] },
+  { id: 6, name: 'Hacker News', favicon: '🟧', priority: 79, category: 'Developer', llmCitations: 478, estimatedTraffic: '5.8M', domain: 'news.ycombinator.com', promptsTriggered: ['Developer tools', 'Startup launches', 'Programming news'] },
+  { id: 7, name: 'VentureBeat', favicon: '🔷', priority: 76, category: 'AI/ML', llmCitations: 423, estimatedTraffic: '4.2M', domain: 'venturebeat.com', promptsTriggered: ['AI innovations', 'Machine learning trends', 'Enterprise tech'] },
+  { id: 8, name: 'Ars Technica', favicon: '⬛', priority: 74, category: 'Deep Tech', llmCitations: 398, estimatedTraffic: '6.1M', domain: 'arstechnica.com', promptsTriggered: ['Technical analysis', 'Science news', 'Security updates'] },
+  { id: 9, name: 'Product Hunt', favicon: '🐱', priority: 71, category: 'Launches', llmCitations: 356, estimatedTraffic: '3.4M', domain: 'producthunt.com', promptsTriggered: ['New product launches', 'Startup tools', 'App recommendations'] },
+  { id: 10, name: 'LinkedIn Pulse', favicon: '🔵', priority: 68, category: 'Professional', llmCitations: 312, estimatedTraffic: '310M', domain: 'linkedin.com', promptsTriggered: ['Career advice', 'Industry insights', 'Professional networking'] },
 ];
 
 export function UnifiedAuthorityLab() {
@@ -165,6 +167,25 @@ export function UnifiedAuthorityLab() {
                   <div className="text-[10px] text-muted-foreground mt-1">High authority</div>
                 </div>
               </div>
+
+              {/* Prompts That Triggered This Source */}
+              <section className="space-y-3">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  Prompts That Surface This Source
+                </h2>
+                <div className="space-y-2">
+                  {selectedSource.promptsTriggered.map((prompt, index) => (
+                    <div 
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-secondary/30 border border-border/30 rounded-lg hover:bg-secondary/50 transition-colors cursor-pointer group"
+                    >
+                      <span className="text-sm text-foreground/80">{prompt}</span>
+                      <Badge variant="secondary" className="text-[10px]">View Details</Badge>
+                    </div>
+                  ))}
+                </div>
+              </section>
 
               {/* Why This Matters */}
               <section className="space-y-3">
