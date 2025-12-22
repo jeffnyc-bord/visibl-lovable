@@ -1,7 +1,6 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Check, ArrowRight, Sparkles, TrendingUp, Eye, BarChart3 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Check, ArrowRight, Sparkles, MessageSquare, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export type UpgradeType = 
@@ -45,82 +44,65 @@ const SparkleParticle = ({ delay, x, size }: { delay: number; x: number; size: n
   </div>
 );
 
-const UPGRADE_CONTENT: Record<UpgradeType, {
-  titleStart: string;
-  titleAccent: string;
-  titleEnd: string;
-  subtitle: string;
-  features: string[];
-  ctaLabel: string;
+// Upgrade option card component
+const UpgradeOption = ({ 
+  icon, 
+  title, 
+  description, 
+  current, 
+  upgraded,
+  isSelected,
+  onClick 
+}: { 
   icon: React.ReactNode;
-}> = {
-  prompt_fidelity: {
-    titleStart: "Unlock Full",
-    titleAccent: "Discovery",
-    titleEnd: ".",
-    subtitle: "See every brand mention across all platforms with complete fidelity benchmarking.",
-    features: [
-      "Complete prompt coverage across all AI platforms",
-      "Real-time sentiment analysis",
-      "Competitor mention tracking",
-      "Historical trend analysis",
-    ],
-    ctaLabel: "Upgrade Coverage",
-    icon: <Eye className="w-5 h-5" />,
-  },
-  product_coverage: {
-    titleStart: "Expand Your",
-    titleAccent: "Footprint",
-    titleEnd: ".",
-    subtitle: "Track additional products across all AI platforms to maximize your brand's visibility.",
-    features: [
-      "AI readiness scoring for each product",
-      "Optimization recommendations",
-      "Category-level insights",
-      "Cross-product analytics",
-    ],
-    ctaLabel: "Add More Products",
-    icon: <BarChart3 className="w-5 h-5" />,
-  },
-  chatbot_coverage: {
-    titleStart: "See What the",
-    titleAccent: "World",
-    titleEnd: " Sees.",
-    subtitle: "Monitor your brand presence across all major AI assistants, not just the basics.",
-    features: [
-      "ChatGPT, Claude, Gemini, and more",
-      "Platform-specific insights",
-      "Response quality scoring",
-      "Cross-platform comparison",
-    ],
-    ctaLabel: "Unlock All Platforms",
-    icon: <Sparkles className="w-5 h-5" />,
-  },
-  general: {
-    titleStart: "Lead with",
-    titleAccent: "AI",
-    titleEnd: ".",
-    subtitle: "Get the complete picture of your brand's AI visibility and outpace the competition.",
-    features: [
-      "Extended tracking limits",
-      "Priority support",
-      "Advanced analytics",
-      "Team collaboration",
-    ],
-    ctaLabel: "Upgrade Now",
-    icon: <TrendingUp className="w-5 h-5" />,
-  },
-};
+  title: string;
+  description: string;
+  current: string;
+  upgraded: string;
+  isSelected: boolean;
+  onClick: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    className={`w-full p-4 rounded-xl text-left transition-all duration-200 ${
+      isSelected 
+        ? 'bg-white/10 border-2 border-cyan-400/50 ring-1 ring-cyan-400/20' 
+        : 'bg-white/5 border border-white/10 hover:bg-white/8 hover:border-white/20'
+    }`}
+  >
+    <div className="flex items-start gap-3">
+      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+        isSelected ? 'bg-gradient-to-br from-cyan-400 to-teal-400' : 'bg-white/10'
+      }`}>
+        <div className={isSelected ? 'text-[#0D0D12]' : 'text-white/70'}>
+          {icon}
+        </div>
+      </div>
+      <div className="flex-1 min-w-0">
+        <h4 className="text-white font-medium text-base">{title}</h4>
+        <p className="text-[#9CA3AF] text-sm mt-0.5">{description}</p>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-xs text-[#6B7280]">{current}</span>
+          <ArrowRight className="w-3 h-3 text-cyan-400" />
+          <span className="text-xs text-cyan-400 font-medium">{upgraded}</span>
+        </div>
+      </div>
+      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-1 ${
+        isSelected ? 'border-cyan-400 bg-cyan-400' : 'border-white/30'
+      }`}>
+        {isSelected && <Check className="w-3 h-3 text-[#0D0D12]" />}
+      </div>
+    </div>
+  </button>
+);
 
 export const UpgradeSheet = ({
   open,
   onOpenChange,
   type,
-  currentValue,
-  maxValue,
 }: UpgradeSheetProps) => {
-  const content = UPGRADE_CONTENT[type];
   const [showParticles, setShowParticles] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(['prompts', 'platforms']);
 
   // Trigger particles when sheet opens
   useEffect(() => {
@@ -130,6 +112,14 @@ export const UpgradeSheet = ({
       return () => clearTimeout(timer);
     }
   }, [open]);
+
+  const toggleOption = (option: string) => {
+    setSelectedOptions(prev => 
+      prev.includes(option) 
+        ? prev.filter(o => o !== option)
+        : [...prev, option]
+    );
+  };
 
   // Generate random sparkle particles
   const sparkles = Array.from({ length: 8 }, (_, i) => ({
@@ -143,7 +133,7 @@ export const UpgradeSheet = ({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent 
         side="bottom" 
-        className="rounded-t-3xl max-h-[85vh] overflow-y-auto border-t-0 p-0 bg-[#0D0D12]"
+        className="rounded-t-3xl max-h-[90vh] overflow-y-auto border-t-0 p-0 bg-[#0D0D12]"
       >
         {/* Sparkle particles */}
         {showParticles && (
@@ -164,66 +154,79 @@ export const UpgradeSheet = ({
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px] opacity-20 bg-cyan-500" />
         </div>
 
-        <div className="relative max-w-xl mx-auto px-8 py-12">
-          <SheetHeader className="text-left pb-8">
-            {/* Large headline with accent color */}
-            <SheetTitle className="text-4xl md:text-5xl font-light tracking-tight text-white leading-tight">
-              {content.titleStart}{" "}
-              <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">
-                {content.titleAccent}
+        <div className="relative max-w-xl mx-auto px-8 py-10">
+          <SheetHeader className="text-left pb-6">
+            {/* Large headline with accent color - lighter weight */}
+            <SheetTitle className="text-3xl md:text-4xl font-extralight tracking-tight text-white leading-tight">
+              Unlock Full{" "}
+              <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent font-light">
+                Discovery
               </span>
-              {content.titleEnd}
+              .
             </SheetTitle>
-            <SheetDescription className="text-[#9CA3AF] text-lg mt-4 leading-relaxed max-w-md">
-              {content.subtitle}
+            <SheetDescription className="text-[#9CA3AF] text-base mt-3 leading-relaxed">
+              Increase your visibility confidence and monitor your brand across all major AI platforms.
             </SheetDescription>
           </SheetHeader>
 
-          {/* Current status indicator */}
-          {currentValue !== undefined && maxValue !== undefined && (
-            <div className="my-6 p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-[#9CA3AF]">Current Usage</span>
-                <span className="text-sm font-medium text-white">
-                  {currentValue} / {maxValue}
-                </span>
-              </div>
-              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
-                <div 
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-teal-400 transition-all duration-500"
-                  style={{ width: `${(currentValue / maxValue) * 100}%` }}
-                />
-              </div>
-            </div>
-          )}
+          {/* Upgrade options */}
+          <div className="space-y-3 mb-8">
+            <UpgradeOption
+              icon={<MessageSquare className="w-5 h-5" />}
+              title="Increase Prompt Allowance"
+              description="Add more prompts to boost confidence scoring"
+              current="5 prompts"
+              upgraded="Unlimited prompts"
+              isSelected={selectedOptions.includes('prompts')}
+              onClick={() => toggleOption('prompts')}
+            />
+            <UpgradeOption
+              icon={<Sparkles className="w-5 h-5" />}
+              title="Unlock More Chatbots"
+              description="Monitor your brand across all AI platforms"
+              current="2 platforms"
+              upgraded="6+ platforms"
+              isSelected={selectedOptions.includes('platforms')}
+              onClick={() => toggleOption('platforms')}
+            />
+          </div>
 
-          {/* Features list */}
-          <div className="space-y-4 mb-10">
-            {content.features.map((feature, index) => (
-              <div 
-                key={index}
-                className="flex items-center gap-3"
-              >
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-400 to-teal-400 flex items-center justify-center flex-shrink-0">
-                  <Check className="w-3 h-3 text-[#0D0D12]" />
+          {/* What's included */}
+          <div className="mb-8">
+            <h4 className="text-xs font-medium uppercase tracking-wider text-[#6B7280] mb-3">
+              What's Included
+            </h4>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                "Real-time sentiment analysis",
+                "Competitor mention tracking",
+                "Historical trend analysis",
+                "Priority support",
+              ].map((feature, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-br from-cyan-400/20 to-teal-400/20 flex items-center justify-center">
+                    <Check className="w-2.5 h-2.5 text-cyan-400" />
+                  </div>
+                  <span className="text-[#D1D5DB] text-sm">{feature}</span>
                 </div>
-                <span className="text-[#D1D5DB] text-base">{feature}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
           <SheetFooter className="flex-row gap-3 sm:flex-row justify-start">
-            {/* Primary CTA - outlined style matching hero */}
+            {/* Primary CTA */}
             <Button 
               className="h-12 px-6 text-base font-medium bg-transparent border border-white/20 text-white hover:bg-white/5 hover:border-white/30 transition-all duration-300 rounded-lg"
               onClick={() => {
                 window.location.href = "/settings?tab=billing";
               }}
+              disabled={selectedOptions.length === 0}
             >
-              {content.ctaLabel}
+              <Zap className="w-4 h-4 mr-2" />
+              Upgrade Now
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
-            {/* Secondary CTA - solid dark style */}
+            {/* Secondary CTA */}
             <Button 
               className="h-12 px-6 text-base font-medium bg-[#1F2937] text-white hover:bg-[#374151] border-0 transition-all duration-300 rounded-lg"
               onClick={() => onOpenChange(false)}
