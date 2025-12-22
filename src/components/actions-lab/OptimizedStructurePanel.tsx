@@ -86,7 +86,7 @@ export const OptimizedStructurePanel = ({
 
   return (
     <section className={cn(
-      "transition-all duration-300",
+      "animate-fade-in",
       isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
     )}>
       {/* Section Header */}

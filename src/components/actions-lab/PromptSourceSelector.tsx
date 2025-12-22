@@ -30,7 +30,10 @@ export const PromptSourceSelector = ({
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <section className={cn("relative", disabled && "opacity-40 pointer-events-none")}>
+    <section className={cn(
+      "relative transition-all duration-300 ease-out",
+      disabled && "opacity-40 pointer-events-none"
+    )}>
       {/* Section Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -62,7 +65,7 @@ export const PromptSourceSelector = ({
 
       {/* List View */}
       {isExpanded && (
-        <div className="divide-y divide-border/40">
+        <div className="divide-y divide-border/40 animate-fade-in">
           {prompts.map((prompt) => (
             <button
               key={prompt.id}

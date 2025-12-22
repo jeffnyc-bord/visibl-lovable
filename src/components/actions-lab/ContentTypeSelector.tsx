@@ -30,7 +30,10 @@ export const ContentTypeSelector = ({
   stepNumber = 3,
 }: ContentTypeSelectorProps) => {
   return (
-    <section className={cn("relative py-4", disabled && "opacity-40 pointer-events-none")}>
+    <section className={cn(
+      "relative py-4 transition-all duration-300 ease-out",
+      disabled && "opacity-40 pointer-events-none"
+    )}>
       {/* Section Header */}
       <div className="flex items-center gap-3 mb-3">
         <div className={cn(
@@ -52,8 +55,8 @@ export const ContentTypeSelector = ({
       </div>
 
       {/* Inline Pill Selector */}
-      <div className="flex flex-wrap gap-2">
-        {contentTypes.map((type) => {
+      <div className="flex flex-wrap gap-2 animate-fade-in">
+        {contentTypes.map((type, index) => {
           const Icon = type.icon;
           const isSelected = selectedType === type.id;
           
@@ -61,11 +64,13 @@ export const ContentTypeSelector = ({
             <button
               key={type.id}
               onClick={() => onSelectType(type.id)}
+              style={{ animationDelay: `${index * 50}ms` }}
               className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-all duration-200 border",
+                "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm border",
+                "transition-all duration-200 ease-out animate-scale-in",
                 isSelected 
-                  ? "bg-foreground text-background border-foreground font-medium" 
-                  : "bg-transparent text-muted-foreground border-border/60 hover:border-foreground/30 hover:text-foreground"
+                  ? "bg-foreground text-background border-foreground font-medium scale-[1.02]" 
+                  : "bg-transparent text-muted-foreground border-border/60 hover:border-foreground/30 hover:text-foreground hover:scale-[1.02]"
               )}
             >
               <Icon className="w-3.5 h-3.5" />
