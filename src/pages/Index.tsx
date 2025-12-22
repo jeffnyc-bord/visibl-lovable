@@ -67,7 +67,10 @@ import {
   Brain,
   Lightbulb,
   FileText,
-  Home
+  Home,
+  Sparkles,
+  Activity,
+  FlaskConical
 } from "lucide-react";
 
 // Mock brand data structure
@@ -240,6 +243,7 @@ const Index = () => {
   const [autoOpenPrompt, setAutoOpenPrompt] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [recommendationsSubTab, setRecommendationsSubTab] = useState<'on-site' | 'authority' | 'actionslog'>('on-site');
+  const [queriesSubTab, setQueriesSubTab] = useState<'generate' | 'monitor' | 'test'>('generate');
   const [previousScrollPosition, setPreviousScrollPosition] = useState<number>(0);
 
   // Check for tab parameter in URL on component mount
@@ -481,7 +485,7 @@ const Index = () => {
             <div>
               {mainSections.map((section) => {
                 const isActive = activeView === "dashboard" && activeTab === section.key;
-                const hasSubItems = section.key === 'recommendations';
+                const hasSubItems = section.key === 'recommendations' || section.key === 'queries';
                 
                 return (
                   <div key={section.key}>
@@ -509,6 +513,45 @@ const Index = () => {
                       <span>{section.label}</span>
                     </div>
                     
+                    {/* Sub-items for Prompt Blast Lab */}
+                    {hasSubItems && activeTab === 'queries' && (
+                      <div className="ml-7 border-l border-border/50 pl-2 mb-1">
+                        <div
+                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                            queriesSubTab === 'generate'
+                              ? 'text-foreground font-medium bg-muted/50' 
+                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                          }`}
+                          onClick={() => setQueriesSubTab('generate')}
+                        >
+                          <Sparkles className="w-4 h-4 flex-shrink-0" />
+                          <span>Generate</span>
+                        </div>
+                        <div
+                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                            queriesSubTab === 'monitor'
+                              ? 'text-foreground font-medium bg-muted/50' 
+                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                          }`}
+                          onClick={() => setQueriesSubTab('monitor')}
+                        >
+                          <Activity className="w-4 h-4 flex-shrink-0" />
+                          <span>Monitor</span>
+                        </div>
+                        <div
+                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                            queriesSubTab === 'test'
+                              ? 'text-foreground font-medium bg-muted/50' 
+                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                          }`}
+                          onClick={() => setQueriesSubTab('test')}
+                        >
+                          <FlaskConical className="w-4 h-4 flex-shrink-0" />
+                          <span>Test</span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Sub-items for Recommendations */}
                     {hasSubItems && activeTab === 'recommendations' && (
                       <div className="ml-7 border-l border-border/50 pl-2 mb-1">
