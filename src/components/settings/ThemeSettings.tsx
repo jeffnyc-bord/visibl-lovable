@@ -2,9 +2,20 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export const ThemeSettings = () => {
   const [selectedTheme, setSelectedTheme] = useState("default");
+  const { toast } = useToast();
+
+  const handleThemeChange = (value: string) => {
+    setSelectedTheme(value);
+    const themeName = themes.find(t => t.id === value)?.name || value;
+    toast({
+      title: "Theme Updated",
+      description: `Theme changed to ${themeName}.`,
+    });
+  };
 
   const themes = [
     { id: "default", name: "Default", colors: ["#3b82f6", "#8b5cf6", "#06b6d4"] },
@@ -24,7 +35,7 @@ export const ThemeSettings = () => {
 
       <Separator />
 
-      <RadioGroup value={selectedTheme} onValueChange={setSelectedTheme} className="grid grid-cols-2 gap-4 max-w-md">
+      <RadioGroup value={selectedTheme} onValueChange={handleThemeChange} className="grid grid-cols-2 gap-4 max-w-md">
         {themes.map((theme) => (
           <Label
             key={theme.id}
