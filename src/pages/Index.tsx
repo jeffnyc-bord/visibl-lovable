@@ -65,7 +65,8 @@ import {
   Code,
   Brain,
   Lightbulb,
-  FileText
+  FileText,
+  Home
 } from "lucide-react";
 
 // Mock brand data structure
@@ -283,7 +284,7 @@ const Index = () => {
 
   // Available dashboard sections - now organized into groups
   const mainSections = [
-    { key: "overview", label: "AI Visibility Overview", icon: Eye },
+    { key: "overview", label: "AI Visibility Overview", icon: Home },
     { key: "brand", label: "Brand & Products Visibility", icon: Building },
     { key: "queries", label: "Prompt Blast Lab", icon: Zap },
     { key: "recommendations", label: "Recommendations", icon: Lightbulb }
@@ -479,31 +480,9 @@ const Index = () => {
 
         {/* Main Navigation */}
         <nav className="flex-1 px-2 py-2 overflow-y-auto">
-          {/* Dashboard Home */}
-          <div 
-            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
-              activeView === "dashboard" && activeTab === "overview"
-                ? 'bg-foreground/[0.06] text-foreground font-medium' 
-                : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
-            }`}
-            onClick={() => {
-              setActiveView("dashboard");
-              setActiveTab("overview");
-            }}
-          >
-            {/* Animated accent bar */}
-            <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-primary transition-all duration-200 ease-out ${
-              activeView === "dashboard" && activeTab === "overview" 
-                ? 'h-4 opacity-100' 
-                : 'h-0 opacity-0'
-            }`} />
-            <BarChart3 className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "dashboard" && activeTab === "overview" ? 'text-foreground' : ''}`} />
-            {!sidebarCollapsed && <span>Dashboard home</span>}
-          </div>
-
           {/* Main Sections Group */}
           {!sidebarCollapsed && (
-            <div className="mt-3">
+            <div>
               {mainSections.map((section) => {
                 const isActive = activeView === "dashboard" && activeTab === section.key;
                 return (
