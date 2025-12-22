@@ -12,16 +12,16 @@ import { cn } from '@/lib/utils';
 
 // Mock data for sources with estimated traffic
 const mockSources = [
-  { id: 1, name: 'TechCrunch', favicon: '🔵', priority: 94, category: 'Tech News', llmCitations: 847, estimatedTraffic: '12.4M' },
-  { id: 2, name: 'Forbes', favicon: '📰', priority: 91, category: 'Business', llmCitations: 723, estimatedTraffic: '89.2M' },
-  { id: 3, name: 'Wired', favicon: '🔴', priority: 88, category: 'Tech Culture', llmCitations: 612, estimatedTraffic: '8.7M' },
-  { id: 4, name: 'The Verge', favicon: '🟣', priority: 85, category: 'Tech News', llmCitations: 589, estimatedTraffic: '24.1M' },
-  { id: 5, name: 'Reddit r/technology', favicon: '🟠', priority: 82, category: 'Community', llmCitations: 534, estimatedTraffic: '1.2B' },
-  { id: 6, name: 'Hacker News', favicon: '🟧', priority: 79, category: 'Developer', llmCitations: 478, estimatedTraffic: '5.8M' },
-  { id: 7, name: 'VentureBeat', favicon: '🔷', priority: 76, category: 'AI/ML', llmCitations: 423, estimatedTraffic: '4.2M' },
-  { id: 8, name: 'Ars Technica', favicon: '⬛', priority: 74, category: 'Deep Tech', llmCitations: 398, estimatedTraffic: '6.1M' },
-  { id: 9, name: 'Product Hunt', favicon: '🐱', priority: 71, category: 'Launches', llmCitations: 356, estimatedTraffic: '3.4M' },
-  { id: 10, name: 'LinkedIn Pulse', favicon: '🔵', priority: 68, category: 'Professional', llmCitations: 312, estimatedTraffic: '310M' },
+  { id: 1, name: 'TechCrunch', favicon: '🔵', priority: 94, category: 'Tech News', llmCitations: 847, estimatedTraffic: '12.4M', domain: 'techcrunch.com' },
+  { id: 2, name: 'Forbes', favicon: '📰', priority: 91, category: 'Business', llmCitations: 723, estimatedTraffic: '89.2M', domain: 'forbes.com' },
+  { id: 3, name: 'Wired', favicon: '🔴', priority: 88, category: 'Tech Culture', llmCitations: 612, estimatedTraffic: '8.7M', domain: 'wired.com' },
+  { id: 4, name: 'The Verge', favicon: '🟣', priority: 85, category: 'Tech News', llmCitations: 589, estimatedTraffic: '24.1M', domain: 'theverge.com' },
+  { id: 5, name: 'Reddit r/technology', favicon: '🟠', priority: 82, category: 'Community', llmCitations: 534, estimatedTraffic: '1.2B', domain: 'reddit.com/r/technology' },
+  { id: 6, name: 'Hacker News', favicon: '🟧', priority: 79, category: 'Developer', llmCitations: 478, estimatedTraffic: '5.8M', domain: 'news.ycombinator.com' },
+  { id: 7, name: 'VentureBeat', favicon: '🔷', priority: 76, category: 'AI/ML', llmCitations: 423, estimatedTraffic: '4.2M', domain: 'venturebeat.com' },
+  { id: 8, name: 'Ars Technica', favicon: '⬛', priority: 74, category: 'Deep Tech', llmCitations: 398, estimatedTraffic: '6.1M', domain: 'arstechnica.com' },
+  { id: 9, name: 'Product Hunt', favicon: '🐱', priority: 71, category: 'Launches', llmCitations: 356, estimatedTraffic: '3.4M', domain: 'producthunt.com' },
+  { id: 10, name: 'LinkedIn Pulse', favicon: '🔵', priority: 68, category: 'Professional', llmCitations: 312, estimatedTraffic: '310M', domain: 'linkedin.com' },
 ];
 
 export function UnifiedAuthorityLab() {
@@ -184,14 +184,24 @@ export function UnifiedAuthorityLab() {
                   Take Action
                 </h2>
                 <div className="flex gap-3">
-                  <button className="flex items-center gap-2 px-4 py-2.5 bg-foreground text-background text-xs font-medium rounded-lg hover:opacity-90 transition-opacity">
+                  <a 
+                    href={`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(selectedSource.name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-foreground text-background text-xs font-medium rounded-lg hover:opacity-90 transition-opacity"
+                  >
                     <Users className="w-4 h-4" />
                     Find Contacts
-                  </button>
-                  <button className="flex items-center gap-2 px-4 py-2.5 bg-secondary border border-border/50 text-foreground text-xs font-medium rounded-lg hover:bg-secondary/80 transition-colors">
+                  </a>
+                  <a 
+                    href={`https://${selectedSource.domain}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-secondary border border-border/50 text-foreground text-xs font-medium rounded-lg hover:bg-secondary/80 transition-colors"
+                  >
                     <ExternalLink className="w-4 h-4" />
                     Visit Source
-                  </button>
+                  </a>
                 </div>
               </section>
             </div>
