@@ -288,7 +288,7 @@ const Index = () => {
     { key: "overview", label: "AI Visibility Overview", icon: Home },
     { key: "brand", label: "Brand & Products Visibility", icon: Building },
     { key: "queries", label: "Prompt Blast Lab", icon: Zap },
-    { key: "recommendations", label: "Recommendations", icon: Lightbulb }
+    { key: "recommendations", label: "Actions Lab", icon: Lightbulb }
   ];
   
   const allSections = [...mainSections];
@@ -520,7 +520,7 @@ const Index = () => {
                           onClick={() => setRecommendationsSubTab('on-site')}
                         >
                           <Globe className="w-4 h-4 flex-shrink-0" />
-                          <span>On-site Content</span>
+                          <span>On-Site Optimization</span>
                         </div>
                         <div
                           className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${

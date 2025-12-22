@@ -48,7 +48,7 @@ export const ActionsLab = ({ demoMode = false, activeTab = 'on-site' }: ActionsL
             <>
               <div className="hidden lg:block mb-6">
                 <h2 className="text-xl font-medium text-foreground tracking-tight">
-                  On-site Content
+                  On-Site Optimization
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   Generate AI-optimized content from your Prompt Blast Lab insights
