@@ -14,6 +14,7 @@ import { ConfidenceBadge } from "@/components/ui/confidence-badge";
 import { LockedPlatformIndicator } from "@/components/ui/locked-platform-indicator";
 import { UpgradeSheet, UpgradeType } from "@/components/ui/upgrade-sheet";
 import { PromptInsightsSheet, PromptInsight } from "@/components/ui/prompt-insights-sheet";
+import { SourceInsightsSheet, SourceInsight } from "@/components/ui/source-insights-sheet";
 import { cn } from "@/lib/utils";
 import grokLogo from "@/assets/grok_logo_new.png";
 
@@ -101,6 +102,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   // State for prompt insights sheet
   const [promptInsightsOpen, setPromptInsightsOpen] = useState(false);
   const [selectedPromptInsight, setSelectedPromptInsight] = useState<PromptInsight | null>(null);
+  
+  // State for source insights sheet
+  const [sourceInsightsOpen, setSourceInsightsOpen] = useState(false);
+  const [selectedSourceInsight, setSelectedSourceInsight] = useState<SourceInsight | null>(null);
   
   const handleUpgradeClick = (type: UpgradeType) => {
     setUpgradeType(type);
@@ -296,21 +301,96 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
     }
   };
 
-  const generateBrandSources = () => {
-    const brandUrl = brandData.url.startsWith('http') ? brandData.url : `https://${brandData.url}`;
-    const brandDomain = brandData.url.replace(/^https?:\/\//, '').replace(/^www\./, '');
-    const baseMentions = Math.round(brandData.totalMentions * 0.027);
-    
-    return [
-      { source: `www.${brandDomain}`, url: brandUrl, mentions: Math.round(baseMentions * 1.2), authority: "high" as const },
-      { source: "www.techcrunch.com", url: "https://www.techcrunch.com", mentions: Math.round(baseMentions * 0.95), authority: "high" as const },
-      { source: "www.theverge.com", url: "https://www.theverge.com", mentions: Math.round(baseMentions * 0.75), authority: "high" as const },
-      { source: "www.wired.com", url: "https://www.wired.com", mentions: Math.round(baseMentions * 0.68), authority: "high" as const },
-      { source: "www.forbes.com", url: "https://www.forbes.com", mentions: Math.round(baseMentions * 0.58), authority: "high" as const },
-    ];
+  // Enhanced source data with prompt attribution
+  const sourceInsightsData: SourceInsight[] = [
+    {
+      id: "1",
+      name: `www.${brandData.url.replace(/^https?:\/\//, '').replace(/^www\./, '')}`,
+      url: brandData.url.startsWith('http') ? brandData.url : `https://${brandData.url}`,
+      authority: "high",
+      citations: Math.round(brandData.totalMentions * 0.027 * 1.2),
+      promptsTriggered: [
+        { query: "Nike Air Max vs Adidas Ultraboost", mentions: 47, platforms: ["ChatGPT", "Gemini", "Perplexity"] },
+        { query: "Best running shoes for marathon training", mentions: 36, platforms: ["ChatGPT", "Grok"] },
+        { query: "Most comfortable athletic shoes", mentions: 28, platforms: ["Gemini", "Perplexity"] },
+      ],
+      trafficEstimate: { monthlyVisitors: "89M", llmReferrals: 12400, trend: "+18%" },
+      sampleQuote: `According to ${brandData.name}'s official product specifications, their latest release features innovative cushioning technology that provides superior comfort for athletes.`,
+      lastCited: "2 hours ago"
+    },
+    {
+      id: "2",
+      name: "www.techcrunch.com",
+      url: "https://www.techcrunch.com",
+      authority: "high",
+      citations: Math.round(brandData.totalMentions * 0.027 * 0.95),
+      promptsTriggered: [
+        { query: "Sustainable athletic footwear options", mentions: 32, platforms: ["ChatGPT", "Gemini", "Grok"] },
+        { query: "Nike Air Max vs Adidas Ultraboost", mentions: 24, platforms: ["Perplexity", "ChatGPT"] },
+      ],
+      trafficEstimate: { monthlyVisitors: "12.4M", llmReferrals: 8470, trend: "+24%" },
+      sampleQuote: `TechCrunch reports that ${brandData.name} has been leading innovation in the athletic wear space with their new sustainable materials initiative.`,
+      lastCited: "5 hours ago"
+    },
+    {
+      id: "3",
+      name: "www.theverge.com",
+      url: "https://www.theverge.com",
+      authority: "high",
+      citations: Math.round(brandData.totalMentions * 0.027 * 0.75),
+      promptsTriggered: [
+        { query: "Best basketball shoes for performance", mentions: 21, platforms: ["ChatGPT", "Gemini"] },
+        { query: "Running shoes for marathon training", mentions: 18, platforms: ["Perplexity"] },
+      ],
+      trafficEstimate: { monthlyVisitors: "24.1M", llmReferrals: 5890, trend: "+12%" },
+      sampleQuote: `The Verge's analysis compares ${brandData.name}'s technology stack against industry competitors, noting both strengths and areas for improvement.`,
+      lastCited: "1 day ago"
+    },
+    {
+      id: "4",
+      name: "www.wired.com",
+      url: "https://www.wired.com",
+      authority: "high",
+      citations: Math.round(brandData.totalMentions * 0.027 * 0.68),
+      promptsTriggered: [
+        { query: "Best cross-training shoes for gym workouts", mentions: 19, platforms: ["ChatGPT", "Grok"] },
+      ],
+      trafficEstimate: { monthlyVisitors: "8.7M", llmReferrals: 4230, trend: "+8%" },
+      sampleQuote: `Wired's deep dive into athletic technology highlights ${brandData.name}'s proprietary foam technology as a game-changer.`,
+      lastCited: "2 days ago"
+    },
+    {
+      id: "5",
+      name: "www.forbes.com",
+      url: "https://www.forbes.com",
+      authority: "high",
+      citations: Math.round(brandData.totalMentions * 0.027 * 0.58),
+      promptsTriggered: [
+        { query: "Sustainable athletic footwear options", mentions: 15, platforms: ["ChatGPT", "Perplexity", "Grok"] },
+        { query: "Most comfortable athletic shoes", mentions: 12, platforms: ["Gemini"] },
+      ],
+      trafficEstimate: { monthlyVisitors: "89.2M", llmReferrals: 7230, trend: "+15%" },
+      sampleQuote: `Forbes ranks ${brandData.name} among the top brands for customer satisfaction and product quality in their annual industry report.`,
+      lastCited: "3 days ago"
+    },
+  ];
+
+  const handleSourceClick = (sourceId: string) => {
+    const insight = sourceInsightsData.find(s => s.id === sourceId);
+    if (insight) {
+      setSelectedSourceInsight(insight);
+      setSourceInsightsOpen(true);
+    }
   };
 
-  const sourceQuality = generateBrandSources();
+  const sourceQuality = sourceInsightsData.map(s => ({
+    id: s.id,
+    source: s.name,
+    url: s.url,
+    mentions: s.citations,
+    authority: s.authority
+  }));
+  
   const topSource = sourceQuality.reduce((max, source) => source.mentions > max.mentions ? source : max, sourceQuality[0]);
 
   const displayedPlatforms = showAllPlatforms ? platformMentions : platformMentions.slice(0, 4);
@@ -674,11 +754,11 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </div>
 
           <div className="space-y-1">
-            {(expandedSources ? sourceQuality : sourceQuality.slice(0, 3)).map((source, index) => (
+            {(expandedSources ? sourceQuality : sourceQuality.slice(0, 3)).map((source) => (
               <div 
-                key={index}
+                key={source.id}
                 className="flex items-center justify-between py-2.5 px-3 -mx-3 rounded-md hover:bg-muted/40 cursor-pointer transition-colors group"
-                onClick={() => window.open(source.url, '_blank')}
+                onClick={() => handleSourceClick(source.id)}
               >
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-foreground group-hover:text-primary transition-colors">
@@ -690,7 +770,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">{source.mentions} refs</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             ))}
@@ -726,6 +806,23 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           open={promptInsightsOpen}
           onOpenChange={setPromptInsightsOpen}
           prompt={selectedPromptInsight}
+        />
+
+        {/* Source Insights Sheet */}
+        <SourceInsightsSheet
+          open={sourceInsightsOpen}
+          onOpenChange={setSourceInsightsOpen}
+          source={selectedSourceInsight}
+          onViewPrompt={(query) => {
+            const insight = promptInsightsData.find(p => p.query === query);
+            if (insight) {
+              setSourceInsightsOpen(false);
+              setTimeout(() => {
+                setSelectedPromptInsight(insight);
+                setPromptInsightsOpen(true);
+              }, 150);
+            }
+          }}
         />
       </div>
     </TooltipProvider>
