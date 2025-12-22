@@ -504,7 +504,7 @@ const Index = () => {
                         isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
                       }`}
                       style={{
-                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #9b72cb 25%, #d96570 50%, #ffc857 75%, #9b72cb 100%)' : undefined,
+                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #34a0a4 33%, #52b788 66%, #e9c46a 100%)' : undefined,
                       }}
                     />
                     <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
@@ -542,7 +542,7 @@ const Index = () => {
                         isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
                       }`}
                       style={{
-                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #9b72cb 25%, #d96570 50%, #ffc857 75%, #9b72cb 100%)' : undefined,
+                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #34a0a4 33%, #52b788 66%, #e9c46a 100%)' : undefined,
                       }}
                     />
                     <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
@@ -577,7 +577,7 @@ const Index = () => {
                         isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
                       }`}
                       style={{
-                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #9b72cb 25%, #d96570 50%, #ffc857 75%, #9b72cb 100%)' : undefined,
+                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #34a0a4 33%, #52b788 66%, #e9c46a 100%)' : undefined,
                       }}
                     />
                     <item.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
@@ -605,7 +605,7 @@ const Index = () => {
                 activeView === "settings" ? 'h-4 opacity-100' : 'h-0 opacity-0'
               }`}
               style={{
-                background: activeView === "settings" ? 'linear-gradient(180deg, #4285f4 0%, #9b72cb 25%, #d96570 50%, #ffc857 75%, #9b72cb 100%)' : undefined,
+                background: activeView === "settings" ? 'linear-gradient(180deg, #4285f4 0%, #34a0a4 33%, #52b788 66%, #e9c46a 100%)' : undefined,
               }}
             />
             <Settings className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "settings" ? 'text-foreground' : ''}`} />
