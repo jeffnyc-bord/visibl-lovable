@@ -457,7 +457,7 @@ const Index = () => {
               <img 
                 src={boardLabsIcon} 
                 alt="Board Labs logo" 
-                className="w-8 h-8 flex-shrink-0 object-contain"
+                className="w-5 h-5 flex-shrink-0 object-contain"
               />
               {!sidebarCollapsed && (
                 <span className="font-semibold text-foreground text-base">visibl</span>
