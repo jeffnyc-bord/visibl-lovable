@@ -151,9 +151,9 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
   const isReadyForStructure = selectedProduct && selectedPrompt && selectedContentType;
 
   return (
-    <div className={cn("flex gap-8 items-start", demoMode && "demo-card-1")}>
+    <div className={cn("flex gap-8 relative", demoMode && "demo-card-1")}>
       {/* Main Content Area */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 pb-8">
         {/* Step 0: Workflow Mode */}
         <WorkflowModeSelector
           selectedMode={workflowMode}
@@ -266,16 +266,20 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
         )}
       </div>
 
-      {/* SERP Preview Sidebar */}
+      {/* SERP Preview Sidebar - Sticky wrapper */}
       {isReadyForStructure && (
-        <SerpPreviewPanel
-          title={seoTitle}
-          urlSlug={urlSlug}
-          description={metaDescription}
-          contentType={selectedContentType}
-          schemaEnabled={schemaEnabled}
-          ratingEnabled={false}
-        />
+        <div className="w-80 flex-shrink-0">
+          <div className="sticky top-0 pt-0">
+            <SerpPreviewPanel
+              title={seoTitle}
+              urlSlug={urlSlug}
+              description={metaDescription}
+              contentType={selectedContentType}
+              schemaEnabled={schemaEnabled}
+              ratingEnabled={false}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
