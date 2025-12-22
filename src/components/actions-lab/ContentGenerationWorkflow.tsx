@@ -148,7 +148,10 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
 
 
   // Check if we've completed all required steps
-  const isReadyForStructure = selectedProduct && selectedPrompt && selectedContentType;
+  // For prompt-first flow, we don't need a product
+  const isReadyForStructure = workflowMode === 'prompt' 
+    ? selectedPrompt && selectedContentType
+    : selectedProduct && selectedPrompt && selectedContentType;
 
   return (
     <div className={cn("flex gap-8 relative", demoMode && "demo-card-1")}>
@@ -194,19 +197,18 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
               stepNumber={1}
             />
 
-            {/* Step 2: Product Source */}
-            <ProductSourceSelector
-              products={mockProducts}
-              selectedProduct={selectedProduct}
-              onSelectProduct={handleSelectProduct}
-              stepNumber={2}
+            {/* Step 2: Content Type (directly after prompt selection) */}
+            <ContentTypeSelector
+              selectedType={selectedContentType}
+              onSelectType={handleSelectContentType}
               disabled={!selectedPrompt}
+              stepNumber={2}
             />
           </>
         )}
 
-        {/* Step 3: Content Type (shown after both product and prompt are selected) */}
-        {workflowMode && (
+        {/* Step 3: Content Type (only for product-first flow) */}
+        {workflowMode === 'product' && (
           <ContentTypeSelector
             selectedType={selectedContentType}
             onSelectType={handleSelectContentType}

@@ -443,13 +443,13 @@ const Index = () => {
       {/* Sidebar - Cloudflare-inspired design */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-72'} bg-background border-r border-border flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
         {/* Logo/Brand Header */}
-        <div className="px-4 py-4 border-b border-border">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+        <div className={`${sidebarCollapsed ? 'px-2 justify-center' : 'px-4'} py-4 border-b border-border`}>
+          <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
+            <div className={`flex items-center ${sidebarCollapsed ? '' : 'space-x-3'}`}>
               <img 
-                src={boardLabsLogo} 
+                src={boardLabsIcon} 
                 alt="Board Labs logo" 
-                className="w-8 h-8"
+                className="w-8 h-8 flex-shrink-0 object-contain"
               />
               {!sidebarCollapsed && (
                 <span className="font-semibold text-foreground text-base">visibl</span>
@@ -476,7 +476,7 @@ const Index = () => {
 
         {/* Main Navigation */}
         <nav className="flex-1 px-2 py-2 overflow-y-auto">
-          {/* Main Sections Group */}
+          {/* Main Sections Group - Expanded */}
           {!sidebarCollapsed && (
             <div>
               {mainSections.map((section) => {
@@ -553,8 +553,74 @@ const Index = () => {
             </div>
           )}
 
+          {/* Main Sections Group - Collapsed (Icons Only) */}
+          {sidebarCollapsed && (
+            <div className="flex flex-col items-center gap-1">
+              {mainSections.map((section) => {
+                const isActive = activeView === "dashboard" && activeTab === section.key;
+                
+                return (
+                  <div
+                    key={section.key}
+                    className={`relative flex items-center justify-center w-10 h-10 rounded-md cursor-pointer transition-colors duration-150 ${
+                      isActive
+                        ? 'text-foreground bg-muted/50' 
+                        : 'text-muted-foreground/80 hover:text-foreground hover:bg-muted/30'
+                    }`}
+                    onClick={() => {
+                      setActiveView("dashboard");
+                      setActiveTab(section.key);
+                    }}
+                    title={section.label}
+                  >
+                    {/* Rainbow gradient accent bar */}
+                    <div 
+                      className={`absolute left-0 top-1/2 -translate-y-1/2 w-[2px] rounded-full transition-all duration-300 ease-out ${
+                        isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
+                      }`}
+                      style={{
+                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #34a0a4 33%, #52b788 66%, #e9c46a 100%)' : undefined,
+                      }}
+                    />
+                    <section.icon className={`w-[18px] h-[18px] ${isActive ? 'text-foreground' : ''}`} />
+                  </div>
+                );
+              })}
 
-          {/* Management Group */}
+              {/* Divider */}
+              <div className="w-6 h-px bg-border/50 my-2" />
+
+              {/* Management items - Collapsed */}
+              {sidebarItems.filter(item => item.view !== "dashboard").map((item, index) => {
+                const isActive = activeView === item.view;
+                return (
+                  <div 
+                    key={index}
+                    className={`relative flex items-center justify-center w-10 h-10 rounded-md cursor-pointer transition-colors duration-150 ${
+                      isActive
+                        ? 'text-foreground bg-muted/50' 
+                        : 'text-muted-foreground/80 hover:text-foreground hover:bg-muted/30'
+                    }`}
+                    onClick={() => setActiveView(item.view)}
+                    title={item.label}
+                  >
+                    {/* Rainbow gradient accent bar */}
+                    <div 
+                      className={`absolute left-0 top-1/2 -translate-y-1/2 w-[2px] rounded-full transition-all duration-300 ease-out ${
+                        isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
+                      }`}
+                      style={{
+                        background: isActive ? 'linear-gradient(180deg, #4285f4 0%, #34a0a4 33%, #52b788 66%, #e9c46a 100%)' : undefined,
+                      }}
+                    />
+                    <item.icon className={`w-[18px] h-[18px] ${isActive ? 'text-foreground' : ''}`} />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Management Group - Expanded */}
           {!sidebarCollapsed && (
             <div className="mt-5">
               <div className="px-3 mb-1.5">
@@ -591,14 +657,15 @@ const Index = () => {
         </nav>
 
         {/* Settings - Pinned to Bottom */}
-        <div className="px-2 py-3 border-t border-border/50">
+        <div className={`${sidebarCollapsed ? 'flex justify-center' : ''} px-2 py-3 border-t border-border/50`}>
           <div 
-            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 ${
+            className={`relative flex items-center ${sidebarCollapsed ? 'justify-center w-10 h-10' : 'gap-3 px-3 py-2'} rounded-md cursor-pointer transition-colors duration-150 ${
               activeView === "settings" 
-                ? 'text-foreground font-medium' 
-                : 'text-muted-foreground/80 hover:text-foreground'
+                ? 'text-foreground font-medium' + (sidebarCollapsed ? ' bg-muted/50' : '')
+                : 'text-muted-foreground/80 hover:text-foreground' + (sidebarCollapsed ? ' hover:bg-muted/30' : '')
             }`}
             onClick={() => setActiveView("settings")}
+            title={sidebarCollapsed ? "Settings" : undefined}
           >
             {/* Rainbow gradient accent bar */}
             <div 
