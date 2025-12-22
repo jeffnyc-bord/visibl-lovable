@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Info } from "lucide-react";
+import { Info, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface ConfidenceBadgeProps {
@@ -21,21 +21,27 @@ export const ConfidenceBadge = ({
   if (!isLowConfidence) return null;
 
   return (
-    <Badge
-      variant="outline"
-      onClick={onClick}
-      className={cn(
-        "gap-1 text-[10px] font-normal cursor-pointer",
-        "bg-muted/30 border-border/50 text-muted-foreground",
-        "hover:bg-primary/10 hover:border-primary/30 hover:text-primary",
-        "transition-all duration-200",
-        className
-      )}
-    >
-      <Info className="w-2.5 h-2.5" />
-      <span>Low Confidence</span>
-      <span className="text-muted-foreground/60">·</span>
-      <span>Add {neededPrompts} more probes</span>
-    </Badge>
+    <div className="flex items-center gap-2">
+      <Badge
+        variant="outline"
+        className={cn(
+          "gap-1 text-[10px] font-normal",
+          "bg-muted/30 border-border/50 text-muted-foreground",
+          className
+        )}
+      >
+        <Info className="w-2.5 h-2.5" />
+        <span>Low Confidence</span>
+        <span className="text-muted-foreground/60">·</span>
+        <span>Add {neededPrompts} more probes</span>
+      </Badge>
+      <button
+        onClick={onClick}
+        className="flex items-center gap-1 text-[11px] font-medium text-primary hover:text-primary/80 transition-colors cursor-pointer group"
+      >
+        <span>Fix now</span>
+        <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+      </button>
+    </div>
   );
 };
