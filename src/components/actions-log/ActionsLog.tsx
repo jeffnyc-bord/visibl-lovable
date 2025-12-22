@@ -562,11 +562,6 @@ export function ActionsLog() {
                   <p className="text-[11px] text-muted-foreground font-mono">
                     {new Date(action.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </p>
-                  {action.impactChange && (
-                    <p className="text-[11px] font-medium text-emerald-600 font-mono">
-                      +{action.impactChange}%
-                    </p>
-                  )}
                 </div>
 
                 {/* Chevron */}
