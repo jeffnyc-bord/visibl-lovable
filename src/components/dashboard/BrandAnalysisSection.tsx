@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddProductDialog } from "@/components/ui/add-product-dialog";
+import { GhostProductSlot } from "@/components/ui/ghost-product-slot";
+import { UpgradeSheet } from "@/components/ui/upgrade-sheet";
 import { toast } from "@/hooks/use-toast";
 import { 
   TrendingUp, 
@@ -82,6 +84,12 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [newProducts, setNewProducts] = useState<any[]>([]);
+  const [upgradeSheetOpen, setUpgradeSheetOpen] = useState(false);
+  
+  // Mock product limits for demo (in real app, would come from subscription context)
+  const currentProductCount = brandData.products.length;
+  const maxProducts = 10; // Free tier limit
+  const showGhostSlots = currentProductCount < maxProducts;
 
   // Use brand's product data with enhanced mock structure
   const mockProducts = brandData.products.map((product, index) => ({
@@ -332,6 +340,13 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                   </div>
                 </div>
               ))}
+              {/* Ghost product slots for expansion nudge */}
+              {showGhostSlots && (
+                <>
+                  <GhostProductSlot onClick={() => setUpgradeSheetOpen(true)} />
+                  <GhostProductSlot onClick={() => setUpgradeSheetOpen(true)} />
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -636,6 +651,15 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
           )}
         </CardContent>
       </Card>
+      
+      {/* Upgrade Sheet */}
+      <UpgradeSheet
+        open={upgradeSheetOpen}
+        onOpenChange={setUpgradeSheetOpen}
+        type="product_coverage"
+        currentValue={currentProductCount}
+        maxValue={maxProducts}
+      />
     </div>
   );
 };
