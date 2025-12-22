@@ -500,10 +500,11 @@ const Index = () => {
                           : 'text-muted-foreground hover:text-foreground font-normal'
                       }`}
                       onClick={() => {
-                        setActiveView("dashboard");
-                        setActiveTab(section.key);
                         if (hasSubItems) {
-                          setExpandedSections(prev => ({ ...prev, [section.key]: true }));
+                          setExpandedSections(prev => ({ ...prev, [section.key]: !prev[section.key] }));
+                        } else {
+                          setActiveView("dashboard");
+                          setActiveTab(section.key);
                         }
                       }}
                     >
@@ -522,10 +523,6 @@ const Index = () => {
                         <motion.div
                           animate={{ rotate: isExpanded ? 90 : 0 }}
                           transition={{ duration: 0.2, ease: "easeInOut" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setExpandedSections(prev => ({ ...prev, [section.key]: !prev[section.key] }));
-                          }}
                         >
                           <ChevronRight className="w-4 h-4 flex-shrink-0 text-muted-foreground/60" />
                         </motion.div>
