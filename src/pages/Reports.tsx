@@ -1,19 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
+  ArrowLeft,
   Calendar,
   Check,
-  ChevronDown,
+  ChevronRight,
   Download,
   Eye,
-  EyeOff,
-  FileText,
-  GripVertical,
-  Hash,
   Image,
-  Palette,
-  Settings2,
-  Sparkles,
   TrendingUp,
   MessageSquare,
   Globe,
@@ -23,600 +18,512 @@ import {
   Link2,
   Activity,
   Building,
-  Layers
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-// Report section types
+// Report section definition
 interface ReportSection {
   id: string;
-  key: string;
   label: string;
   description: string;
   icon: React.ElementType;
   enabled: boolean;
-  subsections?: {
-    id: string;
-    label: string;
-    enabled: boolean;
-  }[];
 }
 
-// Mock data for preview
-const mockScoreData = {
-  overall: 87,
-  trend: '+5',
-  platforms: [
-    { name: 'ChatGPT', score: 92 },
-    { name: 'Claude', score: 87 },
-    { name: 'Gemini', score: 84 },
-    { name: 'Perplexity', score: 91 },
-  ]
-};
+const timePeriods = [
+  { id: 'last_7_days', label: '7 days' },
+  { id: 'last_30_days', label: '30 days' },
+  { id: 'last_90_days', label: '90 days' },
+  { id: 'last_year', label: '12 months' },
+];
 
-const mockMentionsData = {
-  total: 12847,
-  change: '+12%',
-  byPlatform: [
-    { name: 'ChatGPT', count: 4234, percentage: 33 },
-    { name: 'Claude', count: 3456, percentage: 27 },
-    { name: 'Gemini', count: 2847, percentage: 22 },
-    { name: 'Perplexity', count: 2310, percentage: 18 },
-  ]
+// Mock preview data
+const mockData = {
+  score: 87,
+  scoreTrend: '+5',
+  mentions: 12847,
+  mentionsTrend: '+12%',
+  platforms: [
+    { name: 'ChatGPT', value: 92 },
+    { name: 'Claude', value: 87 },
+    { name: 'Gemini', value: 84 },
+    { name: 'Perplexity', value: 91 },
+  ],
+  distribution: [
+    { name: 'ChatGPT', count: 4234, pct: 33 },
+    { name: 'Claude', count: 3456, pct: 27 },
+    { name: 'Gemini', count: 2847, pct: 22 },
+    { name: 'Perplexity', count: 2310, pct: 18 },
+  ],
 };
 
 const Reports = () => {
+  const navigate = useNavigate();
   const [timePeriod, setTimePeriod] = useState('last_30_days');
   const [reportTitle, setReportTitle] = useState('AI Visibility Report');
   const [showPageNumbers, setShowPageNumbers] = useState(true);
-  const [whiteLabelMode, setWhiteLabelMode] = useState(false);
   const [customLogo, setCustomLogo] = useState<string | null>(null);
-  const [brandColor, setBrandColor] = useState('#22D3EE');
+  const [brandColor, setBrandColor] = useState('#007AFF');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [sections, setSections] = useState<ReportSection[]>([
-    {
-      id: 'score',
-      key: 'score',
-      label: 'Visibility Score',
-      description: 'Overall AI visibility score with trend analysis',
-      icon: Target,
-      enabled: true,
-    },
-    {
-      id: 'mentions',
-      key: 'mentions',
-      label: 'Mentions Overview',
-      description: 'Total mentions across all platforms',
-      icon: MessageSquare,
-      enabled: true,
-    },
-    {
-      id: 'platforms_coverage',
-      key: 'platforms_coverage',
-      label: 'Platforms Coverage',
-      description: 'Coverage percentage across AI platforms',
-      icon: Globe,
-      enabled: true,
-    },
-    {
-      id: 'platform_distribution',
-      key: 'platform_distribution',
-      label: 'Platform Distribution',
-      description: 'Breakdown of mentions by platform',
-      icon: BarChart3,
-      enabled: true,
-    },
-    {
-      id: 'prompts',
-      key: 'prompts',
-      label: 'Prompts Analysis',
-      description: 'Performance of tracked prompts',
-      icon: Zap,
-      enabled: true,
-      subsections: [
-        { id: 'prompts_top', label: 'Top performing prompts', enabled: true },
-        { id: 'prompts_low', label: 'Low confidence prompts', enabled: false },
-        { id: 'prompts_all', label: 'All tracked prompts', enabled: false },
-      ]
-    },
-    {
-      id: 'onsite',
-      key: 'onsite',
-      label: 'On-Site Optimization',
-      description: 'Content optimization recommendations',
-      icon: Sparkles,
-      enabled: false,
-    },
-    {
-      id: 'products',
-      key: 'products',
-      label: 'Products Optimized',
-      description: 'Products with their optimized content',
-      icon: Building,
-      enabled: false,
-      subsections: [
-        { id: 'products_list', label: 'Product list with scores', enabled: true },
-        { id: 'products_prompts', label: 'Associated prompts', enabled: true },
-        { id: 'products_content', label: 'Generated content', enabled: false },
-      ]
-    },
-    {
-      id: 'sources',
-      key: 'sources',
-      label: 'Authority Sources',
-      description: 'Sources with traffic and citations data',
-      icon: Link2,
-      enabled: false,
-      subsections: [
-        { id: 'sources_list', label: 'Source list with traffic', enabled: true },
-        { id: 'sources_citations', label: 'LLM citations count', enabled: true },
-        { id: 'sources_prompts', label: 'Prompts that surfaced sources', enabled: false },
-      ]
-    },
-    {
-      id: 'actions_log',
-      key: 'actions_log',
-      label: 'Actions Log',
-      description: 'Selected actions and activities',
-      icon: Activity,
-      enabled: false,
-    },
+    { id: 'score', label: 'Visibility Score', description: 'Overall AI visibility performance', icon: Target, enabled: true },
+    { id: 'mentions', label: 'Mentions', description: 'Total mentions across platforms', icon: MessageSquare, enabled: true },
+    { id: 'coverage', label: 'Platform Coverage', description: 'Coverage by AI platform', icon: Globe, enabled: true },
+    { id: 'distribution', label: 'Distribution', description: 'Mention distribution breakdown', icon: BarChart3, enabled: true },
+    { id: 'prompts', label: 'Prompts', description: 'Tracked prompt performance', icon: Zap, enabled: false },
+    { id: 'optimization', label: 'Optimization', description: 'On-site recommendations', icon: Sparkles, enabled: false },
+    { id: 'products', label: 'Products', description: 'Optimized product content', icon: Building, enabled: false },
+    { id: 'sources', label: 'Sources', description: 'Authority sources & citations', icon: Link2, enabled: false },
+    { id: 'actions', label: 'Actions', description: 'Activity log entries', icon: Activity, enabled: false },
   ]);
 
-  const toggleSection = (sectionId: string) => {
-    setSections(prev => prev.map(s => 
-      s.id === sectionId ? { ...s, enabled: !s.enabled } : s
-    ));
-  };
-
-  const toggleSubsection = (sectionId: string, subsectionId: string) => {
-    setSections(prev => prev.map(s => {
-      if (s.id === sectionId && s.subsections) {
-        return {
-          ...s,
-          subsections: s.subsections.map(sub => 
-            sub.id === subsectionId ? { ...sub, enabled: !sub.enabled } : sub
-          )
-        };
-      }
-      return s;
-    }));
+  const toggleSection = (id: string) => {
+    setSections(prev => prev.map(s => s.id === id ? { ...s, enabled: !s.enabled } : s));
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
-        setCustomLogo(event.target?.result as string);
-      };
+      reader.onload = (event) => setCustomLogo(event.target?.result as string);
       reader.readAsDataURL(file);
     }
   };
 
   const enabledSections = sections.filter(s => s.enabled);
-
-  const handleExportPDF = () => {
-    // PDF export logic would go here
-    console.log('Exporting PDF with sections:', enabledSections);
-  };
+  const enabledCount = enabledSections.length;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Reports</h1>
-            <p className="text-muted-foreground mt-1">
-              Create and export custom AI visibility reports
-            </p>
-          </div>
+    <div className="min-h-screen bg-[#F5F5F7]">
+      {/* Minimal Header */}
+      <header className="sticky top-0 z-50 bg-[#F5F5F7]/80 backdrop-blur-xl border-b border-black/5">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-[#1d1d1f]/60 hover:text-[#1d1d1f] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm font-medium">Back</span>
+          </button>
+          
           <Button 
-            onClick={handleExportPDF}
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            onClick={() => console.log('Export PDF')}
+            className="h-9 px-4 rounded-full bg-[#1d1d1f] text-white hover:bg-[#1d1d1f]/90 text-sm font-medium"
           >
             <Download className="w-4 h-4 mr-2" />
-            Export PDF
+            Export
           </Button>
         </div>
+      </header>
 
-        <div className="grid grid-cols-12 gap-8">
-          {/* Left Panel - Configuration */}
-          <div className="col-span-4 space-y-6">
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        {/* Page Title */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-semibold text-[#1d1d1f] tracking-tight">
+            Create Report
+          </h1>
+          <p className="text-lg text-[#86868b] mt-2">
+            Customize and export your AI visibility insights
+          </p>
+        </div>
+
+        <div className="grid grid-cols-12 gap-12">
+          {/* Left - Configuration */}
+          <div className="col-span-5 space-y-10">
+            
             {/* Time Period */}
-            <Card className="border-border/50">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
-                  <Label className="text-sm font-medium">Time Period</Label>
-                </div>
-                <Select value={timePeriod} onValueChange={setTimePeriod}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="last_7_days">Last 7 days</SelectItem>
-                    <SelectItem value="last_30_days">Last 30 days</SelectItem>
-                    <SelectItem value="last_90_days">Last 90 days</SelectItem>
-                    <SelectItem value="last_year">Last year</SelectItem>
-                    <SelectItem value="custom">Custom range</SelectItem>
-                  </SelectContent>
-                </Select>
-              </CardContent>
-            </Card>
+            <section>
+              <h2 className="text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-4">
+                Time Period
+              </h2>
+              <div className="flex gap-2">
+                {timePeriods.map((period) => (
+                  <button
+                    key={period.id}
+                    onClick={() => setTimePeriod(period.id)}
+                    className={cn(
+                      "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                      timePeriod === period.id
+                        ? "bg-[#1d1d1f] text-white"
+                        : "bg-white text-[#1d1d1f] hover:bg-[#1d1d1f]/5"
+                    )}
+                  >
+                    {period.label}
+                  </button>
+                ))}
+              </div>
+            </section>
 
-            {/* Sections to Include */}
-            <Card className="border-border/50">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <Layers className="w-4 h-4 text-muted-foreground" />
-                  <Label className="text-sm font-medium">Sections to Include</Label>
-                </div>
-                <div className="space-y-1">
-                  {sections.map((section) => (
-                    <div key={section.id}>
-                      <div 
-                        className={cn(
-                          "flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-all duration-200",
-                          section.enabled 
-                            ? "bg-primary/5 border border-primary/20" 
-                            : "hover:bg-muted/50"
-                        )}
-                        onClick={() => toggleSection(section.id)}
-                      >
-                        <div className={cn(
-                          "w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 transition-colors",
-                          section.enabled 
-                            ? "bg-primary text-primary-foreground" 
-                            : "bg-muted border border-border"
-                        )}>
-                          {section.enabled && <Check className="w-3 h-3" />}
-                        </div>
-                        <section.icon className={cn(
-                          "w-4 h-4 flex-shrink-0",
-                          section.enabled ? "text-primary" : "text-muted-foreground"
-                        )} />
-                        <div className="flex-1 min-w-0">
-                          <p className={cn(
-                            "text-sm font-medium truncate",
-                            section.enabled ? "text-foreground" : "text-muted-foreground"
-                          )}>
-                            {section.label}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      {/* Subsections */}
-                      {section.enabled && section.subsections && (
-                        <div className="ml-10 mt-1 space-y-1">
-                          {section.subsections.map((sub) => (
-                            <div 
-                              key={sub.id}
-                              className={cn(
-                                "flex items-center gap-2 p-2 rounded-md cursor-pointer transition-colors text-sm",
-                                sub.enabled ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-                              )}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleSubsection(section.id, sub.id);
-                              }}
-                            >
-                              <div className={cn(
-                                "w-4 h-4 rounded flex items-center justify-center flex-shrink-0",
-                                sub.enabled 
-                                  ? "bg-primary/20 text-primary" 
-                                  : "border border-border"
-                              )}>
-                                {sub.enabled && <Check className="w-2.5 h-2.5" />}
-                              </div>
-                              <span>{sub.label}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+            {/* Sections */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-semibold text-[#86868b] uppercase tracking-wider">
+                  Include
+                </h2>
+                <span className="text-xs text-[#86868b]">
+                  {enabledCount} selected
+                </span>
+              </div>
+              <div className="space-y-1">
+                {sections.map((section) => (
+                  <motion.button
+                    key={section.id}
+                    onClick={() => toggleSection(section.id)}
+                    className={cn(
+                      "w-full flex items-center gap-4 p-4 rounded-2xl text-left transition-all duration-200",
+                      section.enabled
+                        ? "bg-white shadow-sm"
+                        : "hover:bg-white/50"
+                    )}
+                    layout
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                      section.enabled
+                        ? "bg-[#1d1d1f] text-white"
+                        : "bg-[#1d1d1f]/5 text-[#86868b]"
+                    )}>
+                      <section.icon className="w-5 h-5" />
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <div className="flex-1 min-w-0">
+                      <p className={cn(
+                        "text-[15px] font-medium transition-colors",
+                        section.enabled ? "text-[#1d1d1f]" : "text-[#86868b]"
+                      )}>
+                        {section.label}
+                      </p>
+                      <p className="text-[13px] text-[#86868b] mt-0.5">
+                        {section.description}
+                      </p>
+                    </div>
+                    <div className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center transition-all",
+                      section.enabled
+                        ? "bg-[#34C759] text-white"
+                        : "bg-[#1d1d1f]/10"
+                    )}>
+                      {section.enabled && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            </section>
 
-            {/* White Label Settings */}
-            <Card className="border-border/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                    <Label className="text-sm font-medium">White Label</Label>
-                  </div>
-                  <Switch 
-                    checked={whiteLabelMode} 
-                    onCheckedChange={setWhiteLabelMode}
+            {/* Customization */}
+            <section>
+              <h2 className="text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-4">
+                Customize
+              </h2>
+              <div className="bg-white rounded-2xl p-5 space-y-5">
+                {/* Title */}
+                <div>
+                  <label className="text-[13px] font-medium text-[#1d1d1f] mb-2 block">
+                    Report Title
+                  </label>
+                  <Input
+                    value={reportTitle}
+                    onChange={(e) => setReportTitle(e.target.value)}
+                    className="h-11 rounded-xl border-[#d2d2d7] focus:border-[#0071e3] focus:ring-[#0071e3]/20 text-[15px]"
+                    placeholder="Enter title..."
                   />
                 </div>
-                
-                <AnimatePresence>
-                  {whiteLabelMode && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="space-y-4 overflow-hidden"
+
+                {/* Logo */}
+                <div>
+                  <label className="text-[13px] font-medium text-[#1d1d1f] mb-2 block">
+                    Logo
+                  </label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                  {customLogo ? (
+                    <div className="flex items-center gap-3">
+                      <div className="h-11 px-4 rounded-xl bg-[#f5f5f7] flex items-center">
+                        <img src={customLogo} alt="Logo" className="h-6 object-contain" />
+                      </div>
+                      <button 
+                        onClick={() => setCustomLogo(null)}
+                        className="text-[13px] text-[#ff3b30] font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="h-11 px-4 rounded-xl border border-dashed border-[#d2d2d7] text-[13px] text-[#86868b] hover:border-[#86868b] hover:text-[#1d1d1f] transition-colors flex items-center gap-2"
                     >
-                      <div>
-                        <Label className="text-xs text-muted-foreground mb-1.5 block">Report Title</Label>
-                        <Input 
-                          value={reportTitle}
-                          onChange={(e) => setReportTitle(e.target.value)}
-                          placeholder="Enter report title"
-                          className="h-9"
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label className="text-xs text-muted-foreground mb-1.5 block">Custom Logo</Label>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          onChange={handleLogoUpload}
-                          className="hidden"
-                        />
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="w-full justify-start"
-                        >
-                          <Image className="w-4 h-4 mr-2" />
-                          {customLogo ? 'Change Logo' : 'Upload Logo'}
-                        </Button>
-                        {customLogo && (
-                          <div className="mt-2 p-2 bg-muted/50 rounded-md">
-                            <img src={customLogo} alt="Custom logo" className="h-8 object-contain" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label className="text-xs text-muted-foreground mb-1.5 block">Brand Color</Label>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="color"
-                            value={brandColor}
-                            onChange={(e) => setBrandColor(e.target.value)}
-                            className="w-8 h-8 rounded cursor-pointer border-0"
-                          />
-                          <Input 
-                            value={brandColor}
-                            onChange={(e) => setBrandColor(e.target.value)}
-                            className="h-9 flex-1 font-mono text-xs"
-                          />
-                        </div>
-                      </div>
-                    </motion.div>
+                      <Image className="w-4 h-4" />
+                      Upload logo
+                    </button>
                   )}
-                </AnimatePresence>
-              </CardContent>
-            </Card>
-
-            {/* Page Settings */}
-            <Card className="border-border/50">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <Settings2 className="w-4 h-4 text-muted-foreground" />
-                  <Label className="text-sm font-medium">Page Settings</Label>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Show page numbers</span>
-                  <Switch 
+
+                {/* Brand Color */}
+                <div>
+                  <label className="text-[13px] font-medium text-[#1d1d1f] mb-2 block">
+                    Accent Color
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={brandColor}
+                      onChange={(e) => setBrandColor(e.target.value)}
+                      className="w-11 h-11 rounded-xl cursor-pointer border-0 p-1 bg-white"
+                    />
+                    <span className="text-[13px] text-[#86868b] font-mono">{brandColor}</span>
+                  </div>
+                </div>
+
+                {/* Page Numbers */}
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-[13px] font-medium text-[#1d1d1f]">
+                    Page numbers
+                  </span>
+                  <Switch
                     checked={showPageNumbers}
                     onCheckedChange={setShowPageNumbers}
+                    className="data-[state=checked]:bg-[#34C759]"
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </div>
 
-          {/* Right Panel - Live Preview */}
-          <div className="col-span-8">
-            <div className="sticky top-8">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm font-medium text-muted-foreground">Live Preview</span>
-                </div>
-                <Badge variant="secondary" className="text-xs">
-                  {enabledSections.length} sections
-                </Badge>
+          {/* Right - Live Preview */}
+          <div className="col-span-7">
+            <div className="sticky top-24">
+              <div className="flex items-center gap-2 mb-4">
+                <Eye className="w-4 h-4 text-[#86868b]" />
+                <span className="text-xs font-semibold text-[#86868b] uppercase tracking-wider">
+                  Preview
+                </span>
               </div>
-              
-              {/* Preview Container */}
-              <div className="bg-white rounded-xl border border-border shadow-lg overflow-hidden">
-                {/* Report Header */}
+
+              {/* Preview Document */}
+              <div className="bg-white rounded-3xl shadow-2xl shadow-black/10 overflow-hidden">
+                {/* Document Header */}
                 <div 
-                  className="p-6 border-b"
-                  style={{ 
-                    background: whiteLabelMode 
-                      ? `linear-gradient(135deg, ${brandColor}15, ${brandColor}05)` 
-                      : 'linear-gradient(135deg, hsl(var(--primary)/0.1), transparent)' 
-                  }}
+                  className="px-8 py-6 border-b border-black/5"
+                  style={{ background: `linear-gradient(135deg, ${brandColor}08, transparent)` }}
                 >
-                  <div className="flex items-center justify-between">
-                    {whiteLabelMode && customLogo ? (
-                      <img src={customLogo} alt="Logo" className="h-8 object-contain" />
+                  <div className="flex items-center justify-between mb-6">
+                    {customLogo ? (
+                      <img src={customLogo} alt="Logo" className="h-7 object-contain" />
                     ) : (
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <BarChart3 className="w-4 h-4 text-primary" />
+                        <div 
+                          className="w-7 h-7 rounded-lg flex items-center justify-center"
+                          style={{ backgroundColor: `${brandColor}15` }}
+                        >
+                          <BarChart3 className="w-4 h-4" style={{ color: brandColor }} />
                         </div>
-                        <span className="font-semibold text-foreground">Board Labs</span>
+                        <span className="font-semibold text-[#1d1d1f]">Board Labs</span>
                       </div>
                     )}
-                    <span className="text-xs text-muted-foreground">
-                      {timePeriod === 'last_7_days' ? 'Dec 15 - Dec 22, 2024' :
-                       timePeriod === 'last_30_days' ? 'Nov 22 - Dec 22, 2024' :
-                       timePeriod === 'last_90_days' ? 'Sep 23 - Dec 22, 2024' :
-                       'Dec 22, 2023 - Dec 22, 2024'}
+                    <span className="text-[11px] text-[#86868b]">
+                      {timePeriod === 'last_7_days' ? 'Dec 15–22, 2024' :
+                       timePeriod === 'last_30_days' ? 'Nov 22 – Dec 22, 2024' :
+                       timePeriod === 'last_90_days' ? 'Sep 23 – Dec 22, 2024' :
+                       'Dec 2023 – Dec 2024'}
                     </span>
                   </div>
-                  <h1 className="text-xl font-semibold text-foreground mt-4">{reportTitle}</h1>
-                  <p className="text-sm text-muted-foreground mt-1">Nike • Generated Dec 22, 2024</p>
+                  <h2 className="text-2xl font-semibold text-[#1d1d1f] tracking-tight">
+                    {reportTitle}
+                  </h2>
+                  <p className="text-[13px] text-[#86868b] mt-1">Nike • Generated December 22, 2024</p>
                 </div>
 
-                {/* Preview Sections */}
-                <div className="p-6 space-y-6 max-h-[600px] overflow-y-auto">
+                {/* Document Content */}
+                <div className="px-8 py-6 max-h-[480px] overflow-y-auto">
                   <AnimatePresence mode="popLayout">
-                    {enabledSections.length === 0 ? (
-                      <motion.div 
+                    {enabledCount === 0 ? (
+                      <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="text-center py-12"
+                        className="py-16 text-center"
                       >
-                        <EyeOff className="w-8 h-8 text-muted-foreground/40 mx-auto mb-3" />
-                        <p className="text-muted-foreground">No sections selected</p>
-                        <p className="text-sm text-muted-foreground/60 mt-1">
-                          Select sections from the left panel to preview
-                        </p>
+                        <div className="w-16 h-16 rounded-full bg-[#f5f5f7] flex items-center justify-center mx-auto mb-4">
+                          <Eye className="w-7 h-7 text-[#86868b]" />
+                        </div>
+                        <p className="text-[#86868b]">Select sections to preview</p>
                       </motion.div>
                     ) : (
-                      enabledSections.map((section, index) => (
-                        <motion.div
-                          key={section.id}
-                          layout
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          transition={{ duration: 0.2, delay: index * 0.05 }}
-                          className="border-b border-border/50 pb-6 last:border-0"
-                        >
-                          <div className="flex items-center gap-2 mb-3">
-                            <section.icon className="w-4 h-4" style={{ color: whiteLabelMode ? brandColor : 'hsl(var(--primary))' }} />
-                            <h3 className="font-medium text-foreground">{section.label}</h3>
-                          </div>
-                          
-                          {/* Section-specific preview content */}
-                          {section.key === 'score' && (
+                      <div className="space-y-8">
+                        {/* Score Section */}
+                        {sections.find(s => s.id === 'score')?.enabled && (
+                          <motion.div
+                            layout
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                          >
+                            <h3 className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider mb-3">
+                              Visibility Score
+                            </h3>
                             <div className="flex items-center gap-6">
                               <div 
-                                className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold"
-                                style={{ 
-                                  background: whiteLabelMode 
-                                    ? `linear-gradient(135deg, ${brandColor}20, ${brandColor}05)` 
-                                    : 'linear-gradient(135deg, hsl(var(--primary)/0.15), hsl(var(--primary)/0.05))',
-                                  color: whiteLabelMode ? brandColor : 'hsl(var(--primary))'
-                                }}
+                                className="w-24 h-24 rounded-3xl flex items-center justify-center"
+                                style={{ background: `linear-gradient(135deg, ${brandColor}15, ${brandColor}05)` }}
                               >
-                                {mockScoreData.overall}
+                                <span 
+                                  className="text-4xl font-semibold"
+                                  style={{ color: brandColor }}
+                                >
+                                  {mockData.score}
+                                </span>
                               </div>
                               <div>
-                                <p className="text-sm text-muted-foreground">Overall Score</p>
-                                <p className="text-lg font-semibold text-foreground flex items-center gap-1">
-                                  <TrendingUp className="w-4 h-4 text-green-500" />
-                                  <span className="text-green-500 text-sm">{mockScoreData.trend}</span>
-                                  <span className="text-muted-foreground text-xs ml-1">vs last period</span>
+                                <div className="flex items-center gap-2">
+                                  <TrendingUp className="w-4 h-4 text-[#34C759]" />
+                                  <span className="text-[13px] text-[#34C759] font-medium">
+                                    {mockData.scoreTrend} from last period
+                                  </span>
+                                </div>
+                                <p className="text-[13px] text-[#86868b] mt-1">
+                                  Outperforming 94% of competitors
                                 </p>
                               </div>
                             </div>
-                          )}
-                          
-                          {section.key === 'mentions' && (
-                            <div>
-                              <div className="flex items-baseline gap-2 mb-3">
-                                <span className="text-3xl font-bold text-foreground">{mockMentionsData.total.toLocaleString()}</span>
-                                <span className="text-sm text-green-500 font-medium">{mockMentionsData.change}</span>
-                              </div>
-                              <p className="text-sm text-muted-foreground">Total mentions across all platforms</p>
+                          </motion.div>
+                        )}
+
+                        {/* Mentions Section */}
+                        {sections.find(s => s.id === 'mentions')?.enabled && (
+                          <motion.div
+                            layout
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                          >
+                            <h3 className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider mb-3">
+                              Mentions
+                            </h3>
+                            <div className="flex items-baseline gap-3">
+                              <span className="text-4xl font-semibold text-[#1d1d1f]">
+                                {mockData.mentions.toLocaleString()}
+                              </span>
+                              <span className="text-[13px] text-[#34C759] font-medium">
+                                {mockData.mentionsTrend}
+                              </span>
                             </div>
-                          )}
-                          
-                          {section.key === 'platforms_coverage' && (
+                            <p className="text-[13px] text-[#86868b] mt-1">
+                              Total AI platform mentions
+                            </p>
+                          </motion.div>
+                        )}
+
+                        {/* Coverage Section */}
+                        {sections.find(s => s.id === 'coverage')?.enabled && (
+                          <motion.div
+                            layout
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                          >
+                            <h3 className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider mb-3">
+                              Platform Coverage
+                            </h3>
                             <div className="grid grid-cols-4 gap-3">
-                              {mockScoreData.platforms.map((platform) => (
-                                <div key={platform.name} className="text-center p-3 rounded-lg bg-muted/30">
-                                  <p className="text-xs text-muted-foreground mb-1">{platform.name}</p>
+                              {mockData.platforms.map((p) => (
+                                <div key={p.name} className="text-center p-3 rounded-2xl bg-[#f5f5f7]">
+                                  <p className="text-[11px] text-[#86868b] mb-1">{p.name}</p>
                                   <p 
-                                    className="text-lg font-semibold"
-                                    style={{ color: whiteLabelMode ? brandColor : 'hsl(var(--primary))' }}
+                                    className="text-xl font-semibold"
+                                    style={{ color: brandColor }}
                                   >
-                                    {platform.score}%
+                                    {p.value}%
                                   </p>
                                 </div>
                               ))}
                             </div>
-                          )}
-                          
-                          {section.key === 'platform_distribution' && (
-                            <div className="space-y-2">
-                              {mockMentionsData.byPlatform.map((platform) => (
-                                <div key={platform.name} className="flex items-center gap-3">
-                                  <span className="text-sm text-muted-foreground w-24">{platform.name}</span>
-                                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                                    <motion.div 
+                          </motion.div>
+                        )}
+
+                        {/* Distribution Section */}
+                        {sections.find(s => s.id === 'distribution')?.enabled && (
+                          <motion.div
+                            layout
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                          >
+                            <h3 className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider mb-3">
+                              Distribution
+                            </h3>
+                            <div className="space-y-3">
+                              {mockData.distribution.map((d) => (
+                                <div key={d.name} className="flex items-center gap-4">
+                                  <span className="text-[13px] text-[#86868b] w-20">{d.name}</span>
+                                  <div className="flex-1 h-2 bg-[#f5f5f7] rounded-full overflow-hidden">
+                                    <motion.div
                                       initial={{ width: 0 }}
-                                      animate={{ width: `${platform.percentage}%` }}
-                                      transition={{ duration: 0.5, delay: 0.1 }}
+                                      animate={{ width: `${d.pct}%` }}
+                                      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
                                       className="h-full rounded-full"
-                                      style={{ backgroundColor: whiteLabelMode ? brandColor : 'hsl(var(--primary))' }}
+                                      style={{ backgroundColor: brandColor }}
                                     />
                                   </div>
-                                  <span className="text-xs text-muted-foreground w-16 text-right">
-                                    {platform.count.toLocaleString()}
+                                  <span className="text-[13px] text-[#1d1d1f] font-medium w-14 text-right">
+                                    {d.count.toLocaleString()}
                                   </span>
                                 </div>
                               ))}
                             </div>
-                          )}
-                          
-                          {(section.key === 'prompts' || section.key === 'onsite' || 
-                            section.key === 'products' || section.key === 'sources' || 
-                            section.key === 'actions_log') && (
-                            <div className="bg-muted/30 rounded-lg p-4">
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                <FileText className="w-4 h-4" />
-                                <span className="text-sm">{section.description}</span>
+                          </motion.div>
+                        )}
+
+                        {/* Other sections placeholder */}
+                        {['prompts', 'optimization', 'products', 'sources', 'actions'].map((sectionId) => {
+                          const section = sections.find(s => s.id === sectionId);
+                          if (!section?.enabled) return null;
+                          return (
+                            <motion.div
+                              key={sectionId}
+                              layout
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                            >
+                              <h3 className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider mb-3">
+                                {section.label}
+                              </h3>
+                              <div className="p-6 rounded-2xl bg-[#f5f5f7] flex items-center gap-3">
+                                <section.icon className="w-5 h-5 text-[#86868b]" />
+                                <span className="text-[13px] text-[#86868b]">{section.description}</span>
                               </div>
-                              {section.subsections && (
-                                <div className="mt-2 flex flex-wrap gap-1">
-                                  {section.subsections.filter(s => s.enabled).map((sub) => (
-                                    <Badge key={sub.id} variant="secondary" className="text-xs">
-                                      {sub.label}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </motion.div>
-                      ))
+                            </motion.div>
+                          );
+                        })}
+                      </div>
                     )}
                   </AnimatePresence>
                 </div>
 
-                {/* Page Footer */}
-                {showPageNumbers && enabledSections.length > 0 && (
-                  <div className="px-6 py-3 border-t bg-muted/20 flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      {whiteLabelMode ? '' : 'Generated with Board Labs'}
+                {/* Document Footer */}
+                {showPageNumbers && enabledCount > 0 && (
+                  <div className="px-8 py-4 border-t border-black/5 flex items-center justify-between">
+                    <span className="text-[11px] text-[#86868b]">
+                      {customLogo ? '' : 'Powered by Board Labs'}
                     </span>
-                    <span className="text-xs text-muted-foreground">Page 1 of 1</span>
+                    <span className="text-[11px] text-[#86868b]">1 / 1</span>
                   </div>
                 )}
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
