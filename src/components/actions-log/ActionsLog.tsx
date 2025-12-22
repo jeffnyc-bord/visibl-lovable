@@ -166,25 +166,76 @@ const typeConfig: Record<ActionType, { label: string; icon: React.ComponentType<
 };
 
 type FilterStatus = 'all' | 'live' | 'pending' | 'in-progress';
+type AddStep = 'title' | 'type' | 'target' | 'status';
+
+interface NewAction {
+  title: string;
+  type: ActionType;
+  target: string;
+  status: ActionStatus;
+}
 
 export function ActionsLog() {
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
   const [selectedAction, setSelectedAction] = useState<ActionItem | null>(null);
+  const [actions, setActions] = useState<ActionItem[]>(mockActions);
+  
+  // Inline add state
   const [isAddingInline, setIsAddingInline] = useState(false);
-  const [newActionTitle, setNewActionTitle] = useState('');
+  const [addStep, setAddStep] = useState<AddStep>('title');
+  const [newAction, setNewAction] = useState<NewAction>({
+    title: '',
+    type: 'on-site',
+    target: '',
+    status: 'pending'
+  });
 
-  const filteredActions = mockActions.filter(action => {
+  const filteredActions = actions.filter(action => {
     if (statusFilter !== 'all' && action.status !== statusFilter) return false;
     return true;
   });
 
-  const liveCount = mockActions.filter(a => a.status === 'live').length;
-  const totalImpact = mockActions.reduce((sum, a) => sum + (a.impactChange || 0), 0);
+  const liveCount = actions.filter(a => a.status === 'live').length;
+  const totalImpact = actions.reduce((sum, a) => sum + (a.impactChange || 0), 0);
 
-  const handleAddAction = () => {
-    if (newActionTitle.trim()) {
-      setNewActionTitle('');
-      setIsAddingInline(false);
+  const resetAddForm = () => {
+    setIsAddingInline(false);
+    setAddStep('title');
+    setNewAction({ title: '', type: 'on-site', target: '', status: 'pending' });
+  };
+
+  const handleNextStep = () => {
+    if (addStep === 'title' && newAction.title.trim()) {
+      setAddStep('type');
+    } else if (addStep === 'type') {
+      setAddStep('target');
+    } else if (addStep === 'target') {
+      setAddStep('status');
+    } else if (addStep === 'status') {
+      // Submit the action
+      const actionItem: ActionItem = {
+        id: Date.now().toString(),
+        title: newAction.title.trim(),
+        type: newAction.type,
+        target: newAction.target.trim() || 'N/A',
+        status: newAction.status,
+        isAiGenerated: false,
+        author: 'You',
+        authorAvatar: 'Y',
+        date: new Date().toISOString().split('T')[0]
+      };
+      setActions(prev => [actionItem, ...prev]);
+      resetAddForm();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleNextStep();
+    }
+    if (e.key === 'Escape') {
+      resetAddForm();
     }
   };
 
@@ -261,39 +312,121 @@ export function ActionsLog() {
         <div className="divide-y divide-border/20">
           {/* Inline Add Row */}
           {isAddingInline ? (
-            <div className="px-6 py-3 flex items-center gap-4 bg-secondary/20">
-              <div className="w-2.5 h-2.5 rounded-full bg-border/50" />
-              <input
-                type="text"
-                value={newActionTitle}
-                onChange={(e) => setNewActionTitle(e.target.value)}
-                placeholder="Describe the action..."
-                className="flex-1 bg-transparent text-[14px] text-foreground placeholder:text-muted-foreground/60 outline-none"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleAddAction();
-                  if (e.key === 'Escape') {
-                    setIsAddingInline(false);
-                    setNewActionTitle('');
-                  }
-                }}
-              />
-              <div className="flex items-center gap-1">
+            <div className="px-6 py-3 bg-secondary/20 border-b border-border/30">
+              <div className="flex items-center gap-4">
+                <div className={`w-2.5 h-2.5 rounded-full ${addStep === 'status' ? statusConfig[newAction.status].bgColor : 'bg-border/50'}`} />
+                
+                {/* Step indicator */}
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wider">
+                  <span className={addStep === 'title' ? 'text-foreground font-medium' : ''}>Title</span>
+                  <ChevronRight className="w-3 h-3" />
+                  <span className={addStep === 'type' ? 'text-foreground font-medium' : ''}>Type</span>
+                  <ChevronRight className="w-3 h-3" />
+                  <span className={addStep === 'target' ? 'text-foreground font-medium' : ''}>Target</span>
+                  <ChevronRight className="w-3 h-3" />
+                  <span className={addStep === 'status' ? 'text-foreground font-medium' : ''}>Status</span>
+                </div>
+
+                <div className="flex-1" />
+
                 <button
-                  onClick={handleAddAction}
-                  className="p-1.5 text-emerald-600 hover:bg-emerald-500/10 rounded transition-colors"
-                >
-                  <Check className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => {
-                    setIsAddingInline(false);
-                    setNewActionTitle('');
-                  }}
+                  onClick={resetAddForm}
                   className="p-1.5 text-muted-foreground hover:bg-secondary rounded transition-colors"
                 >
                   <span className="text-[11px] font-medium">esc</span>
                 </button>
+              </div>
+
+              <div className="mt-3 ml-6">
+                {addStep === 'title' && (
+                  <input
+                    type="text"
+                    value={newAction.title}
+                    onChange={(e) => setNewAction(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="What did you do? (e.g., Sent pitch to TechCrunch)"
+                    className="w-full bg-transparent text-[14px] text-foreground placeholder:text-muted-foreground/50 outline-none"
+                    autoFocus
+                    onKeyDown={handleKeyDown}
+                  />
+                )}
+
+                {addStep === 'type' && (
+                  <div className="flex items-center gap-2">
+                    {(Object.keys(typeConfig) as ActionType[]).map((type) => {
+                      const TypeIcon = typeConfig[type].icon;
+                      return (
+                        <button
+                          key={type}
+                          onClick={() => {
+                            setNewAction(prev => ({ ...prev, type }));
+                            setAddStep('target');
+                          }}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors ${
+                            newAction.type === type
+                              ? 'bg-foreground text-background'
+                              : 'bg-secondary/60 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                          }`}
+                        >
+                          <TypeIcon className="w-3.5 h-3.5" />
+                          {typeConfig[type].label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {addStep === 'target' && (
+                  <input
+                    type="text"
+                    value={newAction.target}
+                    onChange={(e) => setNewAction(prev => ({ ...prev, target: e.target.value }))}
+                    placeholder="Target URL or destination (optional)"
+                    className="w-full bg-transparent text-[14px] text-foreground placeholder:text-muted-foreground/50 outline-none font-mono"
+                    autoFocus
+                    onKeyDown={handleKeyDown}
+                  />
+                )}
+
+                {addStep === 'status' && (
+                  <div className="flex items-center gap-2">
+                    {(Object.keys(statusConfig) as ActionStatus[]).map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => {
+                          setNewAction(prev => ({ ...prev, status }));
+                          // Auto-submit after status selection
+                          const actionItem: ActionItem = {
+                            id: Date.now().toString(),
+                            title: newAction.title.trim(),
+                            type: newAction.type,
+                            target: newAction.target.trim() || 'N/A',
+                            status: status,
+                            isAiGenerated: false,
+                            author: 'You',
+                            authorAvatar: 'Y',
+                            date: new Date().toISOString().split('T')[0]
+                          };
+                          setActions(prev => [actionItem, ...prev]);
+                          resetAddForm();
+                        }}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors ${
+                          newAction.status === status
+                            ? 'bg-foreground text-background'
+                            : 'bg-secondary/60 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                        }`}
+                      >
+                        <div className={`w-2 h-2 rounded-full ${statusConfig[status].bgColor}`} />
+                        {statusConfig[status].label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {(addStep === 'title' || addStep === 'target') && (
+                  <p className="mt-2 text-[11px] text-muted-foreground/60">
+                    Press Enter to continue, Esc to cancel
+                  </p>
+                )}
               </div>
             </div>
           ) : (
