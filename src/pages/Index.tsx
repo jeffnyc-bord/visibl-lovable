@@ -239,7 +239,7 @@ const Index = () => {
   const [prefilledQuery, setPrefilledQuery] = useState<string>("");
   const [autoOpenPrompt, setAutoOpenPrompt] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("overview");
-  const [recommendationsSubTab, setRecommendationsSubTab] = useState<'on-site' | 'authority'>('on-site');
+  const [recommendationsSubTab, setRecommendationsSubTab] = useState<'on-site' | 'authority' | 'actionslog'>('on-site');
   const [previousScrollPosition, setPreviousScrollPosition] = useState<number>(0);
 
   // Check for tab parameter in URL on component mount
@@ -289,8 +289,7 @@ const Index = () => {
     { key: "overview", label: "AI Visibility Overview", icon: Home },
     { key: "brand", label: "Brand & Products Visibility", icon: Building },
     { key: "queries", label: "Prompt Blast Lab", icon: Zap },
-    { key: "recommendations", label: "Actions Lab", icon: Lightbulb },
-    { key: "actionslog", label: "Actions Log", icon: FileText }
+    { key: "recommendations", label: "Actions Lab", icon: Lightbulb }
   ];
   
   const allSections = [...mainSections];
@@ -534,6 +533,17 @@ const Index = () => {
                         >
                           <Shield className="w-4 h-4 flex-shrink-0" />
                           <span>Authority Lab</span>
+                        </div>
+                        <div
+                          className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                            recommendationsSubTab === 'actionslog'
+                              ? 'text-foreground font-medium bg-muted/50' 
+                              : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                          }`}
+                          onClick={() => setRecommendationsSubTab('actionslog')}
+                        >
+                          <FileText className="w-4 h-4 flex-shrink-0" />
+                          <span>Actions Log</span>
                         </div>
                       </div>
                     )}
@@ -917,16 +927,14 @@ const Index = () => {
                             <WidgetError onRetry={handleRetryWidget} />
                           ) : dashboardStates.widgetLoading ? (
                             <BrandLoadingCard userRole={userRole} />
+                          ) : recommendationsSubTab === 'actionslog' ? (
+                            <div className="h-[calc(100vh-12rem)]">
+                              <ActionsLog />
+                            </div>
                           ) : (
                             <RecommendationsSection brandData={selectedBrand} demoMode={demoMode} activeSubTab={recommendationsSubTab} />
                           )}
                         </>
-                      )}
-
-                      {activeTab === "actionslog" && (
-                        <div className="h-[calc(100vh-12rem)]">
-                          <ActionsLog />
-                        </div>
                       )}
                     </div>
                   )}
