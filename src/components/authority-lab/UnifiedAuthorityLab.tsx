@@ -39,13 +39,40 @@ const mockTimelineEvents = [
 ];
 
 type PlaybookMode = 'pr' | 'social';
+type StepStatus = 'completed' | 'active' | 'pending';
+
+interface WorkflowStep {
+  id: string;
+  label: string;
+  description: string;
+  icon: React.ElementType;
+  status: StepStatus;
+}
 
 export function UnifiedAuthorityLab() {
   const [selectedSource, setSelectedSource] = useState<typeof mockSources[0] | null>(mockSources[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [playbookMode, setPlaybookMode] = useState<PlaybookMode>('pr');
-  const [expandedAction, setExpandedAction] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState(0);
   const [syncStatus] = useState<'synced' | 'syncing'>('synced');
+
+  // Define workflow steps based on mode
+  const getWorkflowSteps = (): WorkflowStep[] => {
+    if (playbookMode === 'pr') {
+      return [
+        { id: 'draft', label: 'Draft Angle', description: 'Create your pitch narrative', icon: FileText, status: currentStep === 0 ? 'active' : currentStep > 0 ? 'completed' : 'pending' },
+        { id: 'personalize', label: 'Personalize', description: 'Tailor for the editor', icon: Users, status: currentStep === 1 ? 'active' : currentStep > 1 ? 'completed' : 'pending' },
+        { id: 'send', label: 'Contact Editor', description: 'Send your outreach', icon: Send, status: currentStep === 2 ? 'active' : currentStep > 2 ? 'completed' : 'pending' },
+      ];
+    }
+    return [
+      { id: 'craft', label: 'Craft Message', description: 'Write engaging content', icon: MessageCircle, status: currentStep === 0 ? 'active' : currentStep > 0 ? 'completed' : 'pending' },
+      { id: 'target', label: 'Target Community', description: 'Select your audience', icon: Users, status: currentStep === 1 ? 'active' : currentStep > 1 ? 'completed' : 'pending' },
+      { id: 'engage', label: 'Post & Engage', description: 'Publish and respond', icon: ExternalLink, status: currentStep === 2 ? 'active' : currentStep > 2 ? 'completed' : 'pending' },
+    ];
+  };
+
+  const workflowSteps = getWorkflowSteps();
 
   const filteredSources = mockSources.filter(source =>
     source.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -225,8 +252,8 @@ export function UnifiedAuthorityLab() {
           )}
         </main>
 
-        {/* Right Panel - Playbook */}
-        <aside className="w-72 border-l border-border/50 bg-secondary/30 backdrop-blur-sm flex flex-col">
+        {/* Right Panel - Playbook Wizard */}
+        <aside className="w-80 border-l border-border/50 bg-secondary/30 backdrop-blur-sm flex flex-col">
           {/* Playbook Header */}
           <div className="p-4 border-b border-border/30">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
@@ -238,7 +265,10 @@ export function UnifiedAuthorityLab() {
               {(['pr', 'social'] as PlaybookMode[]).map((mode) => (
                 <button
                   key={mode}
-                  onClick={() => setPlaybookMode(mode)}
+                  onClick={() => {
+                    setPlaybookMode(mode);
+                    setCurrentStep(0);
+                  }}
                   className={cn(
                     "flex-1 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200",
                     playbookMode === mode
@@ -252,65 +282,45 @@ export function UnifiedAuthorityLab() {
             </div>
           </div>
 
-          {/* Actions List */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-2">
-            {/* Strategic Outreach - Primary Action */}
-            <ActionButton
-              icon={Send}
-              label="Strategic Outreach"
-              description={playbookMode === 'pr' 
-                ? "Draft a pitch for editors" 
-                : "Craft engagement post"
-              }
-              isPrimary
-              expanded={expandedAction === 'outreach'}
-              onClick={() => setExpandedAction(expandedAction === 'outreach' ? null : 'outreach')}
-            />
-
-            {playbookMode === 'pr' ? (
-              <>
-                <ActionButton
-                  icon={FileText}
-                  label="Press Release"
-                  description="Generate newsworthy angle"
-                  expanded={expandedAction === 'press'}
-                  onClick={() => setExpandedAction(expandedAction === 'press' ? null : 'press')}
+          {/* Workflow Stepper */}
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-1">
+              {workflowSteps.map((step, index) => (
+                <StepperItem
+                  key={step.id}
+                  step={step}
+                  stepNumber={index + 1}
+                  isLast={index === workflowSteps.length - 1}
+                  onActivate={() => {
+                    if (step.status === 'completed' || step.status === 'active') {
+                      setCurrentStep(index);
+                    }
+                  }}
+                  onComplete={() => {
+                    if (currentStep < workflowSteps.length - 1) {
+                      setCurrentStep(currentStep + 1);
+                    }
+                  }}
                 />
-                <ActionButton
-                  icon={Users}
-                  label="Expert Commentary"
-                  description="Position as thought leader"
-                  expanded={expandedAction === 'expert'}
-                  onClick={() => setExpandedAction(expandedAction === 'expert' ? null : 'expert')}
-                />
-              </>
-            ) : (
-              <>
-                <ActionButton
-                  icon={MessageCircle}
-                  label="Community Thread"
-                  description="Start discussion on Reddit/HN"
-                  expanded={expandedAction === 'thread'}
-                  onClick={() => setExpandedAction(expandedAction === 'thread' ? null : 'thread')}
-                />
-                <ActionButton
-                  icon={ExternalLink}
-                  label="Cross-Post Strategy"
-                  description="Syndicate across platforms"
-                  expanded={expandedAction === 'crosspost'}
-                  onClick={() => setExpandedAction(expandedAction === 'crosspost' ? null : 'crosspost')}
-                />
-              </>
-            )}
+              ))}
+            </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="p-3 border-t border-border/30 bg-background/50">
-            <div className="flex items-center justify-between text-[10px]">
-              <span className="text-muted-foreground">Actions completed</span>
-              <span className="font-medium text-foreground">12/20</span>
+          {/* Progress Footer */}
+          <div className="p-4 border-t border-border/30 bg-background/50">
+            <div className="flex items-center justify-between text-[10px] mb-2">
+              <span className="text-muted-foreground">Workflow Progress</span>
+              <span className="font-medium text-foreground">Step {currentStep + 1} of {workflowSteps.length}</span>
             </div>
-            <Progress value={60} className="h-1 mt-2" />
+            <Progress value={((currentStep + 1) / workflowSteps.length) * 100} className="h-1.5" />
+            
+            {/* Reset Button */}
+            <button
+              onClick={() => setCurrentStep(0)}
+              className="w-full mt-3 py-2 text-[10px] font-medium text-muted-foreground hover:text-foreground border border-border/50 rounded-lg transition-colors"
+            >
+              Reset Workflow
+            </button>
           </div>
         </aside>
       </div>
@@ -356,65 +366,125 @@ export function UnifiedAuthorityLab() {
   );
 }
 
-// Action Button Component with smooth expand
-function ActionButton({ 
-  icon: Icon, 
-  label, 
-  description, 
-  isPrimary = false,
-  expanded,
-  onClick 
-}: { 
-  icon: React.ElementType;
+// Stepper Item Component with skeuomorphic styling
+interface WorkflowStep {
+  id: string;
   label: string;
   description: string;
-  isPrimary?: boolean;
-  expanded: boolean;
-  onClick: () => void;
+  icon: React.ElementType;
+  status: 'completed' | 'active' | 'pending';
+}
+
+function StepperItem({ 
+  step,
+  stepNumber,
+  isLast,
+  onActivate,
+  onComplete
+}: { 
+  step: WorkflowStep;
+  stepNumber: number;
+  isLast: boolean;
+  onActivate: () => void;
+  onComplete: () => void;
 }) {
+  const Icon = step.icon;
+  const isActive = step.status === 'active';
+  const isCompleted = step.status === 'completed';
+  const isPending = step.status === 'pending';
+
   return (
-    <div className="overflow-hidden">
+    <div className="relative">
+      {/* Connector Line */}
+      {!isLast && (
+        <div 
+          className={cn(
+            "absolute left-[19px] top-[52px] w-[2px] h-6 transition-colors duration-300",
+            isCompleted ? "bg-success" : "bg-border/50"
+          )}
+        />
+      )}
+      
       <button
-        onClick={onClick}
+        onClick={onActivate}
+        disabled={isPending}
         className={cn(
-          "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200",
-          isPrimary 
-            ? "bg-gradient-to-r from-foreground to-foreground/90 text-background hover:opacity-95" 
-            : "bg-background/80 border border-border/50 hover:border-border text-foreground"
+          "w-full text-left transition-all duration-300 rounded-xl p-3 mb-2",
+          // Active: Skeuomorphic pressed button with high-gloss accent
+          isActive && "bg-gradient-to-b from-primary via-primary to-primary/80 shadow-[inset_0_2px_4px_rgba(255,255,255,0.25),inset_0_-2px_4px_rgba(0,0,0,0.15),0_4px_12px_rgba(0,0,0,0.15)] border border-primary/50",
+          // Completed: Subtle success state
+          isCompleted && "bg-background/80 border border-success/30 hover:border-success/50",
+          // Pending: Grayed out
+          isPending && "bg-background/40 border border-border/30 opacity-50 cursor-not-allowed"
         )}
       >
-        <div className={cn(
-          "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
-          isPrimary ? "bg-background/20" : "bg-secondary"
-        )}>
-          <Icon className="w-4 h-4" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-xs font-medium">{label}</div>
+        <div className="flex items-start gap-3">
+          {/* Step Number / Check Circle */}
           <div className={cn(
-            "text-[10px]",
-            isPrimary ? "text-background/70" : "text-muted-foreground"
+            "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300",
+            isActive && "bg-primary-foreground/20 shadow-[inset_0_1px_2px_rgba(255,255,255,0.3)]",
+            isCompleted && "bg-success/20",
+            isPending && "bg-muted/50"
           )}>
-            {description}
+            {isCompleted ? (
+              <Check className="w-4 h-4 text-success" />
+            ) : (
+              <span className={cn(
+                "text-sm font-semibold",
+                isActive ? "text-primary-foreground" : "text-muted-foreground"
+              )}>
+                {stepNumber}
+              </span>
+            )}
+          </div>
+          
+          {/* Content */}
+          <div className="flex-1 min-w-0 pt-1">
+            <div className={cn(
+              "text-xs font-semibold mb-0.5 transition-colors",
+              isActive ? "text-primary-foreground" : isCompleted ? "text-foreground" : "text-muted-foreground"
+            )}>
+              {step.label}
+            </div>
+            <div className={cn(
+              "text-[10px] leading-relaxed",
+              isActive ? "text-primary-foreground/70" : "text-muted-foreground"
+            )}>
+              {step.description}
+            </div>
+          </div>
+
+          {/* Icon */}
+          <div className={cn(
+            "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
+            isActive ? "bg-primary-foreground/20" : isCompleted ? "bg-success/10" : "bg-muted/30"
+          )}>
+            <Icon className={cn(
+              "w-4 h-4",
+              isActive ? "text-primary-foreground" : isCompleted ? "text-success" : "text-muted-foreground"
+            )} />
           </div>
         </div>
+
+        {/* Active Step: Expanded Action Area */}
+        {isActive && (
+          <div className="mt-3 pt-3 border-t border-primary-foreground/20">
+            <p className="text-[10px] text-primary-foreground/60 mb-2">
+              AI will help you with this step...
+            </p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onComplete();
+              }}
+              className="w-full py-2 px-3 bg-primary-foreground text-primary text-[11px] font-semibold rounded-lg shadow-[0_2px_4px_rgba(0,0,0,0.1)] hover:bg-primary-foreground/90 transition-colors flex items-center justify-center gap-2"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              Complete & Continue
+            </button>
+          </div>
+        )}
       </button>
-      
-      {/* Expanded Content */}
-      <div className={cn(
-        "overflow-hidden transition-all duration-300 ease-out",
-        expanded ? "max-h-40 opacity-100 mt-2" : "max-h-0 opacity-0"
-      )}>
-        <div className="p-3 bg-background/60 border border-border/30 rounded-lg space-y-2">
-          <textarea 
-            placeholder="Add your notes or customize the action..."
-            className="w-full h-16 text-xs bg-transparent border-none resize-none focus:outline-none placeholder:text-muted-foreground/50"
-          />
-          <button className="w-full py-1.5 text-[10px] font-medium bg-foreground/10 hover:bg-foreground/20 rounded-md transition-colors">
-            Execute Action
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
