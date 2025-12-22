@@ -79,9 +79,9 @@ export function UnifiedAuthorityLab() {
   );
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background overflow-y-auto">
       {/* Translucent Header Bar */}
-      <header className="h-10 flex items-center justify-between px-4 border-b border-border/50 bg-background/80 backdrop-blur-xl">
+      <header className="h-10 flex items-center justify-between px-4 border-b border-border/50 bg-background/80 backdrop-blur-xl sticky top-0 z-10">
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-foreground">Authority Lab</span>
           <span className="text-[10px] text-muted-foreground">Unified Strategy</span>
@@ -100,13 +100,18 @@ export function UnifiedAuthorityLab() {
         </div>
       </header>
 
-      {/* Main 3-Column Layout */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar - Sources */}
-        <aside className="w-64 border-r border-border/50 bg-secondary/30 backdrop-blur-sm flex flex-col">
-          {/* Search */}
-          <div className="p-3 border-b border-border/30">
-            <div className="relative">
+      {/* Main Content - Stacked Layout */}
+      <div className="flex-1 p-6 space-y-6">
+        {/* Sources Section */}
+        <section className="bg-secondary/30 backdrop-blur-sm rounded-xl border border-border/50 overflow-hidden">
+          {/* Sources Header */}
+          <div className="p-4 border-b border-border/30 flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">Sources</h2>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{mockSources.length} sources tracked</p>
+            </div>
+            {/* Search */}
+            <div className="relative w-64">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
               <input
                 type="text"
@@ -118,249 +123,238 @@ export function UnifiedAuthorityLab() {
             </div>
           </div>
 
-          {/* Sources List */}
-          <div className="flex-1 overflow-y-auto">
-            {filteredSources.map((source, index) => (
+          {/* Sources Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-px bg-border/20">
+            {filteredSources.map((source) => (
               <button
                 key={source.id}
                 onClick={() => setSelectedSource(source)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors",
+                  "flex flex-col items-center gap-2 p-4 text-center transition-colors bg-background/50",
                   selectedSource?.id === source.id 
-                    ? "bg-foreground/5" 
-                    : "hover:bg-foreground/[0.02]",
-                  index !== 0 && "border-t border-border/20"
+                    ? "bg-foreground/5 ring-1 ring-inset ring-primary/30" 
+                    : "hover:bg-foreground/[0.02]"
                 )}
-                style={{ borderWidth: '0.5px' }}
               >
                 {/* Favicon */}
-                <span className="text-sm flex-shrink-0">{source.favicon}</span>
+                <span className="text-xl">{source.favicon}</span>
                 
-                {/* Name & Score */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className={cn(
-                      "text-xs truncate",
-                      selectedSource?.id === source.id ? "font-medium text-foreground" : "text-foreground/80"
-                    )}>
-                      {source.name}
-                    </span>
-                    <span className="text-[10px] font-mono text-muted-foreground flex-shrink-0">
-                      {source.priority}
-                    </span>
-                  </div>
-                  {/* Thin Progress Bar */}
+                {/* Name */}
+                <span className={cn(
+                  "text-xs truncate w-full",
+                  selectedSource?.id === source.id ? "font-medium text-foreground" : "text-foreground/80"
+                )}>
+                  {source.name}
+                </span>
+                
+                {/* Priority Score Bar */}
+                <div className="w-full space-y-1">
                   <div className="h-[3px] w-full bg-border/50 rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-foreground/60 rounded-full transition-all duration-500"
                       style={{ width: `${source.priority}%` }}
                     />
                   </div>
+                  <span className="text-[10px] font-mono text-muted-foreground">{source.priority}</span>
                 </div>
               </button>
             ))}
           </div>
+        </section>
 
-          {/* Source Stats Footer */}
-          <div className="p-3 border-t border-border/30 bg-background/50">
-            <div className="text-[10px] text-muted-foreground">
-              <span className="font-medium text-foreground">{mockSources.length}</span> sources tracked
-            </div>
-          </div>
-        </aside>
-
-        {/* Center Stage - Intelligence */}
-        <main className="flex-1 overflow-y-auto p-6 bg-background">
-          {selectedSource ? (
-            <div className="max-w-2xl mx-auto space-y-8 animate-fade-in">
-              {/* Source Header */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">{selectedSource.favicon}</span>
-                  <h1 className="text-xl font-semibold text-foreground">{selectedSource.name}</h1>
-                  <span className="px-2 py-0.5 text-[10px] font-medium bg-secondary rounded-full text-muted-foreground">
-                    {selectedSource.category}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">Priority Score: {selectedSource.priority}/100</p>
-              </div>
-
-              {/* Why This Matters */}
-              <section className="space-y-3">
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  Why This Matters
-                </h2>
-                <p className="text-sm leading-relaxed text-foreground/80">
-                  {selectedSource.name} is a high-authority source with <strong>{selectedSource.llmCitations.toLocaleString()} LLM citations</strong> in the past 90 days. 
-                  Content published here has a <strong>3.2x higher chance</strong> of being referenced in AI-generated responses compared to average sources.
-                </p>
-              </section>
-
-              {/* Citation Analysis */}
-              <section className="space-y-4">
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  Citation Analysis
-                </h2>
-                
-                {/* LLM Training Data Snippets */}
-                <div className="space-y-3">
-                  <div className="p-4 bg-secondary/50 border border-border/30 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-success" />
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                        GPT-4 Training Reference
-                      </span>
-                    </div>
-                    <code className="block text-xs font-mono text-foreground/70 leading-relaxed">
-                      "According to {selectedSource.name}, the latest developments in AI visibility show that brands appearing in training data see 47% higher recall rates..."
-                    </code>
+        {/* Two Column Layout: Intelligence + Playbook */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Intelligence Panel */}
+          <div className="lg:col-span-2 bg-background rounded-xl border border-border/50 p-6">
+            {selectedSource ? (
+              <div className="space-y-6 animate-fade-in">
+                {/* Source Header */}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{selectedSource.favicon}</span>
+                    <h1 className="text-xl font-semibold text-foreground">{selectedSource.name}</h1>
+                    <span className="px-2 py-0.5 text-[10px] font-medium bg-secondary rounded-full text-muted-foreground">
+                      {selectedSource.category}
+                    </span>
                   </div>
+                  <p className="text-sm text-muted-foreground">Priority Score: {selectedSource.priority}/100</p>
+                </div>
+
+                {/* Why This Matters */}
+                <section className="space-y-3">
+                  <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    Why This Matters
+                  </h2>
+                  <p className="text-sm leading-relaxed text-foreground/80">
+                    {selectedSource.name} is a high-authority source with <strong>{selectedSource.llmCitations.toLocaleString()} LLM citations</strong> in the past 90 days. 
+                    Content published here has a <strong>3.2x higher chance</strong> of being referenced in AI-generated responses compared to average sources.
+                  </p>
+                </section>
+
+                {/* Citation Analysis */}
+                <section className="space-y-4">
+                  <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    Citation Analysis
+                  </h2>
                   
-                  <div className="p-4 bg-secondary/50 border border-border/30 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                        Claude Citation Pattern
-                      </span>
+                  {/* LLM Training Data Snippets */}
+                  <div className="space-y-3">
+                    <div className="p-4 bg-secondary/50 border border-border/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                          GPT-4 Training Reference
+                        </span>
+                      </div>
+                      <code className="block text-xs font-mono text-foreground/70 leading-relaxed">
+                        "According to {selectedSource.name}, the latest developments in AI visibility show that brands appearing in training data see 47% higher recall rates..."
+                      </code>
                     </div>
-                    <code className="block text-xs font-mono text-foreground/70 leading-relaxed">
-                      "{selectedSource.name} reports that enterprise software adoption has increased by 23% in Q4, driven primarily by AI-integrated solutions..."
-                    </code>
+                    
+                    <div className="p-4 bg-secondary/50 border border-border/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                          Claude Citation Pattern
+                        </span>
+                      </div>
+                      <code className="block text-xs font-mono text-foreground/70 leading-relaxed">
+                        "{selectedSource.name} reports that enterprise software adoption has increased by 23% in Q4, driven primarily by AI-integrated solutions..."
+                      </code>
+                    </div>
+                  </div>
+
+                  {/* Citation Stats */}
+                  <div className="grid grid-cols-3 gap-4 pt-2">
+                    {[
+                      { label: 'Total Citations', value: selectedSource.llmCitations.toLocaleString(), icon: FileText },
+                      { label: 'Avg. Position', value: '#2.4', icon: TrendingUp },
+                      { label: 'Reach Score', value: '8.7/10', icon: Users },
+                    ].map((stat) => (
+                      <div key={stat.label} className="text-center">
+                        <stat.icon className="w-4 h-4 mx-auto mb-1 text-muted-foreground" />
+                        <div className="text-sm font-semibold text-foreground">{stat.value}</div>
+                        <div className="text-[10px] text-muted-foreground">{stat.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            ) : (
+              <div className="h-64 flex items-center justify-center text-muted-foreground text-sm">
+                Select a source to view intelligence
+              </div>
+            )}
+          </div>
+
+          {/* Playbook Wizard Panel */}
+          <div className="bg-secondary/30 backdrop-blur-sm rounded-xl border border-border/50 flex flex-col">
+            {/* Playbook Header */}
+            <div className="p-4 border-b border-border/30">
+              <h2 className="text-sm font-semibold text-foreground mb-3">Playbook</h2>
+              
+              {/* Segmented Control */}
+              <div className="flex p-0.5 bg-background/80 border border-border/50 rounded-lg">
+                {(['pr', 'social'] as PlaybookMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => {
+                      setPlaybookMode(mode);
+                      setCurrentStep(0);
+                    }}
+                    className={cn(
+                      "flex-1 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200",
+                      playbookMode === mode
+                        ? "bg-foreground text-background shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {mode === 'pr' ? 'PR Angle' : 'Social Strategy'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Workflow Stepper */}
+            <div className="flex-1 p-4">
+              <div className="space-y-1">
+                {workflowSteps.map((step, index) => (
+                  <StepperItem
+                    key={step.id}
+                    step={step}
+                    stepNumber={index + 1}
+                    isLast={index === workflowSteps.length - 1}
+                    onActivate={() => {
+                      if (step.status === 'completed' || step.status === 'active') {
+                        setCurrentStep(index);
+                      }
+                    }}
+                    onComplete={() => {
+                      if (currentStep < workflowSteps.length - 1) {
+                        setCurrentStep(currentStep + 1);
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Progress Footer */}
+            <div className="p-4 border-t border-border/30 bg-background/50">
+              <div className="flex items-center justify-between text-[10px] mb-2">
+                <span className="text-muted-foreground">Workflow Progress</span>
+                <span className="font-medium text-foreground">Step {currentStep + 1} of {workflowSteps.length}</span>
+              </div>
+              <Progress value={((currentStep + 1) / workflowSteps.length) * 100} className="h-1.5" />
+              
+              {/* Reset Button */}
+              <button
+                onClick={() => setCurrentStep(0)}
+                className="w-full mt-3 py-2 text-[10px] font-medium text-muted-foreground hover:text-foreground border border-border/50 rounded-lg transition-colors"
+              >
+                Reset Workflow
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Timeline */}
+        <div className="h-16 bg-secondary/20 rounded-xl border border-border/50 px-6 flex items-center">
+          <div className="flex items-center gap-2 mr-6">
+            <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Influence Timeline
+            </span>
+          </div>
+          
+          {/* Timeline Track */}
+          <div className="flex-1 relative">
+            <div className="absolute inset-y-1/2 left-0 right-0 h-[2px] bg-border/50 rounded-full" />
+            <div className="relative flex justify-between items-center">
+              {mockTimelineEvents.map((event) => (
+                <div key={event.id} className="flex flex-col items-center gap-1 group">
+                  <div className={cn(
+                    "w-3 h-3 rounded-full border-2 transition-all duration-300 cursor-pointer",
+                    event.completed 
+                      ? "bg-success border-success" 
+                      : "bg-background border-border hover:border-foreground/50"
+                  )}>
+                    {event.completed && <Check className="w-2 h-2 text-success-foreground" />}
+                  </div>
+                  <div className="absolute top-6 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background text-[9px] px-2 py-1 rounded whitespace-nowrap">
+                    {event.label} · {event.date}
                   </div>
                 </div>
-
-                {/* Citation Stats */}
-                <div className="grid grid-cols-3 gap-4 pt-2">
-                  {[
-                    { label: 'Total Citations', value: selectedSource.llmCitations.toLocaleString(), icon: FileText },
-                    { label: 'Avg. Position', value: '#2.4', icon: TrendingUp },
-                    { label: 'Reach Score', value: '8.7/10', icon: Users },
-                  ].map((stat) => (
-                    <div key={stat.label} className="text-center">
-                      <stat.icon className="w-4 h-4 mx-auto mb-1 text-muted-foreground" />
-                      <div className="text-sm font-semibold text-foreground">{stat.value}</div>
-                      <div className="text-[10px] text-muted-foreground">{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </div>
-          ) : (
-            <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              Select a source to view intelligence
-            </div>
-          )}
-        </main>
-
-        {/* Right Panel - Playbook Wizard */}
-        <aside className="w-80 border-l border-border/50 bg-secondary/30 backdrop-blur-sm flex flex-col">
-          {/* Playbook Header */}
-          <div className="p-4 border-b border-border/30">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-              Playbook
-            </h2>
-            
-            {/* Segmented Control */}
-            <div className="flex p-0.5 bg-background/80 border border-border/50 rounded-lg">
-              {(['pr', 'social'] as PlaybookMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => {
-                    setPlaybookMode(mode);
-                    setCurrentStep(0);
-                  }}
-                  className={cn(
-                    "flex-1 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200",
-                    playbookMode === mode
-                      ? "bg-foreground text-background shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {mode === 'pr' ? 'PR Angle' : 'Social Strategy'}
-                </button>
               ))}
             </div>
           </div>
 
-          {/* Workflow Stepper */}
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="space-y-1">
-              {workflowSteps.map((step, index) => (
-                <StepperItem
-                  key={step.id}
-                  step={step}
-                  stepNumber={index + 1}
-                  isLast={index === workflowSteps.length - 1}
-                  onActivate={() => {
-                    if (step.status === 'completed' || step.status === 'active') {
-                      setCurrentStep(index);
-                    }
-                  }}
-                  onComplete={() => {
-                    if (currentStep < workflowSteps.length - 1) {
-                      setCurrentStep(currentStep + 1);
-                    }
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Progress Footer */}
-          <div className="p-4 border-t border-border/30 bg-background/50">
-            <div className="flex items-center justify-between text-[10px] mb-2">
-              <span className="text-muted-foreground">Workflow Progress</span>
-              <span className="font-medium text-foreground">Step {currentStep + 1} of {workflowSteps.length}</span>
-            </div>
-            <Progress value={((currentStep + 1) / workflowSteps.length) * 100} className="h-1.5" />
-            
-            {/* Reset Button */}
-            <button
-              onClick={() => setCurrentStep(0)}
-              className="w-full mt-3 py-2 text-[10px] font-medium text-muted-foreground hover:text-foreground border border-border/50 rounded-lg transition-colors"
-            >
-              Reset Workflow
-            </button>
-          </div>
-        </aside>
-      </div>
-
-      {/* Bottom Timeline */}
-      <div className="h-16 border-t border-border/50 bg-secondary/20 px-6 flex items-center">
-        <div className="flex items-center gap-2 mr-6">
-          <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            Influence Timeline
-          </span>
+          {/* Add Event Button */}
+          <button className="ml-6 flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium bg-gradient-to-r from-foreground to-foreground/90 text-background rounded-full hover:opacity-90 transition-opacity">
+            <Zap className="w-3 h-3" />
+            Add Event
+          </button>
         </div>
-        
-        {/* Timeline Track */}
-        <div className="flex-1 relative">
-          <div className="absolute inset-y-1/2 left-0 right-0 h-[2px] bg-border/50 rounded-full" />
-          <div className="relative flex justify-between items-center">
-            {mockTimelineEvents.map((event, index) => (
-              <div key={event.id} className="flex flex-col items-center gap-1 group">
-                <div className={cn(
-                  "w-3 h-3 rounded-full border-2 transition-all duration-300 cursor-pointer",
-                  event.completed 
-                    ? "bg-success border-success" 
-                    : "bg-background border-border hover:border-foreground/50"
-                )}>
-                  {event.completed && <Check className="w-2 h-2 text-success-foreground" />}
-                </div>
-                <div className="absolute top-6 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background text-[9px] px-2 py-1 rounded whitespace-nowrap">
-                  {event.label} · {event.date}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Add Event Button */}
-        <button className="ml-6 flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium bg-gradient-to-r from-foreground to-foreground/90 text-background rounded-full hover:opacity-90 transition-opacity">
-          <Zap className="w-3 h-3" />
-          Add Event
-        </button>
       </div>
     </div>
   );
