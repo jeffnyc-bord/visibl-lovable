@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { 
   Share, 
-  Plus, 
   Sparkles, 
   ExternalLink,
   ChevronRight,
-  X,
   Globe,
   Megaphone,
   FileText,
-  Users,
   Calendar,
   TrendingUp,
-  Clock
+  Check,
+  MoreHorizontal
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
@@ -168,335 +166,336 @@ const typeConfig: Record<ActionType, { label: string; icon: React.ComponentType<
 };
 
 type FilterStatus = 'all' | 'live' | 'pending' | 'in-progress';
-type FilterCategory = 'all' | 'SEO' | 'PR' | 'Content' | 'Social';
 
 export function ActionsLog() {
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
-  const [categoryFilter, setCategoryFilter] = useState<FilterCategory>('all');
   const [selectedAction, setSelectedAction] = useState<ActionItem | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [isAddingInline, setIsAddingInline] = useState(false);
+  const [newActionTitle, setNewActionTitle] = useState('');
 
   const filteredActions = mockActions.filter(action => {
     if (statusFilter !== 'all' && action.status !== statusFilter) return false;
-    if (categoryFilter !== 'all') {
-      const campaignMatch = action.campaign?.toLowerCase().includes(categoryFilter.toLowerCase());
-      if (!campaignMatch) return false;
-    }
     return true;
   });
 
   const liveCount = mockActions.filter(a => a.status === 'live').length;
   const totalImpact = mockActions.reduce((sum, a) => sum + (a.impactChange || 0), 0);
 
-  const categories: FilterCategory[] = ['all', 'SEO', 'PR', 'Content', 'Social'];
+  const handleAddAction = () => {
+    if (newActionTitle.trim()) {
+      setNewActionTitle('');
+      setIsAddingInline(false);
+    }
+  };
 
   return (
-    <div className="flex h-full bg-background">
-      {/* Sidebar */}
-      <aside className="w-56 border-r border-border/40 bg-secondary/20 p-4 flex-shrink-0">
-        <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-          Categories
-        </h3>
-        <nav className="space-y-0.5">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategoryFilter(cat)}
-              className={`w-full text-left px-3 py-2 text-[13px] rounded-md transition-colors ${
-                categoryFilter === cat
-                  ? 'bg-primary/10 text-foreground font-medium'
-                  : 'text-muted-foreground hover:bg-secondary/60 hover:text-foreground'
-              }`}
-            >
-              {cat === 'all' ? 'All Actions' : cat}
-            </button>
-          ))}
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-border/40">
-          <div className="flex items-center gap-8">
-            <div>
-              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                Total Actions This Month
-              </p>
-              <p className="text-2xl font-semibold text-foreground font-mono">
-                {mockActions.length}
-              </p>
-            </div>
-            <div className="h-10 w-px bg-border/40" />
-            <div>
-              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                Live / Implemented
-              </p>
-              <p className="text-2xl font-semibold text-emerald-600 font-mono">
-                {liveCount}
-              </p>
-            </div>
-            <div className="h-10 w-px bg-border/40" />
-            <div>
-              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                Total Impact
-              </p>
-              <p className="text-2xl font-semibold text-foreground font-mono">
-                +{totalImpact}%
-              </p>
-            </div>
+    <div className="flex flex-col h-full bg-background">
+      {/* Header */}
+      <header className="flex items-center justify-between px-6 py-5 border-b border-border/40">
+        <div className="flex items-center gap-8">
+          <div>
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+              Total Actions
+            </p>
+            <p className="text-2xl font-semibold text-foreground font-mono">
+              {mockActions.length}
+            </p>
           </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-foreground text-background text-[13px] font-medium rounded-lg hover:opacity-90 transition-opacity"
-            >
-              <Plus className="w-4 h-4" />
-              Log Manual Action
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-secondary border border-border/50 text-foreground text-[13px] font-medium rounded-lg hover:bg-secondary/80 transition-colors">
-              <Share className="w-4 h-4" />
-              Share Report
-            </button>
+          <div className="h-8 w-px bg-border/40" />
+          <div>
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+              Implemented
+            </p>
+            <p className="text-2xl font-semibold text-emerald-600 font-mono">
+              {liveCount}
+            </p>
           </div>
-        </header>
-
-        {/* Segmented Control */}
-        <div className="px-6 py-3 border-b border-border/40">
-          <div className="inline-flex bg-secondary/50 rounded-lg p-1">
-            {(['all', 'live', 'pending', 'in-progress'] as FilterStatus[]).map((status) => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`px-4 py-1.5 text-[13px] font-medium rounded-md transition-all ${
-                  statusFilter === status
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {status === 'all' ? 'All' : status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
-              </button>
-            ))}
+          <div className="h-8 w-px bg-border/40" />
+          <div>
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+              Impact
+            </p>
+            <p className="text-2xl font-semibold text-foreground font-mono">
+              +{totalImpact}%
+            </p>
           </div>
         </div>
 
-        {/* Actions List */}
-        <div className="flex-1 overflow-auto">
-          <div className="divide-y divide-border/30">
-            {filteredActions.map((action) => {
-              const TypeIcon = typeConfig[action.type].icon;
-              const statusStyle = statusConfig[action.status];
+        <div className="flex items-center gap-1">
+          <button 
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-md transition-colors"
+            title="Share Report"
+          >
+            <Share className="w-4 h-4" />
+          </button>
+          <button 
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-md transition-colors"
+            title="More options"
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+        </div>
+      </header>
 
-              return (
+      {/* Segmented Control */}
+      <div className="px-6 py-3 border-b border-border/40">
+        <div className="inline-flex bg-secondary/40 rounded-lg p-0.5">
+          {(['all', 'live', 'pending', 'in-progress'] as FilterStatus[]).map((status) => (
+            <button
+              key={status}
+              onClick={() => setStatusFilter(status)}
+              className={`px-3 py-1 text-[12px] font-medium rounded-md transition-all ${
+                statusFilter === status
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {status === 'all' ? 'All' : status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Actions List */}
+      <div className="flex-1 overflow-auto">
+        <div className="divide-y divide-border/20">
+          {/* Inline Add Row */}
+          {isAddingInline ? (
+            <div className="px-6 py-3 flex items-center gap-4 bg-secondary/20">
+              <div className="w-2.5 h-2.5 rounded-full bg-border/50" />
+              <input
+                type="text"
+                value={newActionTitle}
+                onChange={(e) => setNewActionTitle(e.target.value)}
+                placeholder="Describe the action..."
+                className="flex-1 bg-transparent text-[14px] text-foreground placeholder:text-muted-foreground/60 outline-none"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleAddAction();
+                  if (e.key === 'Escape') {
+                    setIsAddingInline(false);
+                    setNewActionTitle('');
+                  }
+                }}
+              />
+              <div className="flex items-center gap-1">
                 <button
-                  key={action.id}
-                  onClick={() => setSelectedAction(action)}
-                  className="w-full px-6 py-4 flex items-center gap-6 hover:bg-secondary/30 transition-colors text-left group"
+                  onClick={handleAddAction}
+                  className="p-1.5 text-emerald-600 hover:bg-emerald-500/10 rounded transition-colors"
                 >
-                  {/* Status Indicator */}
-                  <div className="flex-shrink-0 relative">
-                    <div
-                      className={`w-2.5 h-2.5 rounded-full ${statusStyle.bgColor} ${
-                        statusStyle.glow ? 'shadow-[0_0_8px_2px_rgba(16,185,129,0.4)]' : ''
-                      }`}
-                    />
-                  </div>
-
-                  {/* Type Badge */}
-                  <div className="flex-shrink-0">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-secondary/80 text-muted-foreground text-[11px] font-medium rounded-full">
-                      <TypeIcon className="w-3 h-3" />
-                      {typeConfig[action.type].label}
-                    </span>
-                  </div>
-
-                  {/* Description */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-medium text-foreground truncate">
-                      {action.title}
-                    </p>
-                    <p className="text-[12px] text-muted-foreground truncate font-mono">
-                      {action.target}
-                    </p>
-                  </div>
-
-                  {/* Author */}
-                  <div className="flex-shrink-0 w-24">
-                    {action.isAiGenerated ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                          <Sparkles className="w-3 h-3 text-white" />
-                        </div>
-                        <span className="text-[12px] text-muted-foreground">Visibl AI</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-[10px] font-medium text-foreground">
-                          {action.authorAvatar}
-                        </div>
-                        <span className="text-[12px] text-muted-foreground truncate">
-                          {action.author}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Date & Impact */}
-                  <div className="flex-shrink-0 w-32 text-right">
-                    <p className="text-[12px] text-muted-foreground font-mono">
-                      {new Date(action.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </p>
-                    {action.impactChange && (
-                      <p className="text-[12px] font-medium text-emerald-600 font-mono">
-                        +{action.impactChange}% visibility
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Chevron */}
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+                  <Check className="w-4 h-4" />
                 </button>
-              );
-            })}
-          </div>
+                <button
+                  onClick={() => {
+                    setIsAddingInline(false);
+                    setNewActionTitle('');
+                  }}
+                  className="p-1.5 text-muted-foreground hover:bg-secondary rounded transition-colors"
+                >
+                  <span className="text-[11px] font-medium">esc</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsAddingInline(true)}
+              className="w-full px-6 py-3 flex items-center gap-4 text-muted-foreground hover:text-foreground hover:bg-secondary/20 transition-colors text-left"
+            >
+              <div className="w-2.5 h-2.5 rounded-full border border-dashed border-muted-foreground/40" />
+              <span className="text-[13px]">Log an action...</span>
+            </button>
+          )}
+
+          {/* Action Items */}
+          {filteredActions.map((action) => {
+            const TypeIcon = typeConfig[action.type].icon;
+            const statusStyle = statusConfig[action.status];
+
+            return (
+              <button
+                key={action.id}
+                onClick={() => setSelectedAction(action)}
+                className="w-full px-6 py-3.5 flex items-center gap-5 hover:bg-secondary/20 transition-colors text-left group"
+              >
+                {/* Status Indicator */}
+                <div className="flex-shrink-0">
+                  <div
+                    className={`w-2 h-2 rounded-full ${statusStyle.bgColor} ${
+                      statusStyle.glow ? 'shadow-[0_0_6px_1px_rgba(16,185,129,0.5)]' : ''
+                    }`}
+                  />
+                </div>
+
+                {/* Type Badge */}
+                <div className="flex-shrink-0">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-secondary/60 text-muted-foreground text-[10px] font-medium rounded">
+                    <TypeIcon className="w-3 h-3" />
+                    {typeConfig[action.type].label}
+                  </span>
+                </div>
+
+                {/* Description */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-medium text-foreground truncate">
+                    {action.title}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground/70 truncate font-mono">
+                    {action.target}
+                  </p>
+                </div>
+
+                {/* Author */}
+                <div className="flex-shrink-0">
+                  {action.isAiGenerated ? (
+                    <div className="w-5 h-5 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center" title="Visibl AI">
+                      <Sparkles className="w-2.5 h-2.5 text-white" />
+                    </div>
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-secondary flex items-center justify-center text-[9px] font-medium text-foreground" title={action.author}>
+                      {action.authorAvatar}
+                    </div>
+                  )}
+                </div>
+
+                {/* Date & Impact */}
+                <div className="flex-shrink-0 w-24 text-right">
+                  <p className="text-[11px] text-muted-foreground font-mono">
+                    {new Date(action.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </p>
+                  {action.impactChange && (
+                    <p className="text-[11px] font-medium text-emerald-600 font-mono">
+                      +{action.impactChange}%
+                    </p>
+                  )}
+                </div>
+
+                {/* Chevron */}
+                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors" />
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Detail Sheet */}
       <Sheet open={!!selectedAction} onOpenChange={() => setSelectedAction(null)}>
-        <SheetContent className="w-[480px] sm:w-[540px] overflow-y-auto">
+        <SheetContent className="w-[440px] sm:w-[480px] overflow-y-auto">
           {selectedAction && (
             <>
               <SheetHeader className="pb-6">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-2 mb-2">
                   <div
-                    className={`w-2.5 h-2.5 rounded-full ${statusConfig[selectedAction.status].bgColor} ${
-                      statusConfig[selectedAction.status].glow ? 'shadow-[0_0_8px_2px_rgba(16,185,129,0.4)]' : ''
+                    className={`w-2 h-2 rounded-full ${statusConfig[selectedAction.status].bgColor} ${
+                      statusConfig[selectedAction.status].glow ? 'shadow-[0_0_6px_1px_rgba(16,185,129,0.5)]' : ''
                     }`}
                   />
-                  <span className={`text-[12px] font-medium ${statusConfig[selectedAction.status].color}`}>
+                  <span className={`text-[11px] font-medium ${statusConfig[selectedAction.status].color}`}>
                     {statusConfig[selectedAction.status].label}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-secondary/80 text-muted-foreground text-[11px] font-medium rounded-full">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-secondary/60 text-muted-foreground text-[10px] font-medium rounded">
                     {React.createElement(typeConfig[selectedAction.type].icon, { className: "w-3 h-3" })}
                     {typeConfig[selectedAction.type].label}
                   </span>
                 </div>
-                <SheetTitle className="text-xl font-semibold">{selectedAction.title}</SheetTitle>
+                <SheetTitle className="text-lg font-semibold">{selectedAction.title}</SheetTitle>
                 <a 
                   href={`https://${selectedAction.target}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[13px] text-primary hover:underline font-mono flex items-center gap-1"
+                  className="text-[12px] text-primary hover:underline font-mono flex items-center gap-1"
                 >
                   {selectedAction.target}
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </SheetHeader>
 
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {/* Meta Info */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-secondary/30 rounded-lg">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-[11px] font-medium text-muted-foreground uppercase">Date</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 bg-secondary/20 rounded-lg">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-[10px] font-medium text-muted-foreground uppercase">Date</span>
                     </div>
-                    <p className="text-[14px] font-medium font-mono">
+                    <p className="text-[13px] font-medium font-mono">
                       {new Date(selectedAction.date).toLocaleDateString('en-US', { 
-                        month: 'long', 
+                        month: 'short', 
                         day: 'numeric',
                         year: 'numeric'
                       })}
                     </p>
                   </div>
-                  <div className="p-4 bg-secondary/30 rounded-lg">
-                    <div className="flex items-center gap-2 mb-1">
-                      <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-[11px] font-medium text-muted-foreground uppercase">Impact</span>
+                  <div className="p-3 bg-secondary/20 rounded-lg">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <TrendingUp className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-[10px] font-medium text-muted-foreground uppercase">Impact</span>
                     </div>
-                    <p className="text-[14px] font-medium font-mono text-emerald-600">
+                    <p className="text-[13px] font-medium font-mono text-emerald-600">
                       {selectedAction.impactChange ? `+${selectedAction.impactChange}%` : '—'}
                     </p>
                   </div>
                 </div>
 
                 {/* Author */}
-                <div className="p-4 bg-secondary/30 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Users className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-[11px] font-medium text-muted-foreground uppercase">Source</span>
+                <div className="p-3 bg-secondary/20 rounded-lg">
+                  <span className="text-[10px] font-medium text-muted-foreground uppercase">Source</span>
+                  <div className="mt-2 flex items-center gap-2">
+                    {selectedAction.isAiGenerated ? (
+                      <>
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-white" />
+                        </div>
+                        <span className="text-[13px] font-medium">Visibl AI</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-[10px] font-medium">
+                          {selectedAction.authorAvatar}
+                        </div>
+                        <span className="text-[13px] font-medium">{selectedAction.author}</span>
+                      </>
+                    )}
                   </div>
-                  {selectedAction.isAiGenerated ? (
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                        <Sparkles className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-[14px] font-medium">Generated by Visibl AI</p>
-                        <p className="text-[12px] text-muted-foreground">Automated action from platform</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-[12px] font-medium">
-                        {selectedAction.authorAvatar}
-                      </div>
-                      <div>
-                        <p className="text-[14px] font-medium">{selectedAction.author}</p>
-                        <p className="text-[12px] text-muted-foreground">Manual entry</p>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Description */}
                 {selectedAction.description && (
                   <div>
-                    <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                      Description
-                    </h4>
-                    <p className="text-[14px] text-foreground leading-relaxed">
+                    <h4 className="text-[10px] font-medium text-muted-foreground uppercase mb-2">Description</h4>
+                    <p className="text-[13px] text-muted-foreground leading-relaxed">
                       {selectedAction.description}
                     </p>
                   </div>
                 )}
 
-                {/* AI Prompt Used */}
+                {/* AI Prompt */}
                 {selectedAction.promptUsed && (
                   <div>
-                    <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                      AI Prompt Used
-                    </h4>
-                    <div className="p-4 bg-violet-500/5 border border-violet-500/20 rounded-lg">
-                      <p className="text-[13px] text-foreground/80 italic">
+                    <h4 className="text-[10px] font-medium text-muted-foreground uppercase mb-2">AI Prompt Used</h4>
+                    <div className="p-3 bg-violet-500/5 border border-violet-500/20 rounded-lg">
+                      <p className="text-[12px] text-foreground/80 italic">
                         "{selectedAction.promptUsed}"
                       </p>
                     </div>
                   </div>
                 )}
 
-                {/* Activity History */}
-                {selectedAction.history && selectedAction.history.length > 0 && (
+                {/* History */}
+                {selectedAction.history && (
                   <div>
-                    <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                      Activity History
-                    </h4>
-                    <div className="space-y-0">
-                      {selectedAction.history.map((event, idx) => (
-                        <div key={idx} className="flex gap-4 pb-4 last:pb-0">
+                    <h4 className="text-[10px] font-medium text-muted-foreground uppercase mb-3">History</h4>
+                    <div className="space-y-3">
+                      {selectedAction.history.map((item, index) => (
+                        <div key={index} className="flex gap-3">
                           <div className="flex flex-col items-center">
-                            <div className="w-2 h-2 rounded-full bg-muted-foreground/40" />
-                            {idx < selectedAction.history!.length - 1 && (
-                              <div className="w-px flex-1 bg-border/50 mt-2" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
+                            {index < selectedAction.history!.length - 1 && (
+                              <div className="w-px flex-1 bg-border/40 mt-1" />
                             )}
                           </div>
-                          <div className="flex-1 -mt-0.5">
-                            <p className="text-[13px] text-foreground">{event.event}</p>
-                            <p className="text-[11px] text-muted-foreground font-mono mt-0.5">
-                              {event.date}
-                            </p>
+                          <div className="pb-3">
+                            <p className="text-[11px] text-muted-foreground font-mono">{item.date}</p>
+                            <p className="text-[12px] text-foreground">{item.event}</p>
                           </div>
                         </div>
                       ))}
@@ -504,113 +503,16 @@ export function ActionsLog() {
                   </div>
                 )}
 
-                {/* Campaign Tag */}
+                {/* Campaign */}
                 {selectedAction.campaign && (
-                  <div className="pt-4 border-t border-border/40">
-                    <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                      Campaign:
-                    </span>
-                    <span className="ml-2 text-[13px] text-foreground font-medium">
-                      {selectedAction.campaign}
-                    </span>
+                  <div className="pt-3 border-t border-border/30">
+                    <span className="text-[10px] font-medium text-muted-foreground uppercase">Campaign</span>
+                    <p className="text-[13px] font-medium mt-1">{selectedAction.campaign}</p>
                   </div>
                 )}
               </div>
             </>
           )}
-        </SheetContent>
-      </Sheet>
-
-      {/* Add Manual Action Modal */}
-      <Sheet open={showAddModal} onOpenChange={setShowAddModal}>
-        <SheetContent className="w-[480px] sm:w-[540px]">
-          <SheetHeader className="pb-6">
-            <SheetTitle className="text-xl font-semibold">Log Manual Action</SheetTitle>
-            <p className="text-[13px] text-muted-foreground">
-              Record an external marketing effort or action taken outside of Visibl.
-            </p>
-          </SheetHeader>
-
-          <div className="space-y-5">
-            <div>
-              <label className="text-[12px] font-medium text-foreground mb-2 block">
-                Action Title
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., Conference Speaking Engagement"
-                className="w-full px-4 py-2.5 bg-secondary/50 border border-border/50 rounded-lg text-[14px] placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-
-            <div>
-              <label className="text-[12px] font-medium text-foreground mb-2 block">
-                Target URL or Location
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., sxsw.com/sessions"
-                className="w-full px-4 py-2.5 bg-secondary/50 border border-border/50 rounded-lg text-[14px] placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 font-mono"
-              />
-            </div>
-
-            <div>
-              <label className="text-[12px] font-medium text-foreground mb-2 block">
-                Action Type
-              </label>
-              <div className="flex gap-2">
-                {(['on-site', 'off-site', 'social', 'pr'] as ActionType[]).map((type) => {
-                  const TypeIcon = typeConfig[type].icon;
-                  return (
-                    <button
-                      key={type}
-                      className="flex items-center gap-2 px-4 py-2 bg-secondary/50 border border-border/50 rounded-lg text-[13px] text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
-                    >
-                      <TypeIcon className="w-4 h-4" />
-                      {typeConfig[type].label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[12px] font-medium text-foreground mb-2 block">
-                Description
-              </label>
-              <textarea
-                placeholder="Describe the action and its expected impact..."
-                rows={3}
-                className="w-full px-4 py-2.5 bg-secondary/50 border border-border/50 rounded-lg text-[14px] placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
-              />
-            </div>
-
-            <div>
-              <label className="text-[12px] font-medium text-foreground mb-2 block">
-                Campaign (Optional)
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., Q4 Product Launch"
-                className="w-full px-4 py-2.5 bg-secondary/50 border border-border/50 rounded-lg text-[14px] placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-
-            <div className="flex gap-3 pt-4">
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="flex-1 px-4 py-2.5 bg-secondary border border-border/50 text-foreground text-[13px] font-medium rounded-lg hover:bg-secondary/80 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="flex-1 px-4 py-2.5 bg-foreground text-background text-[13px] font-medium rounded-lg hover:opacity-90 transition-opacity"
-              >
-                Log Action
-              </button>
-            </div>
-          </div>
         </SheetContent>
       </Sheet>
     </div>
