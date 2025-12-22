@@ -319,8 +319,14 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
         onCancel={handleTransitionCancel}
         prompt={selectedPrompt}
         contentType={selectedContentType}
-        productName={selectedProduct?.name}
-        brandLogo={selectedProduct?.brandLogo}
+        productName={
+          selectedProduct?.name ??
+          (((selectedPrompt?.prompt ?? '').toLowerCase().includes('nike')) ? 'Nike' : undefined)
+        }
+        brandLogo={
+          selectedProduct?.brandLogo ??
+          (((selectedPrompt?.prompt ?? '').toLowerCase().includes('nike')) ? nikeLogo : undefined)
+        }
       />
 
       {/* AEO Content Studio */}
