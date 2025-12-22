@@ -501,7 +501,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
           ) : (
             <div className="border rounded-lg overflow-hidden">
               <div className="bg-gray-50 border-b">
-                <div className="grid grid-cols-12 gap-4 p-3 text-sm font-medium text-gray-700">
+                <div className="grid grid-cols-10 gap-4 p-3 text-sm font-medium text-gray-700">
                   <div className="col-span-1 flex items-center">
                     <Checkbox
                       checked={selectedProducts.length === allProducts.length}
@@ -513,9 +513,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
                   <div className="col-span-3">Product / SKU</div>
                   <div className="col-span-2">AI Readiness</div>
                   <div className="col-span-1">Trend</div>
-                  <div className="col-span-1">Key Gaps</div>
                   <div className="col-span-1">AI Mentions</div>
-                  <div className="col-span-1">Avg Rank</div>
                   <div className="col-span-1">Updated</div>
                   <div className="col-span-1">Action</div>
                 </div>
@@ -524,7 +522,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
                 {allProducts.map((product) => (
                 <div 
                   key={product.id} 
-                  className={`grid grid-cols-12 gap-4 p-3 text-sm ${
+                  className={`grid grid-cols-10 gap-4 p-3 text-sm ${
                     product.status === "analyzing" 
                       ? "bg-gradient-to-r from-blue-50/50 to-white border-l-4 border-l-blue-500" 
                       : "hover:bg-gray-50"
@@ -597,14 +595,8 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
                       </div>
                     )}
                   </div>
-                   <div className="col-span-1">
-                     <span className="text-xs text-gray-600">{product.gaps}</span>
-                   </div>
                   <div className="col-span-1 font-medium">
                     {product.status === "analyzing" ? "-" : product.mentions}
-                  </div>
-                  <div className="col-span-1 font-medium">
-                    {product.status === "analyzing" ? "-" : `#${product.rank}`}
                   </div>
                   <div className="col-span-1 text-xs text-gray-500">{product.lastUpdated}</div>
                   <div className="col-span-1">
