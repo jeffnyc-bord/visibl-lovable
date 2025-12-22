@@ -151,7 +151,7 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
   const isReadyForStructure = selectedProduct && selectedPrompt && selectedContentType;
 
   return (
-    <div className={cn("flex gap-8", demoMode && "demo-card-1")}>
+    <div className={cn("flex gap-8 items-start", demoMode && "demo-card-1")}>
       {/* Main Content Area */}
       <div className="flex-1 min-w-0">
         {/* Step 0: Workflow Mode */}
