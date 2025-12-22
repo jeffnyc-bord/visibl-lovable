@@ -976,6 +976,7 @@ const Index = () => {
                               prefilledQuery={prefilledQuery}
                               autoOpenPrompt={autoOpenPrompt}
                               demoMode={demoMode}
+                              activeSubTab={queriesSubTab}
                               onQueryUsed={() => {
                                 setPrefilledQuery("");
                                 setAutoOpenPrompt("");
