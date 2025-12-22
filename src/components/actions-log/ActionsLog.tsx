@@ -12,9 +12,21 @@ import {
   MoreHorizontal,
   CheckCircle2,
   ArrowRight,
-  Trash2
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 type ActionStatus = 'live' | 'pending' | 'in-progress';
 type ActionType = 'on-site' | 'off-site' | 'social' | 'pr';
@@ -765,13 +777,36 @@ export function ActionsLog() {
 
                 {/* Delete Action */}
                 <div className="pt-4 mt-4 border-t border-border/30">
-                  <button
-                    onClick={() => deleteAction(selectedAction.id)}
-                    className="flex items-center gap-2 px-3 py-2 w-full rounded-md text-[12px] font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Delete Action
-                  </button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 w-full rounded-md text-[12px] font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Delete Action
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                          <AlertTriangle className="w-5 h-5 text-red-500" />
+                          Delete Action
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete "{selectedAction.title}"? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => deleteAction(selectedAction.id)}
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </>
