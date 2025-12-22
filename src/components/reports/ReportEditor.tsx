@@ -13,7 +13,8 @@ import {
   ChevronDown,
   Edit3,
   Check,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -49,6 +50,7 @@ interface ReportEditorProps {
   onExport: () => void;
   reportTitle: string;
   onTitleChange: (title: string) => void;
+  isExporting?: boolean;
 }
 
 const ReportEditor = ({ 
@@ -57,7 +59,8 @@ const ReportEditor = ({
   onBack, 
   onExport,
   reportTitle,
-  onTitleChange
+  onTitleChange,
+  isExporting = false
 }: ReportEditorProps) => {
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState(false);
@@ -149,9 +152,19 @@ const ReportEditor = ({
           <Button 
             onClick={onExport}
             className="h-9 px-5 rounded-full"
+            disabled={isExporting}
           >
-            <Download className="w-4 h-4 mr-2" />
-            Export PDF
+            {isExporting ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Exporting...
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4 mr-2" />
+                Export PDF
+              </>
+            )}
           </Button>
         </div>
       </header>

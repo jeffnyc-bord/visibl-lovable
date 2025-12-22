@@ -6,7 +6,8 @@ import {
   Calendar,
   Check,
   ChevronDown,
-  Download
+  Download,
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,8 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import ReportEditor, { ReportBlock } from '@/components/reports/ReportEditor';
+import { downloadReportPDF } from '@/utils/reportPdfExport';
+import { useToast } from '@/hooks/use-toast';
 
 // Mock data for granular selection
 const mockPrompts = [
@@ -82,6 +85,8 @@ const Reports = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const { toast } = useToast();
 
   // Editor blocks state
   const [editorBlocks, setEditorBlocks] = useState<ReportBlock[]>([]);
@@ -239,9 +244,44 @@ const Reports = () => {
     setStep('edit');
   };
 
-  const handleExport = () => {
-    console.log('Exporting PDF with blocks:', editorBlocks);
-    // TODO: Implement actual PDF export
+  const handleExport = async () => {
+    if (editorBlocks.length === 0) {
+      toast({
+        title: "No content to export",
+        description: "Add some content blocks before exporting.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      await downloadReportPDF({
+        blocks: editorBlocks,
+        reportTitle,
+        dateRange: {
+          start: startDate || new Date(2024, 0, 1),
+          end: endDate || new Date()
+        },
+        showPageNumbers,
+        customLogo: customLogo || undefined,
+        brandName: 'Nike' // Could be dynamic based on selected brand
+      });
+      
+      toast({
+        title: "Report exported",
+        description: "Your PDF report has been downloaded successfully."
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export failed",
+        description: "There was an error generating your PDF. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   // Render editor step
@@ -254,6 +294,7 @@ const Reports = () => {
         onExport={handleExport}
         reportTitle={reportTitle}
         onTitleChange={setReportTitle}
+        isExporting={isExporting}
       />
     );
   }
