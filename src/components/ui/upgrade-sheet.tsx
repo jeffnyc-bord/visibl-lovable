@@ -115,7 +115,7 @@ export const UpgradeSheet = ({
                 <MessageSquare className="w-5 h-5 text-cyan-400" />
                 <div>
                   <p className="text-white text-sm font-medium">Increase Prompt Allowance</p>
-                  <p className="text-[#6B7280] text-xs">5 prompts → Unlimited prompts</p>
+                  <p className="text-[#6B7280] text-xs">60 prompts → 150 prompts</p>
                 </div>
               </div>
               <Check className="w-4 h-4 text-cyan-400" />
