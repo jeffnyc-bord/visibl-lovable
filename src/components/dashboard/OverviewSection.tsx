@@ -197,17 +197,17 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
   const displayedPlatforms = showAllPlatforms ? platformMentions : platformMentions.slice(0, 4);
 
-  // Donut chart colors
-  const DONUT_COLORS = ['#171717', '#404040', '#737373', '#a3a3a3'];
+  // Vibrant donut chart colors
+  const DONUT_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444', '#06B6D4'];
 
   return (
     <TooltipProvider>
       <div className="space-y-0">
         {/* Header */}
-        <div className={`flex items-center justify-between pb-8 border-b border-border/50 ${demoMode ? 'demo-header' : ''}`}>
+        <div className={`flex items-center justify-between pb-6 border-b border-border/50 ${demoMode ? 'demo-header' : ''}`}>
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground">AI Visibility</h1>
-            <p className="text-muted-foreground mt-1">Performance overview for {brandData.name}</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">AI Visibility</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Performance overview for {brandData.name}</p>
           </div>
           <ReportExportDialog
             trigger={
@@ -233,11 +233,11 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           />
         </div>
 
-        {/* Primary Metrics - Clean Linear Layout */}
-        <div className={`py-12 border-b border-border/50 ${demoMode ? 'demo-card-1' : ''}`}>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            {/* Left: Score Dial */}
-            <div className="flex flex-col items-center lg:items-start">
+        {/* Primary Metrics - Compact Layout */}
+        <div className={`py-6 border-b border-border/50 ${demoMode ? 'demo-card-1' : ''}`}>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Score */}
+            <div className="flex flex-col">
               <ScoreDial
                 currentScore={brandData.visibilityScore}
                 previousScore={82}
@@ -245,7 +245,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 label="AI Visibility Score"
                 icon={<Sparkles className="w-4 h-4" />}
               />
-              <div className="mt-4">
+              <div className="mt-3">
                 <ConfidenceBadge 
                   promptCount={promptCount} 
                   minForHighConfidence={10}
@@ -254,87 +254,82 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               </div>
             </div>
 
-            {/* Right: Key Metrics */}
-            <div className="space-y-8">
+            {/* Middle: Mentions & Source */}
+            <div className="space-y-5">
               {/* Total Mentions */}
-              <div className="flex items-baseline justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Total Mentions</p>
-                  <p className="text-4xl font-light tracking-tight">{brandData.totalMentions.toLocaleString()}</p>
+              <div>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Mentions</p>
+                  <Badge variant="secondary" className="bg-success/10 text-success border-0 text-xs font-medium">
+                    +15%
+                  </Badge>
                 </div>
-                <Badge variant="secondary" className="bg-success/10 text-success border-0 text-sm font-medium">
-                  +15%
-                </Badge>
+                <p className="text-3xl font-light tracking-tight mt-1">{brandData.totalMentions.toLocaleString()}</p>
               </div>
 
               {/* Top Source */}
               <div 
                 className={cn(
-                  "flex items-baseline justify-between cursor-pointer group transition-all",
+                  "cursor-pointer group transition-all",
                   highlightTopSource && "ring-2 ring-primary ring-offset-4 rounded-lg p-2 -m-2"
                 )}
                 onClick={() => window.open(topSource.url, '_blank')}
               >
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Top Source</p>
-                  <p className="text-xl font-medium text-foreground group-hover:text-primary transition-colors flex items-center gap-2">
-                    {testTopSourceUrl || topSource.source}
-                    <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Top Source</p>
+                  <span className="text-xs text-muted-foreground">{topSource.mentions} refs</span>
                 </div>
-                <span className="text-sm text-muted-foreground">{topSource.mentions} refs</span>
+                <p className="text-lg font-medium text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5 mt-1">
+                  {testTopSourceUrl || topSource.source}
+                  <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </p>
               </div>
+            </div>
 
-              {/* Platform Coverage */}
-              <div>
-                <p className="text-sm text-muted-foreground mb-3">Platform Coverage</p>
-                <div className="flex items-center gap-3">
-                  <AIInsightsModal
-                    trigger={
-                      <div className="flex items-center gap-2 cursor-pointer group">
-                        <div className="flex -space-x-2">
-                          {displayedPlatforms.slice(0, 4).map((platform, i) => (
-                            <img 
-                              key={platform.platform}
-                              src={platform.logo} 
-                              alt={platform.platform}
-                              className="w-8 h-8 rounded-full border-2 border-background object-contain bg-background"
-                              style={{ zIndex: 4 - i }}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                          {platformMentions.length} platforms
-                        </span>
-                      </div>
-                    }
-                    platforms={platformMentions}
-                  />
-                  <div className="flex items-center gap-1.5 ml-4 pl-4 border-l border-border/50">
-                    <LockedPlatformIndicator
-                      platformName="Claude"
-                      platformIcon={<img src="/lovable-uploads/7c83c89c-25ba-4bd6-ac2d-3bfa6cd098db.png" alt="Claude" className="w-full h-full" />}
-                      onClick={() => handleUpgradeClick("chatbot_coverage")}
-                    />
-                    <LockedPlatformIndicator
-                      platformName="Copilot"
-                      platformIcon={<img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="Copilot" className="w-full h-full" />}
-                      onClick={() => handleUpgradeClick("chatbot_coverage")}
-                    />
+            {/* Right: Platform Coverage */}
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">Platform Coverage</p>
+              <AIInsightsModal
+                trigger={
+                  <div className="flex items-center gap-2 cursor-pointer group">
+                    <div className="flex -space-x-2">
+                      {displayedPlatforms.slice(0, 4).map((platform, i) => (
+                        <img 
+                          key={platform.platform}
+                          src={platform.logo} 
+                          alt={platform.platform}
+                          className="w-7 h-7 rounded-full border-2 border-background object-contain bg-background"
+                          style={{ zIndex: 4 - i }}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                      {platformMentions.length} platforms
+                    </span>
                   </div>
-                </div>
+                }
+                platforms={platformMentions}
+              />
+              <div className="flex items-center gap-1.5 mt-3">
+                <LockedPlatformIndicator
+                  platformName="Claude"
+                  platformIcon={<img src="/lovable-uploads/7c83c89c-25ba-4bd6-ac2d-3bfa6cd098db.png" alt="Claude" className="w-full h-full" />}
+                  onClick={() => handleUpgradeClick("chatbot_coverage")}
+                />
+                <LockedPlatformIndicator
+                  platformName="Copilot"
+                  platformIcon={<img src="/lovable-uploads/c3b25065-d9ca-4938-8482-52a5d5251489.png" alt="Copilot" className="w-full h-full" />}
+                  onClick={() => handleUpgradeClick("chatbot_coverage")}
+                />
               </div>
             </div>
           </div>
         </div>
 
         {/* Visibility Trend */}
-        <div className={`py-12 border-b border-border/50 ${demoMode ? 'demo-card-2' : ''}`}>
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-xl font-medium text-foreground">Visibility Trend</h2>
-              <p className="text-sm text-muted-foreground mt-1">Mention volume over time</p>
-            </div>
+        <div className={`py-8 border-b border-border/50 ${demoMode ? 'demo-card-2' : ''}`}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-foreground">Visibility Trend</h2>
           </div>
 
           {visibilityTrendData.length === 1 ? (
@@ -389,88 +384,97 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </div>
 
         {/* Platform Distribution */}
-        <div className={`py-12 border-b border-border/50 ${demoMode ? 'demo-card-3' : ''}`}>
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-xl font-medium text-foreground">Platform Distribution</h2>
-              <p className="text-sm text-muted-foreground mt-1">Mentions across AI platforms</p>
-            </div>
+        <div className={`py-8 border-b border-border/50 ${demoMode ? 'demo-card-3' : ''}`}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-foreground">Platform Distribution</h2>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowAllPlatforms(!showAllPlatforms)}
-              className="text-muted-foreground"
+              className="text-muted-foreground text-xs"
             >
               {showAllPlatforms ? "Show Less" : "Show All"}
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Donut Chart */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Donut Chart - Properly calculated */}
             <div className="flex justify-center items-center">
-              <div className="relative w-48 h-48">
-                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
-                  {displayedPlatforms.slice(0, 4).map((platform, index) => {
-                    const total = displayedPlatforms.slice(0, 4).reduce((sum, p) => sum + p.mentions, 0);
-                    const percentage = (platform.mentions / total) * 100;
-                    const radius = 45;
+              <div className="relative w-40 h-40">
+                <svg className="w-full h-full" viewBox="0 0 100 100">
+                  {(() => {
+                    const platforms = displayedPlatforms.slice(0, 4);
+                    const total = platforms.reduce((sum, p) => sum + p.mentions, 0);
+                    const radius = 35;
                     const circumference = 2 * Math.PI * radius;
-                    const segmentLength = (percentage / 100) * circumference;
-                    const offset = displayedPlatforms.slice(0, index).reduce((acc, p) => 
-                      acc + ((p.mentions / total) * circumference), 0);
-                    const gap = 3;
+                    let cumulativeOffset = 0;
                     
-                    return (
-                      <circle
-                        key={index}
-                        cx="60"
-                        cy="60"
-                        r={radius}
-                        fill="none"
-                        stroke={DONUT_COLORS[index]}
-                        strokeWidth={hoveredSegment === index ? 10 : 8}
-                        strokeLinecap="round"
-                        strokeDasharray={`${segmentLength - gap} ${circumference - segmentLength + gap}`}
-                        strokeDashoffset={-(offset + (index * gap))}
-                        className="transition-all duration-300 cursor-pointer"
-                        onMouseEnter={() => setHoveredSegment(index)}
-                        onMouseLeave={() => setHoveredSegment(null)}
-                      />
-                    );
-                  })}
+                    return platforms.map((platform, index) => {
+                      const percentage = platform.mentions / total;
+                      const segmentLength = percentage * circumference;
+                      const currentOffset = cumulativeOffset;
+                      cumulativeOffset += segmentLength;
+                      
+                      return (
+                        <circle
+                          key={index}
+                          cx="50"
+                          cy="50"
+                          r={radius}
+                          fill="none"
+                          stroke={DONUT_COLORS[index]}
+                          strokeWidth={hoveredSegment === index ? 12 : 10}
+                          strokeDasharray={`${segmentLength} ${circumference - segmentLength}`}
+                          strokeDashoffset={-currentOffset}
+                          transform="rotate(-90 50 50)"
+                          className="transition-all duration-200 cursor-pointer"
+                          style={{ filter: hoveredSegment === index ? 'brightness(1.1)' : 'brightness(1)' }}
+                          onMouseEnter={() => setHoveredSegment(index)}
+                          onMouseLeave={() => setHoveredSegment(null)}
+                        />
+                      );
+                    });
+                  })()}
                 </svg>
-                {hoveredSegment !== null && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <p className="text-2xl font-light">{displayedPlatforms[hoveredSegment].mentions}</p>
-                      <p className="text-xs text-muted-foreground">{displayedPlatforms[hoveredSegment].platform}</p>
-                    </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    {hoveredSegment !== null ? (
+                      <>
+                        <p className="text-xl font-medium">{displayedPlatforms[hoveredSegment].mentions}</p>
+                        <p className="text-xs text-muted-foreground">{displayedPlatforms[hoveredSegment].platform}</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xl font-medium">{displayedPlatforms.slice(0, 4).reduce((sum, p) => sum + p.mentions, 0)}</p>
+                        <p className="text-xs text-muted-foreground">Total</p>
+                      </>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
 
             {/* Platform List */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               {displayedPlatforms.map((platform, index) => (
                 <div 
                   key={platform.platform}
                   className={cn(
-                    "flex items-center justify-between py-2 transition-colors",
-                    hoveredSegment === index && "bg-muted/50 -mx-3 px-3 rounded-lg"
+                    "flex items-center justify-between py-2 px-2 -mx-2 rounded-md transition-colors cursor-pointer",
+                    hoveredSegment === index ? "bg-muted/60" : "hover:bg-muted/30"
                   )}
                   onMouseEnter={() => setHoveredSegment(index)}
                   onMouseLeave={() => setHoveredSegment(null)}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     <div 
-                      className="w-2 h-2 rounded-full" 
+                      className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
                       style={{ backgroundColor: DONUT_COLORS[index % DONUT_COLORS.length] }}
                     />
-                    <img src={platform.logo} alt={platform.platform} className="w-6 h-6 object-contain" />
-                    <span className="text-sm font-medium">{platform.platform}</span>
+                    <img src={platform.logo} alt={platform.platform} className="w-5 h-5 object-contain" />
+                    <span className="text-sm">{platform.platform}</span>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <span className="text-sm font-medium tabular-nums">{platform.mentions}</span>
                     <Badge variant="secondary" className="bg-success/10 text-success border-0 text-xs">
                       {platform.trend}
@@ -483,47 +487,44 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </div>
 
         {/* Top Prompts */}
-        <div className={`py-12 border-b border-border/50 ${demoMode ? 'demo-card-4' : ''}`}>
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-xl font-medium text-foreground">Top Prompts</h2>
-              <p className="text-sm text-muted-foreground mt-1">Queries where your brand appears most</p>
-            </div>
+        <div className={`py-8 border-b border-border/50 ${demoMode ? 'demo-card-4' : ''}`}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-foreground">Top Prompts</h2>
             {onNavigateToPrompts && (
-              <Button variant="outline" size="sm" onClick={onNavigateToPrompts}>
-                Manage Prompts
+              <Button variant="ghost" size="sm" onClick={onNavigateToPrompts} className="text-xs text-muted-foreground">
+                Manage
               </Button>
             )}
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-1">
             {(expandedPrompts ? coreQueries : coreQueries.slice(0, 4)).map((query, index) => (
               <div 
                 key={index}
                 onClick={() => onQueryClick?.(query.query)}
-                className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors group"
+                className="flex items-center justify-between py-2.5 px-3 -mx-3 rounded-md hover:bg-muted/40 cursor-pointer transition-colors group"
               >
                 <p className="text-sm text-foreground group-hover:text-primary transition-colors">{query.query}</p>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">{query.mentions} mentions</span>
-                  <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="text-xs text-muted-foreground">{query.mentions}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             ))}
           </div>
 
           {coreQueries.length > 4 && (
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center mt-4">
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => setExpandedPrompts(!expandedPrompts)}
-                className="text-muted-foreground"
+                className="text-muted-foreground text-xs"
               >
                 {expandedPrompts ? (
-                  <>Show Less <ChevronUp className="w-4 h-4 ml-1" /></>
+                  <>Less <ChevronUp className="w-3.5 h-3.5 ml-0.5" /></>
                 ) : (
-                  <>View All <ChevronDown className="w-4 h-4 ml-1" /></>
+                  <>More <ChevronDown className="w-3.5 h-3.5 ml-0.5" /></>
                 )}
               </Button>
             </div>
@@ -531,49 +532,46 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         </div>
 
         {/* Source Quality */}
-        <div className={`py-12 ${demoMode ? 'demo-card-5' : ''}`}>
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-xl font-medium text-foreground">Source Quality</h2>
-              <p className="text-sm text-muted-foreground mt-1">Where AI platforms find your brand</p>
-            </div>
+        <div className={`py-8 ${demoMode ? 'demo-card-5' : ''}`}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-foreground">Source Quality</h2>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-1">
             {(expandedSources ? sourceQuality : sourceQuality.slice(0, 3)).map((source, index) => (
               <div 
                 key={index}
-                className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors group"
+                className="flex items-center justify-between py-2.5 px-3 -mx-3 rounded-md hover:bg-muted/40 cursor-pointer transition-colors group"
                 onClick={() => window.open(source.url, '_blank')}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-foreground group-hover:text-primary transition-colors">
                     {source.source}
                   </span>
-                  <Badge variant="secondary" className="text-xs capitalize">
+                  <Badge variant="secondary" className="text-[10px] capitalize px-1.5 py-0">
                     {source.authority}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">{source.mentions} refs</span>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="text-xs text-muted-foreground">{source.mentions} refs</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             ))}
           </div>
 
           {sourceQuality.length > 3 && (
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center mt-4">
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => setExpandedSources(!expandedSources)}
-                className="text-muted-foreground"
+                className="text-muted-foreground text-xs"
               >
                 {expandedSources ? (
-                  <>Show Less <ChevronUp className="w-4 h-4 ml-1" /></>
+                  <>Less <ChevronUp className="w-3.5 h-3.5 ml-0.5" /></>
                 ) : (
-                  <>View All <ChevronDown className="w-4 h-4 ml-1" /></>
+                  <>More <ChevronDown className="w-3.5 h-3.5 ml-0.5" /></>
                 )}
               </Button>
             </div>
