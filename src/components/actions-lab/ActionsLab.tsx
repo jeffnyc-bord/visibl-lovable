@@ -58,9 +58,9 @@ export const ActionsLab = ({ demoMode = false, activeTab = 'on-site' }: ActionsL
             </>
           )}
 
-          {/* Authority Lab: Unified Off-site, PR & Social */}
+          {/* Authority Lab: Full width */}
           {activeTab === 'authority' && (
-            <div className="h-[calc(100vh-220px)] -mx-6 -mb-6 lg:mx-0 lg:mb-0 lg:rounded-2xl lg:border lg:border-border/50 overflow-hidden">
+            <div className="h-[calc(100vh-180px)] -mx-6 -mt-2 -mb-6">
               <UnifiedAuthorityLab />
             </div>
           )}
