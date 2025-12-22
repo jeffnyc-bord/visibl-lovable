@@ -134,7 +134,7 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">
+            <h3 className="text-lg font-medium text-foreground mb-2">
               Select a prompt to begin
             </h3>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">

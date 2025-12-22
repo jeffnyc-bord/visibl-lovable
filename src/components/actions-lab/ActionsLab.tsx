@@ -93,7 +93,7 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
                   className={cn(
                     "w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                     activeTab === tab.id
-                      ? 'bg-primary/10 text-primary'
+                      ? 'bg-foreground/5 text-foreground'
                       : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                   )}
                 >
@@ -135,7 +135,7 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
           {/* Progress */}
           <div className="p-4">
             <div className="text-center">
-              <div className="text-3xl font-semibold text-foreground tracking-tight">
+              <div className="text-3xl font-medium text-foreground tracking-tight">
                 {Math.round((completedCount / totalCount) * 100)}%
               </div>
               <div className="text-xs text-muted-foreground mt-1">
@@ -174,8 +174,8 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
         {activeTab === 'on-site' && (
           <>
             <div className="hidden lg:block mb-6">
-              <h2 className="text-xl font-semibold text-foreground tracking-tight">
-                {tabConfig.find(t => t.id === activeTab)?.label}
+            <h2 className="text-xl font-medium text-foreground tracking-tight">
+              {tabConfig.find(t => t.id === activeTab)?.label}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
                 Generate AI-optimized content from your Prompt Blast Lab insights
@@ -197,8 +197,8 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
             />
 
             <div className="hidden lg:flex items-center justify-between gap-4 mb-6">
-              <h2 className="text-xl font-semibold text-foreground tracking-tight">
-                {tabConfig.find(t => t.id === activeTab)?.label}
+            <h2 className="text-xl font-medium text-foreground tracking-tight">
+              {tabConfig.find(t => t.id === activeTab)?.label}
               </h2>
               <FilterBar filters={filters} onFilterChange={setFilters} />
             </div>

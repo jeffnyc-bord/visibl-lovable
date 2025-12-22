@@ -401,7 +401,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
       {/* Export Report Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className={`text-2xl font-bold text-foreground ${demoMode ? 'demo-header' : ''}`}>AI Visibility Overview</h2>
+          <h2 className={`text-2xl font-medium text-foreground ${demoMode ? 'demo-header' : ''}`}>AI Visibility Overview</h2>
           <p className={`text-muted-foreground ${demoMode ? 'demo-header' : ''}`}>Comprehensive AI visibility metrics and platform insights for {brandData.name}</p>
         </div>
         <ReportExportDialog
@@ -473,7 +473,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               </div>
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-bold text-gray-900">{brandData.totalMentions.toLocaleString()}</span>
+              <span className="text-2xl font-medium text-foreground">{brandData.totalMentions.toLocaleString()}</span>
               <Badge variant="secondary" className="ml-2 text-xs bg-green-100 text-green-800">
                 +15%
               </Badge>
@@ -517,7 +517,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               </div>
             </div>
             <div className="mt-2 min-w-0">
-              <span className="text-lg font-bold text-green-600 block truncate max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+              <span className="text-lg font-medium text-success block truncate max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                 {testTopSourceUrl || sourceQuality.reduce((max, source) => 
                   source.mentions > max.mentions ? source : max
                 , sourceQuality[0]).source}
@@ -555,7 +555,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 <div className="flex items-center space-x-2">
                   <AIInsightsModal
                     trigger={
-                      <button className="text-2xl font-bold text-gray-900 hover:text-primary transition-colors cursor-pointer">
+                      <button className="text-2xl font-medium text-foreground hover:text-foreground/80 transition-colors cursor-pointer">
                         4
                       </button>
                     }
@@ -1050,7 +1050,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                           
                           {/* Central Percentage Text */}
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-white text-lg font-bold">
+                            <span className="text-white text-lg font-medium">
                               {hoveredSegment !== null ? `${platformMentionsData[hoveredSegment].percentage}%` : ''}
                             </span>
                           </div>
@@ -1071,8 +1071,8 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                               key={index}
                               className={`absolute text-xs font-medium cursor-pointer transition-all duration-300 ${
                                 hoveredSegment === index 
-                                  ? 'text-gray-900 font-bold transform scale-110' 
-                                  : 'text-gray-700 hover:text-gray-900'
+                                  ? 'text-foreground font-medium transform scale-110' 
+                                  : 'text-muted-foreground hover:text-foreground'
                               }`}
                               style={{
                                 left: `${x}%`,
