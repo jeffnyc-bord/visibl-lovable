@@ -806,6 +806,16 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           open={promptInsightsOpen}
           onOpenChange={setPromptInsightsOpen}
           prompt={selectedPromptInsight}
+          onViewSource={(sourceName) => {
+            const insight = sourceInsightsData.find(s => s.name === sourceName);
+            if (insight) {
+              setPromptInsightsOpen(false);
+              setTimeout(() => {
+                setSelectedSourceInsight(insight);
+                setSourceInsightsOpen(true);
+              }, 150);
+            }
+          }}
         />
 
         {/* Source Insights Sheet */}

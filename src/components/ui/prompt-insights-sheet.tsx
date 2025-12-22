@@ -48,13 +48,15 @@ interface PromptInsightsSheetProps {
   onOpenChange: (open: boolean) => void;
   prompt: PromptInsight | null;
   onViewInAuthorityLab?: (sourceUrl: string) => void;
+  onViewSource?: (sourceName: string) => void;
 }
 
 export const PromptInsightsSheet = ({ 
   open, 
   onOpenChange, 
   prompt,
-  onViewInAuthorityLab 
+  onViewInAuthorityLab,
+  onViewSource
 }: PromptInsightsSheetProps) => {
   if (!prompt) return null;
 
@@ -183,7 +185,7 @@ export const PromptInsightsSheet = ({
                 <div 
                   key={index}
                   className="flex items-center justify-between p-3 rounded-lg hover:bg-secondary/30 transition-colors cursor-pointer group"
-                  onClick={() => window.open(source.url, '_blank')}
+                  onClick={() => onViewSource?.(source.name)}
                 >
                   <div className="flex items-center gap-3">
                     <Globe className="w-4 h-4 text-muted-foreground" />
@@ -198,6 +200,17 @@ export const PromptInsightsSheet = ({
                     <Badge variant="outline" className={cn("text-[10px] capitalize", getAuthorityColor(source.authority))}>
                       {source.authority}
                     </Badge>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 px-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(source.url, '_blank');
+                      }}
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                    </Button>
                     <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
