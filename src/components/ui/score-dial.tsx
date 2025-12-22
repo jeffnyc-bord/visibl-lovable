@@ -80,25 +80,26 @@ export const ScoreDial = ({
       </div>
 
       {/* Score Display */}
-      <div className="flex items-end gap-2 mb-2">
-        <span className="text-3xl font-bold text-foreground tabular-nums">
+      <div className="flex items-baseline gap-1.5 mb-2">
+        <span className="text-3xl font-light text-foreground tabular-nums">
           {animatedScore}
         </span>
+        <span className="text-sm text-muted-foreground font-light">out of 100</span>
         {showChange && (
-          <>
+          <div className="ml-2">
             {isHovered ? (
-              <span className="text-xs text-muted-foreground mb-1 animate-fade-in whitespace-nowrap">
+              <span className="text-xs text-muted-foreground animate-fade-in whitespace-nowrap">
                 Up from {previousScore} last week
               </span>
             ) : (
               <Badge 
                 variant="secondary" 
-                className="bg-success/10 text-success border-success/20 animate-scale-in text-xs mb-1"
+                className="bg-success/10 text-success border-success/20 animate-scale-in text-xs"
               >
                 +{change}
               </Badge>
             )}
-          </>
+          </div>
         )}
       </div>
 
