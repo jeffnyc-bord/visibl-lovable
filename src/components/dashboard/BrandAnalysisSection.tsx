@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AddProductFlow } from "@/components/ui/add-product-flow";
+import { AddProductDialog } from "@/components/ui/add-product-dialog";
 import { toast } from "@/hooks/use-toast";
 import { 
   TrendingUp, 
@@ -81,7 +81,6 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [showTooltips, setShowTooltips] = useState<{[key: string]: boolean}>({});
   const [newProducts, setNewProducts] = useState<any[]>([]);
-  const [showAddProductFlow, setShowAddProductFlow] = useState(false);
 
   // Use brand's product data with enhanced mock structure
   const mockProducts = brandData.products.map((product, index) => ({
@@ -393,19 +392,6 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
           <CardDescription>Detailed view and management of all product performance</CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Inline Add Product Flow */}
-          {showAddProductFlow && (
-            <div className="mb-6">
-              <AddProductFlow 
-                onProductAdded={(product) => {
-                  handleProductAdded(product);
-                  setShowAddProductFlow(false);
-                }}
-                onCancel={() => setShowAddProductFlow(false)}
-              />
-            </div>
-          )}
-
           {/* Search and Filters */}
           <div className="flex flex-col lg:flex-row gap-4 mb-6">
             <div className="flex-1 relative">
@@ -418,16 +404,15 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
               />
             </div>
             <div className="flex gap-2">
-              {!showAddProductFlow && (
-                <Button 
-                  variant="outline" 
-                  className="flex items-center space-x-2"
-                  onClick={() => setShowAddProductFlow(true)}
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Product/Service</span>
-                </Button>
-              )}
+              <AddProductDialog 
+                onProductAdded={handleProductAdded}
+                trigger={
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <Plus className="w-4 h-4" />
+                    <span>Add Product/Service</span>
+                  </Button>
+                }
+              />
               {selectedProducts.length > 0 && (
                 <Button
                   variant="outline"
