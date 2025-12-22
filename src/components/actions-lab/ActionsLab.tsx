@@ -1,19 +1,24 @@
 import { useState, useRef } from 'react';
-import { Globe, Link2, Megaphone, Zap, LayoutList, Clock, CheckCircle2 } from "lucide-react";
+import { Globe, Link2, Megaphone, Zap, LayoutList, Clock, CheckCircle2, FileText, Sparkles } from "lucide-react";
 import { StrategyOverview } from './StrategyOverview';
 import { FilterBar } from './FilterBar';
 import { ActionGroup } from './ActionGroup';
 import { ContentQueueBar } from './ContentQueueBar';
+import { ContentGenerationWorkflow } from './ContentGenerationWorkflow';
 import { recommendations, strategyKPIs, strategySummary } from './data';
 import { FilterState, TabType, Recommendation } from './types';
 import { toast } from "@/hooks/use-toast";
+import { cn } from '@/lib/utils';
 
 interface ActionsLabProps {
   demoMode?: boolean;
 }
 
+type ViewMode = 'actions' | 'generate';
+
 export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
   const [activeTab, setActiveTab] = useState<TabType>('on-site');
+  const [viewMode, setViewMode] = useState<ViewMode>('actions');
   const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterState>({
     goal: 'all',
@@ -90,57 +95,94 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
       {/* Glassmorphism Sidebar */}
       <aside className="hidden lg:flex flex-col w-56 flex-shrink-0 sticky top-6 self-start">
         <div className="rounded-2xl border border-border/50 bg-background/60 backdrop-blur-xl shadow-sm overflow-hidden">
-          {/* Navigation */}
-          <nav className="p-3">
+          {/* View Mode Toggle */}
+          <div className="p-3 border-b border-border/40">
             <span className="px-3 text-[10px] uppercase tracking-widest text-muted-foreground/60 font-medium">
-              Categories
+              Mode
             </span>
             <div className="mt-2 space-y-0.5">
-              {tabConfig.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                    activeTab === tab.id
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-                  }`}
-                >
-                  <tab.icon className="w-4 h-4" />
-                  {tab.shortLabel}
-                </button>
-              ))}
+              <button
+                onClick={() => setViewMode('actions')}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                  viewMode === 'actions'
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                )}
+              >
+                <LayoutList className="w-4 h-4" />
+                Actions
+              </button>
+              <button
+                onClick={() => setViewMode('generate')}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                  viewMode === 'generate'
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                )}
+              >
+                <Sparkles className="w-4 h-4" />
+                Generate
+              </button>
             </div>
-          </nav>
+          </div>
 
-          {/* Divider */}
-          <div className="mx-3 border-t border-border/40" />
+          {/* Navigation - Only show when in actions mode */}
+          {viewMode === 'actions' && (
+            <>
+              <nav className="p-3">
+                <span className="px-3 text-[10px] uppercase tracking-widest text-muted-foreground/60 font-medium">
+                  Categories
+                </span>
+                <div className="mt-2 space-y-0.5">
+                  {tabConfig.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                        activeTab === tab.id
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      }`}
+                    >
+                      <tab.icon className="w-4 h-4" />
+                      {tab.shortLabel}
+                    </button>
+                  ))}
+                </div>
+              </nav>
 
-          {/* Quick Actions */}
-          <nav className="p-3">
-            <span className="px-3 text-[10px] uppercase tracking-widest text-muted-foreground/60 font-medium">
-              Views
-            </span>
-            <div className="mt-2 space-y-0.5">
-              {quickActions.map((action, index) => (
-                <button
-                  key={index}
-                  className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground rounded-lg transition-all duration-200"
-                >
-                  <span className="flex items-center gap-2.5">
-                    <action.icon className="w-4 h-4" />
-                    {action.label}
-                  </span>
-                  {action.count > 0 && (
-                    <span className="text-xs text-muted-foreground/60">{action.count}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </nav>
+              {/* Divider */}
+              <div className="mx-3 border-t border-border/40" />
 
-          {/* Divider */}
-          <div className="mx-3 border-t border-border/40" />
+              {/* Quick Actions */}
+              <nav className="p-3">
+                <span className="px-3 text-[10px] uppercase tracking-widest text-muted-foreground/60 font-medium">
+                  Views
+                </span>
+                <div className="mt-2 space-y-0.5">
+                  {quickActions.map((action, index) => (
+                    <button
+                      key={index}
+                      className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground rounded-lg transition-all duration-200"
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <action.icon className="w-4 h-4" />
+                        {action.label}
+                      </span>
+                      {action.count > 0 && (
+                        <span className="text-xs text-muted-foreground/60">{action.count}</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </nav>
+
+              {/* Divider */}
+              <div className="mx-3 border-t border-border/40" />
+            </>
+          )}
 
           {/* Progress Section */}
           <div className="p-4">
@@ -164,87 +206,104 @@ export const ActionsLab = ({ demoMode = false }: ActionsLabProps) => {
 
       {/* Main Content */}
       <div className="flex-1 min-w-0">
-        {/* Strategy Overview */}
-        <StrategyOverview 
-          summary={strategySummary}
-          kpis={strategyKPIs}
-          onStartQuickWins={handleStartQuickWins}
-          completedCount={completedCount}
-          totalCount={totalCount}
-        />
+        {viewMode === 'actions' ? (
+          <>
+            {/* Strategy Overview */}
+            <StrategyOverview 
+              summary={strategySummary}
+              kpis={strategyKPIs}
+              onStartQuickWins={handleStartQuickWins}
+              completedCount={completedCount}
+              totalCount={totalCount}
+            />
 
-        {/* Mobile Tabs */}
-        <div ref={contentRef} className="lg:hidden flex items-center justify-between gap-4 border-b border-border/40 mb-6">
-          <div className="flex items-center gap-1">
-            {tabConfig.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
-                  activeTab === tab.id
-                    ? 'text-foreground border-foreground'
-                    : 'text-muted-foreground border-transparent hover:text-foreground'
-                }`}
-              >
-                <tab.icon className="w-4 h-4" />
-                <span>{tab.shortLabel}</span>
-              </button>
-            ))}
+            {/* Mobile Tabs */}
+            <div ref={contentRef} className="lg:hidden flex items-center justify-between gap-4 border-b border-border/40 mb-6">
+              <div className="flex items-center gap-1">
+                {tabConfig.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                      activeTab === tab.id
+                        ? 'text-foreground border-foreground'
+                        : 'text-muted-foreground border-transparent hover:text-foreground'
+                    }`}
+                  >
+                    <tab.icon className="w-4 h-4" />
+                    <span>{tab.shortLabel}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop Header */}
+            <div className="hidden lg:flex items-center justify-between gap-4 mb-6">
+              <h2 className="text-xl font-semibold text-foreground tracking-tight">
+                {tabConfig.find(t => t.id === activeTab)?.label}
+              </h2>
+              <FilterBar 
+                filters={filters}
+                onFilterChange={setFilters}
+              />
+            </div>
+
+            {/* Mobile Filter */}
+            <div className="lg:hidden mb-4">
+              <FilterBar 
+                filters={filters}
+                onFilterChange={setFilters}
+              />
+            </div>
+
+            {/* Content Queue */}
+            <ContentQueueBar draftCount={draftCount} onViewDrafts={handleViewDrafts} />
+
+            {/* Actions List */}
+            <div className="mt-6 space-y-8">
+              {/* This Week - Priority Group */}
+              <ActionGroup
+                title="This Week"
+                subtitle="High-impact quick wins"
+                recommendations={getThisWeekRecs(activeTab)}
+                completedIds={completedIds}
+                onToggleComplete={handleToggleComplete}
+                onOpenStudio={handleOpenStudio}
+                showStepNumbers={true}
+                defaultExpanded={true}
+                maxVisible={5}
+                isPriorityGroup={true}
+              />
+
+              {/* Later */}
+              <ActionGroup
+                title="Later"
+                subtitle="Foundations & advanced"
+                recommendations={getLaterRecs(activeTab)}
+                completedIds={completedIds}
+                onToggleComplete={handleToggleComplete}
+                onOpenStudio={handleOpenStudio}
+                showStepNumbers={false}
+                defaultExpanded={true}
+                maxVisible={4}
+                isPriorityGroup={false}
+              />
+            </div>
+          </>
+        ) : (
+          /* Content Generation Workflow */
+          <div>
+            <div className="mb-8">
+              <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+                Content Generator
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Create AI-optimized content from your Prompt Blast Lab insights
+              </p>
+            </div>
+            <ContentGenerationWorkflow demoMode={demoMode} />
           </div>
-        </div>
-
-        {/* Desktop Header */}
-        <div className="hidden lg:flex items-center justify-between gap-4 mb-6">
-          <h2 className="text-xl font-semibold text-foreground tracking-tight">
-            {tabConfig.find(t => t.id === activeTab)?.label}
-          </h2>
-          <FilterBar 
-            filters={filters}
-            onFilterChange={setFilters}
-          />
-        </div>
-
-        {/* Mobile Filter */}
-        <div className="lg:hidden mb-4">
-          <FilterBar 
-            filters={filters}
-            onFilterChange={setFilters}
-          />
-        </div>
-
-        {/* Content Queue */}
-        <ContentQueueBar draftCount={draftCount} onViewDrafts={handleViewDrafts} />
-
-        {/* Actions List */}
-        <div className="mt-6 space-y-8">
-          {/* This Week - Priority Group */}
-          <ActionGroup
-            title="This Week"
-            subtitle="High-impact quick wins"
-            recommendations={getThisWeekRecs(activeTab)}
-            completedIds={completedIds}
-            onToggleComplete={handleToggleComplete}
-            onOpenStudio={handleOpenStudio}
-            showStepNumbers={true}
-            defaultExpanded={true}
-            maxVisible={5}
-            isPriorityGroup={true}
-          />
-
-          {/* Later */}
-          <ActionGroup
-            title="Later"
-            subtitle="Foundations & advanced"
-            recommendations={getLaterRecs(activeTab)}
-            completedIds={completedIds}
-            onToggleComplete={handleToggleComplete}
-            onOpenStudio={handleOpenStudio}
-            showStepNumbers={false}
-            defaultExpanded={true}
-            maxVisible={4}
-            isPriorityGroup={false}
-          />
-        </div>
+        )}
       </div>
     </div>
   );
