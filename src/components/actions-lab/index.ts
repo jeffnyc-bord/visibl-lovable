@@ -12,5 +12,6 @@ export { OptimizedStructurePanel } from './OptimizedStructurePanel';
 export { SerpPreviewPanel } from './SerpPreviewPanel';
 export { EditableHeadersPanel } from './EditableHeadersPanel';
 export { ContextNotesPanel } from './ContextNotesPanel';
+export { WorkflowModeSelector } from './WorkflowModeSelector';
 export * from './types';
 export * from './data';

@@ -5,6 +5,7 @@ import { ContentTypeSelector, ContentType } from './ContentTypeSelector';
 import { OptimizedStructurePanel, OptimizedStructure } from './OptimizedStructurePanel';
 import { SerpPreviewPanel } from './SerpPreviewPanel';
 import { ContextNotesPanel } from './ContextNotesPanel';
+import { WorkflowModeSelector, WorkflowMode } from './WorkflowModeSelector';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -89,6 +90,7 @@ interface ContentGenerationWorkflowProps {
 }
 
 export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGenerationWorkflowProps) => {
+  const [workflowMode, setWorkflowMode] = useState<WorkflowMode | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<ProductSource | null>(null);
   const [selectedPrompt, setSelectedPrompt] = useState<PromptSource | null>(null);
   const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
@@ -99,17 +101,30 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
   const [productNotes, setProductNotes] = useState('');
   const [sessionContext, setSessionContext] = useState<ContextNote[]>([]);
 
-  const handleSelectProduct = (product: ProductSource) => {
-    setSelectedProduct(product);
-    // Reset downstream selections
+  const handleSelectMode = (mode: WorkflowMode) => {
+    setWorkflowMode(mode);
+    // Reset all downstream selections when mode changes
+    setSelectedProduct(null);
     setSelectedPrompt(null);
     setSelectedContentType(null);
   };
 
+  const handleSelectProduct = (product: ProductSource) => {
+    setSelectedProduct(product);
+    // Only reset downstream if in product-first mode
+    if (workflowMode === 'product') {
+      setSelectedPrompt(null);
+      setSelectedContentType(null);
+    }
+  };
+
   const handleSelectPrompt = (prompt: PromptSource) => {
     setSelectedPrompt(prompt);
-    // Reset downstream selections
-    setSelectedContentType(null);
+    // Only reset downstream if in prompt-first mode
+    if (workflowMode === 'prompt') {
+      setSelectedProduct(null);
+      setSelectedContentType(null);
+    }
   };
 
   const handleSelectContentType = (type: ContentType) => {
@@ -139,30 +154,66 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
     <div className={cn("flex gap-8", demoMode && "demo-card-1")}>
       {/* Main Content Area */}
       <div className="flex-1 min-w-0">
-        {/* Step 1: Product Source */}
-        <ProductSourceSelector
-          products={mockProducts}
-          selectedProduct={selectedProduct}
-          onSelectProduct={handleSelectProduct}
-          stepNumber={1}
+        {/* Step 0: Workflow Mode */}
+        <WorkflowModeSelector
+          selectedMode={workflowMode}
+          onSelectMode={handleSelectMode}
         />
 
-        {/* Step 2: Prompt Source */}
-        <PromptSourceSelector
-          prompts={mockPrompts}
-          selectedPrompt={selectedPrompt}
-          onSelectPrompt={handleSelectPrompt}
-          disabled={!selectedProduct}
-          stepNumber={2}
-        />
+        {/* Product-first flow */}
+        {workflowMode === 'product' && (
+          <>
+            {/* Step 1: Product Source */}
+            <ProductSourceSelector
+              products={mockProducts}
+              selectedProduct={selectedProduct}
+              onSelectProduct={handleSelectProduct}
+              stepNumber={1}
+            />
 
-        {/* Step 3: Content Type */}
-        <ContentTypeSelector
-          selectedType={selectedContentType}
-          onSelectType={handleSelectContentType}
-          disabled={!selectedPrompt}
-          stepNumber={3}
-        />
+            {/* Step 2: Prompt Source */}
+            <PromptSourceSelector
+              prompts={mockPrompts}
+              selectedPrompt={selectedPrompt}
+              onSelectPrompt={handleSelectPrompt}
+              disabled={!selectedProduct}
+              stepNumber={2}
+            />
+          </>
+        )}
+
+        {/* Prompt-first flow */}
+        {workflowMode === 'prompt' && (
+          <>
+            {/* Step 1: Prompt Source */}
+            <PromptSourceSelector
+              prompts={mockPrompts}
+              selectedPrompt={selectedPrompt}
+              onSelectPrompt={handleSelectPrompt}
+              disabled={false}
+              stepNumber={1}
+            />
+
+            {/* Step 2: Product Source */}
+            <ProductSourceSelector
+              products={mockProducts}
+              selectedProduct={selectedProduct}
+              onSelectProduct={handleSelectProduct}
+              stepNumber={2}
+              disabled={!selectedPrompt}
+            />
+          </>
+        )}
+
+        {/* Step 3: Content Type (shown after both product and prompt are selected) */}
+        {workflowMode && (
+          <ContentTypeSelector
+            selectedType={selectedContentType}
+            onSelectType={handleSelectContentType}
+            disabled={!selectedPrompt || !selectedProduct}
+            stepNumber={3}
+          />
+        )}
 
         {/* Step 4: Context & Notes (Optional) */}
         {selectedContentType && (
@@ -188,7 +239,7 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
         )}
 
         {/* Empty State */}
-        {!selectedProduct && (
+        {!workflowMode && (
           <div className="mt-12 text-center py-16">
             <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-muted/50 flex items-center justify-center">
               <svg
@@ -206,10 +257,10 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
               </svg>
             </div>
             <h3 className="text-lg font-medium text-foreground mb-2">
-              Start by selecting a product
+              Choose how to start
             </h3>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Choose a product from your catalog, then select a prompt and content format to generate optimized content.
+              Select whether you want to start with a product from your catalog or a prompt from Prompt Blast Lab.
             </p>
           </div>
         )}
