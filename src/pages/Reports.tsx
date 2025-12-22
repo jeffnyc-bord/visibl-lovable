@@ -2,11 +2,11 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
+  ArrowRight,
   Calendar,
   Check,
   ChevronDown,
-  Download,
-  X
+  Download
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
+import ReportEditor, { ReportBlock } from '@/components/reports/ReportEditor';
 
 // Mock data for granular selection
 const mockPrompts = [
@@ -60,6 +61,7 @@ interface SectionConfig {
 
 const Reports = () => {
   const navigate = useNavigate();
+  const [step, setStep] = useState<'configure' | 'edit'>('configure');
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(2024, 0, 1));
   const [endDate, setEndDate] = useState<Date | undefined>(new Date());
   
@@ -80,6 +82,9 @@ const Reports = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+
+  // Editor blocks state
+  const [editorBlocks, setEditorBlocks] = useState<ReportBlock[]>([]);
 
   const toggleSection = (key: string) => {
     setSections(prev => ({
@@ -126,6 +131,134 @@ const Reports = () => {
 
   const enabledSectionsCount = Object.values(sections).filter(s => s.enabled).length;
 
+  // Generate initial blocks from configuration
+  const generateBlocks = (): ReportBlock[] => {
+    const blocks: ReportBlock[] = [];
+    
+    if (sections.score.enabled) {
+      blocks.push({
+        id: 'score-section',
+        type: 'section',
+        content: {
+          sectionType: 'Visibility Score',
+          title: 'Overall AI Visibility Score',
+          body: 'Your brand scored 87/100 this period, up 5 points from last period.'
+        }
+      });
+    }
+
+    if (sections.mentions.enabled) {
+      blocks.push({
+        id: 'mentions-stat',
+        type: 'stat',
+        content: {
+          statValue: '12,847',
+          statLabel: 'total brand mentions across AI platforms'
+        }
+      });
+    }
+
+    if (sections.platformCoverage.enabled && sections.platformCoverage.items?.length) {
+      blocks.push({
+        id: 'platform-section',
+        type: 'section',
+        content: {
+          sectionType: 'Platform Coverage',
+          title: 'AI Platform Mention Distribution',
+          body: 'Comprehensive analysis of brand mentions across leading AI platforms with visual breakdown and detailed metrics.'
+        }
+      });
+    }
+
+    if (sections.prompts.enabled && sections.prompts.items?.length) {
+      blocks.push({
+        id: 'prompts-section',
+        type: 'section',
+        content: {
+          sectionType: 'Top Prompts',
+          title: 'Top AI Prompts & Queries',
+          body: 'Most frequent prompts and queries mentioning your brand across AI platforms.'
+        }
+      });
+      
+      // Add selected prompts as quotes
+      const selectedPrompts = mockPrompts.filter(p => sections.prompts.items?.includes(p.id));
+      selectedPrompts.slice(0, 3).forEach((prompt, i) => {
+        blocks.push({
+          id: `prompt-${prompt.id}`,
+          type: 'quote',
+          content: {
+            quoteText: prompt.text,
+            quoteAuthor: `${prompt.mentions} mentions on ${prompt.platform}`
+          }
+        });
+      });
+    }
+
+    if (sections.products.enabled && sections.products.items?.length) {
+      blocks.push({
+        id: 'products-section',
+        type: 'section',
+        content: {
+          sectionType: 'Optimized Products',
+          title: 'Product Optimization Summary',
+          body: 'Products that have been optimized for AI visibility with associated prompts and content.'
+        }
+      });
+    }
+
+    if (sections.sources.enabled && sections.sources.items?.length) {
+      blocks.push({
+        id: 'sources-section',
+        type: 'section',
+        content: {
+          sectionType: 'Authority Sources',
+          title: 'Top Authority Sources',
+          body: 'Pages with highest estimated traffic and LLM citation counts.'
+        }
+      });
+    }
+
+    if (sections.actions.enabled && sections.actions.items?.length) {
+      blocks.push({
+        id: 'actions-section',
+        type: 'section',
+        content: {
+          sectionType: 'Actions Log',
+          title: 'Recent Actions & Optimizations',
+          body: 'Summary of optimization actions taken during this period.'
+        }
+      });
+    }
+
+    return blocks;
+  };
+
+  const handleProceedToEdit = () => {
+    setEditorBlocks(generateBlocks());
+    setStep('edit');
+  };
+
+  const handleExport = () => {
+    console.log('Exporting PDF with blocks:', editorBlocks);
+    // TODO: Implement actual PDF export
+  };
+
+  // Render editor step
+  if (step === 'edit') {
+    return (
+      <ReportEditor
+        blocks={editorBlocks}
+        onBlocksChange={setEditorBlocks}
+        onBack={() => setStep('configure')}
+        onExport={handleExport}
+        reportTitle={reportTitle}
+        onTitleChange={setReportTitle}
+      />
+    );
+  }
+
+  // Render configure step
   return (
     <div className="min-h-screen bg-background">
       {/* Minimal Header */}
@@ -140,10 +273,11 @@ const Reports = () => {
           </button>
           
           <Button 
+            onClick={handleProceedToEdit}
             className="h-9 px-5 rounded-full"
           >
-            <Download className="w-4 h-4 mr-2" />
-            Export PDF
+            Continue
+            <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
       </header>
@@ -151,11 +285,14 @@ const Reports = () => {
       <main className="max-w-5xl mx-auto px-8 py-16">
         {/* Page Title */}
         <div className="mb-16">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">Step 1 of 2</span>
+          </div>
           <h1 className="text-3xl font-light tracking-tight text-foreground">
-            Create Report
+            Configure Report
           </h1>
           <p className="text-muted-foreground mt-1">
-            Configure what to include in your export
+            Select what to include, then customize in the next step
           </p>
         </div>
 
