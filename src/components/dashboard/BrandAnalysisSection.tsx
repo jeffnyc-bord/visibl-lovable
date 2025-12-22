@@ -69,9 +69,10 @@ interface BrandData {
 interface BrandAnalysisSectionProps {
   brandData: BrandData;
   demoMode?: boolean;
+  onOptimizeProduct?: (productId: string, productName: string) => void;
 }
 
-export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnalysisSectionProps) => {
+export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizeProduct }: BrandAnalysisSectionProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [scoreFilter, setScoreFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -610,7 +611,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
                         size="sm" 
                         variant="outline" 
                         className="text-xs px-2 py-1"
-                        onClick={() => window.location.href = `/product/${product.id}`}
+                        onClick={() => onOptimizeProduct?.(String(product.id), product.name)}
                       >
                         <ExternalLink className="w-3 h-3 mr-1" />
                         Optimize

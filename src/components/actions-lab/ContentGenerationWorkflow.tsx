@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ProductSourceSelector, ProductSource } from './ProductSourceSelector';
 import { PromptSourceSelector, PromptSource } from './PromptSourceSelector';
 import { ContentTypeSelector, ContentType } from './ContentTypeSelector';
@@ -94,9 +94,11 @@ const mockPrompts: PromptSource[] = [
 
 interface ContentGenerationWorkflowProps {
   demoMode?: boolean;
+  preselectedProductId?: string | null;
+  onProductUsed?: () => void;
 }
 
-export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGenerationWorkflowProps) => {
+export const ContentGenerationWorkflow = ({ demoMode = false, preselectedProductId, onProductUsed }: ContentGenerationWorkflowProps) => {
   const [workflowMode, setWorkflowMode] = useState<WorkflowMode | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<ProductSource | null>(null);
   const [selectedPrompt, setSelectedPrompt] = useState<PromptSource | null>(null);
@@ -107,6 +109,18 @@ export const ContentGenerationWorkflow = ({ demoMode = false }: ContentGeneratio
   const [schemaEnabled, setSchemaEnabled] = useState(false);
   const [productNotes, setProductNotes] = useState('');
   const [sessionContext, setSessionContext] = useState<ContextNote[]>([]);
+
+  // Handle preselected product from external navigation
+  useEffect(() => {
+    if (preselectedProductId) {
+      const product = mockProducts.find(p => p.id === preselectedProductId);
+      if (product) {
+        setWorkflowMode('product');
+        setSelectedProduct(product);
+        onProductUsed?.();
+      }
+    }
+  }, [preselectedProductId, onProductUsed]);
 
   const handleSelectMode = (mode: WorkflowMode) => {
     setWorkflowMode(mode);
