@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronRight, Package, Check, ChevronDown, Database, ShoppingBag } from 'lucide-react';
+import { ChevronRight, Package, Check, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface ProductSource {
@@ -8,7 +8,6 @@ export interface ProductSource {
   category: string;
   visibilityScore: number;
   mentions: number;
-  source?: 'catalog' | 'manual';
 }
 
 interface ProductSourceSelectorProps {
@@ -94,33 +93,12 @@ export const ProductSourceSelector = ({
 
               {/* Product Info */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className={cn(
-                    "text-sm line-clamp-1",
-                    selectedProduct?.id === product.id ? "text-foreground font-medium" : "text-foreground/80"
-                  )}>
-                    {product.name}
-                  </span>
-                  {/* Source Badge */}
-                  <span className={cn(
-                    "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium uppercase tracking-wide",
-                    product.source === 'catalog' 
-                      ? "bg-primary/10 text-primary" 
-                      : "bg-muted text-muted-foreground"
-                  )}>
-                    {product.source === 'catalog' ? (
-                      <>
-                        <Database className="w-2.5 h-2.5" />
-                        Catalog
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingBag className="w-2.5 h-2.5" />
-                        Manual
-                      </>
-                    )}
-                  </span>
-                </div>
+                <span className={cn(
+                  "block text-sm line-clamp-1",
+                  selectedProduct?.id === product.id ? "text-foreground font-medium" : "text-foreground/80"
+                )}>
+                  {product.name}
+                </span>
                 <span className="text-xs text-muted-foreground">{product.category}</span>
               </div>
 
