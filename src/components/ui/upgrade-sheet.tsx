@@ -129,7 +129,7 @@ export const UpgradeSheet = ({
                 <Sparkles className="w-5 h-5 text-cyan-400" />
                 <div>
                   <p className="text-white text-sm font-medium">Unlock More Chatbots</p>
-                  <p className="text-[#6B7280] text-xs">2 platforms → 6+ platforms</p>
+                  <p className="text-[#6B7280] text-xs">2 chatbots → 4 chatbots</p>
                 </div>
               </div>
               <Check className="w-4 h-4 text-cyan-400" />
