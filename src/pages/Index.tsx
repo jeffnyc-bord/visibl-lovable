@@ -481,7 +481,7 @@ const Index = () => {
         <nav className="flex-1 px-2 py-2 overflow-y-auto">
           {/* Dashboard Home */}
           <div 
-            className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
+            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
               activeView === "dashboard" && activeTab === "overview"
                 ? 'bg-foreground/[0.06] text-foreground font-medium' 
                 : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
@@ -491,6 +491,12 @@ const Index = () => {
               setActiveTab("overview");
             }}
           >
+            {/* Animated accent bar */}
+            <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-primary transition-all duration-200 ease-out ${
+              activeView === "dashboard" && activeTab === "overview" 
+                ? 'h-4 opacity-100' 
+                : 'h-0 opacity-0'
+            }`} />
             <BarChart3 className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "dashboard" && activeTab === "overview" ? 'text-foreground' : ''}`} />
             {!sidebarCollapsed && <span>Dashboard home</span>}
           </div>
@@ -498,23 +504,30 @@ const Index = () => {
           {/* Main Sections Group */}
           {!sidebarCollapsed && (
             <div className="mt-3">
-              {mainSections.map((section) => (
-                <div
-                  key={section.key}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
-                    activeView === "dashboard" && activeTab === section.key
-                      ? 'bg-foreground/[0.06] text-foreground font-medium' 
-                      : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
-                  }`}
-                  onClick={() => {
-                    setActiveView("dashboard");
-                    setActiveTab(section.key);
-                  }}
-                >
-                  <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "dashboard" && activeTab === section.key ? 'text-foreground' : ''}`} />
-                  <span>{section.label}</span>
-                </div>
-              ))}
+              {mainSections.map((section) => {
+                const isActive = activeView === "dashboard" && activeTab === section.key;
+                return (
+                  <div
+                    key={section.key}
+                    className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
+                      isActive
+                        ? 'bg-foreground/[0.06] text-foreground font-medium' 
+                        : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
+                    }`}
+                    onClick={() => {
+                      setActiveView("dashboard");
+                      setActiveTab(section.key);
+                    }}
+                  >
+                    {/* Animated accent bar */}
+                    <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-primary transition-all duration-200 ease-out ${
+                      isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
+                    }`} />
+                    <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
+                    <span>{section.label}</span>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -524,23 +537,30 @@ const Index = () => {
               <div className="px-3 mb-1.5">
                 <span className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider">Analytics</span>
               </div>
-              {analyticsSections.map((section) => (
-                <div
-                  key={section.key}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
-                    activeView === "dashboard" && activeTab === section.key
-                      ? 'bg-foreground/[0.06] text-foreground font-medium' 
-                      : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
-                  }`}
-                  onClick={() => {
-                    setActiveView("dashboard");
-                    setActiveTab(section.key);
-                  }}
-                >
-                  <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "dashboard" && activeTab === section.key ? 'text-foreground' : ''}`} />
-                  <span>{section.label}</span>
-                </div>
-              ))}
+              {analyticsSections.map((section) => {
+                const isActive = activeView === "dashboard" && activeTab === section.key;
+                return (
+                  <div
+                    key={section.key}
+                    className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
+                      isActive
+                        ? 'bg-foreground/[0.06] text-foreground font-medium' 
+                        : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
+                    }`}
+                    onClick={() => {
+                      setActiveView("dashboard");
+                      setActiveTab(section.key);
+                    }}
+                  >
+                    {/* Animated accent bar */}
+                    <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-primary transition-all duration-200 ease-out ${
+                      isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
+                    }`} />
+                    <section.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
+                    <span>{section.label}</span>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -550,20 +570,27 @@ const Index = () => {
               <div className="px-3 mb-1.5">
                 <span className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider">Manage</span>
               </div>
-              {sidebarItems.filter(item => item.view !== "dashboard").map((item, index) => (
-                <div 
-                  key={index}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
-                    activeView === item.view
-                      ? 'bg-foreground/[0.06] text-foreground font-medium' 
-                      : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
-                  }`}
-                  onClick={() => setActiveView(item.view)}
-                >
-                  <item.icon className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === item.view ? 'text-foreground' : ''}`} />
-                  <span>{item.label}</span>
-                </div>
-              ))}
+              {sidebarItems.filter(item => item.view !== "dashboard").map((item, index) => {
+                const isActive = activeView === item.view;
+                return (
+                  <div 
+                    key={index}
+                    className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
+                      isActive
+                        ? 'bg-foreground/[0.06] text-foreground font-medium' 
+                        : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
+                    }`}
+                    onClick={() => setActiveView(item.view)}
+                  >
+                    {/* Animated accent bar */}
+                    <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-primary transition-all duration-200 ease-out ${
+                      isActive ? 'h-4 opacity-100' : 'h-0 opacity-0'
+                    }`} />
+                    <item.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-foreground' : ''}`} />
+                    <span>{item.label}</span>
+                  </div>
+                );
+              })}
             </div>
           )}
         </nav>
@@ -571,13 +598,17 @@ const Index = () => {
         {/* Settings - Pinned to Bottom */}
         <div className="px-2 py-3 border-t border-border/50">
           <div 
-            className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 ${
+            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 ${
               activeView === "settings" 
                 ? 'bg-foreground/[0.06] text-foreground font-medium' 
                 : 'text-muted-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground'
             }`}
             onClick={() => setActiveView("settings")}
           >
+            {/* Animated accent bar */}
+            <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-primary transition-all duration-200 ease-out ${
+              activeView === "settings" ? 'h-4 opacity-100' : 'h-0 opacity-0'
+            }`} />
             <Settings className={`w-[18px] h-[18px] flex-shrink-0 ${activeView === "settings" ? 'text-foreground' : ''}`} />
             {!sidebarCollapsed && <span>Settings</span>}
           </div>
