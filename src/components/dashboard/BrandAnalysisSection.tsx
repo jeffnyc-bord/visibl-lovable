@@ -387,7 +387,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
 
       {/* Section 3: Detailed Product AI Readiness Table */}
       <Card className={demoMode ? 'demo-card-6' : ''}>
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg">Product AI Readiness Analysis</CardTitle>
@@ -396,40 +396,15 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
             <AddProductDialog 
               onProductAdded={handleProductAdded}
               trigger={
-                <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90">
-                  <Plus className="w-4 h-4" />
-                  <span>Add Product</span>
+                <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground">
+                  <Plus className="w-4 h-4 mr-1.5" />
+                  Add Product
                 </Button>
               }
             />
           </div>
         </CardHeader>
         <CardContent>
-          {/* Inline Add Product CTA - shows when products exist */}
-          {allProducts.length > 0 && (
-            <div className="mb-6 p-4 rounded-lg border-2 border-dashed border-primary/30 bg-primary/5 hover:border-primary/50 hover:bg-primary/10 transition-colors">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-primary/10">
-                    <Package className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">Track more products</p>
-                    <p className="text-sm text-muted-foreground">Add products to monitor their AI visibility and optimize their discoverability</p>
-                  </div>
-                </div>
-                <AddProductDialog 
-                  onProductAdded={handleProductAdded}
-                  trigger={
-                    <Button variant="outline" className="flex items-center gap-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                      <Plus className="w-4 h-4" />
-                      <span>Add Product</span>
-                    </Button>
-                  }
-                />
-              </div>
-            </div>
-          )}
 
           {/* Search and Filters */}
           <div className="flex flex-col lg:flex-row gap-4 mb-6">
@@ -511,28 +486,17 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false }: BrandAnaly
 
           {/* Product Table */}
           {allProducts.length === 0 ? (
-            /* Empty State - No Products */
-            <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-12 text-center">
-              <div className="flex flex-col items-center gap-4">
-                <div className="p-4 rounded-full bg-primary/10">
-                  <Package className="w-10 h-10 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">No products added yet</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                    Add your first product to start tracking its AI visibility across ChatGPT, Perplexity, Claude, and other AI platforms.
-                  </p>
-                </div>
-                <AddProductDialog 
-                  onProductAdded={handleProductAdded}
-                  trigger={
-                    <Button size="lg" className="flex items-center gap-2">
-                      <Plus className="w-5 h-5" />
-                      <span>Add Your First Product</span>
-                    </Button>
-                  }
-                />
-              </div>
+            /* Empty State - Clean minimal design */
+            <div className="py-16 text-center">
+              <p className="text-muted-foreground mb-4">No products yet</p>
+              <AddProductDialog 
+                onProductAdded={handleProductAdded}
+                trigger={
+                  <button className="text-primary hover:underline text-sm font-medium">
+                    Add your first product
+                  </button>
+                }
+              />
             </div>
           ) : (
             <div className="border rounded-lg overflow-hidden">
