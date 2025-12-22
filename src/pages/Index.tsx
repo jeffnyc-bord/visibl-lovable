@@ -495,12 +495,15 @@ const Index = () => {
                     <div
                       className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 mb-0.5 ${
                         isActive
-                          ? 'text-foreground font-medium' 
-                          : 'text-muted-foreground/80 hover:text-foreground'
+                          ? 'text-foreground font-normal' 
+                          : 'text-muted-foreground/80 hover:text-foreground font-normal'
                       }`}
                       onClick={() => {
                         setActiveView("dashboard");
                         setActiveTab(section.key);
+                        if (hasSubItems) {
+                          setExpandedSections(prev => ({ ...prev, [section.key]: true }));
+                        }
                       }}
                     >
                       {/* Rainbow gradient accent bar */}
@@ -542,8 +545,8 @@ const Index = () => {
                             <div
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'queries' && queriesSubTab === 'generate'
-                                  ? 'text-foreground font-medium bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                                  ? 'text-foreground font-normal bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
@@ -557,8 +560,8 @@ const Index = () => {
                             <div
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'queries' && queriesSubTab === 'monitor'
-                                  ? 'text-foreground font-medium bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                                  ? 'text-foreground font-normal bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
@@ -572,8 +575,8 @@ const Index = () => {
                             <div
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'queries' && queriesSubTab === 'test'
-                                  ? 'text-foreground font-medium bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                                  ? 'text-foreground font-normal bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
@@ -603,8 +606,8 @@ const Index = () => {
                             <div
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'recommendations' && recommendationsSubTab === 'on-site'
-                                  ? 'text-foreground font-medium bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                                  ? 'text-foreground font-normal bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
@@ -618,8 +621,8 @@ const Index = () => {
                             <div
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'recommendations' && recommendationsSubTab === 'authority'
-                                  ? 'text-foreground font-medium bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                                  ? 'text-foreground font-normal bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
@@ -633,8 +636,8 @@ const Index = () => {
                             <div
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'recommendations' && recommendationsSubTab === 'actionslog'
-                                  ? 'text-foreground font-medium bg-muted/50' 
-                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                                  ? 'text-foreground font-normal bg-muted/50' 
+                                  : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30 font-normal'
                               }`}
                               onClick={() => {
                                 setActiveView("dashboard");
