@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -51,7 +50,7 @@ export const ProductDetail = () => {
   const [selectedPrompts, setSelectedPrompts] = useState<number[]>([]);
   const [showFidelitySheet, setShowFidelitySheet] = useState(false);
   const [showTransitionModal, setShowTransitionModal] = useState(false);
-  const [selectedGap, setSelectedGap] = useState<typeof gaps[0] | null>(null);
+  const [selectedGapId, setSelectedGapId] = useState<number | null>(null);
   
   type PromptStatus = "completed" | "queued";
   type Prompt = {
@@ -479,6 +478,28 @@ export const ProductDetail = () => {
                 <h1 className="text-4xl font-light tracking-tight text-foreground">{mockProduct.name}</h1>
                 <p className="text-muted-foreground">SKU: {mockProduct.sku}</p>
               </div>
+              
+              {/* Fix Now Pulsing Indicator */}
+              <button
+                onClick={() => {
+                  setSelectedGapId(1); // First gap
+                  setShowTransitionModal(true);
+                }}
+                className="group relative flex items-center gap-3 px-5 py-3 rounded-2xl bg-foreground text-background hover:bg-foreground/90 transition-all"
+              >
+                {/* Pulse ring */}
+                <span className="absolute inset-0 rounded-2xl animate-ping bg-foreground/30" style={{ animationDuration: '2s' }} />
+                <span className="absolute inset-0 rounded-2xl animate-pulse bg-foreground/10" style={{ animationDuration: '1.5s' }} />
+                
+                <div className="relative flex items-center gap-2">
+                  <Wrench className="w-4 h-4" />
+                  <span className="font-medium text-sm">Fix now</span>
+                </div>
+                <div className="relative flex items-center gap-1.5 pl-3 border-l border-background/20">
+                  <span className="text-xs text-background/70">3 issues</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-background/70 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </button>
             </div>
           </div>
 
@@ -554,317 +575,199 @@ export const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Navigation Tabs */}
-          <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-10">
-            <TabsList className="bg-transparent p-0 h-auto border-b border-border/30 w-full justify-start gap-8 rounded-none">
-              <TabsTrigger 
-                value="prompts" 
-                className="bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none px-0 pb-4 pt-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none font-normal"
-              >
-                Prompts
-              </TabsTrigger>
-              <TabsTrigger 
-                value="recommendations" 
-                className="bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none px-0 pb-4 pt-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none font-normal"
-              >
-                Recommendations
-              </TabsTrigger>
-              <TabsTrigger 
-                value="keywords" 
-                className="bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none px-0 pb-4 pt-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none font-normal"
-              >
-                Keywords
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="recommendations" className="space-y-8 mt-10">
-              <div>
-                <h3 className="text-xl font-light text-foreground mb-2">Optimization Recommendations</h3>
-                <p className="text-sm text-muted-foreground mb-10">Prioritized improvements to boost your product's AI readiness</p>
-                
-                <div className="space-y-1">
-                  {gaps.map((gap, index) => (
-                    <div 
-                      key={gap.id} 
-                      className="group py-6 border-b border-border/20 last:border-0 hover:bg-muted/20 transition-colors -mx-4 px-4 rounded-xl"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-4 flex-1">
-                          <div className="mt-0.5">
-                            {getStatusIcon(gap.status)}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h4 className="text-foreground">{gap.title}</h4>
-                              <span className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(gap.priority)}`}>
-                                {gap.priority}
-                              </span>
-                              <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(gap.status)}`}>
-                                {gap.status === 'in-progress' ? 'In Progress' : gap.status === 'resolved' ? 'Resolved' : 'Pending'}
-                              </span>
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-3">{gap.description}</p>
-                            <div className="flex items-center gap-6 text-xs text-muted-foreground">
-                              <span>Impact: <strong className="text-foreground font-medium">{gap.impact}</strong></span>
-                              <span>Effort: <strong className="text-foreground font-medium">{gap.effort}</strong></span>
-                            </div>
-                          </div>
-                        </div>
-                        {gap.status !== 'resolved' && (
-                          <Button 
-                            size="sm" 
-                            onClick={() => {
-                              setSelectedGap(gap);
-                              setShowTransitionModal(true);
-                            }}
-                            className="rounded-full bg-foreground text-background hover:bg-foreground/90 gap-2"
-                          >
-                            <Wrench className="w-3.5 h-3.5" />
-                            Fix now
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+          {/* Prompts Section */}
+          <div className="space-y-8">
+            {/* Fidelity Meter */}
+            <div className="mb-8 p-4 rounded-2xl bg-muted/30 border border-border/20">
+              <div className="flex items-center justify-between">
+                <FidelityMeter
+                  current={3}
+                  max={5}
+                  label="Data Fidelity"
+                  description="60% — Add more prompts for higher accuracy"
+                  onClick={() => setShowFidelitySheet(true)}
+                />
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowFidelitySheet(true)}
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                >
+                  <Info className="w-3.5 h-3.5 mr-1.5" />
+                  Learn more
+                </Button>
               </div>
-            </TabsContent>
+            </div>
 
-            <TabsContent value="prompts" className="space-y-8 mt-10">
-              <div>
-                {/* Fidelity Meter */}
-                <div className="mb-8 p-4 rounded-2xl bg-muted/30 border border-border/20">
-                  <div className="flex items-center justify-between">
-                    <FidelityMeter
-                      current={3}
-                      max={5}
-                      label="Data Fidelity"
-                      description="60% — Add more prompts for higher accuracy"
-                      onClick={() => setShowFidelitySheet(true)}
-                    />
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => setShowFidelitySheet(true)}
-                      className="text-xs text-muted-foreground hover:text-foreground"
-                    >
-                      <Info className="w-3.5 h-3.5 mr-1.5" />
-                      Learn more
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Queue Indicator */}
-                {prompts.filter(p => p.queued).length > 0 && (
-                  <div className="flex items-center justify-between mb-8 p-4 rounded-2xl bg-amber-50/50 border border-amber-200/30">
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-4 h-4 text-amber-600" />
-                      <div>
-                        <p className="text-sm text-foreground">
-                          {prompts.filter(p => p.queued).length} prompt{prompts.filter(p => p.queued).length > 1 ? 's' : ''} queued
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Waiting for next analysis run
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between mb-8">
+            {/* Queue Indicator */}
+            {prompts.filter(p => p.queued).length > 0 && (
+              <div className="flex items-center justify-between mb-8 p-4 rounded-2xl bg-amber-50/50 border border-amber-200/30">
+                <div className="flex items-center gap-3">
+                  <Clock className="w-4 h-4 text-amber-600" />
                   <div>
-                    <h3 className="text-xl font-light text-foreground mb-1">Product Prompts</h3>
-                    <p className="text-sm text-muted-foreground">{prompts.length}/{MAX_PROMPTS} prompts tracked</p>
+                    <p className="text-sm text-foreground">
+                      {prompts.filter(p => p.queued).length} prompt{prompts.filter(p => p.queued).length > 1 ? 's' : ''} queued
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Waiting for next analysis run
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {selectedPrompts.length > 0 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleDeletePrompts}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete ({selectedPrompts.length})
-                      </Button>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowAddPrompt(true)}
-                      disabled={prompts.length >= MAX_PROMPTS}
-                      className="rounded-full"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Prompt
-                    </Button>
-                  </div>
-                </div>
-                
-                {/* Prompts List - Clean Table */}
-                <div className="rounded-xl border border-border/30 overflow-hidden bg-background/50">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-border/20 hover:bg-transparent">
-                        <TableHead className="w-12">
-                          <button
-                            onClick={handleToggleAllPrompts}
-                            className="group relative flex items-center justify-center w-5 h-5 rounded-full border border-border hover:border-foreground transition-all duration-200 cursor-pointer bg-background"
-                          >
-                            <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
-                              selectedPrompts.length === prompts.length && prompts.length > 0
-                                ? 'bg-foreground scale-100 opacity-100' 
-                                : 'bg-transparent scale-0 opacity-0'
-                            }`} />
-                            <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
-                              selectedPrompts.length === prompts.length && prompts.length > 0
-                                ? 'text-background scale-100 opacity-100' 
-                                : 'text-transparent scale-0 opacity-0'
-                            }`} />
-                          </button>
-                        </TableHead>
-                        <TableHead className="text-xs text-muted-foreground font-normal">Prompt</TableHead>
-                        <TableHead className="text-xs text-muted-foreground font-normal">Platform</TableHead>
-                        <TableHead className="text-xs text-muted-foreground font-normal">Mentions</TableHead>
-                        <TableHead className="text-xs text-muted-foreground font-normal">Source</TableHead>
-                        <TableHead className="text-xs text-muted-foreground font-normal">Date</TableHead>
-                        <TableHead className="w-12"></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {prompts.map((mention) => (
-                        <TableRow 
-                          key={mention.id} 
-                          className={`border-border/10 ${mention.status !== "queued" ? "cursor-pointer hover:bg-muted/30" : "cursor-default"}`}
-                          onClick={() => mention.status !== "queued" && handleMentionClick(mention.id)}
-                        >
-                          <TableCell onClick={(e) => e.stopPropagation()}>
-                            <button
-                              onClick={() => handleTogglePromptSelection(mention.id)}
-                              className="group relative flex items-center justify-center w-5 h-5 rounded-full border border-border hover:border-foreground transition-all duration-200 cursor-pointer bg-background"
-                            >
-                              <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
-                                selectedPrompts.includes(mention.id)
-                                  ? 'bg-foreground scale-100 opacity-100' 
-                                  : 'bg-transparent scale-0 opacity-0'
-                              }`} />
-                              <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
-                                selectedPrompts.includes(mention.id)
-                                  ? 'text-background scale-100 opacity-100' 
-                                  : 'text-transparent scale-0 opacity-0'
-                              }`} />
-                            </button>
-                          </TableCell>
-                          <TableCell>
-                            <p className="text-sm text-foreground max-w-xs truncate">{mention.query}</p>
-                          </TableCell>
-                          <TableCell>
-                            {mention.status === "queued" ? (
-                              <span className="text-xs text-amber-600 flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                Queued
-                              </span>
-                            ) : (
-                              <span className="text-xs text-muted-foreground">{mention.model}</span>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <span className="text-sm text-foreground">{mention.mentions}</span>
-                          </TableCell>
-                          <TableCell>
-                            <span className="text-xs text-muted-foreground">{mention.url.split('/')[0]}</span>
-                          </TableCell>
-                          <TableCell>
-                            <span className="text-xs text-muted-foreground">{mention.date}</span>
-                          </TableCell>
-                          <TableCell onClick={(e) => e.stopPropagation()}>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100">
-                                  <Settings className="h-4 w-4 text-muted-foreground" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-48">
-                                {mention.status === "queued" && (
-                                  <DropdownMenuItem 
-                                    onClick={() => handleDeleteSinglePrompt(mention.id)}
-                                    className="text-destructive focus:text-destructive"
-                                  >
-                                    <X className="mr-2 h-4 w-4" />
-                                    Remove from Queue
-                                  </DropdownMenuItem>
-                                )}
-                                <DropdownMenuItem onClick={() => {
-                                  if (mention.status !== "queued") {
-                                    handleMentionClick(mention.id);
-                                  }
-                                }} disabled={mention.status === "queued"}>
-                                  <BarChart3 className="mr-2 h-4 w-4" />
-                                  View Details
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => {
-                                  navigator.clipboard.writeText(mention.query);
-                                  toast({
-                                    title: "Copied",
-                                    description: "Prompt copied to clipboard.",
-                                  });
-                                }}>
-                                  <Copy className="mr-2 h-4 w-4" />
-                                  Copy Prompt
-                                </DropdownMenuItem>
-                                {mention.status !== "queued" && (
-                                  <DropdownMenuItem 
-                                    onClick={() => handleDeleteSinglePrompt(mention.id)}
-                                    className="text-destructive focus:text-destructive"
-                                  >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete Prompt
-                                  </DropdownMenuItem>
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-
-                {/* Ghost Product Slot */}
-                <div className="mt-8">
-                  <GhostProductSlot 
-                    onClick={() => navigate('/?tab=brand')}
-                    className="opacity-60 hover:opacity-100"
-                  />
-                  <p className="text-xs text-muted-foreground mt-2 text-center">
-                    Ready to dominate another category? Track your next product line here.
-                  </p>
                 </div>
               </div>
-            </TabsContent>
+            )}
 
-            <TabsContent value="keywords" className="space-y-8 mt-10">
+            <div className="flex items-center justify-between mb-8">
               <div>
-                <h3 className="text-xl font-light text-foreground mb-2">Search Performance</h3>
-                <p className="text-sm text-muted-foreground mb-10">Keyword rankings and performance metrics for {mockProduct.name}</p>
-                
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {keywords.map((keyword, index) => (
-                    <div 
-                      key={index} 
-                      className="group p-5 rounded-2xl border border-border/20 bg-background/50 hover:bg-muted/30 transition-all cursor-pointer"
-                    >
-                      <p className="text-sm text-foreground mb-3 truncate">{keyword.keyword}</p>
-                      <div className="flex items-end justify-between">
-                        <span className="text-xs text-muted-foreground">{keyword.volume.toLocaleString()} vol</span>
-                        <span className="text-2xl font-light text-foreground">#{keyword.rank}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <h3 className="text-xl font-light text-foreground mb-1">Product Prompts</h3>
+                <p className="text-sm text-muted-foreground">{prompts.length}/{MAX_PROMPTS} prompts tracked</p>
               </div>
-            </TabsContent>
-          </Tabs>
+              <div className="flex items-center gap-2">
+                {selectedPrompts.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleDeletePrompts}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete ({selectedPrompts.length})
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAddPrompt(true)}
+                  disabled={prompts.length >= MAX_PROMPTS}
+                  className="rounded-full"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Prompt
+                </Button>
+              </div>
+            </div>
+            
+            {/* Prompts List - Clean Table */}
+            <div className="rounded-xl border border-border/30 overflow-hidden bg-background/50">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border/20 hover:bg-transparent">
+                    <TableHead className="w-12">
+                      <button
+                        onClick={handleToggleAllPrompts}
+                        className="group relative flex items-center justify-center w-5 h-5 rounded-full border border-border hover:border-foreground transition-all duration-200 cursor-pointer bg-background"
+                      >
+                        <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
+                          selectedPrompts.length === prompts.length && prompts.length > 0
+                            ? 'bg-foreground scale-100 opacity-100' 
+                            : 'bg-transparent scale-0 opacity-0'
+                        }`} />
+                        <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
+                          selectedPrompts.length === prompts.length && prompts.length > 0
+                            ? 'text-background opacity-100' 
+                            : 'text-transparent opacity-0'
+                        }`} />
+                      </button>
+                    </TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Query</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Model</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Status</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium w-12"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {prompts.map((prompt) => (
+                    <TableRow 
+                      key={prompt.id}
+                      className="border-border/10 hover:bg-muted/30 transition-colors cursor-pointer group"
+                      onClick={() => handleMentionClick(prompt.id)}
+                    >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => handleTogglePromptSelection(prompt.id)}
+                          className="group/check relative flex items-center justify-center w-5 h-5 rounded-full border border-border hover:border-foreground transition-all duration-200 cursor-pointer bg-background"
+                        >
+                          <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
+                            selectedPrompts.includes(prompt.id)
+                              ? 'bg-foreground scale-100 opacity-100' 
+                              : 'bg-transparent scale-0 opacity-0'
+                          }`} />
+                          <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
+                            selectedPrompts.includes(prompt.id)
+                              ? 'text-background opacity-100' 
+                              : 'text-transparent opacity-0'
+                          }`} />
+                        </button>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <p className="text-sm text-foreground group-hover:text-primary transition-colors">
+                            {prompt.query}
+                          </p>
+                          <p className="text-xs text-muted-foreground line-clamp-1">
+                            {prompt.excerpt}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-muted-foreground">{prompt.model}</span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {prompt.status === 'completed' ? (
+                            <Badge variant="secondary" className="bg-green-50/80 text-green-700 border-0 text-xs">
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Complete
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="bg-amber-50/80 text-amber-700 border-0 text-xs">
+                              <Clock className="w-3 h-3 mr-1" />
+                              Queued
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0">
+                              <Settings className="w-4 h-4 text-muted-foreground" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem onClick={() => handleToggleQueue(prompt.id)}>
+                              {prompt.queued ? 'Remove from Queue' : 'Add to Queue'}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(prompt.query)}>
+                              <Copy className="w-4 h-4 mr-2" />
+                              Copy Query
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteSinglePrompt(prompt.id)}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Ghost Product Slot */}
+            <div className="mt-8">
+              <GhostProductSlot 
+                onClick={() => navigate('/?tab=brand')}
+                className="opacity-60 hover:opacity-100"
+              />
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                Ready to dominate another category? Track your next product line here.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -941,57 +844,61 @@ export const ProductDetail = () => {
       </Sheet>
 
       {/* Transition Modal - Apple Style */}
-      {showTransitionModal && selectedGap && (
-        <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-background/95 backdrop-blur-xl rounded-3xl shadow-2xl p-10 max-w-md w-full mx-4 animate-scale-in border border-border/50">
-            <div className="text-center space-y-6">
-              {/* Icon */}
-              <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl flex items-center justify-center mx-auto">
-                <Wrench className="w-7 h-7 text-primary" />
-              </div>
-
-              {/* Content */}
-              <div className="space-y-2">
-                <h3 className="text-xl font-medium text-foreground">
-                  Opening Content Studio
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  You're about to optimize <strong className="text-foreground">{mockProduct.name}</strong> to fix:
-                </p>
-                <div className="mt-4 p-4 rounded-xl bg-muted/30 border border-border/20">
-                  <p className="text-sm font-medium text-foreground">{selectedGap.title}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{selectedGap.description}</p>
+      {showTransitionModal && selectedGapId && (() => {
+        const selectedGap = gaps.find(g => g.id === selectedGapId);
+        if (!selectedGap) return null;
+        return (
+          <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+            <div className="bg-background/95 backdrop-blur-xl rounded-3xl shadow-2xl p-10 max-w-md w-full mx-4 animate-scale-in border border-border/50">
+              <div className="text-center space-y-6">
+                {/* Icon */}
+                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl flex items-center justify-center mx-auto">
+                  <Wrench className="w-7 h-7 text-primary" />
                 </div>
-              </div>
 
-              {/* Actions */}
-              <div className="flex flex-col gap-3 pt-2">
-                <Button 
-                  className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 gap-2"
-                  onClick={() => {
-                    setShowTransitionModal(false);
-                    setSelectedGap(null);
-                    navigate(`/?tab=recommendations&subtab=on-site&productId=${productId}`);
-                  }}
-                >
-                  Continue to Studio
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="w-full rounded-full"
-                  onClick={() => {
-                    setShowTransitionModal(false);
-                    setSelectedGap(null);
-                  }}
-                >
-                  Cancel
-                </Button>
+                {/* Content */}
+                <div className="space-y-2">
+                  <h3 className="text-xl font-medium text-foreground">
+                    Opening Content Studio
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    You're about to optimize <strong className="text-foreground">{mockProduct.name}</strong> to fix:
+                  </p>
+                  <div className="mt-4 p-4 rounded-xl bg-muted/30 border border-border/20">
+                    <p className="text-sm font-medium text-foreground">{selectedGap.title}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{selectedGap.description}</p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-col gap-3 pt-2">
+                  <Button 
+                    className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 gap-2"
+                    onClick={() => {
+                      setShowTransitionModal(false);
+                      setSelectedGapId(null);
+                      navigate(`/?tab=recommendations&subtab=on-site&productId=${productId}`);
+                    }}
+                  >
+                    Continue to Studio
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full rounded-full"
+                    onClick={() => {
+                      setShowTransitionModal(false);
+                      setSelectedGapId(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </>
   );
 };
