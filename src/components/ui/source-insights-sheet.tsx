@@ -1,6 +1,7 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   ExternalLink, 
   TrendingUp, 
@@ -11,8 +12,14 @@ import {
   Users,
   ArrowUpRight,
   Shield,
-  Quote
+  Sparkles
 } from "lucide-react";
+
+import chatGPTLogo from "@/assets/chatGPT_logo.png";
+import claudeLogo from "@/assets/claude_logo.png";
+import geminiLogo from "@/assets/gemini_logo.png";
+import perplexityLogo from "@/assets/perplexity_logo.png";
+import grokLogo from "@/assets/grok_logo.png";
 import { cn } from "@/lib/utils";
 
 export interface SourceInsight {
@@ -123,65 +130,67 @@ export const SourceInsightsSheet = ({
             </div>
           </section>
 
-          {/* Prompts That Triggered This Source */}
+          {/* Where did this source come from? */}
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                <MessageSquare className="w-3.5 h-3.5" />
-                Prompts That Surfaced This Source
+                <Sparkles className="w-3.5 h-3.5" />
+                Where did this source come from?
               </h3>
               <span className="text-xs text-muted-foreground">{source.promptsTriggered.length} prompts</span>
             </div>
             <div className="space-y-2">
-              {source.promptsTriggered.map((prompt, index) => (
-                <div 
-                  key={index}
-                  onClick={() => onViewPrompt?.(prompt.query)}
-                  className="p-3 rounded-lg bg-secondary/20 border border-border/30 hover:bg-secondary/40 transition-colors cursor-pointer group"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
-                        {prompt.query}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <span className="text-xs text-muted-foreground">{prompt.mentions} mentions</span>
-                        <span className="text-border">•</span>
-                        <div className="flex items-center gap-1">
-                          {prompt.platforms.slice(0, 3).map((platform) => (
-                            <span key={platform} className="text-[10px] text-muted-foreground">
-                              {platform}
-                            </span>
-                          ))}
-                          {prompt.platforms.length > 3 && (
-                            <span className="text-[10px] text-muted-foreground">
-                              +{prompt.platforms.length - 3}
-                            </span>
-                          )}
+              {source.promptsTriggered.map((prompt, index) => {
+                const getPlatformLogo = (platform: string) => {
+                  const lower = platform.toLowerCase();
+                  if (lower.includes('chatgpt') || lower.includes('openai')) return chatGPTLogo;
+                  if (lower.includes('claude')) return claudeLogo;
+                  if (lower.includes('gemini')) return geminiLogo;
+                  if (lower.includes('perplexity')) return perplexityLogo;
+                  if (lower.includes('grok')) return grokLogo;
+                  return null;
+                };
+
+                return (
+                  <div 
+                    key={index}
+                    onClick={() => onViewPrompt?.(prompt.query)}
+                    className="p-3 rounded-lg bg-secondary/20 border border-border/30 hover:bg-secondary/40 transition-colors cursor-pointer group"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                          {prompt.query}
+                        </p>
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="text-xs text-muted-foreground">{prompt.mentions} mentions</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs text-muted-foreground">Found in:</span>
+                            <div className="flex items-center -space-x-1">
+                              {prompt.platforms.map((platform) => {
+                                const logo = getPlatformLogo(platform);
+                                return logo ? (
+                                  <Avatar key={platform} className="w-5 h-5 border-2 border-background">
+                                    <AvatarImage src={logo} alt={platform} />
+                                    <AvatarFallback className="text-[8px]">{platform[0]}</AvatarFallback>
+                                  </Avatar>
+                                ) : (
+                                  <span key={platform} className="text-[10px] text-muted-foreground px-1">
+                                    {platform}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </div>
                         </div>
                       </div>
+                      <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5" />
                     </div>
-                    <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5" />
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
-
-          {/* Sample Quote */}
-          {source.sampleQuote && (
-            <section className="space-y-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                <Quote className="w-3.5 h-3.5" />
-                Sample Citation
-              </h3>
-              <div className="p-4 rounded-xl bg-secondary/20 border border-border/30 border-l-4 border-l-primary">
-                <p className="text-sm italic text-foreground/80 leading-relaxed">
-                  "{source.sampleQuote}"
-                </p>
-              </div>
-            </section>
-          )}
 
           {/* Why This Source Matters */}
           <section className="space-y-4">
