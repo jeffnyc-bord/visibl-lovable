@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { TrendingUp, FileText, MessageSquare, ChevronDown, ChevronUp, ExternalLink, ThumbsUp, ThumbsDown, Minus, Clock, Quote, Info, ArrowUpRight, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -665,11 +665,16 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={visibilityTrendData} barSize={32}>
+              <AreaChart data={visibilityTrendData}>
                 <defs>
-                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={gradientColors[0]} stopOpacity={1} />
-                    <stop offset="100%" stopColor={gradientColors[2]} stopOpacity={0.8} />
+                  <linearGradient id="areaGradientFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={gradientColors[0]} stopOpacity={0.8} />
+                    <stop offset="95%" stopColor={gradientColors[0]} stopOpacity={0.1} />
+                  </linearGradient>
+                  <linearGradient id="areaGradientStroke" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor={gradientColors[0]} />
+                    <stop offset="50%" stopColor={gradientColors[1] || gradientColors[0]} />
+                    <stop offset="100%" stopColor={gradientColors[2] || gradientColors[0]} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
@@ -698,8 +703,14 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                 />
-                <Bar dataKey="mentions" fill="url(#barGradient)" radius={[4, 4, 0, 0]} />
-              </BarChart>
+                <Area 
+                  type="monotone" 
+                  dataKey="mentions" 
+                  stroke="url(#areaGradientStroke)" 
+                  strokeWidth={2}
+                  fill="url(#areaGradientFill)" 
+                />
+              </AreaChart>
             </ResponsiveContainer>
           )}
         </div>
