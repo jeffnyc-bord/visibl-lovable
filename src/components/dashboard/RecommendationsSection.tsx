@@ -39,11 +39,11 @@ interface BrandData {
 interface RecommendationsSectionProps {
   brandData?: BrandData;
   demoMode?: boolean;
-  activeSubTab?: 'on-site' | 'authority';
+  activeSubTab?: 'on-site' | 'authority' | 'contentstudio';
   preselectedProductId?: string | null;
   onProductUsed?: () => void;
 }
 
 export const RecommendationsSection = ({ brandData, demoMode = false, activeSubTab = 'on-site', preselectedProductId, onProductUsed }: RecommendationsSectionProps = {}) => {
-  return <ActionsLab demoMode={demoMode} activeTab={activeSubTab} preselectedProductId={preselectedProductId} onProductUsed={onProductUsed} />;
+  return <ActionsLab demoMode={demoMode} activeTab={activeSubTab === 'contentstudio' ? 'on-site' : activeSubTab} preselectedProductId={preselectedProductId} onProductUsed={onProductUsed} />;
 };

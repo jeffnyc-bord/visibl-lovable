@@ -28,6 +28,7 @@ import { ExternalAIVisibilitySection } from "@/components/dashboard/ExternalAIVi
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
 import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
 import { ActionsLog } from "@/components/actions-log";
+import { AEOContentStudio } from "@/components/actions-lab/AEOContentStudio";
 import { Settings as SettingsPage } from "@/pages/Settings";
 import { DashboardSkeleton, ChartWidgetSkeleton, ScorecardSkeleton, TableSkeleton, WidgetSkeleton } from "@/components/ui/dashboard-skeleton";
 import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from "@/components/ui/error-states";
@@ -244,7 +245,7 @@ const Index = () => {
   const [prefilledQuery, setPrefilledQuery] = useState<string>("");
   const [autoOpenPrompt, setAutoOpenPrompt] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("overview");
-  const [recommendationsSubTab, setRecommendationsSubTab] = useState<'on-site' | 'authority' | 'actionslog'>('on-site');
+  const [recommendationsSubTab, setRecommendationsSubTab] = useState<'on-site' | 'authority' | 'actionslog' | 'contentstudio'>('on-site');
   const [queriesSubTab, setQueriesSubTab] = useState<'generate' | 'monitor' | 'test'>('generate');
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ queries: true, recommendations: true });
   const [preselectedProductId, setPreselectedProductId] = useState<string | null>(null);
@@ -620,6 +621,21 @@ const Index = () => {
                             </div>
                             <div
                               className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
+                                activeTab === 'recommendations' && recommendationsSubTab === 'contentstudio'
+                                  ? 'text-foreground font-normal bg-muted/50' 
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 font-normal'
+                              }`}
+                              onClick={() => {
+                                setActiveView("dashboard");
+                                setActiveTab('recommendations');
+                                setRecommendationsSubTab('contentstudio');
+                              }}
+                            >
+                              <FileText className="w-4 h-4 flex-shrink-0" />
+                              <span>AEO Content Studio</span>
+                            </div>
+                            <div
+                              className={`relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors duration-150 text-sm ${
                                 activeTab === 'recommendations' && recommendationsSubTab === 'authority'
                                   ? 'text-foreground font-normal bg-muted/50' 
                                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 font-normal'
@@ -844,7 +860,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <header className="bg-background border-b border-border px-6 py-3">
+        <header className="bg-background border-b border-border px-6 py-3 sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Button
@@ -1165,6 +1181,15 @@ const Index = () => {
                           ) : recommendationsSubTab === 'actionslog' ? (
                             <div className="h-[calc(100vh-12rem)]">
                               <ActionsLog />
+                            </div>
+                          ) : recommendationsSubTab === 'contentstudio' ? (
+                            <div className="h-[calc(100vh-12rem)]">
+                              <AEOContentStudio 
+                                isOpen={true} 
+                                onClose={() => setRecommendationsSubTab('on-site')}
+                                prompt={null}
+                                contentType={null}
+                              />
                             </div>
                           ) : (
                             <RecommendationsSection 
