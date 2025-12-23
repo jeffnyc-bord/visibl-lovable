@@ -209,8 +209,8 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
       </div>
 
       {/* Hero Stats */}
-      <div className="py-12 border-b border-border/20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+      <div className="py-8 border-b border-border/20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Left: Large Score */}
           <div className="lg:col-span-4">
             <div className="flex flex-col">
@@ -268,7 +268,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                     <span className="text-xs text-foreground">{item.label}</span>
                     <span className="text-xs text-muted-foreground tabular-nums">{item.count}</span>
                   </div>
-                  <div className="h-1.5 bg-muted/30 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-border/20 rounded-full overflow-hidden">
                     <div 
                       className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${item.percentage}%`, background: item.color }}
@@ -282,8 +282,8 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
       </div>
 
       {/* Top / Bottom Products */}
-      <div className="py-12 border-b border-border/20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+      <div className="py-8 border-b border-border/20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Top Products */}
           <div>
             <div className="flex items-center gap-2 mb-6">
@@ -371,7 +371,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
       </div>
 
       {/* All Products Section */}
-      <div className="py-12">
+      <div className="py-8">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-xl font-light text-foreground">All Products</h2>
           <span className="text-sm text-muted-foreground">
@@ -387,7 +387,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-10 bg-muted/20 border-border/30 rounded-xl"
+              className="pl-9 h-10 bg-background border-border/30 rounded-xl"
             />
           </div>
           
@@ -409,7 +409,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
           )}
           
           <Select value={scoreFilter} onValueChange={setScoreFilter}>
-            <SelectTrigger className="w-32 h-10 bg-muted/20 border-border/30 rounded-xl">
+            <SelectTrigger className="w-32 h-10 bg-background border-border/30 rounded-xl">
               <SelectValue placeholder="Score" />
             </SelectTrigger>
             <SelectContent>
@@ -422,7 +422,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
           </Select>
           
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-32 h-10 bg-muted/20 border-border/30 rounded-xl">
+            <SelectTrigger className="w-32 h-10 bg-background border-border/30 rounded-xl">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -434,7 +434,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
           </Select>
           
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-40 h-10 bg-muted/20 border-border/30 rounded-xl">
+            <SelectTrigger className="w-40 h-10 bg-background border-border/30 rounded-xl">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>

@@ -412,7 +412,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           style={{ animationDelay: '0ms', animationFillMode: 'backwards' }}
         >
           <div>
-            <p className="text-sm text-muted-foreground tracking-wide uppercase mb-1">Overview</p>
+            <p className="text-sm text-muted-foreground tracking-wide uppercase mb-1">AI Visibility Overview</p>
             <h1 className="text-3xl font-light tracking-tight text-foreground">{brandData.name}</h1>
           </div>
           <ReportExportDialog
@@ -441,10 +441,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
         {/* Hero Score Section */}
         <div 
-          className={`py-12 border-b border-border/20 animate-fade-in ${demoMode ? 'demo-card-1' : ''}`}
+          className={`py-8 border-b border-border/20 animate-fade-in ${demoMode ? 'demo-card-1' : ''}`}
           style={{ animationDelay: '50ms', animationFillMode: 'backwards' }}
         >
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             {/* Left: Large Score Display */}
             <div className="lg:col-span-4">
               <div className="flex flex-col">
@@ -553,7 +553,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
         {/* Platform Distribution - Apple Health Style */}
         <div 
-          className={`py-12 border-b border-border/20 animate-fade-in ${demoMode ? 'demo-card-2' : ''}`}
+          className={`py-8 border-b border-border/20 animate-fade-in ${demoMode ? 'demo-card-2' : ''}`}
           style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}
         >
           <div className="flex items-center justify-between mb-8">
@@ -617,7 +617,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
         {/* Visibility Trend */}
         <div 
-          className={`py-12 border-b border-border/20 animate-fade-in ${demoMode ? 'demo-card-3' : ''}`}
+          className={`py-8 border-b border-border/20 animate-fade-in ${demoMode ? 'demo-card-3' : ''}`}
           style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}
         >
           <h2 className="text-xl font-light text-foreground mb-8">Visibility Trend</h2>
