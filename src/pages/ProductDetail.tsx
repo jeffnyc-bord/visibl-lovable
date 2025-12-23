@@ -27,7 +27,9 @@ import {
   X,
   Check,
   Info,
-  Sparkles
+  Sparkles,
+  Wrench,
+  ArrowRight
 } from "lucide-react";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
 import { AddPromptDialog } from "@/components/ui/add-prompt-dialog";
@@ -48,6 +50,8 @@ export const ProductDetail = () => {
   const [selectedMentionId, setSelectedMentionId] = useState<number | null>(null);
   const [selectedPrompts, setSelectedPrompts] = useState<number[]>([]);
   const [showFidelitySheet, setShowFidelitySheet] = useState(false);
+  const [showTransitionModal, setShowTransitionModal] = useState(false);
+  const [selectedGap, setSelectedGap] = useState<typeof gaps[0] | null>(null);
   
   type PromptStatus = "completed" | "queued";
   type Prompt = {
@@ -606,13 +610,19 @@ export const ProductDetail = () => {
                             </div>
                           </div>
                         </div>
-                        <Button 
-                          size="sm" 
-                          variant="ghost"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-xs"
-                        >
-                          Get Guidance
-                        </Button>
+                        {gap.status !== 'resolved' && (
+                          <Button 
+                            size="sm" 
+                            onClick={() => {
+                              setSelectedGap(gap);
+                              setShowTransitionModal(true);
+                            }}
+                            className="rounded-full bg-foreground text-background hover:bg-foreground/90 gap-2"
+                          >
+                            <Wrench className="w-3.5 h-3.5" />
+                            Fix now
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -929,6 +939,59 @@ export const ProductDetail = () => {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Transition Modal - Apple Style */}
+      {showTransitionModal && selectedGap && (
+        <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-background/95 backdrop-blur-xl rounded-3xl shadow-2xl p-10 max-w-md w-full mx-4 animate-scale-in border border-border/50">
+            <div className="text-center space-y-6">
+              {/* Icon */}
+              <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl flex items-center justify-center mx-auto">
+                <Wrench className="w-7 h-7 text-primary" />
+              </div>
+
+              {/* Content */}
+              <div className="space-y-2">
+                <h3 className="text-xl font-medium text-foreground">
+                  Opening Content Studio
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  You're about to optimize <strong className="text-foreground">{mockProduct.name}</strong> to fix:
+                </p>
+                <div className="mt-4 p-4 rounded-xl bg-muted/30 border border-border/20">
+                  <p className="text-sm font-medium text-foreground">{selectedGap.title}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{selectedGap.description}</p>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col gap-3 pt-2">
+                <Button 
+                  className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 gap-2"
+                  onClick={() => {
+                    setShowTransitionModal(false);
+                    setSelectedGap(null);
+                    navigate(`/?tab=recommendations&subtab=on-site&productId=${productId}`);
+                  }}
+                >
+                  Continue to Studio
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="w-full rounded-full"
+                  onClick={() => {
+                    setShowTransitionModal(false);
+                    setSelectedGap(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
