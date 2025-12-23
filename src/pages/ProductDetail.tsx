@@ -479,26 +479,17 @@ export const ProductDetail = () => {
                 <p className="text-muted-foreground">SKU: {mockProduct.sku}</p>
               </div>
               
-              {/* Fix Now Pulsing Indicator */}
+              {/* Fix Now - Clean Apple Style */}
               <button
                 onClick={() => {
-                  setSelectedGapId(1); // First gap
+                  setSelectedGapId(1);
                   setShowTransitionModal(true);
                 }}
-                className="group relative flex items-center gap-3 px-5 py-3 rounded-2xl bg-foreground text-background hover:bg-foreground/90 transition-all"
+                className="group flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/20 transition-all duration-200"
               >
-                {/* Pulse ring */}
-                <span className="absolute inset-0 rounded-2xl animate-ping bg-foreground/30" style={{ animationDuration: '2s' }} />
-                <span className="absolute inset-0 rounded-2xl animate-pulse bg-foreground/10" style={{ animationDuration: '1.5s' }} />
-                
-                <div className="relative flex items-center gap-2">
-                  <Wrench className="w-4 h-4" />
-                  <span className="font-medium text-sm">Fix now</span>
-                </div>
-                <div className="relative flex items-center gap-1.5 pl-3 border-l border-background/20">
-                  <span className="text-xs text-background/70">3 issues</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-background/70 group-hover:translate-x-0.5 transition-transform" />
-                </div>
+                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <span className="text-sm font-medium text-amber-600">3 issues to fix</span>
+                <ArrowRight className="w-3.5 h-3.5 text-amber-500 group-hover:translate-x-0.5 transition-transform duration-200" />
               </button>
             </div>
           </div>
