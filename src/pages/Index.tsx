@@ -255,8 +255,22 @@ const Index = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
+    const subtabParam = urlParams.get('subtab');
+    const productIdParam = urlParams.get('productId');
+    
     if (tabParam && allSections.some(section => section.key === tabParam)) {
       setActiveTab(tabParam);
+      
+      // Handle subtab for recommendations
+      if (tabParam === 'recommendations' && subtabParam === 'on-site') {
+        setRecommendationsSubTab('on-site');
+      }
+      
+      // Handle preselected product
+      if (productIdParam) {
+        setPreselectedProductId(productIdParam);
+      }
+      
       // Clear the URL parameter after setting the tab
       window.history.replaceState({}, '', window.location.pathname);
     }
