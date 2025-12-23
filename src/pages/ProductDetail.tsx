@@ -488,7 +488,7 @@ export const ProductDetail = () => {
                 className="group flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/20 transition-all duration-200"
               >
                 <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                <span className="text-sm font-medium text-amber-600">3 issues to fix</span>
+                <span className="text-sm font-medium text-amber-600">Fix Now</span>
                 <ArrowRight className="w-3.5 h-3.5 text-amber-500 group-hover:translate-x-0.5 transition-transform duration-200" />
               </button>
             </div>
