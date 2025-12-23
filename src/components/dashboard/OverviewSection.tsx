@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
-import { TrendingUp, FileText, MessageSquare, ChevronDown, ChevronUp, ExternalLink, ThumbsUp, ThumbsDown, Minus, Clock, Quote, Info, ArrowUpRight, Sparkles } from "lucide-react";
+import { TrendingUp, FileText, ChevronDown, ChevronUp, ArrowUpRight, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
-import { TooltipProvider, Tooltip as UITooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { ScoreDial } from "@/components/ui/score-dial";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ConfidenceBadge } from "@/components/ui/confidence-badge";
 import { LockedPlatformIndicator } from "@/components/ui/locked-platform-indicator";
 import { UpgradeSheet, UpgradeType } from "@/components/ui/upgrade-sheet";
@@ -403,25 +400,25 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
   const displayedPlatforms = showAllPlatforms ? platformMentions : platformMentions.slice(0, 4);
 
-  // Vibrant donut chart colors
-  const DONUT_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444', '#06B6D4'];
+  // Platform distribution colors - Apple Health style
+  const PLATFORM_COLORS = ['hsl(142, 71%, 45%)', 'hsl(200, 80%, 50%)', 'hsl(280, 70%, 55%)', 'hsl(35, 90%, 55%)'];
 
   return (
     <TooltipProvider>
       <div className="space-y-0">
-        {/* Header */}
+        {/* Header - Clean & Minimal */}
         <div 
-          className={`flex items-center justify-between pb-6 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-header' : ''}`}
+          className={`flex items-center justify-between pb-8 animate-fade-in ${demoMode ? 'demo-header' : ''}`}
           style={{ animationDelay: '0ms', animationFillMode: 'backwards' }}
         >
           <div>
-            <h1 className="text-2xl font-light tracking-tight text-foreground">AI Visibility Overview</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Performance overview for {brandData.name}</p>
+            <p className="text-sm text-muted-foreground tracking-wide uppercase mb-1">Overview</p>
+            <h1 className="text-3xl font-light tracking-tight text-foreground">{brandData.name}</h1>
           </div>
           <ReportExportDialog
             trigger={
-              <Button variant="outline" size="sm" className="gap-2">
-                <FileText className="w-4 h-4" />
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                <FileText className="w-4 h-4 mr-2" />
                 Export
               </Button>
             }
@@ -442,22 +439,46 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           />
         </div>
 
-        {/* Primary Metrics - Compact Layout */}
+        {/* Hero Score Section */}
         <div 
-          className={`py-6 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-1' : ''}`}
+          className={`py-12 border-b border-border/20 animate-fade-in ${demoMode ? 'demo-card-1' : ''}`}
           style={{ animationDelay: '50ms', animationFillMode: 'backwards' }}
         >
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Score */}
-            <div className="flex flex-col">
-              <ScoreDial
-                currentScore={brandData.visibilityScore}
-                previousScore={82}
-                change={5}
-                label="AI Visibility Score"
-                icon={<Sparkles className="w-4 h-4" />}
-              />
-              <div className="mt-3">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            {/* Left: Large Score Display */}
+            <div className="lg:col-span-4">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">AI Visibility Score</span>
+                </div>
+                
+                {/* Large Score */}
+                <div className="relative mb-4">
+                  <span 
+                    className="text-7xl font-extralight tracking-tighter text-foreground"
+                    style={{
+                      textShadow: '0 0 60px rgba(34, 197, 94, 0.1)'
+                    }}
+                  >
+                    {brandData.visibilityScore}
+                  </span>
+                  <span className="text-2xl font-extralight text-muted-foreground ml-1">/ 100</span>
+                  
+                  {/* Trend Badge */}
+                  <div 
+                    className="absolute -right-2 top-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
+                    style={{
+                      background: 'rgba(34, 197, 94, 0.1)',
+                      color: 'rgb(22, 163, 74)',
+                      boxShadow: '0 0 20px rgba(34, 197, 94, 0.15)'
+                    }}
+                  >
+                    <TrendingUp className="w-3 h-3" />
+                    +5%
+                  </div>
+                </div>
+
                 <ConfidenceBadge 
                   promptCount={promptCount} 
                   minForHighConfidence={10}
@@ -466,63 +487,54 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
               </div>
             </div>
 
-            {/* Middle: Mentions & Source */}
-            <div className="space-y-5">
-              {/* Total Mentions */}
-              <div>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Mentions</p>
-                  <Badge variant="secondary" className="bg-success/10 text-success border-0 text-xs font-medium">
-                    +15%
-                  </Badge>
+            {/* Center: Key Metrics */}
+            <div className="lg:col-span-4 flex items-center">
+              <div className="grid grid-cols-2 gap-x-12 gap-y-6 w-full">
+                <div>
+                  <p className="text-4xl font-extralight text-foreground">{brandData.totalMentions.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Total Mentions</p>
                 </div>
-                <p className="text-3xl font-light tracking-tight mt-1">{brandData.totalMentions.toLocaleString()}</p>
-              </div>
-
-              {/* Top Source */}
-              <div 
-                className={cn(
-                  "cursor-pointer group transition-all",
-                  highlightTopSource && "ring-2 ring-primary ring-offset-4 rounded-lg p-2 -m-2"
-                )}
-                onClick={() => window.open(topSource.url, '_blank')}
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Top Source</p>
-                  <span className="text-xs text-muted-foreground">{topSource.mentions} refs</span>
+                <div 
+                  className={cn(
+                    "cursor-pointer group",
+                    highlightTopSource && "ring-2 ring-primary/30 ring-offset-4 rounded-lg p-2 -m-2"
+                  )}
+                  onClick={() => window.open(topSource.url, '_blank')}
+                >
+                  <p className="text-lg font-light text-foreground group-hover:text-primary transition-colors flex items-center gap-1">
+                    {testTopSourceUrl || topSource.source}
+                    <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">Top Source • {topSource.mentions} refs</p>
                 </div>
-                <p className="text-lg font-medium text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5 mt-1">
-                  {testTopSourceUrl || topSource.source}
-                  <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </p>
               </div>
             </div>
 
             {/* Right: Platform Coverage */}
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">Platform Coverage</p>
+            <div className="lg:col-span-4">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-4">Platform Coverage</p>
               <AIInsightsModal
                 trigger={
-                  <div className="flex items-center gap-2 cursor-pointer group">
+                  <div className="flex items-center gap-3 cursor-pointer group mb-4">
                     <div className="flex -space-x-2">
                       {activePlatformMentions.map((platform, i) => (
                         <img 
                           key={platform.platform}
                           src={platform.logo} 
                           alt={platform.platform}
-                          className="w-7 h-7 rounded-full border-2 border-background object-contain bg-background"
+                          className="w-8 h-8 rounded-full border-2 border-background object-contain bg-background"
                           style={{ zIndex: activePlatformMentions.length - i }}
                         />
                       ))}
                     </div>
                     <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                      {activePlatformMentions.length} platforms
+                      {activePlatformMentions.length} active
                     </span>
                   </div>
                 }
                 platforms={activePlatformMentions}
               />
-              <div className="flex items-center gap-1.5 mt-3">
+              <div className="flex items-center gap-2">
                 <LockedPlatformIndicator
                   platformName="Grok"
                   platformIcon={<img src={grokLogo} alt="Grok" className="w-full h-full" />}
@@ -533,18 +545,19 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   platformIcon={<img src="/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" alt="Perplexity" className="w-full h-full" />}
                   onClick={() => handleUpgradeClick("chatbot_coverage")}
                 />
+                <span className="text-xs text-muted-foreground ml-1">locked</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Platform Distribution */}
+        {/* Platform Distribution - Apple Health Style */}
         <div 
-          className={`py-8 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-2' : ''}`}
+          className={`py-12 border-b border-border/20 animate-fade-in ${demoMode ? 'demo-card-2' : ''}`}
           style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-foreground">Platform Distribution</h2>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-xl font-light text-foreground">Platform Distribution</h2>
             <Button
               variant="ghost"
               size="sm"
@@ -555,121 +568,77 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Donut Chart - Properly calculated */}
-            <div className="flex justify-center items-center">
-              <div className="relative w-40 h-40">
-                <svg className="w-full h-full" viewBox="0 0 100 100">
-                  {(() => {
-                    const platforms = displayedPlatforms.slice(0, 4);
-                    const total = platforms.reduce((sum, p) => sum + p.mentions, 0);
-                    const radius = 35;
-                    const circumference = 2 * Math.PI * radius;
-                    let cumulativeOffset = 0;
-                    
-                    return platforms.map((platform, index) => {
-                      const percentage = platform.mentions / total;
-                      const segmentLength = percentage * circumference;
-                      const currentOffset = cumulativeOffset;
-                      cumulativeOffset += segmentLength;
-                      
-                      return (
-                        <circle
-                          key={index}
-                          cx="50"
-                          cy="50"
-                          r={radius}
-                          fill="none"
-                          stroke={DONUT_COLORS[index]}
-                          strokeWidth={hoveredSegment === index ? 12 : 10}
-                          strokeDasharray={`${segmentLength} ${circumference - segmentLength}`}
-                          strokeDashoffset={-currentOffset}
-                          transform="rotate(-90 50 50)"
-                          className="transition-all duration-200 cursor-pointer"
-                          style={{ filter: hoveredSegment === index ? 'brightness(1.1)' : 'brightness(1)' }}
-                          onMouseEnter={() => setHoveredSegment(index)}
-                          onMouseLeave={() => setHoveredSegment(null)}
-                        />
-                      );
-                    });
-                  })()}
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    {hoveredSegment !== null ? (
-                      <>
-                        <p className="text-xl font-medium">{displayedPlatforms[hoveredSegment].mentions}</p>
-                        <p className="text-xs text-muted-foreground">{displayedPlatforms[hoveredSegment].platform}</p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-xl font-medium">{displayedPlatforms.slice(0, 4).reduce((sum, p) => sum + p.mentions, 0)}</p>
-                        <p className="text-xs text-muted-foreground">Total</p>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Platform List */}
-            <div className="space-y-2">
-              {displayedPlatforms.map((platform, index) => (
+          {/* Horizontal Apple Health-style bars */}
+          <div className="space-y-5">
+            {displayedPlatforms.slice(0, 4).map((platform, index) => {
+              const maxMentions = Math.max(...displayedPlatforms.map(p => p.mentions));
+              const percentage = (platform.mentions / maxMentions) * 100;
+              
+              return (
                 <div 
                   key={platform.platform}
-                  className={cn(
-                    "flex items-center justify-between py-2 px-2 -mx-2 rounded-md transition-colors cursor-pointer",
-                    hoveredSegment === index ? "bg-muted/60" : "hover:bg-muted/30"
-                  )}
+                  className="group cursor-pointer"
                   onMouseEnter={() => setHoveredSegment(index)}
                   onMouseLeave={() => setHoveredSegment(null)}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <div 
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
-                      style={{ backgroundColor: DONUT_COLORS[index % DONUT_COLORS.length] }}
-                    />
-                    <img src={platform.logo} alt={platform.platform} className="w-5 h-5 object-contain" />
-                    <span className="text-sm">{platform.platform}</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <img src={platform.logo} alt={platform.platform} className="w-5 h-5 object-contain" />
+                      <span className="text-sm text-foreground">{platform.platform}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-foreground tabular-nums">{platform.mentions}</span>
+                      <span 
+                        className="text-xs px-1.5 py-0.5 rounded-full"
+                        style={{
+                          background: 'rgba(34, 197, 94, 0.1)',
+                          color: 'rgb(22, 163, 74)'
+                        }}
+                      >
+                        {platform.trend}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium tabular-nums">{platform.mentions}</span>
-                    <Badge variant="secondary" className="bg-success/10 text-success border-0 text-xs">
-                      {platform.trend}
-                    </Badge>
+                  <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full rounded-full transition-all duration-500 ease-out"
+                      style={{ 
+                        width: `${percentage}%`,
+                        background: PLATFORM_COLORS[index % PLATFORM_COLORS.length],
+                        opacity: hoveredSegment === null || hoveredSegment === index ? 1 : 0.4
+                      }}
+                    />
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Visibility Trend */}
         <div 
-          className={`py-8 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-3' : ''}`}
+          className={`py-12 border-b border-border/20 animate-fade-in ${demoMode ? 'demo-card-3' : ''}`}
           style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-foreground">Visibility Trend</h2>
-          </div>
+          <h2 className="text-xl font-light text-foreground mb-8">Visibility Trend</h2>
 
           {visibilityTrendData.length === 1 ? (
-            <div className="flex items-center justify-center h-48 rounded-xl bg-muted/30">
+            <div className="flex items-center justify-center h-48 rounded-2xl bg-muted/20">
               <div className="text-center space-y-2">
-                <div className="w-3 h-3 rounded-full bg-primary/60 mx-auto animate-pulse" />
+                <div className="w-3 h-3 rounded-full bg-foreground/40 mx-auto animate-pulse" />
                 <p className="text-sm text-muted-foreground">
-                  Baseline captured: <span className="font-medium text-foreground">{visibilityTrendData[0].mentions}</span> mentions
+                  Baseline: <span className="font-medium text-foreground">{visibilityTrendData[0].mentions}</span> mentions
                 </p>
                 <p className="text-xs text-muted-foreground">Waiting for next scan</p>
               </div>
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={visibilityTrendData}>
                 <defs>
                   <linearGradient id="areaGradientFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={gradientColors[0]} stopOpacity={0.8} />
-                    <stop offset="95%" stopColor={gradientColors[0]} stopOpacity={0.1} />
+                    <stop offset="5%" stopColor={gradientColors[0]} stopOpacity={0.3} />
+                    <stop offset="95%" stopColor={gradientColors[0]} stopOpacity={0.02} />
                   </linearGradient>
                   <linearGradient id="areaGradientStroke" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor={gradientColors[0]} />
@@ -677,31 +646,32 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                     <stop offset="100%" stopColor={gradientColors[2] || gradientColors[0]} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.3)" vertical={false} />
                 <XAxis 
                   dataKey="month" 
                   stroke="hsl(var(--muted-foreground))"
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis 
                   stroke="hsl(var(--muted-foreground))"
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                   width={40}
                 />
                 <Tooltip 
                   contentStyle={{
-                    backgroundColor: 'hsl(var(--popover))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    padding: '8px 12px'
+                    backgroundColor: 'hsl(var(--background) / 0.95)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid hsl(var(--border) / 0.3)',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                    padding: '10px 14px'
                   }}
-                  labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}
-                  itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                  labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 500, fontSize: 12 }}
+                  itemStyle={{ color: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 />
                 <Area 
                   type="monotone" 
@@ -717,28 +687,28 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
         {/* Top Prompts */}
         <div 
-          className={`py-8 border-b border-border/50 animate-fade-in ${demoMode ? 'demo-card-4' : ''}`}
+          className={`py-12 border-b border-border/20 animate-fade-in ${demoMode ? 'demo-card-4' : ''}`}
           style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-foreground">Top Prompts</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-light text-foreground">Top Prompts</h2>
             {onNavigateToPrompts && (
-              <Button variant="ghost" size="sm" onClick={onNavigateToPrompts} className="text-xs text-muted-foreground">
+              <Button variant="ghost" size="sm" onClick={onNavigateToPrompts} className="text-xs text-muted-foreground hover:text-foreground">
                 Manage
               </Button>
             )}
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-0">
             {(expandedPrompts ? promptInsightsData : promptInsightsData.slice(0, 4)).map((prompt) => (
               <div 
                 key={prompt.id}
                 onClick={() => handlePromptClick(prompt.id)}
-                className="flex items-center justify-between py-2.5 px-3 -mx-3 rounded-md hover:bg-muted/40 cursor-pointer transition-colors group"
+                className="flex items-center justify-between py-4 border-b border-border/10 last:border-0 hover:bg-muted/20 -mx-4 px-4 cursor-pointer transition-colors group"
               >
                 <p className="text-sm text-foreground group-hover:text-primary transition-colors">{prompt.query}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">{prompt.mentions}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground tabular-nums">{prompt.mentions} mentions</span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
@@ -746,7 +716,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </div>
 
           {promptInsightsData.length > 4 && (
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-6">
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -754,9 +724,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 className="text-muted-foreground text-xs"
               >
                 {expandedPrompts ? (
-                  <>Less <ChevronUp className="w-3.5 h-3.5 ml-0.5" /></>
+                  <>Show less <ChevronUp className="w-3.5 h-3.5 ml-1" /></>
                 ) : (
-                  <>More <ChevronDown className="w-3.5 h-3.5 ml-0.5" /></>
+                  <>Show more <ChevronDown className="w-3.5 h-3.5 ml-1" /></>
                 )}
               </Button>
             </div>
@@ -765,30 +735,28 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
 
         {/* Source Quality */}
         <div 
-          className={`py-8 animate-fade-in ${demoMode ? 'demo-card-5' : ''}`}
+          className={`py-12 animate-fade-in ${demoMode ? 'demo-card-5' : ''}`}
           style={{ animationDelay: '250ms', animationFillMode: 'backwards' }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-foreground">Source Quality</h2>
-          </div>
+          <h2 className="text-xl font-light text-foreground mb-6">Source Quality</h2>
 
-          <div className="space-y-1">
+          <div className="space-y-0">
             {(expandedSources ? sourceQuality : sourceQuality.slice(0, 3)).map((source) => (
               <div 
                 key={source.id}
-                className="flex items-center justify-between py-2.5 px-3 -mx-3 rounded-md hover:bg-muted/40 cursor-pointer transition-colors group"
+                className="flex items-center justify-between py-4 border-b border-border/10 last:border-0 hover:bg-muted/20 -mx-4 px-4 cursor-pointer transition-colors group"
                 onClick={() => handleSourceClick(source.id)}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <span className="text-sm text-foreground group-hover:text-primary transition-colors">
                     {source.source}
                   </span>
-                  <Badge variant="secondary" className="text-[10px] capitalize px-1.5 py-0">
+                  <span className="text-[10px] text-muted-foreground capitalize px-1.5 py-0.5 rounded-full bg-muted/50">
                     {source.authority}
-                  </Badge>
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">{source.mentions} refs</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground tabular-nums">{source.mentions} refs</span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
@@ -796,7 +764,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           </div>
 
           {sourceQuality.length > 3 && (
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-6">
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -804,9 +772,9 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 className="text-muted-foreground text-xs"
               >
                 {expandedSources ? (
-                  <>Less <ChevronUp className="w-3.5 h-3.5 ml-0.5" /></>
+                  <>Show less <ChevronUp className="w-3.5 h-3.5 ml-1" /></>
                 ) : (
-                  <>More <ChevronDown className="w-3.5 h-3.5 ml-0.5" /></>
+                  <>Show more <ChevronDown className="w-3.5 h-3.5 ml-1" /></>
                 )}
               </Button>
             </div>
