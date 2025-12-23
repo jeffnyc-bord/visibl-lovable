@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowLeft,
@@ -13,7 +11,6 @@ import {
   Eye,
   Search,
   RefreshCw,
-  ExternalLink,
   Target,
   Package,
   Pin,
@@ -28,11 +25,16 @@ import {
   Copy,
   BarChart3,
   X,
-  Check
+  Check,
+  Info,
+  Sparkles
 } from "lucide-react";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
 import { AddPromptDialog } from "@/components/ui/add-prompt-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { GhostProductSlot } from "@/components/ui/ghost-product-slot";
+import { FidelityMeter } from "@/components/ui/fidelity-meter";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 export const ProductDetail = () => {
   const { productId } = useParams();
@@ -45,6 +47,7 @@ export const ProductDetail = () => {
   const [showMentionDetails, setShowMentionDetails] = useState(false);
   const [selectedMentionId, setSelectedMentionId] = useState<number | null>(null);
   const [selectedPrompts, setSelectedPrompts] = useState<number[]>([]);
+  const [showFidelitySheet, setShowFidelitySheet] = useState(false);
   
   type PromptStatus = "completed" | "queued";
   type Prompt = {
@@ -74,8 +77,8 @@ export const ProductDetail = () => {
     id: productId,
     name: "Nike Air Max 1",
     sku: "AIR-MAX-001",
-    score: 98,
-    trend: 5,
+    score: 82,
+    trend: 2,
     category: "Footwear",
     image: "/placeholder-product.jpg",
     lastAnalyzed: "2 hours ago",
@@ -83,6 +86,14 @@ export const ProductDetail = () => {
     avgRank: 3,
     pagesCrawled: 12
   };
+
+  // Score distribution data for Apple Health-style bars
+  const scoreDistribution = [
+    { label: "Content Quality", score: 88, color: "hsl(142, 71%, 45%)" },
+    { label: "Technical SEO", score: 76, color: "hsl(200, 80%, 50%)" },
+    { label: "AI Optimization", score: 82, color: "hsl(280, 70%, 55%)" },
+    { label: "Authority Signals", score: 71, color: "hsl(35, 90%, 55%)" },
+  ];
 
   const gaps = [
     { 
@@ -124,10 +135,6 @@ export const ProductDetail = () => {
   ];
 
   const keywords = [
-    { keyword: "nike air max 1", volume: 49500, rank: 2, clicks: 1250, impressions: 15600, ctr: 8.0, trend: "up" },
-    { keyword: "air max 1 shoes", volume: 18100, rank: 4, clicks: 890, impressions: 12400, ctr: 7.2, trend: "stable" },
-    { keyword: "nike sneakers", volume: 8200, rank: 6, clicks: 420, impressions: 6800, ctr: 6.2, trend: "down" },
-    { keyword: "nike air max 1", volume: 49500, rank: 2, clicks: 1250, impressions: 15600, ctr: 8.0, trend: "up" },
     { keyword: "nike air max 1", volume: 49500, rank: 2, clicks: 1250, impressions: 15600, ctr: 8.0, trend: "up" },
     { keyword: "air max 1 shoes", volume: 18100, rank: 4, clicks: 890, impressions: 12400, ctr: 7.2, trend: "stable" },
     { keyword: "nike sneakers", volume: 8200, rank: 6, clicks: 420, impressions: 6800, ctr: 6.2, trend: "down" },
@@ -350,26 +357,26 @@ export const ProductDetail = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'High': return 'bg-red-50 text-red-700 border-red-200';
-      case 'Medium': return 'bg-amber-50 text-amber-700 border-amber-200';
-      case 'Low': return 'bg-blue-50 text-blue-700 border-blue-200';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200';
+      case 'High': return 'text-red-600 bg-red-50/50';
+      case 'Medium': return 'text-amber-600 bg-amber-50/50';
+      case 'Low': return 'text-blue-600 bg-blue-50/50';
+      default: return 'text-muted-foreground bg-muted/50';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'resolved': return 'bg-green-50 text-green-700 border-green-200';
-      case 'in-progress': return 'bg-blue-50 text-blue-700 border-blue-200';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200';
+      case 'resolved': return 'text-green-600 bg-green-50/50';
+      case 'in-progress': return 'text-blue-600 bg-blue-50/50';
+      default: return 'text-muted-foreground bg-muted/50';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'resolved': return <CheckCircle2 className="w-5 h-5 text-green-600" />;
-      case 'in-progress': return <Clock className="w-5 h-5 text-blue-600" />;
-      default: return <AlertCircle className="w-5 h-5 text-amber-600" />;
+      case 'resolved': return <CheckCircle2 className="w-4 h-4 text-green-600" />;
+      case 'in-progress': return <Clock className="w-4 h-4 text-blue-600" />;
+      default: return <AlertCircle className="w-4 h-4 text-amber-600" />;
     }
   };
 
@@ -377,28 +384,28 @@ export const ProductDetail = () => {
     <>
       {/* Loading Overlay */}
       {isReanalyzing && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
-            <div className="text-center space-y-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-3xl flex items-center justify-center mx-auto">
-                <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
+        <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-background/95 backdrop-blur-xl rounded-3xl shadow-2xl p-10 max-w-md w-full mx-4 animate-scale-in border border-border/50">
+            <div className="text-center space-y-8">
+              <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto">
+                <RefreshCw className="w-7 h-7 text-foreground animate-spin" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-medium text-foreground mb-2">
                   Re-analyzing Product
                 </h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-muted-foreground text-sm">
                   Running AI analysis and updating readiness metrics...
                 </p>
               </div>
-                <div className="space-y-3">
-                  <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div 
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300 ease-out"
-                      style={{ width: `${Math.min(analysisProgress, 100)}%` }}
-                    />
-                  </div>
-                <p className="text-sm text-gray-500">
+              <div className="space-y-3">
+                <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                  <div 
+                    className="bg-foreground h-1.5 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${Math.min(analysisProgress, 100)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
                   {analysisProgress < 30 ? "Scanning product pages..." :
                    analysisProgress < 60 ? "Analyzing AI mentions..." :
                    analysisProgress < 90 ? "Updating metrics..." :
@@ -410,441 +417,518 @@ export const ProductDetail = () => {
         </div>
       )}
 
-    <div className="min-h-screen" style={{ backgroundColor: '#F9FAFC' }}>
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+      {/* Mesh Gradient Background */}
+      <div 
+        className="min-h-screen relative"
+        style={{
+          background: `
+            radial-gradient(ellipse 80% 50% at 20% 40%, rgba(248, 250, 252, 0.9) 0%, transparent 50%),
+            radial-gradient(ellipse 60% 40% at 80% 20%, rgba(241, 245, 249, 0.8) 0%, transparent 50%),
+            radial-gradient(ellipse 50% 30% at 40% 80%, rgba(226, 232, 240, 0.6) 0%, transparent 50%),
+            linear-gradient(180deg, hsl(0 0% 99%) 0%, hsl(0 0% 97%) 100%)
+          `
+        }}
+      >
+        {/* Header */}
+        <div className="border-b border-border/40 bg-background/60 backdrop-blur-xl sticky top-0 z-40">
+          <div className="max-w-6xl mx-auto px-8 py-5">
+            <div className="flex items-center justify-between">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={() => navigate('/?tab=brand')}
-                className="text-gray-500 hover:text-gray-900"
+                className="text-muted-foreground hover:text-foreground -ml-2"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
+                Back
               </Button>
-            </div>
-            <div className="flex items-center space-x-3">
-              <h1 className="text-xl font-bold text-gray-900">{mockProduct.name}</h1>
-              <p className="text-sm text-gray-500">SKU: {mockProduct.sku}</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button 
-                onClick={handleTogglePin}
-                variant="outline"
-                className="rounded-3xl border-gray-300 text-gray-600 hover:bg-gray-50"
-              >
-                {isPinned ? <Pin className="w-4 h-4 mr-2" /> : <PinOff className="w-4 h-4 mr-2" />}
-                {isPinned ? 'Pinned' : 'Pin to Watchlist'}
-              </Button>
-              <Button 
-                onClick={handleReanalyze}
-                disabled={isReanalyzing}
-                className="text-white shadow-sm rounded-3xl"
-                style={{ backgroundColor: '#2F7EFE' }}
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${isReanalyzing ? 'animate-spin' : ''}`} />
-                {isReanalyzing ? 'Re-analyzing...' : 'Re-analyze Product'}
-              </Button>
+              <div className="flex items-center gap-3">
+                <Button 
+                  onClick={handleTogglePin}
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  {isPinned ? <Pin className="w-4 h-4" /> : <PinOff className="w-4 h-4" />}
+                </Button>
+                <Button 
+                  onClick={handleReanalyze}
+                  disabled={isReanalyzing}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full border-border/60"
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${isReanalyzing ? 'animate-spin' : ''}`} />
+                  {isReanalyzing ? 'Analyzing...' : 'Re-analyze'}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* AI Readiness Hero Section */}
-        <Card className="bg-white border-gray-200 shadow-sm mb-8">
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left: AI Readiness Score */}
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                  <Package className="w-5 h-5 text-gray-600" />
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-1">AI Readiness Score</h2>
-                  <p className="text-sm text-gray-600 mb-6">Overall performance and Optimization status</p>
-                  
-                  <div className="space-y-3 pt-4 border-t border-gray-100">
-                    <div className="flex items-center space-x-2">
-                      <Package className="w-4 h-4 text-gray-400" />
-                      <span className="font-semibold text-gray-900">{mockProduct.name}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-500"># SKU: {mockProduct.sku}</span>
-                    </div>
-                    <div className="inline-flex items-center space-x-1 bg-green-50 text-green-700 px-3 py-1 rounded-md text-sm">
-                      <TrendingUp className="w-4 h-4" />
-                      <span>+{mockProduct.trend}% up this week</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="relative w-32 h-32 flex-shrink-0">
-                  <svg className="transform -rotate-90 w-32 h-32">
-                    <circle
-                      cx="64"
-                      cy="64"
-                      r="56"
-                      stroke="currentColor"
-                      strokeWidth="5"
-                      fill="transparent"
-                      className="text-gray-200"
-                    />
-                    <circle
-                      cx="64"
-                      cy="64"
-                      r="56"
-                      stroke="currentColor"
-                      strokeWidth="5"
-                      fill="transparent"
-                      strokeDasharray={2 * Math.PI * 56}
-                      strokeDashoffset={2 * Math.PI * 56 * (1 - mockProduct.score / 100)}
-                      className="text-gray-900"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-3xl font-medium text-gray-900">{mockProduct.score}%</span>
-                  </div>
-                </div>
+        <div className="max-w-6xl mx-auto px-8 py-12">
+          {/* Product Hero */}
+          <div className="mb-16">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground tracking-wide uppercase">Product</p>
+                <h1 className="text-4xl font-light tracking-tight text-foreground">{mockProduct.name}</h1>
+                <p className="text-muted-foreground">SKU: {mockProduct.sku}</p>
               </div>
+            </div>
+          </div>
 
-              {/* Right: Key Metrics */}
-              <div className="grid grid-cols-2 gap-6 lg:border-l lg:border-gray-100 lg:pl-8">
-                {/* Avg. Rank */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <Search className="w-5 h-5" />
-                    <span className="font-medium text-gray-900">Avg. Rank</span>
+          {/* AI Readiness Score Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
+            {/* Left: Score Display */}
+            <div className="lg:col-span-5">
+              <div className="flex flex-col items-center lg:items-start">
+                {/* Large Score */}
+                <div className="relative mb-6">
+                  <div 
+                    className="text-8xl font-extralight tracking-tighter text-foreground"
+                    style={{
+                      textShadow: mockProduct.trend > 0 ? '0 0 60px rgba(34, 197, 94, 0.15)' : 'none'
+                    }}
+                  >
+                    {mockProduct.score}
                   </div>
-                  <p className="text-xs text-gray-600">Average rank position</p>
-                  <p className="text-3xl font-bold text-gray-900">#{mockProduct.avgRank}</p>
+                  <span className="text-2xl font-extralight text-muted-foreground ml-1">%</span>
+                  
+                  {/* Trend Badge with Glow */}
+                  <div 
+                    className="absolute -right-4 top-4 flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium"
+                    style={{
+                      background: 'rgba(34, 197, 94, 0.1)',
+                      color: 'rgb(22, 163, 74)',
+                      boxShadow: '0 0 20px rgba(34, 197, 94, 0.2)'
+                    }}
+                  >
+                    <TrendingUp className="w-3.5 h-3.5" />
+                    +{mockProduct.trend}%
+                  </div>
                 </div>
+                
+                <p className="text-sm text-muted-foreground mb-8">AI Readiness Score</p>
 
-                {/* Product Mentions */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <Eye className="w-5 h-5" />
-                    <span className="font-medium text-gray-900">Product Mentions</span>
+                {/* Key Metrics - Minimal */}
+                <div className="flex gap-12 pt-8 border-t border-border/30 w-full">
+                  <div>
+                    <p className="text-3xl font-light text-foreground">#{mockProduct.avgRank}</p>
+                    <p className="text-xs text-muted-foreground mt-1">Avg. Rank</p>
                   </div>
-                  <p className="text-xs text-gray-600">Total mentions across platforms</p>
-                  <p className="text-3xl font-bold text-gray-900">{mockProduct.mentions}</p>
+                  <div>
+                    <p className="text-3xl font-light text-foreground">{mockProduct.mentions}</p>
+                    <p className="text-xs text-muted-foreground mt-1">Mentions</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Navigation Tabs */}
-        <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-8">
-          <div className="border-b border-gray-200">
-            <TabsList className="grid w-full grid-cols-3 bg-transparent h-auto p-0 space-x-8">
-              <TabsTrigger 
-                value="prompts" 
-                className="flex items-center space-x-2 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 px-0 py-4 rounded-none bg-transparent hover:text-blue-500 transition-colors"
-              >
-                <Eye className="w-4 h-4" />
-                <span className="font-medium">Prompts</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="recommendations" 
-                className="flex items-center space-x-2 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 px-0 py-4 rounded-none bg-transparent hover:text-blue-500 transition-colors"
-              >
-                <Target className="w-4 h-4" />
-                <span className="font-medium">Recommendations</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="keywords" 
-                className="flex items-center space-x-2 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 px-0 py-4 rounded-none bg-transparent hover:text-blue-500 transition-colors"
-              >
-                <Search className="w-4 h-4" />
-                <span className="font-medium">Keywords</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          <TabsContent value="recommendations" className="space-y-8">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Optimization Recommendations</h3>
-              <p className="text-gray-600 mb-8">Prioritized improvements to boost your product's AI readiness score</p>
-              <div className="space-y-6">
-                {gaps.map((gap) => (
-                  <div 
-                    key={gap.id} 
-                    className="border-l-4 border-blue-500 bg-white pl-6 pr-6 py-6 hover:bg-gray-50 transition-colors duration-200 rounded-r-3xl shadow-sm"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-3">
-                          {getStatusIcon(gap.status)}
-                          <h4 className="font-semibold text-gray-900">{gap.title}</h4>
-                          <Badge className={getPriorityColor(gap.priority)} variant="outline">
-                            {gap.priority} Priority
-                          </Badge>
-                          <Badge className={getStatusColor(gap.status)} variant="outline">
-                            {gap.status === 'in-progress' ? 'In Progress' : gap.status === 'resolved' ? 'Resolved' : 'Pending'}
-                          </Badge>
-                        </div>
-                        <p className="text-gray-600 mb-4">{gap.description}</p>
-                        <div className="flex items-center space-x-6 text-sm">
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium text-gray-700">Impact:</span>
-                            <Badge variant="outline" className="text-xs">
-                              {gap.impact}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium text-gray-700">Effort:</span>
-                            <Badge variant="outline" className="text-xs">
-                              {gap.effort}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2 ml-6">
-                        <Button size="sm" variant="outline" className="text-xs rounded-2xl">
-                          Mark In Progress
-                        </Button>
-                        <Button size="sm" className="text-xs bg-blue-600 hover:bg-blue-700 rounded-2xl">
-                          Get Guidance
-                        </Button>
-                      </div>
+            {/* Right: Score Distribution - Apple Health Style Bars */}
+            <div className="lg:col-span-7">
+              <p className="text-sm text-muted-foreground mb-6">Score Breakdown</p>
+              <div className="space-y-5">
+                {scoreDistribution.map((item, index) => (
+                  <div key={index} className="group">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-foreground">{item.label}</span>
+                      <span className="text-sm font-medium text-foreground">{item.score}%</span>
+                    </div>
+                    <div className="h-2 bg-muted/50 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full transition-all duration-700 ease-out"
+                        style={{ 
+                          width: `${item.score}%`,
+                          background: item.color
+                        }}
+                      />
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          </TabsContent>
+          </div>
 
-          <TabsContent value="prompts" className="space-y-8">
-            <div>
-              {/* Queue Indicator */}
-              {prompts.filter(p => p.queued).length > 0 && (
-                <div className="flex items-center justify-between mb-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="w-5 h-5 text-amber-600" />
+          {/* Navigation Tabs */}
+          <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-10">
+            <TabsList className="bg-transparent p-0 h-auto border-b border-border/30 w-full justify-start gap-8 rounded-none">
+              <TabsTrigger 
+                value="prompts" 
+                className="bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none px-0 pb-4 pt-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none font-normal"
+              >
+                Prompts
+              </TabsTrigger>
+              <TabsTrigger 
+                value="recommendations" 
+                className="bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none px-0 pb-4 pt-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none font-normal"
+              >
+                Recommendations
+              </TabsTrigger>
+              <TabsTrigger 
+                value="keywords" 
+                className="bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none px-0 pb-4 pt-0 text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none font-normal"
+              >
+                Keywords
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="recommendations" className="space-y-8 mt-10">
+              <div>
+                <h3 className="text-xl font-light text-foreground mb-2">Optimization Recommendations</h3>
+                <p className="text-sm text-muted-foreground mb-10">Prioritized improvements to boost your product's AI readiness</p>
+                
+                <div className="space-y-1">
+                  {gaps.map((gap, index) => (
+                    <div 
+                      key={gap.id} 
+                      className="group py-6 border-b border-border/20 last:border-0 hover:bg-muted/20 transition-colors -mx-4 px-4 rounded-xl"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className="mt-0.5">
+                            {getStatusIcon(gap.status)}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="text-foreground">{gap.title}</h4>
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(gap.priority)}`}>
+                                {gap.priority}
+                              </span>
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(gap.status)}`}>
+                                {gap.status === 'in-progress' ? 'In Progress' : gap.status === 'resolved' ? 'Resolved' : 'Pending'}
+                              </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-3">{gap.description}</p>
+                            <div className="flex items-center gap-6 text-xs text-muted-foreground">
+                              <span>Impact: <strong className="text-foreground font-medium">{gap.impact}</strong></span>
+                              <span>Effort: <strong className="text-foreground font-medium">{gap.effort}</strong></span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                        >
+                          Get Guidance
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="prompts" className="space-y-8 mt-10">
+              <div>
+                {/* Fidelity Meter */}
+                <div className="mb-8 p-4 rounded-2xl bg-muted/30 border border-border/20">
+                  <div className="flex items-center justify-between">
+                    <FidelityMeter
+                      current={3}
+                      max={5}
+                      label="Data Fidelity"
+                      description="60% — Add more prompts for higher accuracy"
+                      onClick={() => setShowFidelitySheet(true)}
+                    />
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setShowFidelitySheet(true)}
+                      className="text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      <Info className="w-3.5 h-3.5 mr-1.5" />
+                      Learn more
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Queue Indicator */}
+                {prompts.filter(p => p.queued).length > 0 && (
+                  <div className="flex items-center justify-between mb-8 p-4 rounded-2xl bg-amber-50/50 border border-amber-200/30">
+                    <div className="flex items-center gap-3">
+                      <Clock className="w-4 h-4 text-amber-600" />
                       <div>
-                        <p className="font-semibold text-gray-900">
+                        <p className="text-sm text-foreground">
                           {prompts.filter(p => p.queued).length} prompt{prompts.filter(p => p.queued).length > 1 ? 's' : ''} queued
                         </p>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-xs text-muted-foreground">
                           Waiting for next analysis run
                         </p>
                       </div>
                     </div>
                   </div>
-                  <Badge variant="outline" className="bg-white">
-                    <Clock className="w-3 h-3 mr-1" />
-                    Pending Analysis
-                  </Badge>
-                </div>
-              )}
+                )}
 
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-1">Product Prompts</h3>
-                  <p className="text-gray-600">Track how {mockProduct.name} performs across different prompts • {prompts.length}/{MAX_PROMPTS} prompts used</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {selectedPrompts.length > 0 && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={handleDeletePrompts}
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete ({selectedPrompts.length})
-                    </Button>
-                  )}
-                  <Button
-                    className="bg-gray-900 hover:bg-gray-800 text-white"
-                    size="sm"
-                    onClick={() => setShowAddPrompt(true)}
-                    disabled={prompts.length >= MAX_PROMPTS}
-                  >
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Add Prompt
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead className="w-12">
-                        <button
-                          onClick={handleToggleAllPrompts}
-                          className="group relative flex items-center justify-center w-5 h-5 rounded-full border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background"
-                        >
-                          <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
-                            selectedPrompts.length === prompts.length && prompts.length > 0
-                              ? 'bg-primary scale-100 opacity-100' 
-                              : 'bg-transparent scale-0 opacity-0'
-                          }`} />
-                          <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
-                            selectedPrompts.length === prompts.length && prompts.length > 0
-                              ? 'text-primary-foreground scale-100 opacity-100' 
-                              : 'text-transparent scale-0 opacity-0'
-                          }`} />
-                        </button>
-                      </TableHead>
-                      <TableHead className="font-semibold">Prompt</TableHead>
-                      <TableHead className="font-semibold">Top Platform</TableHead>
-                      <TableHead className="font-semibold">Mentions</TableHead>
-                      <TableHead className="font-semibold">Source</TableHead>
-                      <TableHead className="font-semibold">Date</TableHead>
-                      <TableHead className="font-semibold w-24">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {prompts.map((mention) => (
-                      <TableRow 
-                        key={mention.id} 
-                        className={`hover:bg-gray-50 ${mention.status !== "queued" ? "cursor-pointer" : "cursor-default"}`}
-                        onClick={() => mention.status !== "queued" && handleMentionClick(mention.id)}
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="text-xl font-light text-foreground mb-1">Product Prompts</h3>
+                    <p className="text-sm text-muted-foreground">{prompts.length}/{MAX_PROMPTS} prompts tracked</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {selectedPrompts.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleDeletePrompts}
+                        className="text-destructive hover:text-destructive"
                       >
-                        <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete ({selectedPrompts.length})
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowAddPrompt(true)}
+                      disabled={prompts.length >= MAX_PROMPTS}
+                      className="rounded-full"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Prompt
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Prompts List - Clean Table */}
+                <div className="rounded-xl border border-border/30 overflow-hidden bg-background/50">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-border/20 hover:bg-transparent">
+                        <TableHead className="w-12">
                           <button
-                            onClick={() => handleTogglePromptSelection(mention.id)}
-                            className="group relative flex items-center justify-center w-5 h-5 rounded-full border-2 border-input hover:border-primary transition-all duration-200 cursor-pointer bg-background"
+                            onClick={handleToggleAllPrompts}
+                            className="group relative flex items-center justify-center w-5 h-5 rounded-full border border-border hover:border-foreground transition-all duration-200 cursor-pointer bg-background"
                           >
                             <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
-                              selectedPrompts.includes(mention.id)
-                                ? 'bg-primary scale-100 opacity-100' 
+                              selectedPrompts.length === prompts.length && prompts.length > 0
+                                ? 'bg-foreground scale-100 opacity-100' 
                                 : 'bg-transparent scale-0 opacity-0'
                             }`} />
                             <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
-                              selectedPrompts.includes(mention.id)
-                                ? 'text-primary-foreground scale-100 opacity-100' 
+                              selectedPrompts.length === prompts.length && prompts.length > 0
+                                ? 'text-background scale-100 opacity-100' 
                                 : 'text-transparent scale-0 opacity-0'
                             }`} />
                           </button>
-                        </TableCell>
-                        <TableCell>
-                          <p className="font-medium text-gray-900 max-w-xs truncate">{mention.query}</p>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            {mention.status === "queued" ? (
-                              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                                <Clock className="w-3 h-3 mr-1" />
-                                Queued
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline">{mention.model}</Badge>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm text-gray-900">{mention.mentions}</span>
-                        </TableCell>
-                        <TableCell>
-                          <p className="text-sm text-gray-600">{mention.url.split('/')[0]}</p>
-                        </TableCell>
-                        <TableCell>
-                          <p className="text-sm text-gray-500">{mention.date}</p>
-                        </TableCell>
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Settings className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {mention.status === "queued" && (
-                                <DropdownMenuItem 
-                                  onClick={() => handleDeleteSinglePrompt(mention.id)}
-                                  className="text-destructive focus:text-destructive"
-                                >
-                                  <X className="mr-2 h-4 w-4" />
-                                  Remove from Queue
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuItem onClick={() => {
-                                if (mention.status !== "queued") {
-                                  handleMentionClick(mention.id);
-                                }
-                              }} disabled={mention.status === "queued"}>
-                                <BarChart3 className="mr-2 h-4 w-4" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => {
-                                navigator.clipboard.writeText(mention.query);
-                                toast({
-                                  title: "Copied",
-                                  description: "Prompt copied to clipboard.",
-                                });
-                              }}>
-                                <Copy className="mr-2 h-4 w-4" />
-                                Copy Prompt
-                              </DropdownMenuItem>
-                              {mention.status !== "queued" && (
-                                <DropdownMenuItem 
-                                  onClick={() => handleDeleteSinglePrompt(mention.id)}
-                                  className="text-destructive focus:text-destructive"
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Delete Prompt
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
+                        </TableHead>
+                        <TableHead className="text-xs text-muted-foreground font-normal">Prompt</TableHead>
+                        <TableHead className="text-xs text-muted-foreground font-normal">Platform</TableHead>
+                        <TableHead className="text-xs text-muted-foreground font-normal">Mentions</TableHead>
+                        <TableHead className="text-xs text-muted-foreground font-normal">Source</TableHead>
+                        <TableHead className="text-xs text-muted-foreground font-normal">Date</TableHead>
+                        <TableHead className="w-12"></TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          </TabsContent>
+                    </TableHeader>
+                    <TableBody>
+                      {prompts.map((mention) => (
+                        <TableRow 
+                          key={mention.id} 
+                          className={`border-border/10 ${mention.status !== "queued" ? "cursor-pointer hover:bg-muted/30" : "cursor-default"}`}
+                          onClick={() => mention.status !== "queued" && handleMentionClick(mention.id)}
+                        >
+                          <TableCell onClick={(e) => e.stopPropagation()}>
+                            <button
+                              onClick={() => handleTogglePromptSelection(mention.id)}
+                              className="group relative flex items-center justify-center w-5 h-5 rounded-full border border-border hover:border-foreground transition-all duration-200 cursor-pointer bg-background"
+                            >
+                              <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
+                                selectedPrompts.includes(mention.id)
+                                  ? 'bg-foreground scale-100 opacity-100' 
+                                  : 'bg-transparent scale-0 opacity-0'
+                              }`} />
+                              <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
+                                selectedPrompts.includes(mention.id)
+                                  ? 'text-background scale-100 opacity-100' 
+                                  : 'text-transparent scale-0 opacity-0'
+                              }`} />
+                            </button>
+                          </TableCell>
+                          <TableCell>
+                            <p className="text-sm text-foreground max-w-xs truncate">{mention.query}</p>
+                          </TableCell>
+                          <TableCell>
+                            {mention.status === "queued" ? (
+                              <span className="text-xs text-amber-600 flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                Queued
+                              </span>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">{mention.model}</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-foreground">{mention.mentions}</span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-xs text-muted-foreground">{mention.url.split('/')[0]}</span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-xs text-muted-foreground">{mention.date}</span>
+                          </TableCell>
+                          <TableCell onClick={(e) => e.stopPropagation()}>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100">
+                                  <Settings className="h-4 w-4 text-muted-foreground" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-48">
+                                {mention.status === "queued" && (
+                                  <DropdownMenuItem 
+                                    onClick={() => handleDeleteSinglePrompt(mention.id)}
+                                    className="text-destructive focus:text-destructive"
+                                  >
+                                    <X className="mr-2 h-4 w-4" />
+                                    Remove from Queue
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem onClick={() => {
+                                  if (mention.status !== "queued") {
+                                    handleMentionClick(mention.id);
+                                  }
+                                }} disabled={mention.status === "queued"}>
+                                  <BarChart3 className="mr-2 h-4 w-4" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => {
+                                  navigator.clipboard.writeText(mention.query);
+                                  toast({
+                                    title: "Copied",
+                                    description: "Prompt copied to clipboard.",
+                                  });
+                                }}>
+                                  <Copy className="mr-2 h-4 w-4" />
+                                  Copy Prompt
+                                </DropdownMenuItem>
+                                {mention.status !== "queued" && (
+                                  <DropdownMenuItem 
+                                    onClick={() => handleDeleteSinglePrompt(mention.id)}
+                                    className="text-destructive focus:text-destructive"
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete Prompt
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
 
-          <TabsContent value="keywords" className="space-y-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-2">
-                <Search className="w-5 h-5 text-gray-600" />
-                <h3 className="text-xl font-semibold text-gray-900">Search Performance — {mockProduct.name}</h3>
+                {/* Ghost Product Slot */}
+                <div className="mt-8">
+                  <GhostProductSlot 
+                    onClick={() => navigate('/?tab=brand')}
+                    className="opacity-60 hover:opacity-100"
+                  />
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
+                    Ready to dominate another category? Track your next product line here.
+                  </p>
+                </div>
               </div>
-              <p className="text-gray-600 mb-6">Keyword rankings and performance metrics</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {keywords.map((keyword, index) => (
-                  <Card key={index} className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                    <CardContent className="pt-6">
-                      <div className="space-y-3">
-                        <p className="font-medium text-gray-900 text-sm">{keyword.keyword}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 text-sm">{keyword.volume.toLocaleString()}</span>
-                          <span className="text-blue-600 font-semibold text-lg">#{keyword.rank}</span>
-                        </div>
+            </TabsContent>
+
+            <TabsContent value="keywords" className="space-y-8 mt-10">
+              <div>
+                <h3 className="text-xl font-light text-foreground mb-2">Search Performance</h3>
+                <p className="text-sm text-muted-foreground mb-10">Keyword rankings and performance metrics for {mockProduct.name}</p>
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {keywords.map((keyword, index) => (
+                    <div 
+                      key={index} 
+                      className="group p-5 rounded-2xl border border-border/20 bg-background/50 hover:bg-muted/30 transition-all cursor-pointer"
+                    >
+                      <p className="text-sm text-foreground mb-3 truncate">{keyword.keyword}</p>
+                      <div className="flex items-end justify-between">
+                        <span className="text-xs text-muted-foreground">{keyword.volume.toLocaleString()} vol</span>
+                        <span className="text-2xl font-light text-foreground">#{keyword.rank}</span>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+
+      {/* Prompt Details Panel */}
+      <PromptDetailsPanel
+        isOpen={showMentionDetails}
+        onClose={() => setShowMentionDetails(false)}
+        promptData={selectedMentionId ? transformMentionToPromptData(selectedMentionId) : null}
+      />
+
+      {/* Add Prompt Dialog */}
+      <AddPromptDialog
+        open={showAddPrompt}
+        onOpenChange={setShowAddPrompt}
+        onAdd={handleAddPrompt}
+      />
+
+      {/* Fidelity Enhancement Sheet */}
+      <Sheet open={showFidelitySheet} onOpenChange={setShowFidelitySheet}>
+        <SheetContent className="bg-background/95 backdrop-blur-xl border-l border-border/30">
+          <SheetHeader className="pb-6">
+            <SheetTitle className="text-xl font-light flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Enhance Data Fidelity
+            </SheetTitle>
+            <SheetDescription>
+              Improve your brand's intelligence with more prompt coverage
+            </SheetDescription>
+          </SheetHeader>
+          
+          <div className="space-y-6">
+            <div className="p-6 rounded-2xl bg-muted/30 border border-border/20">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm text-muted-foreground">Current Fidelity</span>
+                <span className="text-2xl font-light text-foreground">60%</span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full rounded-full bg-foreground/70"
+                  style={{ width: '60%' }}
+                />
               </div>
             </div>
-          </TabsContent>
-         </Tabs>
-       </div>
-     </div>
 
-     {/* Prompt Details Panel */}
-     <PromptDetailsPanel
-       isOpen={showMentionDetails}
-       onClose={() => setShowMentionDetails(false)}
-       promptData={selectedMentionId ? transformMentionToPromptData(selectedMentionId) : null}
-     />
+            <div className="space-y-4">
+              <h4 className="text-sm text-foreground">What you'll get:</h4>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span>Track 10 additional prompts for 100% fidelity</span>
+                </li>
+                <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span>More accurate AI visibility scoring</span>
+                </li>
+                <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span>Better competitive intelligence</span>
+                </li>
+              </ul>
+            </div>
 
-     {/* Add Prompt Dialog */}
-     <AddPromptDialog
-       open={showAddPrompt}
-       onOpenChange={setShowAddPrompt}
-       onAdd={handleAddPrompt}
-     />
-     </>
-   );
+            <Button 
+              className="w-full rounded-full mt-6"
+              onClick={() => {
+                setShowFidelitySheet(false);
+                navigate('/settings?tab=billing');
+              }}
+            >
+              Upgrade to Pro
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
+  );
 };
