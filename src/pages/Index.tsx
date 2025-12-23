@@ -28,7 +28,7 @@ import { ExternalAIVisibilitySection } from "@/components/dashboard/ExternalAIVi
 import { AgencyAdminSection } from "@/components/dashboard/AgencyAdminSection";
 import { BrandManagementSection } from "@/components/dashboard/BrandManagementSection";
 import { ActionsLog } from "@/components/actions-log";
-import { AEOContentStudio } from "@/components/actions-lab/AEOContentStudio";
+import { ContentStudioLibrary } from "@/components/actions-lab/ContentStudioLibrary";
 import { Settings as SettingsPage } from "@/pages/Settings";
 import { DashboardSkeleton, ChartWidgetSkeleton, ScorecardSkeleton, TableSkeleton, WidgetSkeleton } from "@/components/ui/dashboard-skeleton";
 import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from "@/components/ui/error-states";
@@ -1184,12 +1184,7 @@ const Index = () => {
                             </div>
                           ) : recommendationsSubTab === 'contentstudio' ? (
                             <div className="h-[calc(100vh-12rem)]">
-                              <AEOContentStudio 
-                                isOpen={true} 
-                                onClose={() => setRecommendationsSubTab('on-site')}
-                                prompt={null}
-                                contentType={null}
-                              />
+                              <ContentStudioLibrary />
                             </div>
                           ) : (
                             <RecommendationsSection 
