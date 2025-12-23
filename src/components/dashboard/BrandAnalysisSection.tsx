@@ -1,11 +1,8 @@
-
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { AddProductDialog } from "@/components/ui/add-product-dialog";
 import { UpgradeSheet } from "@/components/ui/upgrade-sheet";
 import { toast } from "@/hooks/use-toast";
@@ -13,17 +10,15 @@ import {
   TrendingUp, 
   TrendingDown, 
   Search, 
-  Eye,
   AlertTriangle,
   CheckCircle,
-  Package,
   Star,
-  ExternalLink,
   Pin,
   Plus,
   Loader2,
   RotateCcw,
-  ChevronRight
+  ArrowUpRight,
+  Check
 } from "lucide-react";
 
 interface BrandData {
@@ -73,7 +68,6 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
   const [scoreFilter, setScoreFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortBy, setSortBy] = useState("score-desc");
-  const [pinnedFilter, setPinnedFilter] = useState("all");
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [newProducts, setNewProducts] = useState<any[]>([]);
@@ -101,20 +95,28 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
   const topProducts = allProducts.filter(p => p.score >= 90).slice(0, 5);
   const bottomProducts = allProducts.filter(p => p.score < 70 && p.status === "complete").slice(0, 5);
 
+  // Score distribution data
+  const scoreDistribution = [
+    { label: "Excellent", range: "90-100%", count: 156, percentage: 12, color: "hsl(142, 71%, 45%)" },
+    { label: "Good", range: "80-89%", count: 423, percentage: 34, color: "hsl(200, 80%, 50%)" },
+    { label: "Needs Work", range: "70-79%", count: 579, percentage: 46, color: "hsl(35, 90%, 55%)" },
+    { label: "Poor", range: "<70%", count: 89, percentage: 7, color: "hsl(0, 70%, 55%)" },
+  ];
+
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedProducts(allProducts.map(p => p.id));
+      setSelectedProducts(allProducts.filter(p => p.status !== "analyzing").map(p => p.id));
     } else {
       setSelectedProducts([]);
     }
   };
 
-  const handleSelectProduct = (productId: number, checked: boolean) => {
-    if (checked) {
-      setSelectedProducts(prev => [...prev, productId]);
-    } else {
-      setSelectedProducts(prev => prev.filter(id => id !== productId));
-    }
+  const handleSelectProduct = (productId: number) => {
+    setSelectedProducts(prev =>
+      prev.includes(productId)
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
   };
 
   const handleBatchReanalyze = async () => {
@@ -127,14 +129,14 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
       
       toast({
         title: "Re-analysis Complete",
-        description: `Successfully re-analyzed ${selectedProducts.length} product${selectedProducts.length > 1 ? 's' : ''}. AI readiness scores have been updated.`,
+        description: `Successfully re-analyzed ${selectedProducts.length} product${selectedProducts.length > 1 ? 's' : ''}.`,
       });
       
       setSelectedProducts([]);
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to re-analyze selected products. Please try again.",
+        description: "Failed to re-analyze selected products.",
         variant: "destructive",
       });
     } finally {
@@ -162,7 +164,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
     
     toast({
       title: "Analysis Started",
-      description: `${product.name} has been added and is being analyzed.`,
+      description: `${product.name} is being analyzed.`,
     });
     
     setTimeout(() => {
@@ -182,199 +184,210 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
       
       toast({
         title: "Analysis Complete",
-        description: `${product.name} has been analyzed and is now ready.`,
+        description: `${product.name} is now ready.`,
       });
     }, 10000);
   };
 
   return (
-    <div className="space-y-8">
-      {/* Section Header */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-0">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-8">
         <div>
-          <h2 className="text-2xl font-semibold text-foreground tracking-tight">Product AI Readiness</h2>
-          <p className="text-sm text-muted-foreground mt-1">Manage and optimize your product catalog for AI visibility</p>
+          <p className="text-sm text-muted-foreground tracking-wide uppercase mb-1">Products</p>
+          <h1 className="text-3xl font-light tracking-tight text-foreground">AI Readiness</h1>
         </div>
         <AddProductDialog 
           onProductAdded={handleProductAdded}
           trigger={
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1.5">
-              <Plus className="w-4 h-4" />
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              <Plus className="w-4 h-4 mr-2" />
               Add Product
             </Button>
           }
         />
       </div>
 
-      {/* Summary Stats - Clean horizontal row */}
-      <div className="flex items-center gap-12 py-6 border-b border-border/50">
-        <div className="flex items-center gap-4">
-          <div className="text-4xl font-semibold text-foreground tracking-tight">82%</div>
-          <div>
-            <p className="text-sm text-muted-foreground">Average AI Readiness</p>
-            <div className="flex items-center gap-1 text-emerald-600 mt-0.5">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span className="text-xs font-medium">+2% this week</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="h-10 w-px bg-border/50" />
-        
-        <div>
-          <div className="text-2xl font-semibold text-foreground">1,247</div>
-          <p className="text-sm text-muted-foreground">Total Products</p>
-        </div>
-        
-        <div>
-          <div className="text-2xl font-semibold text-red-600">89</div>
-          <p className="text-sm text-muted-foreground">Need Attention</p>
-        </div>
-        
-        <div>
-          <div className="text-2xl font-semibold text-emerald-600">156</div>
-          <p className="text-sm text-muted-foreground">AI-Ready</p>
-        </div>
-      </div>
-
-      {/* Score Distribution - Inline progress bars */}
-      <div className="py-4">
-        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">Score Distribution</h3>
-        <div className="grid grid-cols-4 gap-6">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-foreground">Excellent (90-100%)</span>
-              <span className="text-sm font-medium text-foreground">156</span>
-            </div>
-            <Progress value={15} className="h-1.5" />
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-foreground">Good (80-89%)</span>
-              <span className="text-sm font-medium text-foreground">423</span>
-            </div>
-            <Progress value={40} className="h-1.5" />
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-foreground">Needs Work (70-79%)</span>
-              <span className="text-sm font-medium text-foreground">579</span>
-            </div>
-            <Progress value={35} className="h-1.5" />
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-foreground">Poor (&lt;70%)</span>
-              <span className="text-sm font-medium text-foreground">89</span>
-            </div>
-            <Progress value={10} className="h-1.5" />
-          </div>
-        </div>
-      </div>
-
-      {/* Top / Bottom Products - Side by side list style */}
-      <div className="grid grid-cols-2 gap-8">
-        {/* Top Products */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Star className="w-4 h-4 text-emerald-600" />
-            <h3 className="text-sm font-medium text-foreground">Top AI-Ready Products</h3>
-          </div>
-          <div className="space-y-1">
-            {topProducts.map((product) => (
-              <div 
-                key={product.id} 
-                className="flex items-center justify-between py-3 px-3 -mx-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
-                onClick={() => window.location.href = `/product/${product.id}`}
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-foreground truncate">{product.name}</span>
-                    <span className="text-xs text-muted-foreground">{product.sku}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-emerald-600">{product.score}%</span>
-                  <div className="flex items-center text-emerald-600">
-                    <TrendingUp className="w-3 h-3" />
-                    <span className="text-xs ml-0.5">+{product.trend}%</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+      {/* Hero Stats */}
+      <div className="py-12 border-b border-border/20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          {/* Left: Large Score */}
+          <div className="lg:col-span-4">
+            <div className="flex flex-col">
+              <span className="text-sm text-muted-foreground mb-2">Average AI Readiness</span>
+              <div className="relative">
+                <span 
+                  className="text-7xl font-extralight tracking-tighter text-foreground"
+                  style={{ textShadow: '0 0 60px rgba(34, 197, 94, 0.1)' }}
+                >
+                  82
+                </span>
+                <span className="text-2xl font-extralight text-muted-foreground ml-1">%</span>
+                
+                {/* Trend Badge */}
+                <div 
+                  className="absolute -right-2 top-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
+                  style={{
+                    background: 'rgba(34, 197, 94, 0.1)',
+                    color: 'rgb(22, 163, 74)',
+                    boxShadow: '0 0 20px rgba(34, 197, 94, 0.15)'
+                  }}
+                >
+                  <TrendingUp className="w-3 h-3" />
+                  +2%
                 </div>
               </div>
-            ))}
+            </div>
+          </div>
+
+          {/* Center: Key Metrics */}
+          <div className="lg:col-span-4 flex items-center">
+            <div className="grid grid-cols-3 gap-8 w-full">
+              <div>
+                <p className="text-3xl font-extralight text-foreground">1,247</p>
+                <p className="text-xs text-muted-foreground mt-1">Total Products</p>
+              </div>
+              <div>
+                <p className="text-3xl font-extralight text-red-500">89</p>
+                <p className="text-xs text-muted-foreground mt-1">Need Attention</p>
+              </div>
+              <div>
+                <p className="text-3xl font-extralight text-green-600">156</p>
+                <p className="text-xs text-muted-foreground mt-1">AI-Ready</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Score Distribution - Apple Health Style */}
+          <div className="lg:col-span-4">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-4">Score Distribution</p>
+            <div className="space-y-3">
+              {scoreDistribution.map((item, index) => (
+                <div key={index} className="group">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs text-foreground">{item.label}</span>
+                    <span className="text-xs text-muted-foreground tabular-nums">{item.count}</span>
+                  </div>
+                  <div className="h-1.5 bg-muted/30 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${item.percentage}%`, background: item.color }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom Products */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <AlertTriangle className="w-4 h-4 text-red-600" />
-            <h3 className="text-sm font-medium text-foreground">Products Needing Attention</h3>
-          </div>
-          <div className="space-y-1">
-            {bottomProducts.length > 0 ? (
-              bottomProducts.map((product) => (
+      {/* Top / Bottom Products */}
+      <div className="py-12 border-b border-border/20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          {/* Top Products */}
+          <div>
+            <div className="flex items-center gap-2 mb-6">
+              <Star className="w-4 h-4 text-green-600" />
+              <h3 className="text-lg font-light text-foreground">Top AI-Ready</h3>
+            </div>
+            <div className="space-y-0">
+              {topProducts.map((product) => (
                 <div 
                   key={product.id} 
-                  className="flex items-center justify-between py-3 px-3 -mx-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
+                  className="flex items-center justify-between py-4 border-b border-border/10 last:border-0 hover:bg-muted/20 -mx-4 px-4 cursor-pointer transition-colors group"
                   onClick={() => window.location.href = `/product/${product.id}`}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-foreground truncate">{product.name}</span>
-                      <span className="text-xs text-muted-foreground">{product.sku}</span>
-                    </div>
+                    <p className="text-sm text-foreground group-hover:text-primary transition-colors truncate">{product.name}</p>
+                    <p className="text-xs text-muted-foreground">{product.sku}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-red-600">{product.score}%</span>
-                    <div className="flex items-center text-red-600">
-                      <TrendingDown className="w-3 h-3" />
-                      <span className="text-xs ml-0.5">{product.trend}%</span>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="text-xs h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.location.href = `/product/${product.id}?section=opportunities`;
-                      }}
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium text-green-600 tabular-nums">{product.score}%</span>
+                    <div 
+                      className="flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full"
+                      style={{ background: 'rgba(34, 197, 94, 0.1)', color: 'rgb(22, 163, 74)' }}
                     >
-                      Fix Now
-                    </Button>
+                      <TrendingUp className="w-3 h-3" />
+                      +{product.trend}%
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <CheckCircle className="w-6 h-6 text-emerald-500 mb-2" />
-                <p className="text-sm text-foreground">All products performing well</p>
-                <p className="text-xs text-muted-foreground mt-1">No products currently need attention</p>
-              </div>
-            )}
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom Products */}
+          <div>
+            <div className="flex items-center gap-2 mb-6">
+              <AlertTriangle className="w-4 h-4 text-red-500" />
+              <h3 className="text-lg font-light text-foreground">Needs Attention</h3>
+            </div>
+            <div className="space-y-0">
+              {bottomProducts.length > 0 ? (
+                bottomProducts.map((product) => (
+                  <div 
+                    key={product.id} 
+                    className="flex items-center justify-between py-4 border-b border-border/10 last:border-0 hover:bg-muted/20 -mx-4 px-4 cursor-pointer transition-colors group"
+                    onClick={() => window.location.href = `/product/${product.id}`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground group-hover:text-primary transition-colors truncate">{product.name}</p>
+                      <p className="text-xs text-muted-foreground">{product.sku}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm font-medium text-red-500 tabular-nums">{product.score}%</span>
+                      <div 
+                        className="flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full"
+                        style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'rgb(220, 38, 38)' }}
+                      >
+                        <TrendingDown className="w-3 h-3" />
+                        {product.trend}%
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="text-xs h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.href = `/product/${product.id}?section=opportunities`;
+                        }}
+                      >
+                        Fix Now
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <CheckCircle className="w-8 h-8 text-green-500 mb-3" />
+                  <p className="text-sm text-foreground">All products performing well</p>
+                  <p className="text-xs text-muted-foreground mt-1">No products need attention</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="border-t border-border/50 pt-8">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-foreground">All Products</h3>
-          <div className="text-sm text-muted-foreground">
-            Showing {allProducts.length} of 1,247 products
-          </div>
+      {/* All Products Section */}
+      <div className="py-12">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-xl font-light text-foreground">All Products</h2>
+          <span className="text-sm text-muted-foreground">
+            {allProducts.length} of 1,247 products
+          </span>
         </div>
 
-        {/* Search and Filters - Clean inline design */}
-        <div className="flex items-center gap-3 mb-6">
+        {/* Search and Filters */}
+        <div className="flex items-center gap-3 mb-8">
           <div className="flex-1 relative max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 bg-muted/30 border-border/50"
+              className="pl-9 h-10 bg-muted/20 border-border/30 rounded-xl"
             />
           </div>
           
@@ -384,19 +397,19 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
               size="sm"
               onClick={handleBatchReanalyze}
               disabled={isReanalyzing}
-              className="h-9 gap-1.5"
+              className="h-10 rounded-full border-border/30"
             >
               {isReanalyzing ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : (
-                <RotateCcw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-4 h-4 mr-2" />
               )}
-              {isReanalyzing ? "Re-analyzing..." : `Re-analyze (${selectedProducts.length})`}
+              {isReanalyzing ? "Analyzing..." : `Re-analyze (${selectedProducts.length})`}
             </Button>
           )}
           
           <Select value={scoreFilter} onValueChange={setScoreFilter}>
-            <SelectTrigger className="w-32 h-9 bg-muted/30 border-border/50">
+            <SelectTrigger className="w-32 h-10 bg-muted/20 border-border/30 rounded-xl">
               <SelectValue placeholder="Score" />
             </SelectTrigger>
             <SelectContent>
@@ -409,7 +422,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
           </Select>
           
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-32 h-9 bg-muted/30 border-border/50">
+            <SelectTrigger className="w-32 h-10 bg-muted/20 border-border/30 rounded-xl">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -421,7 +434,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
           </Select>
           
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-40 h-9 bg-muted/30 border-border/50">
+            <SelectTrigger className="w-40 h-10 bg-muted/20 border-border/30 rounded-xl">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -433,28 +446,39 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
           </Select>
         </div>
 
-        {/* Product List - Clean table style without heavy borders */}
+        {/* Product List */}
         {allProducts.length === 0 ? (
-          <div className="py-16 text-center">
+          <div className="py-20 text-center">
             <p className="text-muted-foreground mb-4">No products yet</p>
             <AddProductDialog 
               onProductAdded={handleProductAdded}
               trigger={
-                <button className="text-primary hover:underline text-sm font-medium">
+                <button className="text-primary hover:underline text-sm">
                   Add your first product
                 </button>
               }
             />
           </div>
         ) : (
-          <div>
-            {/* Header Row */}
-            <div className="grid grid-cols-12 gap-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider border-b border-border/50">
+          <div className="rounded-2xl border border-border/20 overflow-hidden bg-background/50">
+            {/* Table Header */}
+            <div className="grid grid-cols-12 gap-4 py-3 px-5 text-xs text-muted-foreground border-b border-border/10 bg-muted/20">
               <div className="col-span-1 flex items-center">
-                <Checkbox
-                  checked={selectedProducts.length === allProducts.length}
-                  onCheckedChange={handleSelectAll}
-                />
+                <button
+                  onClick={() => handleSelectAll(selectedProducts.length !== allProducts.filter(p => p.status !== "analyzing").length)}
+                  className="group relative flex items-center justify-center w-5 h-5 rounded-full border border-border hover:border-foreground transition-all duration-200 cursor-pointer bg-background"
+                >
+                  <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
+                    selectedProducts.length === allProducts.filter(p => p.status !== "analyzing").length && allProducts.length > 0
+                      ? 'bg-foreground scale-100 opacity-100' 
+                      : 'bg-transparent scale-0 opacity-0'
+                  }`} />
+                  <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
+                    selectedProducts.length === allProducts.filter(p => p.status !== "analyzing").length && allProducts.length > 0
+                      ? 'text-background scale-100 opacity-100' 
+                      : 'text-transparent scale-0 opacity-0'
+                  }`} />
+                </button>
               </div>
               <div className="col-span-4">Product</div>
               <div className="col-span-2">AI Readiness</div>
@@ -465,121 +489,144 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
             </div>
             
             {/* Product Rows */}
-            <div>
-              {allProducts.map((product) => (
-                <div 
-                  key={product.id} 
-                  className={`grid grid-cols-12 gap-4 py-4 items-center border-b border-border/30 transition-colors ${
-                    product.status === "analyzing" 
-                      ? "bg-blue-50/30" 
-                      : "hover:bg-muted/30"
-                  }`}
-                >
-                  <div className="col-span-1">
-                    <Checkbox
-                      checked={selectedProducts.includes(product.id)}
-                      onCheckedChange={(checked) => handleSelectProduct(product.id, checked as boolean)}
-                      disabled={product.status === "analyzing"}
-                    />
-                  </div>
-                  
-                  <div className="col-span-4">
-                    <div className="flex items-center gap-2">
-                      {product.status === "analyzing" && (
-                        <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin flex-shrink-0" />
-                      )}
-                      <div>
-                        <div 
-                          className={`text-sm font-medium ${product.status === "analyzing" ? "text-blue-600" : "text-foreground hover:text-primary cursor-pointer"}`}
-                          onClick={() => product.status !== "analyzing" && (window.location.href = `/product/${product.id}`)}
-                        >
-                          {product.name}
-                        </div>
-                        <div className="text-xs text-muted-foreground">{product.sku}</div>
-                      </div>
-                      {product.status === "analyzing" && (
-                        <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-0">
-                          Analyzing
-                        </Badge>
-                      )}
-                      {product.isPinned && product.status !== "analyzing" && (
-                        <Pin className="w-3 h-3 text-amber-500 flex-shrink-0" />
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="col-span-2">
-                    {product.status === "analyzing" ? (
-                      <span className="text-xs text-blue-600 font-medium">Analyzing...</span>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Progress value={product.score} className="h-1.5 w-16" />
-                        <span className="text-sm font-medium text-foreground">{product.score}%</span>
-                        {product.score >= 90 ? (
-                          <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-                        ) : product.score >= 70 ? (
-                          <Eye className="w-3.5 h-3.5 text-amber-600" />
-                        ) : (
-                          <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
-                        )}
-                      </div>
+            {allProducts.map((product) => (
+              <div 
+                key={product.id} 
+                className={`grid grid-cols-12 gap-4 py-4 px-5 items-center border-b border-border/10 last:border-0 transition-colors ${
+                  product.status === "analyzing" 
+                    ? "bg-blue-50/30" 
+                    : "hover:bg-muted/20"
+                }`}
+              >
+                <div className="col-span-1">
+                  {product.status !== "analyzing" && (
+                    <button
+                      onClick={() => handleSelectProduct(product.id)}
+                      className="group relative flex items-center justify-center w-5 h-5 rounded-full border border-border hover:border-foreground transition-all duration-200 cursor-pointer bg-background"
+                    >
+                      <div className={`absolute inset-0 rounded-full transition-all duration-200 ${
+                        selectedProducts.includes(product.id)
+                          ? 'bg-foreground scale-100 opacity-100' 
+                          : 'bg-transparent scale-0 opacity-0'
+                      }`} />
+                      <Check className={`w-3 h-3 relative z-10 transition-all duration-200 ${
+                        selectedProducts.includes(product.id)
+                          ? 'text-background scale-100 opacity-100' 
+                          : 'text-transparent scale-0 opacity-0'
+                      }`} />
+                    </button>
+                  )}
+                </div>
+                
+                <div className="col-span-4">
+                  <div className="flex items-center gap-2">
+                    {product.status === "analyzing" && (
+                      <Loader2 className="w-4 h-4 text-blue-600 animate-spin flex-shrink-0" />
                     )}
-                  </div>
-                  
-                  <div className="col-span-1">
-                    {product.status === "analyzing" ? (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    ) : product.trend > 0 ? (
-                      <div className="flex items-center text-emerald-600">
-                        <TrendingUp className="w-3 h-3 mr-0.5" />
-                        <span className="text-xs font-medium">+{product.trend}%</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center text-red-600">
-                        <TrendingDown className="w-3 h-3 mr-0.5" />
-                        <span className="text-xs font-medium">{product.trend}%</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="col-span-1">
-                    <span className="text-sm text-foreground">
-                      {product.status === "analyzing" ? "—" : product.mentions}
-                    </span>
-                  </div>
-                  
-                  <div className="col-span-2">
-                    <span className="text-sm text-muted-foreground">{product.lastUpdated}</span>
-                  </div>
-                  
-                  <div className="col-span-1">
-                    {product.status === "analyzing" ? (
-                      <span className="text-xs text-blue-600">In Queue</span>
-                    ) : (
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="text-xs h-7 px-2 gap-1 text-muted-foreground hover:text-foreground"
-                        onClick={() => onOptimizeProduct?.(String(product.id), product.name)}
+                    <div>
+                      <p 
+                        className={`text-sm ${product.status === "analyzing" ? "text-blue-600" : "text-foreground hover:text-primary cursor-pointer"} transition-colors`}
+                        onClick={() => product.status !== "analyzing" && (window.location.href = `/product/${product.id}`)}
                       >
-                        <ExternalLink className="w-3 h-3" />
-                        Optimize
-                      </Button>
+                        {product.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{product.sku}</p>
+                    </div>
+                    {product.status === "analyzing" && (
+                      <Badge variant="secondary" className="text-[10px] bg-blue-100 text-blue-700 border-0 ml-2">
+                        Analyzing
+                      </Badge>
+                    )}
+                    {product.isPinned && product.status !== "analyzing" && (
+                      <Pin className="w-3 h-3 text-amber-500 flex-shrink-0" />
                     )}
                   </div>
                 </div>
-              ))}
-            </div>
+                
+                <div className="col-span-2">
+                  {product.status === "analyzing" ? (
+                    <span className="text-xs text-blue-600">Analyzing...</span>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      {/* Apple Health-style thin bar */}
+                      <div className="w-16 h-1.5 bg-muted/30 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{ 
+                            width: `${product.score}%`,
+                            background: product.score >= 90 
+                              ? 'hsl(142, 71%, 45%)' 
+                              : product.score >= 70 
+                                ? 'hsl(35, 90%, 55%)' 
+                                : 'hsl(0, 70%, 55%)'
+                          }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium text-foreground tabular-nums">{product.score}%</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="col-span-1">
+                  {product.status === "analyzing" ? (
+                    <span className="text-xs text-muted-foreground">—</span>
+                  ) : product.trend > 0 ? (
+                    <div 
+                      className="inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full"
+                      style={{ background: 'rgba(34, 197, 94, 0.1)', color: 'rgb(22, 163, 74)' }}
+                    >
+                      <TrendingUp className="w-3 h-3" />
+                      +{product.trend}%
+                    </div>
+                  ) : (
+                    <div 
+                      className="inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full"
+                      style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'rgb(220, 38, 38)' }}
+                    >
+                      <TrendingDown className="w-3 h-3" />
+                      {product.trend}%
+                    </div>
+                  )}
+                </div>
+                
+                <div className="col-span-1">
+                  <span className="text-sm text-foreground tabular-nums">
+                    {product.status === "analyzing" ? "—" : product.mentions}
+                  </span>
+                </div>
+                
+                <div className="col-span-2">
+                  <span className="text-sm text-muted-foreground">{product.lastUpdated}</span>
+                </div>
+                
+                <div className="col-span-1 flex justify-end">
+                  {product.status === "analyzing" ? (
+                    <span className="text-xs text-blue-600">In Queue</span>
+                  ) : (
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="text-xs h-7 px-2 text-muted-foreground hover:text-foreground"
+                      onClick={() => onOptimizeProduct?.(String(product.id), product.name)}
+                    >
+                      Optimize
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
-            {/* Pagination */}
-            <div className="flex items-center justify-between mt-6 pt-4">
-              <div className="text-sm text-muted-foreground">
-                Showing {allProducts.length} of 1,247 products
-              </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" size="sm" className="h-8">Previous</Button>
-                <Button variant="ghost" size="sm" className="h-8">Next</Button>
-              </div>
+        {/* Pagination */}
+        {allProducts.length > 0 && (
+          <div className="flex items-center justify-between mt-8">
+            <span className="text-sm text-muted-foreground">
+              Showing {allProducts.length} of 1,247 products
+            </span>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">Previous</Button>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">Next</Button>
             </div>
           </div>
         )}
