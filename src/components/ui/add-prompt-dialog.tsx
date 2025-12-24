@@ -94,7 +94,7 @@ export const AddPromptDialog = ({
                     className="text-lg font-semibold text-foreground tracking-tight"
                     style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Segoe UI", Roboto, sans-serif' }}
                   >
-                    New Intelligence Probe
+                    New Intelligence Prompt
                   </h2>
                 </div>
               </div>
@@ -121,9 +121,9 @@ export const AddPromptDialog = ({
                 </div>
 
                 {/* Bottom Bar: Capacity Meter + Actions */}
-                <div className="flex items-center justify-between gap-4">
-                  {/* Capacity Meter */}
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-4">
+                  {/* Top row: Capacity + Nudge */}
+                  <div className="flex items-center gap-3 flex-wrap">
                     <div className="flex items-center gap-2">
                       {/* Thin Progress Bar */}
                       <div className="w-16 h-1 bg-muted/60 rounded-full overflow-hidden">
@@ -136,7 +136,7 @@ export const AddPromptDialog = ({
                         />
                       </div>
                       <span 
-                        className="text-xs text-muted-foreground"
+                        className="text-xs text-muted-foreground whitespace-nowrap"
                         style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif' }}
                       >
                         {promptsUsed}/{maxPrompts} Prompts Used
@@ -161,8 +161,8 @@ export const AddPromptDialog = ({
                     )}
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex items-center gap-3">
+                  {/* Bottom row: Action Buttons - Right aligned */}
+                  <div className="flex items-center justify-end gap-4">
                     {/* Cancel - Ghost with underline on hover */}
                     <button 
                       type="button" 
@@ -178,7 +178,7 @@ export const AddPromptDialog = ({
                     <button 
                       type="submit" 
                       disabled={!prompt.trim()}
-                      className="px-5 py-2.5 rounded-full text-sm font-medium text-primary-foreground bg-foreground hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
+                      className="px-6 py-2.5 rounded-full text-sm font-medium text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm whitespace-nowrap"
                       style={{ 
                         fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
                         background: prompt.trim() 
