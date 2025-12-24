@@ -479,18 +479,6 @@ export const ProductDetail = () => {
                 <p className="text-muted-foreground">SKU: {mockProduct.sku}</p>
               </div>
               
-              {/* Fix Now - Clean Apple Style */}
-              <button
-                onClick={() => {
-                  setSelectedGapId(1);
-                  setShowTransitionModal(true);
-                }}
-                className="group flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/20 transition-all duration-200"
-              >
-                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                <span className="text-sm font-medium text-amber-600">Fix Now</span>
-                <ArrowRight className="w-3.5 h-3.5 text-amber-500 group-hover:translate-x-0.5 transition-transform duration-200" />
-              </button>
             </div>
           </div>
 
@@ -525,7 +513,21 @@ export const ProductDetail = () => {
                   </div>
                 </div>
                 
-                <p className="text-sm text-muted-foreground mb-8">AI Readiness Score</p>
+                {/* AI Readiness Label + Fix Now Button */}
+                <div className="flex items-center gap-4 mb-8">
+                  <p className="text-sm text-muted-foreground">AI Readiness Score</p>
+                  <button
+                    onClick={() => {
+                      setSelectedGapId(1);
+                      setShowTransitionModal(true);
+                    }}
+                    className="group flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/20 transition-all duration-200"
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="text-xs font-medium text-amber-600">Fix Now</span>
+                    <ArrowRight className="w-3 h-3 text-amber-500 group-hover:translate-x-0.5 transition-transform duration-200" />
+                  </button>
+                </div>
 
                 {/* Key Metrics - Minimal */}
                 <div className="flex gap-12 pt-8 border-t border-border/30 w-full">
