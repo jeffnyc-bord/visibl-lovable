@@ -39,6 +39,14 @@ import { ReviewHandoffPanel } from './ReviewHandoffPanel';
 import { useToast } from '@/hooks/use-toast';
 
 // Inline annotation types
+interface AnnotationReply {
+  id: string;
+  comment: string;
+  author: string;
+  authorInitials: string;
+  timestamp: Date;
+}
+
 interface InlineAnnotation {
   id: string;
   selectedText: string;
@@ -48,6 +56,7 @@ interface InlineAnnotation {
   timestamp: Date;
   position: { top: number; left: number };
   resolved: boolean;
+  replies: AnnotationReply[];
 }
 
 // Floating annotation bubble component
@@ -162,63 +171,194 @@ const AnnotationMarker = ({
   </motion.button>
 );
 
-// Annotation detail popover
+// Annotation detail popover with reply threads
 const AnnotationDetail = ({
   annotation,
   onResolve,
-  onClose
+  onClose,
+  onAddReply
 }: {
   annotation: InlineAnnotation;
   onResolve: () => void;
   onClose: () => void;
-}) => (
-  <motion.div
-    initial={{ opacity: 0, x: 10 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: 10 }}
-    className="absolute -right-80 top-0 w-72 frosted-glass-vibrant rounded-xl shadow-2xl border border-border/50 p-3 z-50"
-  >
-    {/* Header */}
-    <div className="flex items-center justify-between mb-2">
-      <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-semibold text-primary">
-          {annotation.authorInitials}
-        </div>
-        <div>
-          <div className="text-xs font-medium text-foreground">{annotation.author}</div>
-          <div className="text-[9px] text-muted-foreground">
-            {annotation.timestamp.toLocaleDateString()}
+  onAddReply: (reply: string) => void;
+}) => {
+  const [showReplyInput, setShowReplyInput] = useState(false);
+  const [replyText, setReplyText] = useState('');
+  const replyInputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (showReplyInput && replyInputRef.current) {
+      replyInputRef.current.focus();
+    }
+  }, [showReplyInput]);
+
+  const handleSubmitReply = () => {
+    if (replyText.trim()) {
+      onAddReply(replyText);
+      setReplyText('');
+      setShowReplyInput(false);
+    }
+  };
+
+  // Mock team members for demo variety
+  const teamColors: Record<string, string> = {
+    'Y': 'bg-primary/20 text-primary',
+    'SC': 'bg-violet-500/20 text-violet-600',
+    'MJ': 'bg-amber-500/20 text-amber-600',
+    'AR': 'bg-emerald-500/20 text-emerald-600'
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 10 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 10 }}
+      className="absolute -right-80 top-0 w-80 frosted-glass-vibrant rounded-xl shadow-2xl border border-border/50 z-50 max-h-[400px] flex flex-col"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between p-3 border-b border-border/30">
+        <div className="flex items-center gap-2">
+          <div className={cn(
+            "w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold",
+            teamColors[annotation.authorInitials] || 'bg-primary/20 text-primary'
+          )}>
+            {annotation.authorInitials}
+          </div>
+          <div>
+            <div className="text-xs font-medium text-foreground">{annotation.author}</div>
+            <div className="text-[9px] text-muted-foreground">
+              {annotation.timestamp.toLocaleDateString()} at {annotation.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
           </div>
         </div>
+        <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-1 rounded hover:bg-muted/50">
+          <X className="w-3.5 h-3.5" />
+        </button>
       </div>
-      <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
-        <X className="w-3.5 h-3.5" />
-      </button>
-    </div>
 
-    {/* Selected text */}
-    <div className="mb-2 px-2 py-1.5 bg-primary/5 rounded-lg border-l-2 border-primary">
-      <p className="text-[10px] text-muted-foreground line-clamp-2 italic">"{annotation.selectedText}"</p>
-    </div>
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto p-3">
+        {/* Selected text */}
+        <div className="mb-3 px-2 py-1.5 bg-primary/5 rounded-lg border-l-2 border-primary">
+          <p className="text-[10px] text-muted-foreground line-clamp-2 italic">"{annotation.selectedText}"</p>
+        </div>
 
-    {/* Comment */}
-    <p className="text-xs text-foreground leading-relaxed mb-3">{annotation.comment}</p>
+        {/* Original Comment */}
+        <p className="text-xs text-foreground leading-relaxed mb-3">{annotation.comment}</p>
 
-    {/* Actions */}
-    <div className="flex items-center justify-between pt-2 border-t border-border/30">
-      <button className="text-[10px] text-muted-foreground hover:text-foreground transition-colors">
-        Reply
-      </button>
-      <button
-        onClick={onResolve}
-        className="flex items-center gap-1 text-[10px] text-emerald-600 hover:text-emerald-700 transition-colors"
-      >
-        <CheckCircle2 className="w-3 h-3" />
-        Resolve
-      </button>
-    </div>
-  </motion.div>
-);
+        {/* Reply Thread */}
+        {annotation.replies.length > 0 && (
+          <div className="space-y-3 mb-3">
+            <div className="flex items-center gap-2">
+              <div className="h-px flex-1 bg-border/50" />
+              <span className="text-[9px] text-muted-foreground uppercase tracking-wider">
+                {annotation.replies.length} {annotation.replies.length === 1 ? 'Reply' : 'Replies'}
+              </span>
+              <div className="h-px flex-1 bg-border/50" />
+            </div>
+            
+            {annotation.replies.map((reply) => (
+              <motion.div
+                key={reply.id}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="pl-3 border-l-2 border-muted"
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-semibold",
+                    teamColors[reply.authorInitials] || 'bg-primary/20 text-primary'
+                  )}>
+                    {reply.authorInitials}
+                  </div>
+                  <span className="text-[10px] font-medium text-foreground">{reply.author}</span>
+                  <span className="text-[9px] text-muted-foreground">
+                    {reply.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">{reply.comment}</p>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {/* Reply Input */}
+        <AnimatePresence>
+          {showReplyInput && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-2"
+            >
+              <textarea
+                ref={replyInputRef}
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                placeholder="Write a reply..."
+                className="w-full px-3 py-2 text-xs bg-muted/30 border border-border/50 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                rows={2}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmitReply();
+                  }
+                  if (e.key === 'Escape') {
+                    setShowReplyInput(false);
+                    setReplyText('');
+                  }
+                }}
+              />
+              <div className="flex items-center justify-end gap-2 mt-2">
+                <button
+                  onClick={() => {
+                    setShowReplyInput(false);
+                    setReplyText('');
+                  }}
+                  className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Cancel
+                </button>
+                <Button
+                  size="sm"
+                  onClick={handleSubmitReply}
+                  disabled={!replyText.trim()}
+                  className="h-6 px-2.5 gap-1 text-[10px]"
+                >
+                  <Send className="w-2.5 h-2.5" />
+                  Reply
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Actions Footer */}
+      <div className="flex items-center justify-between p-3 pt-2 border-t border-border/30">
+        {!showReplyInput ? (
+          <button
+            onClick={() => setShowReplyInput(true)}
+            className="flex items-center gap-1.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <MessageCircle className="w-3 h-3" />
+            Reply
+          </button>
+        ) : (
+          <div />
+        )}
+        <button
+          onClick={onResolve}
+          className="flex items-center gap-1 text-[10px] text-emerald-600 hover:text-emerald-700 transition-colors"
+        >
+          <CheckCircle2 className="w-3 h-3" />
+          Resolve
+        </button>
+      </div>
+    </motion.div>
+  );
+};
 
 interface GeneratedSection {
   id: string;
@@ -433,7 +573,8 @@ export const AEOContentStudio = ({
       authorInitials: 'Y',
       timestamp: new Date(),
       position: { top: annotationPosition.top - (contentAreaRef.current?.getBoundingClientRect().top || 0), left: annotationPosition.left },
-      resolved: false
+      resolved: false,
+      replies: []
     };
     setAnnotations(prev => [...prev, newAnnotation]);
     setShowAnnotationBubble(false);
@@ -441,6 +582,23 @@ export const AEOContentStudio = ({
     window.getSelection()?.removeAllRanges();
     toast({ title: "Comment added", description: "Your annotation has been saved." });
   }, [selectedText, annotationPosition, toast]);
+
+  // Add reply to annotation
+  const handleAddReply = useCallback((annotationId: string, replyComment: string) => {
+    const newReply: AnnotationReply = {
+      id: Date.now().toString(),
+      comment: replyComment,
+      author: 'You',
+      authorInitials: 'Y',
+      timestamp: new Date()
+    };
+    setAnnotations(prev => prev.map(a => 
+      a.id === annotationId 
+        ? { ...a, replies: [...a.replies, newReply] }
+        : a
+    ));
+    toast({ title: "Reply added", description: "Your reply has been posted." });
+  }, [toast]);
 
   // Resolve annotation
   const handleResolveAnnotation = useCallback((id: string) => {
@@ -938,6 +1096,7 @@ ${s.content}`).join('\n\n')}`;
                         annotation={annotation}
                         onResolve={() => handleResolveAnnotation(annotation.id)}
                         onClose={() => setActiveAnnotationId(null)}
+                        onAddReply={(reply) => handleAddReply(annotation.id, reply)}
                       />
                     )}
                   </AnimatePresence>
