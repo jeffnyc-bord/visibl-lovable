@@ -28,7 +28,9 @@ import {
   Info,
   Sparkles,
   Wrench,
-  ArrowRight
+  ArrowRight,
+  ExternalLink,
+  Zap
 } from "lucide-react";
 import { PromptDetailsPanel } from "@/components/ui/prompt-details-panel";
 import { AddPromptDialog } from "@/components/ui/add-prompt-dialog";
@@ -36,6 +38,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { GhostProductSlot } from "@/components/ui/ghost-product-slot";
 import { FidelityMeter } from "@/components/ui/fidelity-meter";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { UpgradeDialog } from "@/components/ui/upgrade-dialog";
+
+// AI Platform Logos
+import chatGPTLogo from "@/assets/chatGPT_logo.png";
+import geminiLogo from "@/assets/gemini_logo.png";
+import perplexityLogo from "@/assets/perplexity_logo.png";
+import grokLogo from "@/assets/grok_logo_new.png";
 
 export const ProductDetail = () => {
   const { productId } = useParams();
@@ -51,6 +60,16 @@ export const ProductDetail = () => {
   const [showFidelitySheet, setShowFidelitySheet] = useState(false);
   const [showTransitionModal, setShowTransitionModal] = useState(false);
   const [selectedGapId, setSelectedGapId] = useState<number | null>(null);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState<'product_limit' | 'tracking_frequency' | 'platform_expansion' | 'prompt_limit'>('product_limit');
+
+  // Platform logo mapping
+  const platformLogos: Record<string, string> = {
+    'ChatGPT': chatGPTLogo,
+    'Gemini': geminiLogo,
+    'Perplexity': perplexityLogo,
+    'Grok': grokLogo
+  };
   
   type PromptStatus = "completed" | "queued";
   type Prompt = {
@@ -562,24 +581,39 @@ export const ProductDetail = () => {
                     <span className="text-sm font-medium text-foreground">Platform Coverage</span>
                     <span className="text-lg font-semibold text-foreground">{pillars.platformCoverage.current}/{pillars.platformCoverage.total} <span className="text-sm font-normal text-muted-foreground">Platforms</span></span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    {pillars.platformCoverage.platforms.map((platform, idx) => {
-                      const isActive = idx < pillars.platformCoverage.current;
-                      return (
-                        <div 
-                          key={platform}
-                          className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all ${
-                            isActive 
-                              ? 'bg-foreground/10' 
-                              : 'bg-muted/30'
-                          }`}
-                          title={platform}
-                        >
-                          <MessageSquare className={`w-4 h-4 ${isActive ? 'text-foreground' : 'text-muted-foreground/40'}`} />
-                        </div>
-                      );
-                    })}
-                    <span className="text-xs text-muted-foreground ml-2">Expand to more platforms →</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {pillars.platformCoverage.platforms.map((platform, idx) => {
+                        const isActive = idx < pillars.platformCoverage.current;
+                        return (
+                          <div 
+                            key={platform}
+                            className={`flex items-center justify-center w-9 h-9 rounded-xl transition-all overflow-hidden ${
+                              isActive 
+                                ? 'bg-background shadow-sm ring-1 ring-border/40' 
+                                : 'bg-muted/30 grayscale opacity-40'
+                            }`}
+                            title={platform}
+                          >
+                            <img 
+                              src={platformLogos[platform]} 
+                              alt={platform}
+                              className="w-6 h-6 object-contain"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <button 
+                      onClick={() => {
+                        setUpgradeReason('platform_expansion');
+                        setShowUpgradeDialog(true);
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all group"
+                    >
+                      <Zap className="w-3 h-3 text-primary" />
+                      <span className="text-xs font-medium text-primary">Expand Coverage</span>
+                    </button>
                   </div>
                 </div>
 
@@ -587,18 +621,37 @@ export const ProductDetail = () => {
                 <div className="p-5 border-b border-border/20">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-sm font-medium text-foreground">Intelligence Depth</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-semibold text-foreground">{pillars.intelligenceDepth.current}/{pillars.intelligenceDepth.total} <span className="text-sm font-normal text-muted-foreground">Prompts</span></span>
-                      {pillars.intelligenceDepth.current < pillars.intelligenceDepth.total && (
-                        <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
-                      )}
-                    </div>
+                    <span className="text-lg font-semibold text-foreground">{pillars.intelligenceDepth.current}/{pillars.intelligenceDepth.total} <span className="text-sm font-normal text-muted-foreground">Prompts</span></span>
                   </div>
-                  <div className="h-1.5 bg-muted/40 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full rounded-full bg-foreground/70 transition-all duration-700 ease-out"
-                      style={{ width: `${(pillars.intelligenceDepth.current / pillars.intelligenceDepth.total) * 100}%` }}
-                    />
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1 h-1.5 bg-muted/40 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full bg-foreground/70 transition-all duration-700 ease-out"
+                        style={{ width: `${(pillars.intelligenceDepth.current / pillars.intelligenceDepth.total) * 100}%` }}
+                      />
+                    </div>
+                    <button 
+                      onClick={() => {
+                        // If almost at limit (>80%), show paywall
+                        const usagePercent = (pillars.intelligenceDepth.current / pillars.intelligenceDepth.total) * 100;
+                        if (usagePercent >= 80) {
+                          setUpgradeReason('prompt_limit');
+                          setShowUpgradeDialog(true);
+                        } else {
+                          // Anchor to prompts section
+                          setActiveSection('prompts');
+                          const promptsSection = document.getElementById('prompts-section');
+                          if (promptsSection) {
+                            promptsSection.scrollIntoView({ behavior: 'smooth' });
+                          }
+                          setShowAddPrompt(true);
+                        }
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all group shrink-0"
+                    >
+                      <Plus className="w-3 h-3 text-primary" />
+                      <span className="text-xs font-medium text-primary">Add Prompts</span>
+                    </button>
                   </div>
                 </div>
 
@@ -627,18 +680,27 @@ export const ProductDetail = () => {
 
                 {/* Pillar 4: Content Freshness */}
                 <div className="p-5">
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-foreground">Content Freshness</span>
                     <span className="text-lg font-semibold text-foreground">{pillars.contentFreshness.activePages} <span className="text-sm font-normal text-muted-foreground">Active Pages</span></span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Last sync with AEO Content Studio: {pillars.contentFreshness.lastSync}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">Last sync with AEO Content Studio: {pillars.contentFreshness.lastSync}</p>
+                    <button 
+                      onClick={() => navigate('/?tab=actions&view=content-studio-library')}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all group"
+                    >
+                      <ExternalLink className="w-3 h-3 text-primary" />
+                      <span className="text-xs font-medium text-primary">Open Studio</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Prompts Section */}
-          <div className="space-y-8">
+          <div id="prompts-section" className="space-y-8">
             {/* Fidelity Meter */}
             <div className="mb-8 p-4 rounded-2xl bg-muted/30 border border-border/20">
               <div className="flex items-center justify-between">
@@ -961,6 +1023,13 @@ export const ProductDetail = () => {
           </div>
         );
       })()}
+
+      {/* Upgrade Dialog */}
+      <UpgradeDialog 
+        open={showUpgradeDialog} 
+        onOpenChange={setShowUpgradeDialog} 
+        reason={upgradeReason}
+      />
     </>
   );
 };
