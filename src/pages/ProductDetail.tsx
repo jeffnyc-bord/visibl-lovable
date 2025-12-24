@@ -597,7 +597,7 @@ export const ProductDetail = () => {
               
               {/* Frosted Glass Container */}
               <div 
-                className="rounded-2xl border border-border/30 overflow-hidden"
+                className="rounded-2xl border border-border/30"
                 style={{
                   background: 'rgba(255, 255, 255, 0.6)',
                   backdropFilter: 'blur(20px) saturate(180%)',
@@ -652,7 +652,8 @@ export const ProductDetail = () => {
                               </TooltipTrigger>
                               <TooltipContent 
                                 side="bottom" 
-                                className="max-w-xs p-3"
+                                sideOffset={8}
+                                className="max-w-xs p-3 z-[100]"
                                 style={{
                                   background: 'rgba(0, 0, 0, 0.85)',
                                   backdropFilter: 'blur(10px)',
