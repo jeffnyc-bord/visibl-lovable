@@ -38,7 +38,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { GhostProductSlot } from "@/components/ui/ghost-product-slot";
 import { FidelityMeter } from "@/components/ui/fidelity-meter";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { UpgradeDialog } from "@/components/ui/upgrade-dialog";
+import { UpgradeSheet } from "@/components/ui/upgrade-sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // AI Platform Logos
@@ -61,8 +61,7 @@ export const ProductDetail = () => {
   const [showFidelitySheet, setShowFidelitySheet] = useState(false);
   const [showTransitionModal, setShowTransitionModal] = useState(false);
   const [selectedGapId, setSelectedGapId] = useState<number | null>(null);
-  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const [upgradeReason, setUpgradeReason] = useState<'product_limit' | 'tracking_frequency' | 'platform_expansion' | 'prompt_limit'>('product_limit');
+  const [showUpgradeSheet, setShowUpgradeSheet] = useState(false);
 
   // Platform logo mapping
   const platformLogos: Record<string, string> = {
@@ -690,10 +689,7 @@ export const ProductDetail = () => {
                       </div>
                     </TooltipProvider>
                     <button 
-                      onClick={() => {
-                        setUpgradeReason('platform_expansion');
-                        setShowUpgradeDialog(true);
-                      }}
+                      onClick={() => setShowUpgradeSheet(true)}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all group"
                     >
                       <Zap className="w-3 h-3 text-primary" />
@@ -720,8 +716,7 @@ export const ProductDetail = () => {
                         // If almost at limit (>80%), show paywall
                         const usagePercent = (pillars.intelligenceDepth.current / pillars.intelligenceDepth.total) * 100;
                         if (usagePercent >= 80) {
-                          setUpgradeReason('prompt_limit');
-                          setShowUpgradeDialog(true);
+                          setShowUpgradeSheet(true);
                         } else {
                           // Anchor to prompts section
                           setActiveSection('prompts');
@@ -1109,11 +1104,11 @@ export const ProductDetail = () => {
         );
       })()}
 
-      {/* Upgrade Dialog */}
-      <UpgradeDialog 
-        open={showUpgradeDialog} 
-        onOpenChange={setShowUpgradeDialog} 
-        reason={upgradeReason}
+      {/* Upgrade Sheet */}
+      <UpgradeSheet 
+        open={showUpgradeSheet} 
+        onOpenChange={setShowUpgradeSheet} 
+        type="chatbot_coverage"
       />
     </>
   );
