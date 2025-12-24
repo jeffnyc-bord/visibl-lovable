@@ -509,12 +509,6 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                 onClick={() => window.location.href = `/product/${product.id}`}
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <img 
-                    src={product.thumbnail} 
-                    alt="" 
-                    className="w-10 h-10 rounded-xl object-cover"
-                    style={{ background: 'rgba(0,0,0,0.04)' }}
-                  />
                   <div className="min-w-0">
                     <p className="text-[14px] font-medium truncate transition-colors" style={{ color: '#1D1D1F' }}>
                       {product.name}
