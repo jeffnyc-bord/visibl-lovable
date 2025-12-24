@@ -7,7 +7,6 @@ import {
   List,
   CheckCircle2,
   ArrowLeft,
-  Globe,
   Zap,
   Brain,
   Hash,
@@ -21,12 +20,20 @@ import {
   Italic,
   Underline,
   Heading1,
-  Heading2
+  Heading2,
+  Share2,
+  Code2,
+  FileText,
+  ExternalLink,
+  Copy,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { PromptSource } from './PromptSourceSelector';
 import { ContentType } from './ContentTypeSelector';
+import { ReviewHandoffPanel } from './ReviewHandoffPanel';
+import { useToast } from '@/hooks/use-toast';
 
 interface GeneratedSection {
   id: string;
@@ -187,9 +194,12 @@ export const AEOContentStudio = ({
   const [schemaEnabled, setSchemaEnabled] = useState(true);
   const [entityVerification, setEntityVerification] = useState(true);
   const [isGenerating, setIsGenerating] = useState(true);
-  const [syncStatus, setSyncStatus] = useState<'draft' | 'syncing' | 'live'>('draft');
+  const [contentStatus, setContentStatus] = useState<'draft' | 'ready' | 'approved'>('draft');
+  const [showShareSheet, setShowShareSheet] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const addMenuRef = useRef<HTMLDivElement>(null);
+  const shareSheetRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   
   // Editable content state
   const [content, setContent] = useState<GeneratedContent>({
@@ -237,13 +247,68 @@ export const AEOContentStudio = ({
     }
   }, [isOpen]);
 
-  const handleSync = () => {
-    setSyncStatus('syncing');
-    setTimeout(() => {
-      setSyncStatus('live');
-      onPublish?.();
-    }, 2000);
+  const generateHTML = () => {
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${content.title}</title>
+</head>
+<body>
+  <article>
+    <h1>${content.h1}</h1>
+    <p class="tldr"><strong>TL;DR:</strong> ${content.tldr}</p>
+    ${content.sections.map(s => `
+    <section>
+      <h2>${s.heading}</h2>
+      <p>${s.content}</p>
+    </section>`).join('')}
+  </article>
+</body>
+</html>`;
+    return html;
   };
+
+  const generateMarkdown = () => {
+    const md = `# ${content.h1}
+
+**TL;DR:** ${content.tldr}
+
+${content.sections.map(s => `## ${s.heading}
+
+${s.content}`).join('\n\n')}`;
+    return md;
+  };
+
+  const handleCopyHTML = () => {
+    navigator.clipboard.writeText(generateHTML());
+    toast({ title: "Copied as HTML", description: "Clean HTML ready for your CMS." });
+    setShowShareSheet(false);
+  };
+
+  const handleCopyMarkdown = () => {
+    navigator.clipboard.writeText(generateMarkdown());
+    toast({ title: "Copied as Markdown", description: "Markdown copied to clipboard." });
+    setShowShareSheet(false);
+  };
+
+  const handleCreatePreviewLink = () => {
+    toast({ title: "Preview Link Created", description: "Share this link with stakeholders." });
+    setShowShareSheet(false);
+  };
+
+  // Close share sheet on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (shareSheetRef.current && !shareSheetRef.current.contains(event.target as Node)) {
+        setShowShareSheet(false);
+      }
+    };
+    if (showShareSheet) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showShareSheet]);
 
   const updateSection = (id: string, field: 'heading' | 'content', value: string) => {
     setContent(prev => ({
@@ -358,35 +423,99 @@ export const AEOContentStudio = ({
                 <span className="text-xs">Generating...</span>
               </motion.div>
             )}
+
+            {/* Status indicator */}
+            {contentStatus !== 'draft' && (
+              <span className={cn(
+                "px-2 py-1 rounded-full text-[10px] font-medium",
+                contentStatus === 'ready' && "bg-amber-500/10 text-amber-600",
+                contentStatus === 'approved' && "bg-success/10 text-success"
+              )}>
+                {contentStatus === 'ready' ? 'Ready' : 'Approved'}
+              </span>
+            )}
             
-            <Button
-              onClick={handleSync}
-              disabled={syncStatus === 'syncing' || isGenerating}
-              size="sm"
-              className={cn(
-                "h-8 gap-1.5 text-xs",
-                syncStatus === 'live' && "bg-emerald-500 hover:bg-emerald-600"
-              )}
-            >
-              {syncStatus === 'draft' && (
-                <>
-                  <Globe className="w-3.5 h-3.5" />
-                  Sync to Site
-                </>
-              )}
-              {syncStatus === 'syncing' && (
-                <>
-                  <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Syncing...
-                </>
-              )}
-              {syncStatus === 'live' && (
-                <>
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Live
-                </>
-              )}
-            </Button>
+            {/* Share Button with Sheet */}
+            <div className="relative" ref={shareSheetRef}>
+              <Button
+                onClick={() => setShowShareSheet(!showShareSheet)}
+                disabled={isGenerating}
+                size="sm"
+                className="h-8 gap-1.5 text-xs"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                Share
+              </Button>
+
+              {/* Frosted Glass Share Sheet */}
+              <AnimatePresence>
+                {showShareSheet && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 top-full mt-2 w-64 p-3 rounded-xl border border-border/50 shadow-2xl frosted-glass-vibrant z-50"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs font-semibold text-foreground">Export & Share</span>
+                      <button 
+                        onClick={() => setShowShareSheet(false)}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-1.5">
+                      <button
+                        onClick={handleCopyHTML}
+                        className="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Code2 className="w-4 h-4 text-primary" />
+                        </div>
+                        <div className="flex-1 text-left">
+                          <div className="text-xs font-medium text-foreground">Copy as HTML</div>
+                          <div className="text-[10px] text-muted-foreground">CMS-ready markup</div>
+                        </div>
+                        <Copy className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </button>
+
+                      <button
+                        onClick={handleCopyMarkdown}
+                        className="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <FileText className="w-4 h-4 text-primary" />
+                        </div>
+                        <div className="flex-1 text-left">
+                          <div className="text-xs font-medium text-foreground">Copy as Markdown</div>
+                          <div className="text-[10px] text-muted-foreground">Universal format</div>
+                        </div>
+                        <Copy className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </button>
+
+                      <div className="thin-rule border-t my-2" />
+
+                      <button
+                        onClick={handleCreatePreviewLink}
+                        className="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Link2 className="w-4 h-4 text-primary" />
+                        </div>
+                        <div className="flex-1 text-left">
+                          <div className="text-xs font-medium text-foreground">Create Preview Link</div>
+                          <div className="text-[10px] text-muted-foreground">Shareable read-only URL</div>
+                        </div>
+                        <ExternalLink className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </motion.header>
 
@@ -732,70 +861,68 @@ export const AEOContentStudio = ({
             </div>
           </motion.main>
 
-          {/* Right Panel - Context */}
+          {/* Right Panel - Review & Handoff */}
           <motion.aside
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="w-64 border-l border-border/30 p-4 overflow-y-auto"
+            className="w-72 border-l border-border/30 p-4 overflow-y-auto"
           >
-            <div className="space-y-6">
-              {/* Source */}
-              <div>
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground/70 font-medium mb-3">
-                  <Brain className="w-3 h-3" />
-                  Source Context
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {prompt?.fullPrompt || 'No prompt selected'}
-                </p>
+            {/* Source Context - Compact */}
+            <div className="mb-4 pb-4 border-b border-border/30">
+              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground/70 font-medium mb-2">
+                <Brain className="w-3 h-3" />
+                Source Context
               </div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3">
+                {prompt?.fullPrompt || 'No prompt selected'}
+              </p>
+            </div>
 
-              {/* LLM Insights */}
-              <div className="pt-4 border-t border-border/30">
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-medium mb-3">
-                  LLM Insights
-                </div>
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-4 h-4 rounded bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-                        <span className="text-[8px] font-bold text-white">G</span>
-                      </div>
-                      <span className="text-xs font-medium">Gemini</span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      Optimized for conversational queries.
-                    </p>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-4 h-4 rounded bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center">
-                        <span className="text-[8px] font-bold text-white">P</span>
-                      </div>
-                      <span className="text-xs font-medium">Perplexity</span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      High citation probability.
-                    </p>
-                  </div>
-                </div>
+            {/* Review & Handoff Panel */}
+            <ReviewHandoffPanel 
+              content={{
+                title: content.title,
+                h1: content.h1,
+                tldr: content.tldr,
+                sections: content.sections.map(s => ({
+                  heading: s.heading,
+                  content: s.content
+                }))
+              }}
+              onStatusChange={setContentStatus}
+            />
+
+            {/* LLM Insights - Compact */}
+            <div className="mt-6 pt-4 border-t border-border/30">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-medium mb-3">
+                LLM Insights
               </div>
-
-              {/* Competitor Gap */}
-              <div className="pt-4 border-t border-border/30">
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-medium mb-3">
-                  Competitor Gap
-                </div>
-                <div className="flex items-start gap-2 p-2 rounded-md bg-amber-500/5 border border-amber-500/20">
-                  <AlertCircle className="w-3.5 h-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="text-xs font-medium text-amber-700">Adidas Ultraboost</div>
-                    <p className="text-[10px] text-amber-600/80">23 prompts you don&apos;t appear in</p>
+              <div className="flex gap-2">
+                <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-600">
+                  <div className="w-3 h-3 rounded bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                    <span className="text-[6px] font-bold text-white">G</span>
                   </div>
+                  <span className="text-[10px] font-medium">Gemini Ready</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-violet-500/10 text-violet-600">
+                  <div className="w-3 h-3 rounded bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center">
+                    <span className="text-[6px] font-bold text-white">P</span>
+                  </div>
+                  <span className="text-[10px] font-medium">High Citation</span>
                 </div>
               </div>
+            </div>
 
+            {/* Competitor Gap - Compact */}
+            <div className="mt-4 pt-4 border-t border-border/30">
+              <div className="flex items-start gap-2 p-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="text-[10px] font-medium text-amber-700">Competitor Gap</div>
+                  <p className="text-[9px] text-amber-600/80">23 prompts missing coverage</p>
+                </div>
+              </div>
             </div>
           </motion.aside>
         </div>
