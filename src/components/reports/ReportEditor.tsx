@@ -14,7 +14,8 @@ import {
   Edit3,
   Check,
   X,
-  Loader2
+  Loader2,
+  TrendingUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { format } from 'date-fns';
+
+// Import AI logos
+import chatGPTLogo from '@/assets/chatGPT_logo.png';
+import geminiLogo from '@/assets/gemini_logo.png';
+import claudeLogo from '@/assets/claude_logo.png';
+import perplexityLogo from '@/assets/perplexity_logo.png';
+import grokLogo from '@/assets/grok_logo_new.png';
+
+const platformLogos: Record<string, string> = {
+  chatgpt: chatGPTLogo,
+  gemini: geminiLogo,
+  claude: claudeLogo,
+  perplexity: perplexityLogo,
+  grok: grokLogo,
+};
 
 export interface ReportBlock {
   id: string;
@@ -43,6 +60,22 @@ export interface ReportBlock {
   };
 }
 
+interface SectionData {
+  score: { enabled: boolean };
+  mentions: { enabled: boolean };
+  platformCoverage: { enabled: boolean; items?: string[] };
+  prompts: { enabled: boolean; items?: string[] };
+  products: { enabled: boolean; items?: string[] };
+  optimizations: { enabled: boolean; items?: string[] };
+  actions: { enabled: boolean; items?: string[] };
+}
+
+interface PlatformData {
+  id: string;
+  name: string;
+  mentions: number;
+}
+
 interface ReportEditorProps {
   blocks: ReportBlock[];
   onBlocksChange: (blocks: ReportBlock[]) => void;
@@ -51,7 +84,15 @@ interface ReportEditorProps {
   reportTitle: string;
   onTitleChange: (title: string) => void;
   isExporting?: boolean;
+  sections?: SectionData;
+  platforms?: PlatformData[];
+  dateRange?: { start: Date | undefined; end: Date | undefined };
+  brandName?: string;
+  customLogo?: string | null;
 }
+
+// Mock trend data for visualization
+const trendData = [35, 42, 38, 51, 49, 62, 58, 71, 68, 79, 85, 87];
 
 const ReportEditor = ({ 
   blocks, 
@@ -60,7 +101,12 @@ const ReportEditor = ({
   onExport,
   reportTitle,
   onTitleChange,
-  isExporting = false
+  isExporting = false,
+  sections,
+  platforms,
+  dateRange,
+  brandName = 'Brand',
+  customLogo
 }: ReportEditorProps) => {
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState(false);
@@ -171,7 +217,7 @@ const ReportEditor = ({
 
       <main className="max-w-4xl mx-auto px-8 py-12">
         {/* Editable Title */}
-        <div className="mb-12 group">
+        <div className="mb-8 group">
           {editingTitle ? (
             <div className="flex items-center gap-3">
               <Input
@@ -198,10 +244,103 @@ const ReportEditor = ({
               </h1>
             </button>
           )}
-          <p className="text-muted-foreground mt-2">
-            Drag to reorder, click to edit, or add new blocks
-          </p>
+          {dateRange && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {dateRange.start ? format(dateRange.start, "MMM d, yyyy") : "—"} — {dateRange.end ? format(dateRange.end, "MMM d, yyyy") : "—"}
+            </p>
+          )}
         </div>
+
+        {/* Visual Preview Section - AI Visibility Data */}
+        {sections && (sections.score.enabled || sections.mentions.enabled || (sections.platformCoverage.items?.length || 0) > 0) && (
+          <div className="mb-10 p-6 bg-muted/30 rounded-xl border border-border/50">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Report Cover Preview</span>
+              {customLogo && (
+                <img src={customLogo} alt="Logo" className="h-6 object-contain" />
+              )}
+            </div>
+            
+            {/* Score with Trend Chart */}
+            {sections.score.enabled && (
+              <div className="mb-6">
+                <div className="flex items-end gap-3 mb-4">
+                  <span className="text-5xl font-light text-foreground" style={{ letterSpacing: '-0.03em' }}>87</span>
+                  <div className="flex items-center gap-1 text-emerald-600 text-sm pb-2">
+                    <TrendingUp className="w-4 h-4" />
+                    <span>+5 pts</span>
+                  </div>
+                </div>
+                
+                {/* Mini Trend Chart */}
+                <div className="h-12 flex items-end gap-1">
+                  {trendData.map((value, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 bg-gradient-to-t from-primary/40 to-primary/80 rounded-t-sm transition-all"
+                      style={{ height: `${value}%` }}
+                    />
+                  ))}
+                </div>
+                <div className="flex justify-between mt-1">
+                  <span className="text-xs text-muted-foreground">Jan</span>
+                  <span className="text-xs text-muted-foreground">Dec</span>
+                </div>
+              </div>
+            )}
+
+            {/* Mentions */}
+            {sections.mentions.enabled && (
+              <div className="mb-6">
+                <span className="text-3xl font-light text-foreground" style={{ letterSpacing: '-0.02em' }}>12,847</span>
+                <p className="text-sm text-muted-foreground mt-1">total brand mentions across AI platforms</p>
+              </div>
+            )}
+
+            {/* Platform Coverage with Logos */}
+            {(sections.platformCoverage.items?.length || 0) > 0 && platforms && (
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Platform Coverage</p>
+                <div className="flex flex-wrap gap-2">
+                  {sections.platformCoverage.items?.slice(0, 5).map((platformId) => {
+                    const platform = platforms.find(p => p.id === platformId);
+                    const logo = platformLogos[platformId];
+                    if (!platform) return null;
+                    return (
+                      <div key={platformId} className="flex items-center gap-2 bg-background rounded-full px-3 py-1.5 border border-border/50">
+                        {logo && (
+                          <img src={logo} alt={platform.name} className="w-4 h-4 object-contain rounded-sm" />
+                        )}
+                        <span className="text-sm text-foreground">{platform.name}</span>
+                        <span className="text-xs text-muted-foreground">{(platform.mentions / 1000).toFixed(1)}k</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Summary */}
+            <div className="mt-6 pt-4 border-t border-border/50 flex flex-wrap gap-4 text-xs text-muted-foreground">
+              {(sections.prompts.items?.length || 0) > 0 && (
+                <span>{sections.prompts.items?.length} prompts included</span>
+              )}
+              {(sections.products.items?.length || 0) > 0 && (
+                <span>{sections.products.items?.length} products included</span>
+              )}
+              {(sections.optimizations.items?.length || 0) > 0 && (
+                <span>{sections.optimizations.items?.length} optimizations included</span>
+              )}
+              {(sections.actions.items?.length || 0) > 0 && (
+                <span>{sections.actions.items?.length} actions included</span>
+              )}
+            </div>
+          </div>
+        )}
+
+        <p className="text-muted-foreground mb-6 text-sm">
+          Add commentary, insights, or additional content below. Drag to reorder.
+        </p>
 
         {/* Blocks */}
         <div className="space-y-4">
