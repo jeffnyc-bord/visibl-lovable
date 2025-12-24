@@ -23,8 +23,15 @@ import {
   Brain,
   BarChart3,
   Clock,
-  Zap
+  Zap,
+  Info
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface BrandData {
   id: string;
@@ -84,10 +91,29 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
 
   // Visibility pillars data
   const visibilityPillars = [
-    { label: "Platform Coverage", current: 2, max: 4, icon: Globe },
-    { label: "Intelligence Depth", current: 10, max: 25, icon: Brain },
+    { 
+      label: "Platform Coverage", 
+      current: 2, 
+      max: 4, 
+      icon: Globe,
+      description: "Tracking more AI platforms (ChatGPT, Claude, Perplexity, etc.) increases your score confidence by cross-validating visibility across different LLMs. Each platform has unique training data and response patterns."
+    },
+    { 
+      label: "Intelligence Depth", 
+      current: 10, 
+      max: 25, 
+      icon: Brain,
+      description: "More prompts mean broader coverage of how customers actually search using AI. Higher prompt count increases score confidence and ensures your products appear across diverse customer queries and use cases."
+    },
     { label: "Market Presence", current: 78, max: 100, icon: BarChart3, isPercentage: true },
-    { label: "Content Freshness", current: 85, max: 100, icon: Clock, isPercentage: true },
+    { 
+      label: "Content Freshness", 
+      current: 85, 
+      max: 100, 
+      icon: Clock, 
+      isPercentage: true,
+      description: "LLMs favor up-to-date, comprehensive content. Regular updates and broader topic coverage increase the likelihood of your products being surfaced in AI responses. Fresh content signals relevance and authority."
+    },
   ];
 
   const mockProducts = brandData.products.map((product, index) => ({
@@ -370,23 +396,40 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
           <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-5" style={{ color: '#86868B' }}>VISIBILITY PILLARS</p>
           
           {/* Pillars as clean rows with 40px spacing */}
-          <div className="flex items-center gap-10">
-            {visibilityPillars.map((pillar, index) => (
-              <button 
-                key={index} 
-                className="flex items-center gap-4 group transition-all hover:opacity-80 active:scale-[0.98]"
-              >
-                <pillar.icon className="w-5 h-5" style={{ color: '#86868B' }} />
-                <div className="text-left">
-                  <p className="text-[11px] font-medium tracking-[0.04em] uppercase" style={{ color: '#86868B' }}>{pillar.label}</p>
-                  <p className="text-[24px] font-extralight tabular-nums tracking-tighter leading-tight" style={{ color: '#1D1D1F' }}>
-                    {pillar.isPercentage ? `${pillar.current}%` : <>{pillar.current}<span className="text-[14px] font-light" style={{ color: '#86868B' }}>/{pillar.max}</span></>}
-                  </p>
-                </div>
-                <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity -ml-1" style={{ color: '#86868B' }} />
-              </button>
-            ))}
-          </div>
+          <TooltipProvider delayDuration={200}>
+            <div className="flex items-center gap-10">
+              {visibilityPillars.map((pillar, index) => (
+                <Tooltip key={index}>
+                  <TooltipTrigger asChild>
+                    <button 
+                      className="flex items-center gap-4 group transition-all hover:opacity-80 active:scale-[0.98]"
+                    >
+                      <pillar.icon className="w-5 h-5" style={{ color: '#86868B' }} />
+                      <div className="text-left">
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-[11px] font-medium tracking-[0.04em] uppercase" style={{ color: '#86868B' }}>{pillar.label}</p>
+                          {pillar.description && <Info className="w-3 h-3" style={{ color: '#86868B' }} />}
+                        </div>
+                        <p className="text-[24px] font-extralight tabular-nums tracking-tighter leading-tight" style={{ color: '#1D1D1F' }}>
+                          {pillar.isPercentage ? `${pillar.current}%` : <>{pillar.current}<span className="text-[14px] font-light" style={{ color: '#86868B' }}>/{pillar.max}</span></>}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity -ml-1" style={{ color: '#86868B' }} />
+                    </button>
+                  </TooltipTrigger>
+                  {pillar.description && (
+                    <TooltipContent 
+                      side="bottom" 
+                      sideOffset={8}
+                      className="max-w-xs p-3 text-[12px] leading-relaxed z-[100]"
+                    >
+                      {pillar.description}
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              ))}
+            </div>
+          </TooltipProvider>
         </div>
 
         {/* Segmented Control */}
@@ -657,7 +700,6 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                   
                   <div className="col-span-4">
                     <div className="flex items-center gap-3">
-                      <img src={product.thumbnail} alt="" className="w-9 h-9 rounded-xl object-cover flex-shrink-0" style={{ background: 'rgba(0,0,0,0.04)' }} />
                       <div className="min-w-0">
                         <p className="text-[14px] font-medium truncate" style={{ color: product.status === "analyzing" ? '#007AFF' : '#1D1D1F' }}>
                           {product.name}
