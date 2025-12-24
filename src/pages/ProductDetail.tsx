@@ -501,7 +501,7 @@ export const ProductDetail = () => {
                   
                   {/* Trend Badge with Glow */}
                   <div 
-                    className="absolute -right-4 top-4 flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium"
+                    className="absolute -right-16 top-4 flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium"
                     style={{
                       background: 'rgba(34, 197, 94, 0.1)',
                       color: 'rgb(22, 163, 74)',
