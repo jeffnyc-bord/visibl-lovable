@@ -218,7 +218,6 @@ export function ActionsLog() {
   });
 
   const liveCount = actions.filter(a => a.status === 'live').length;
-  const totalImpact = actions.reduce((sum, a) => sum + (a.impactChange || 0), 0);
 
   const resetAddForm = () => {
     setIsAddingInline(false);
@@ -326,15 +325,6 @@ export function ActionsLog() {
             </p>
             <p className="text-2xl font-semibold text-emerald-600 font-mono">
               {liveCount}
-            </p>
-          </div>
-          <div className="h-8 w-px bg-border/40" />
-          <div>
-            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-              Impact
-            </p>
-            <p className="text-2xl font-semibold text-foreground font-mono">
-              +{totalImpact}%
             </p>
           </div>
         </div>
