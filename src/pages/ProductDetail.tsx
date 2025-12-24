@@ -620,7 +620,7 @@ export const ProductDetail = () => {
                             <Tooltip key={platform}>
                               <TooltipTrigger asChild>
                                 <div 
-                                  className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all overflow-hidden cursor-pointer group ${
+                                  className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all cursor-pointer group ${
                                     isActive 
                                       ? 'bg-background shadow-sm ring-1 ring-border/40 hover:ring-primary/40 hover:shadow-md' 
                                       : 'bg-muted/30 hover:bg-muted/50'
