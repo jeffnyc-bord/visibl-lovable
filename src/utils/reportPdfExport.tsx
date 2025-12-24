@@ -1,5 +1,30 @@
-import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, pdf, Image, Svg, Rect, G } from '@react-pdf/renderer';
 import { ReportBlock } from '@/components/reports/ReportEditor';
+
+// AI Platform logos as base64 or URLs - using public paths since @react-pdf works better with URLs
+const platformLogoUrls: Record<string, string> = {
+  chatgpt: '/lovable-uploads/chatGPT_logo.png',
+  gemini: '/lovable-uploads/gemini_logo.png',
+  claude: '/lovable-uploads/claude_logo.png',
+  perplexity: '/lovable-uploads/perplexity_logo.png',
+  grok: '/lovable-uploads/grok_logo_new.png',
+};
+
+interface PlatformData {
+  id: string;
+  name: string;
+  mentions: number;
+}
+
+interface SectionData {
+  score: { enabled: boolean };
+  mentions: { enabled: boolean };
+  platformCoverage: { enabled: boolean; items?: string[] };
+  prompts: { enabled: boolean; items?: string[] };
+  products: { enabled: boolean; items?: string[] };
+  optimizations: { enabled: boolean; items?: string[] };
+  actions: { enabled: boolean; items?: string[] };
+}
 
 interface ReportPDFConfig {
   blocks: ReportBlock[];
@@ -8,9 +33,14 @@ interface ReportPDFConfig {
   showPageNumbers: boolean;
   customLogo?: string;
   brandName?: string;
+  sections?: SectionData;
+  platforms?: PlatformData[];
 }
 
-// Clean, Apple-inspired PDF styles
+// Mock trend data matching preview
+const trendData = [35, 42, 38, 51, 49, 62, 58, 71, 68, 79, 85, 87];
+
+// Clean, Apple-inspired PDF styles with Google Sans feel
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
@@ -24,40 +54,156 @@ const styles = StyleSheet.create({
   coverPage: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
-    padding: 60,
+    padding: 48,
     fontFamily: 'Helvetica',
-    justifyContent: 'space-between',
     height: '100%',
+  },
+  coverHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 40,
   },
   coverContent: {
     flex: 1,
     justifyContent: 'center',
+    paddingBottom: 60,
   },
   coverTitle: {
-    fontSize: 42,
+    fontSize: 36,
     fontWeight: 'light',
     color: '#1d1d1f',
-    marginBottom: 20,
+    marginBottom: 12,
     letterSpacing: -1,
   },
   coverSubtitle: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#86868b',
     marginBottom: 8,
   },
   coverDate: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#86868b',
-    marginTop: 40,
   },
   coverLogo: {
-    width: 120,
-    height: 40,
+    width: 100,
+    height: 32,
     objectFit: 'contain',
-    marginBottom: 40,
   },
   pageNumber: {
+    fontSize: 10,
+    color: '#86868b',
+  },
+  // Score Section
+  scoreSection: {
+    marginBottom: 32,
+  },
+  scoreRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    marginBottom: 12,
+  },
+  scoreValue: {
+    fontSize: 56,
+    fontWeight: 'light',
+    color: '#1d1d1f',
+    letterSpacing: -2,
+  },
+  scoreTrend: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 16,
+    marginBottom: 10,
+  },
+  scoreTrendText: {
+    fontSize: 12,
+    color: '#22c55e',
+  },
+  // Trend Chart
+  trendChartContainer: {
+    height: 60,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  chartLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  chartLabel: {
+    fontSize: 8,
+    color: '#86868b',
+  },
+  // Mentions Section
+  mentionsSection: {
+    marginBottom: 32,
+  },
+  mentionsValue: {
+    fontSize: 42,
+    fontWeight: 'light',
+    color: '#1d1d1f',
+    letterSpacing: -1,
+  },
+  mentionsLabel: {
     fontSize: 11,
+    color: '#86868b',
+    marginTop: 4,
+  },
+  // Platform Coverage
+  platformSection: {
+    marginBottom: 32,
+  },
+  sectionLabel: {
+    fontSize: 9,
+    color: '#86868b',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: 12,
+  },
+  platformRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  platformPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f7',
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  platformLogo: {
+    width: 16,
+    height: 16,
+    marginRight: 6,
+    borderRadius: 2,
+  },
+  platformName: {
+    fontSize: 10,
+    color: '#1d1d1f',
+    marginRight: 4,
+  },
+  platformMentions: {
+    fontSize: 9,
+    color: '#86868b',
+  },
+  // Summary footer
+  summarySection: {
+    marginTop: 'auto',
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#f5f5f7',
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
+  },
+  summaryItem: {
+    fontSize: 9,
     color: '#86868b',
   },
   // Content styles
@@ -152,8 +298,8 @@ const styles = StyleSheet.create({
   footer: {
     position: 'absolute',
     bottom: 40,
-    left: 60,
-    right: 60,
+    left: 48,
+    right: 48,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -169,48 +315,157 @@ const styles = StyleSheet.create({
   },
 });
 
-// Cover Page Component
+// Trend Chart Component using SVG
+const TrendChart = () => (
+  <View style={styles.trendChartContainer}>
+    <Svg width="100%" height="60" viewBox="0 0 400 60">
+      <G>
+        {trendData.map((value, i) => {
+          const barWidth = 400 / trendData.length - 4;
+          const barHeight = (value / 100) * 55;
+          const x = i * (400 / trendData.length) + 2;
+          const y = 55 - barHeight;
+          return (
+            <Rect
+              key={i}
+              x={x}
+              y={y}
+              width={barWidth}
+              height={barHeight}
+              fill="#6366f1"
+              opacity={0.7 + (value / 100) * 0.3}
+              rx={2}
+            />
+          );
+        })}
+      </G>
+    </Svg>
+    <View style={styles.chartLabels}>
+      <Text style={styles.chartLabel}>Jan</Text>
+      <Text style={styles.chartLabel}>Dec</Text>
+    </View>
+  </View>
+);
+
+// Cover Page Component with visual data matching preview
 const CoverPage = ({ 
   reportTitle, 
   dateRange, 
   customLogo, 
   brandName,
-  showPageNumbers 
+  showPageNumbers,
+  sections,
+  platforms
 }: { 
   reportTitle: string;
   dateRange: { start: Date; end: Date };
   customLogo?: string;
   brandName?: string;
   showPageNumbers: boolean;
-}) => (
-  <Page size="A4" style={styles.coverPage}>
-    <View style={styles.coverContent}>
-      {customLogo && (
-        <Image style={styles.coverLogo} src={customLogo} />
-      )}
-      <Text style={styles.coverTitle}>{reportTitle}</Text>
-      <Text style={styles.coverSubtitle}>
-        {brandName || 'AI Visibility Report'}
-      </Text>
-      <Text style={styles.coverDate}>
-        Report Period: {dateRange.start.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} — {dateRange.end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-      </Text>
-      <Text style={styles.coverDate}>
-        Generated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-      </Text>
-    </View>
-    {showPageNumbers && (
-      <View style={styles.footer}>
+  sections?: SectionData;
+  platforms?: PlatformData[];
+}) => {
+  const formatDate = (date: Date) => 
+    date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  return (
+    <Page size="A4" style={styles.coverPage}>
+      {/* Header */}
+      <View style={styles.coverHeader}>
         {customLogo ? (
-          <Image style={styles.footerLogo} src={customLogo} />
+          <Image style={styles.coverLogo} src={customLogo} />
         ) : (
-          <Text style={styles.footerBrand}>{brandName || ''}</Text>
+          <Text style={styles.coverDate}>{brandName}</Text>
         )}
-        <Text style={styles.pageNumber}>01</Text>
+        <Text style={styles.coverDate}>
+          {formatDate(dateRange.start)} — {formatDate(dateRange.end)}
+        </Text>
       </View>
-    )}
-  </Page>
-);
+
+      {/* Title */}
+      <View style={styles.coverContent}>
+        <Text style={styles.coverTitle}>{reportTitle}</Text>
+        <Text style={styles.coverSubtitle}>
+          AI Visibility Report • {brandName || 'Brand Report'}
+        </Text>
+
+        {/* Score Section with Trend Chart */}
+        {sections?.score.enabled && (
+          <View style={styles.scoreSection}>
+            <View style={styles.scoreRow}>
+              <Text style={styles.scoreValue}>87</Text>
+              <View style={styles.scoreTrend}>
+                <Text style={styles.scoreTrendText}>▲ +5 pts</Text>
+              </View>
+            </View>
+            <TrendChart />
+          </View>
+        )}
+
+        {/* Mentions */}
+        {sections?.mentions.enabled && (
+          <View style={styles.mentionsSection}>
+            <Text style={styles.mentionsValue}>12,847</Text>
+            <Text style={styles.mentionsLabel}>total brand mentions across AI platforms</Text>
+          </View>
+        )}
+
+        {/* Platform Coverage with Logos */}
+        {(sections?.platformCoverage.items?.length || 0) > 0 && platforms && (
+          <View style={styles.platformSection}>
+            <Text style={styles.sectionLabel}>Platform Coverage</Text>
+            <View style={styles.platformRow}>
+              {sections?.platformCoverage.items?.slice(0, 5).map((platformId) => {
+                const platform = platforms.find(p => p.id === platformId);
+                if (!platform) return null;
+                const logoUrl = platformLogoUrls[platformId];
+                return (
+                  <View key={platformId} style={styles.platformPill}>
+                    {logoUrl && (
+                      <Image style={styles.platformLogo} src={logoUrl} />
+                    )}
+                    <Text style={styles.platformName}>{platform.name}</Text>
+                    <Text style={styles.platformMentions}>{(platform.mentions / 1000).toFixed(1)}k</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
+      </View>
+
+      {/* Summary Footer */}
+      <View style={styles.summarySection}>
+        <View style={styles.summaryRow}>
+          {(sections?.prompts.items?.length || 0) > 0 && (
+            <Text style={styles.summaryItem}>{sections?.prompts.items?.length} prompts</Text>
+          )}
+          {(sections?.products.items?.length || 0) > 0 && (
+            <Text style={styles.summaryItem}>{sections?.products.items?.length} products</Text>
+          )}
+          {(sections?.optimizations.items?.length || 0) > 0 && (
+            <Text style={styles.summaryItem}>{sections?.optimizations.items?.length} optimizations</Text>
+          )}
+          {(sections?.actions.items?.length || 0) > 0 && (
+            <Text style={styles.summaryItem}>{sections?.actions.items?.length} actions</Text>
+          )}
+        </View>
+      </View>
+
+      {/* Page Number */}
+      {showPageNumbers && (
+        <View style={styles.footer}>
+          {customLogo ? (
+            <Image style={styles.footerLogo} src={customLogo} />
+          ) : (
+            <Text style={styles.footerBrand}>{brandName || ''}</Text>
+          )}
+          <Text style={styles.pageNumber}>01</Text>
+        </View>
+      )}
+    </Page>
+  );
+};
 
 // Block Renderers
 const SectionBlockPDF = ({ block }: { block: ReportBlock }) => (
@@ -374,6 +629,8 @@ const ReportPDFDocument = ({ config }: { config: ReportPDFConfig }) => {
         customLogo={config.customLogo}
         brandName={config.brandName}
         showPageNumbers={config.showPageNumbers}
+        sections={config.sections}
+        platforms={config.platforms}
       />
       {blockPages.map((pageBlocks, index) => (
         <ContentPage
@@ -409,4 +666,4 @@ export const downloadReportPDF = async (config: ReportPDFConfig, filename?: stri
   URL.revokeObjectURL(url);
 };
 
-export type { ReportPDFConfig };
+export type { ReportPDFConfig, SectionData, PlatformData };

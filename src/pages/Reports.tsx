@@ -398,13 +398,26 @@ const Reports = () => {
 
     setIsExporting(true);
     try {
+      // Transform sections to match PDF export format
+      const pdfSections = {
+        score: { enabled: sections.score.enabled },
+        mentions: { enabled: sections.mentions.enabled },
+        platformCoverage: { enabled: sections.platformCoverage.enabled, items: sections.platformCoverage.items },
+        prompts: { enabled: sections.prompts.enabled, items: sections.prompts.items },
+        products: { enabled: sections.products.enabled, items: sections.products.items },
+        optimizations: { enabled: sections.optimizations.enabled, items: sections.optimizations.items },
+        actions: { enabled: sections.actions.enabled, items: sections.actions.items },
+      };
+      
       await downloadReportPDF({
         blocks: editorBlocks,
         reportTitle,
         dateRange: { start: startDate || new Date(2024, 0, 1), end: endDate || new Date() },
         showPageNumbers,
         customLogo: customLogo || undefined,
-        brandName: 'Nike'
+        brandName: 'Nike',
+        sections: pdfSections,
+        platforms
       });
       
       toast({ title: "Report exported", description: "Your PDF has been downloaded." });
