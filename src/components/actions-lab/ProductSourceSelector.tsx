@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ChevronRight, Package, Check, ChevronDown } from 'lucide-react';
+import { ChevronRight, Package, Check, ChevronDown, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 export interface ProductSource {
@@ -27,6 +28,7 @@ export const ProductSourceSelector = ({
   stepNumber = 1,
 }: ProductSourceSelectorProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const navigate = useNavigate();
 
   return (
     <section className={cn(
@@ -114,6 +116,23 @@ export const ProductSourceSelector = ({
               <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
             </button>
           ))}
+
+          {/* Add Product Helper */}
+          <button
+            onClick={() => navigate('/?tab=brand')}
+            className="w-full flex items-center gap-2 py-3 px-1 text-left group hover:bg-muted/30 transition-colors"
+          >
+            <div className="w-4 h-4 flex-shrink-0" />
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Plus className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+              Don't see your product?
+            </span>
+            <span className="text-sm text-primary font-medium group-hover:underline">
+              Add it now →
+            </span>
+          </button>
         </div>
       )}
 
