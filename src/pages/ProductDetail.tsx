@@ -90,13 +90,13 @@ export const ProductDetail = () => {
     pagesCrawled: 12
   };
 
-  // Score distribution data for Apple Health-style bars
-  const scoreDistribution = [
-    { label: "Content Quality", score: 88, color: "hsl(142, 71%, 45%)" },
-    { label: "Technical SEO", score: 76, color: "hsl(200, 80%, 50%)" },
-    { label: "AI Optimization", score: 82, color: "hsl(280, 70%, 55%)" },
-    { label: "Authority Signals", score: 71, color: "hsl(35, 90%, 55%)" },
-  ];
+  // Apple-style pillar data
+  const pillars = {
+    platformCoverage: { current: 2, total: 4, platforms: ['ChatGPT', 'Gemini', 'Perplexity', 'Grok'] },
+    intelligenceDepth: { current: 12, total: 25 },
+    marketPresence: { mentions: 1247, trend: [45, 52, 48, 61, 55, 72, 68] },
+    contentFreshness: { activePages: 8, lastSync: '2m ago' }
+  };
 
   const gaps = [
     { 
@@ -488,7 +488,7 @@ export const ProductDetail = () => {
             <div className="lg:col-span-5">
               <div className="flex flex-col items-center lg:items-start">
                 {/* Large Score */}
-                <div className="relative mb-6">
+                <div className="relative mb-6 flex items-baseline gap-2">
                   <div 
                     className="text-8xl font-extralight tracking-tighter text-foreground"
                     style={{
@@ -497,11 +497,11 @@ export const ProductDetail = () => {
                   >
                     {mockProduct.score}
                   </div>
-                  <span className="text-2xl font-extralight text-muted-foreground ml-1">%</span>
+                  <span className="text-2xl font-extralight text-muted-foreground">/100</span>
                   
                   {/* Trend Badge with Glow */}
                   <div 
-                    className="absolute -right-16 top-4 flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium"
+                    className="ml-4 flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium"
                     style={{
                       background: 'rgba(34, 197, 94, 0.1)',
                       color: 'rgb(22, 163, 74)',
@@ -543,27 +543,96 @@ export const ProductDetail = () => {
               </div>
             </div>
 
-            {/* Right: Score Distribution - Apple Health Style Bars */}
+            {/* Right: Score Breakdown - Apple Settings Style */}
             <div className="lg:col-span-7">
-              <p className="text-sm text-muted-foreground mb-6">Score Breakdown</p>
-              <div className="space-y-5">
-                {scoreDistribution.map((item, index) => (
-                  <div key={index} className="group">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-foreground">{item.label}</span>
-                      <span className="text-sm font-medium text-foreground">{item.score}%</span>
-                    </div>
-                    <div className="h-2 bg-muted/50 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full rounded-full transition-all duration-700 ease-out"
-                        style={{ 
-                          width: `${item.score}%`,
-                          background: item.color
-                        }}
-                      />
+              <p className="text-sm text-muted-foreground mb-6 font-medium tracking-wide">Score Breakdown</p>
+              
+              {/* Frosted Glass Container */}
+              <div 
+                className="rounded-2xl border border-border/30 overflow-hidden"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.6)',
+                  backdropFilter: 'blur(20px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(20px) saturate(180%)'
+                }}
+              >
+                {/* Pillar 1: Platform Coverage */}
+                <div className="p-5 border-b border-border/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-foreground">Platform Coverage</span>
+                    <span className="text-lg font-semibold text-foreground">{pillars.platformCoverage.current}/{pillars.platformCoverage.total} <span className="text-sm font-normal text-muted-foreground">Platforms</span></span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {pillars.platformCoverage.platforms.map((platform, idx) => {
+                      const isActive = idx < pillars.platformCoverage.current;
+                      return (
+                        <div 
+                          key={platform}
+                          className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all ${
+                            isActive 
+                              ? 'bg-foreground/10' 
+                              : 'bg-muted/30'
+                          }`}
+                          title={platform}
+                        >
+                          <MessageSquare className={`w-4 h-4 ${isActive ? 'text-foreground' : 'text-muted-foreground/40'}`} />
+                        </div>
+                      );
+                    })}
+                    <span className="text-xs text-muted-foreground ml-2">Expand to more platforms →</span>
+                  </div>
+                </div>
+
+                {/* Pillar 2: Intelligence Depth */}
+                <div className="p-5 border-b border-border/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-foreground">Intelligence Depth</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-semibold text-foreground">{pillars.intelligenceDepth.current}/{pillars.intelligenceDepth.total} <span className="text-sm font-normal text-muted-foreground">Prompts</span></span>
+                      {pillars.intelligenceDepth.current < pillars.intelligenceDepth.total && (
+                        <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
+                      )}
                     </div>
                   </div>
-                ))}
+                  <div className="h-1.5 bg-muted/40 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full rounded-full bg-foreground/70 transition-all duration-700 ease-out"
+                      style={{ width: `${(pillars.intelligenceDepth.current / pillars.intelligenceDepth.total) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Pillar 3: Market Presence */}
+                <div className="p-5 border-b border-border/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-foreground">Market Presence</span>
+                    <span className="text-lg font-semibold text-foreground">{pillars.marketPresence.mentions.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">Mentions</span></span>
+                  </div>
+                  {/* Sparkline */}
+                  <div className="flex items-end gap-1 h-8">
+                    {pillars.marketPresence.trend.map((value, idx) => {
+                      const maxVal = Math.max(...pillars.marketPresence.trend);
+                      const height = (value / maxVal) * 100;
+                      return (
+                        <div 
+                          key={idx}
+                          className="flex-1 rounded-sm bg-foreground/20 transition-all hover:bg-foreground/40"
+                          style={{ height: `${height}%` }}
+                        />
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">Last 7 days</p>
+                </div>
+
+                {/* Pillar 4: Content Freshness */}
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-foreground">Content Freshness</span>
+                    <span className="text-lg font-semibold text-foreground">{pillars.contentFreshness.activePages} <span className="text-sm font-normal text-muted-foreground">Active Pages</span></span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Last sync with AEO Content Studio: {pillars.contentFreshness.lastSync}</p>
+                </div>
               </div>
             </div>
           </div>
