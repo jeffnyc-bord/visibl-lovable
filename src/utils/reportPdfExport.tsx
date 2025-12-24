@@ -62,12 +62,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 24,
   },
   coverContent: {
     flex: 1,
-    justifyContent: 'center',
-    paddingBottom: 60,
+    justifyContent: 'flex-start',
+    paddingTop: 20,
   },
   coverTitle: {
     fontSize: 36,

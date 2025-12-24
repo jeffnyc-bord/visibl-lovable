@@ -61,7 +61,7 @@ export const ReportPreview = ({
       {/* Cover Page Preview */}
       <div className="aspect-[8.5/11] bg-white p-8 flex flex-col relative">
         {/* Header */}
-        <div className="flex items-center justify-between mb-auto">
+        <div className="flex items-center justify-between mb-4">
           {customLogo ? (
             <img src={customLogo} alt="Logo" className="h-6 object-contain" />
           ) : (
@@ -73,7 +73,7 @@ export const ReportPreview = ({
         </div>
 
         {/* Title Section */}
-        <div className="flex-1 flex flex-col justify-center">
+        <div className="flex-1 flex flex-col justify-start pt-2">
           <h1 
             className="text-xl font-light text-[#1d1d1f] tracking-tight leading-tight mb-2"
             style={{ letterSpacing: '-0.02em' }}

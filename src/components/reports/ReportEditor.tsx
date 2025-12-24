@@ -326,7 +326,7 @@ const ReportEditor = ({
             >
               <div className="p-6 flex flex-col h-full">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-auto">
+                <div className="flex items-center justify-between mb-4">
                   {customLogo ? (
                     <img src={customLogo} alt="Logo" className="h-5 object-contain" />
                   ) : (
@@ -338,7 +338,7 @@ const ReportEditor = ({
                 </div>
 
                 {/* Title */}
-                <div className="flex-1 flex flex-col justify-center py-4">
+                <div className="flex-1 flex flex-col justify-start pt-2">
                   <h1 className="text-lg font-light text-[#1d1d1f] tracking-tight leading-tight mb-1">
                     {reportTitle}
                   </h1>
