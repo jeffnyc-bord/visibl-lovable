@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogOverlay, DialogPortal } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, X } from "lucide-react";
+import { Sparkles, X, Check, Loader2 } from "lucide-react";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 
 interface AddPromptDialogProps {
@@ -25,11 +25,22 @@ export const AddPromptDialog = ({
   const { tier } = useSubscription();
   const [prompt, setPrompt] = React.useState("");
   const [isFocused, setIsFocused] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [showSuccess, setShowSuccess] = React.useState(false);
 
   const usagePercent = (promptsUsed / maxPrompts) * 100;
   const isNearLimit = usagePercent >= 80;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Reset states when dialog closes
+  React.useEffect(() => {
+    if (!open) {
+      setIsSubmitting(false);
+      setShowSuccess(false);
+      setPrompt("");
+    }
+  }, [open]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!prompt.trim()) {
@@ -41,11 +52,24 @@ export const AddPromptDialog = ({
       return;
     }
 
+    setIsSubmitting(true);
+    
+    // Simulate brief processing
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
+    setIsSubmitting(false);
+    setShowSuccess(true);
+    
+    // Show success state, then close
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    
     onAdd(prompt.trim());
     setPrompt("");
+    setShowSuccess(false);
   };
 
   const handleClose = () => {
+    if (isSubmitting || showSuccess) return;
     setPrompt("");
     onOpenChange(false);
   };
@@ -77,12 +101,90 @@ export const AddPromptDialog = ({
                 border: '1px solid rgba(0, 0, 0, 0.08)'
               }}
             >
+              {/* Success Overlay */}
+              {showSuccess && (
+                <div 
+                  className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/95 animate-in fade-in duration-300"
+                  style={{
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
+                  {/* Success checkmark with ring animation */}
+                  <div className="relative mb-4">
+                    <div 
+                      className="w-16 h-16 rounded-full flex items-center justify-center"
+                      style={{
+                        background: 'linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(142 71% 45%) 100%)',
+                        boxShadow: '0 0 0 0 hsla(142, 76%, 36%, 0.4)',
+                        animation: 'successPulse 1s ease-out'
+                      }}
+                    >
+                      <Check 
+                        className="w-8 h-8 text-white" 
+                        style={{
+                          animation: 'checkDraw 0.4s ease-out 0.1s both'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  <h3 
+                    className="text-lg font-semibold text-foreground mb-1 animate-in fade-in slide-in-from-bottom-2 duration-300"
+                    style={{ 
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Segoe UI", Roboto, sans-serif',
+                      animationDelay: '0.15s',
+                      animationFillMode: 'both'
+                    }}
+                  >
+                    Added to Queue
+                  </h3>
+                  <p 
+                    className="text-sm text-muted-foreground animate-in fade-in slide-in-from-bottom-2 duration-300"
+                    style={{ 
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
+                      animationDelay: '0.25s',
+                      animationFillMode: 'both'
+                    }}
+                  >
+                    Your prompt is now being analyzed
+                  </p>
+                  
+                  {/* Animated queue indicator */}
+                  <div 
+                    className="mt-6 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300"
+                    style={{ 
+                      animationDelay: '0.35s',
+                      animationFillMode: 'both'
+                    }}
+                  >
+                    <div className="flex -space-x-1">
+                      {[0, 1, 2].map((i) => (
+                        <div 
+                          key={i}
+                          className="w-2 h-2 rounded-full bg-primary/60"
+                          style={{
+                            animation: `queueDot 0.6s ease-in-out ${i * 0.1}s infinite alternate`
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <span 
+                      className="text-xs text-muted-foreground"
+                      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif' }}
+                    >
+                      Processing...
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Header */}
               <div className="relative px-6 pt-6 pb-4">
                 {/* Close Button */}
                 <button
                   onClick={handleClose}
-                  className="absolute top-4 right-4 w-7 h-7 rounded-full bg-muted/60 hover:bg-muted flex items-center justify-center transition-colors group"
+                  disabled={isSubmitting || showSuccess}
+                  className="absolute top-4 right-4 w-7 h-7 rounded-full bg-muted/60 hover:bg-muted flex items-center justify-center transition-colors group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <X className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </button>
@@ -109,7 +211,8 @@ export const AddPromptDialog = ({
                     onChange={(e) => setPrompt(e.target.value)}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    className="min-h-[140px] resize-none border-0 bg-transparent p-0 text-base text-foreground placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    disabled={isSubmitting || showSuccess}
+                    className="min-h-[140px] resize-none border-0 bg-transparent p-0 text-base text-foreground placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50"
                     style={{ 
                       fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
                       caretColor: 'hsl(211, 100%, 50%)', // System Blue cursor
@@ -167,7 +270,8 @@ export const AddPromptDialog = ({
                     <button 
                       type="button" 
                       onClick={handleClose}
-                      className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground relative group transition-colors"
+                      disabled={isSubmitting || showSuccess}
+                      className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground relative group transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif' }}
                     >
                       Cancel
@@ -177,16 +281,23 @@ export const AddPromptDialog = ({
                     {/* Save & Run - High-gloss black pill */}
                     <button 
                       type="submit" 
-                      disabled={!prompt.trim()}
-                      className="px-6 py-2.5 rounded-full text-sm font-medium text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm whitespace-nowrap"
+                      disabled={!prompt.trim() || isSubmitting || showSuccess}
+                      className="px-6 py-2.5 rounded-full text-sm font-medium text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm whitespace-nowrap flex items-center gap-2"
                       style={{ 
                         fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
-                        background: prompt.trim() 
+                        background: prompt.trim() && !isSubmitting
                           ? 'linear-gradient(180deg, hsl(0 0% 15%) 0%, hsl(0 0% 9%) 100%)' 
                           : 'hsl(var(--muted))'
                       }}
                     >
-                      Save & Run
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save & Run'
+                      )}
                     </button>
                   </div>
                 </div>
@@ -195,6 +306,46 @@ export const AddPromptDialog = ({
           </div>
         </div>
       </DialogPortal>
+      
+      {/* Custom keyframes for success animation */}
+      <style>{`
+        @keyframes successPulse {
+          0% {
+            box-shadow: 0 0 0 0 hsla(142, 76%, 36%, 0.6);
+            transform: scale(0.8);
+          }
+          50% {
+            box-shadow: 0 0 0 20px hsla(142, 76%, 36%, 0);
+            transform: scale(1.05);
+          }
+          100% {
+            box-shadow: 0 0 0 0 hsla(142, 76%, 36%, 0);
+            transform: scale(1);
+          }
+        }
+        
+        @keyframes checkDraw {
+          0% {
+            opacity: 0;
+            transform: scale(0.5) rotate(-10deg);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+          }
+        }
+        
+        @keyframes queueDot {
+          0% {
+            opacity: 0.4;
+            transform: scale(0.8);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1.2);
+          }
+        }
+      `}</style>
     </Dialog>
   );
 };
