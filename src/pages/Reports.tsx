@@ -3,11 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
-  Calendar,
   Check,
-  ChevronDown,
-  Download,
-  Loader2
+  ChevronRight,
+  Loader2,
+  BarChart3,
+  MessageSquare,
+  Package,
+  FileText,
+  ClipboardList,
+  TrendingUp,
+  AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -17,17 +22,26 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import ReportEditor, { ReportBlock } from '@/components/reports/ReportEditor';
 import { downloadReportPDF } from '@/utils/reportPdfExport';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
-// Mock data for granular selection
+// Mock data
 const mockPrompts = [
-  { id: "1", text: "Best running shoes for marathon training", mentions: 24, platform: "ChatGPT" },
-  { id: "2", text: "Nike vs Adidas for professional athletes", mentions: 18, platform: "Gemini" },
-  { id: "3", text: "Most comfortable shoes for daily wear", mentions: 15, platform: "Claude" },
-  { id: "4", text: "Top rated sneakers 2024", mentions: 12, platform: "Perplexity" },
-  { id: "5", text: "Which brand has the best durability", mentions: 9, platform: "Grok" },
+  { id: "1", text: "Best running shoes for marathon training", mentions: 24, platform: "ChatGPT", status: "ai-ready" },
+  { id: "2", text: "Nike vs Adidas for professional athletes", mentions: 18, platform: "Gemini", status: "needs-improvement" },
+  { id: "3", text: "Most comfortable shoes for daily wear", mentions: 15, platform: "Claude", status: "ai-ready" },
+  { id: "4", text: "Top rated sneakers 2024", mentions: 12, platform: "Perplexity", status: "needs-improvement" },
+  { id: "5", text: "Which brand has the best durability", mentions: 9, platform: "Grok", status: "ai-ready" },
 ];
 
 const mockActions = [
@@ -38,15 +52,68 @@ const mockActions = [
 ];
 
 const mockProducts = [
-  { id: "1", name: "Air Max 90", prompts: 8 },
-  { id: "2", name: "Air Force 1", prompts: 6 },
-  { id: "3", name: "Dunk Low", prompts: 4 },
+  { 
+    id: "1", 
+    name: "Air Max 90", 
+    status: "ai-ready",
+    prompts: [
+      { id: "p1-1", text: "Best Air Max for running", mentions: 12 },
+      { id: "p1-2", text: "Air Max 90 vs Air Max 95", mentions: 8 },
+    ]
+  },
+  { 
+    id: "2", 
+    name: "Air Force 1", 
+    status: "needs-improvement",
+    prompts: [
+      { id: "p2-1", text: "Air Force 1 sizing guide", mentions: 15 },
+      { id: "p2-2", text: "Best white sneakers 2024", mentions: 22 },
+    ]
+  },
+  { 
+    id: "3", 
+    name: "Dunk Low", 
+    status: "ai-ready",
+    prompts: [
+      { id: "p3-1", text: "Dunk Low vs Jordan 1", mentions: 19 },
+    ]
+  },
+  { 
+    id: "4", 
+    name: "Pegasus 40", 
+    status: "needs-improvement",
+    prompts: [
+      { id: "p4-1", text: "Best running shoes for beginners", mentions: 31 },
+      { id: "p4-2", text: "Nike Pegasus review", mentions: 14 },
+    ]
+  },
 ];
 
-const mockSources = [
-  { id: "1", url: "nike.com/running", traffic: "45K", citations: 12 },
-  { id: "2", url: "nike.com/air-max", traffic: "32K", citations: 8 },
-  { id: "3", url: "nike.com/basketball", traffic: "28K", citations: 5 },
+const mockOptimizations = [
+  { 
+    id: "1", 
+    title: "Ultimate Guide to Marathon Training", 
+    urlSlug: "/guides/marathon-training",
+    headers: ["H1: Marathon Training Guide", "H2: Best Gear", "H2: Training Plans"],
+    associatedWith: { type: "product", name: "Pegasus 40" },
+    createdAt: "Dec 20, 2024"
+  },
+  { 
+    id: "2", 
+    title: "Basketball Shoe Comparison 2024", 
+    urlSlug: "/comparisons/basketball-shoes",
+    headers: ["H1: Basketball Shoe Guide", "H2: Top Picks", "H2: Price Comparison"],
+    associatedWith: { type: "brand", name: "Nike" },
+    createdAt: "Dec 18, 2024"
+  },
+  { 
+    id: "3", 
+    title: "Air Max Technology Explained", 
+    urlSlug: "/technology/air-max",
+    headers: ["H1: Air Max Tech", "H2: History", "H2: Innovation"],
+    associatedWith: { type: "product", name: "Air Max 90" },
+    createdAt: "Dec 15, 2024"
+  },
 ];
 
 const platforms = [
@@ -56,6 +123,16 @@ const platforms = [
   { id: "perplexity", name: "Perplexity", mentions: 2310 },
   { id: "grok", name: "Grok", mentions: 1892 },
 ];
+
+type NavigationPath = 
+  | { section: 'root' }
+  | { section: 'ai-visibility' }
+  | { section: 'prompts' }
+  | { section: 'products' }
+  | { section: 'products'; productId: string }
+  | { section: 'optimizations' }
+  | { section: 'optimizations'; optimizationId: string }
+  | { section: 'actions' };
 
 interface SectionConfig {
   enabled: boolean;
@@ -68,36 +145,75 @@ const Reports = () => {
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(2024, 0, 1));
   const [endDate, setEndDate] = useState<Date | undefined>(new Date());
   
+  // Navigation state
+  const [currentPath, setCurrentPath] = useState<NavigationPath>({ section: 'root' });
+  
+  // Selection state
   const [sections, setSections] = useState<Record<string, SectionConfig>>({
+    // AI Visibility
     score: { enabled: true },
     mentions: { enabled: true },
     platformCoverage: { enabled: true, items: platforms.map(p => p.id) },
+    // Prompts
     prompts: { enabled: true, items: mockPrompts.map(p => p.id) },
-    optimization: { enabled: false },
+    // Products
     products: { enabled: false, items: [] },
-    sources: { enabled: false, items: [] },
+    productPrompts: { enabled: false, items: [] },
+    // Optimizations
+    optimizations: { enabled: false, items: [] },
+    optimizationDetails: { enabled: false, items: [] },
+    // Actions
     actions: { enabled: false, items: [] },
   });
+  
+  // Filter states
+  const [productFilter, setProductFilter] = useState<'all' | 'ai-ready' | 'needs-improvement'>('all');
+  const [promptFilter, setPromptFilter] = useState<'all' | 'ai-ready' | 'needs-improvement'>('all');
 
   const [reportTitle, setReportTitle] = useState("AI Visibility Report");
   const [showPageNumbers, setShowPageNumbers] = useState(true);
   const [customLogo, setCustomLogo] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
-
-  // Editor blocks state
   const [editorBlocks, setEditorBlocks] = useState<ReportBlock[]>([]);
 
-  const toggleSection = (key: string) => {
-    setSections(prev => ({
-      ...prev,
-      [key]: { ...prev[key], enabled: !prev[key].enabled }
-    }));
+  // Navigation helpers
+  const navigateTo = (path: NavigationPath) => setCurrentPath(path);
+  
+  const getBreadcrumbs = (): { label: string; path: NavigationPath }[] => {
+    const crumbs: { label: string; path: NavigationPath }[] = [
+      { label: 'Report Sections', path: { section: 'root' } }
+    ];
+    
+    if (currentPath.section === 'ai-visibility') {
+      crumbs.push({ label: 'AI Visibility Overview', path: { section: 'ai-visibility' } });
+    } else if (currentPath.section === 'prompts') {
+      crumbs.push({ label: 'Prompts & Queries', path: { section: 'prompts' } });
+    } else if (currentPath.section === 'products') {
+      crumbs.push({ label: 'Products', path: { section: 'products' } });
+      if ('productId' in currentPath && currentPath.productId) {
+        const product = mockProducts.find(p => p.id === currentPath.productId);
+        if (product) {
+          crumbs.push({ label: product.name, path: currentPath });
+        }
+      }
+    } else if (currentPath.section === 'optimizations') {
+      crumbs.push({ label: 'On-site Optimizations', path: { section: 'optimizations' } });
+      if ('optimizationId' in currentPath && currentPath.optimizationId) {
+        const opt = mockOptimizations.find(o => o.id === currentPath.optimizationId);
+        if (opt) {
+          crumbs.push({ label: opt.title, path: currentPath });
+        }
+      }
+    } else if (currentPath.section === 'actions') {
+      crumbs.push({ label: 'Actions Log', path: { section: 'actions' } });
+    }
+    
+    return crumbs;
   };
 
+  // Toggle helpers
   const toggleItem = (sectionKey: string, itemId: string) => {
     setSections(prev => {
       const currentItems = prev[sectionKey].items || [];
@@ -106,7 +222,7 @@ const Reports = () => {
         : [...currentItems, itemId];
       return {
         ...prev,
-        [sectionKey]: { ...prev[sectionKey], items: newItems }
+        [sectionKey]: { ...prev[sectionKey], enabled: newItems.length > 0, items: newItems }
       };
     });
   };
@@ -114,14 +230,21 @@ const Reports = () => {
   const selectAllItems = (sectionKey: string, allIds: string[]) => {
     setSections(prev => ({
       ...prev,
-      [sectionKey]: { ...prev[sectionKey], items: allIds }
+      [sectionKey]: { ...prev[sectionKey], enabled: true, items: allIds }
     }));
   };
 
   const deselectAllItems = (sectionKey: string) => {
     setSections(prev => ({
       ...prev,
-      [sectionKey]: { ...prev[sectionKey], items: [] }
+      [sectionKey]: { ...prev[sectionKey], enabled: false, items: [] }
+    }));
+  };
+
+  const toggleSection = (key: string) => {
+    setSections(prev => ({
+      ...prev,
+      [key]: { ...prev[key], enabled: !prev[key].enabled }
     }));
   };
 
@@ -134,9 +257,35 @@ const Reports = () => {
     }
   };
 
-  const enabledSectionsCount = Object.values(sections).filter(s => s.enabled).length;
+  // Count selected items per section
+  const getSelectionSummary = () => {
+    const aiVisibility = [
+      sections.score.enabled ? 'Score' : null,
+      sections.mentions.enabled ? 'Mentions' : null,
+      (sections.platformCoverage.items?.length || 0) > 0 ? `${sections.platformCoverage.items?.length} platforms` : null,
+    ].filter(Boolean);
+    
+    const promptsCount = sections.prompts.items?.length || 0;
+    const productsCount = sections.products.items?.length || 0;
+    const optimizationsCount = sections.optimizations.items?.length || 0;
+    const actionsCount = sections.actions.items?.length || 0;
 
-  // Generate initial blocks from configuration
+    return { aiVisibility, promptsCount, productsCount, optimizationsCount, actionsCount };
+  };
+
+  const summary = getSelectionSummary();
+
+  // Filter products
+  const filteredProducts = mockProducts.filter(p => 
+    productFilter === 'all' || p.status === productFilter
+  );
+
+  // Filter prompts
+  const filteredPrompts = mockPrompts.filter(p => 
+    promptFilter === 'all' || p.status === promptFilter
+  );
+
+  // Generate blocks for editor
   const generateBlocks = (): ReportBlock[] => {
     const blocks: ReportBlock[] = [];
     
@@ -170,7 +319,7 @@ const Reports = () => {
         content: {
           sectionType: 'Platform Coverage',
           title: 'AI Platform Mention Distribution',
-          body: 'Comprehensive analysis of brand mentions across leading AI platforms with visual breakdown and detailed metrics.'
+          body: 'Comprehensive analysis of brand mentions across leading AI platforms.'
         }
       });
     }
@@ -182,13 +331,12 @@ const Reports = () => {
         content: {
           sectionType: 'Top Prompts',
           title: 'Top AI Prompts & Queries',
-          body: 'Most frequent prompts and queries mentioning your brand across AI platforms.'
+          body: 'Most frequent prompts mentioning your brand.'
         }
       });
       
-      // Add selected prompts as quotes
       const selectedPrompts = mockPrompts.filter(p => sections.prompts.items?.includes(p.id));
-      selectedPrompts.slice(0, 3).forEach((prompt, i) => {
+      selectedPrompts.slice(0, 3).forEach((prompt) => {
         blocks.push({
           id: `prompt-${prompt.id}`,
           type: 'quote',
@@ -205,21 +353,21 @@ const Reports = () => {
         id: 'products-section',
         type: 'section',
         content: {
-          sectionType: 'Optimized Products',
-          title: 'Product Optimization Summary',
-          body: 'Products that have been optimized for AI visibility with associated prompts and content.'
+          sectionType: 'Products',
+          title: 'Product AI Visibility',
+          body: 'Products analyzed for AI visibility with their associated prompts.'
         }
       });
     }
 
-    if (sections.sources.enabled && sections.sources.items?.length) {
+    if (sections.optimizations.enabled && sections.optimizations.items?.length) {
       blocks.push({
-        id: 'sources-section',
+        id: 'optimizations-section',
         type: 'section',
         content: {
-          sectionType: 'Authority Sources',
-          title: 'Top Authority Sources',
-          body: 'Pages with highest estimated traffic and LLM citation counts.'
+          sectionType: 'On-site Optimizations',
+          title: 'Content Optimization Summary',
+          body: 'Content created and optimized for AI visibility.'
         }
       });
     }
@@ -259,32 +407,21 @@ const Reports = () => {
       await downloadReportPDF({
         blocks: editorBlocks,
         reportTitle,
-        dateRange: {
-          start: startDate || new Date(2024, 0, 1),
-          end: endDate || new Date()
-        },
+        dateRange: { start: startDate || new Date(2024, 0, 1), end: endDate || new Date() },
         showPageNumbers,
         customLogo: customLogo || undefined,
-        brandName: 'Nike' // Could be dynamic based on selected brand
+        brandName: 'Nike'
       });
       
-      toast({
-        title: "Report exported",
-        description: "Your PDF report has been downloaded successfully."
-      });
+      toast({ title: "Report exported", description: "Your PDF has been downloaded." });
     } catch (error) {
       console.error('Export error:', error);
-      toast({
-        title: "Export failed",
-        description: "There was an error generating your PDF. Please try again.",
-        variant: "destructive"
-      });
+      toast({ title: "Export failed", description: "Please try again.", variant: "destructive" });
     } finally {
       setIsExporting(false);
     }
   };
 
-  // Render editor step
   if (step === 'edit') {
     return (
       <ReportEditor
@@ -299,10 +436,428 @@ const Reports = () => {
     );
   }
 
-  // Render configure step
+  // Render section navigation cards (root view)
+  const renderRootView = () => (
+    <div className="space-y-3">
+      <SectionNavCard
+        icon={BarChart3}
+        title="AI Visibility Overview"
+        description="Score, mentions, and platform coverage"
+        selected={summary.aiVisibility.length > 0}
+        selectedCount={summary.aiVisibility.length}
+        onClick={() => navigateTo({ section: 'ai-visibility' })}
+      />
+      <SectionNavCard
+        icon={MessageSquare}
+        title="Prompts & Queries"
+        description="Standalone prompts and queries"
+        selected={summary.promptsCount > 0}
+        selectedCount={summary.promptsCount}
+        onClick={() => navigateTo({ section: 'prompts' })}
+      />
+      <SectionNavCard
+        icon={Package}
+        title="Products"
+        description="Products and their associated prompts"
+        selected={summary.productsCount > 0}
+        selectedCount={summary.productsCount}
+        onClick={() => navigateTo({ section: 'products' })}
+      />
+      <SectionNavCard
+        icon={FileText}
+        title="On-site Optimizations"
+        description="Content created with titles, URLs, and headers"
+        selected={summary.optimizationsCount > 0}
+        selectedCount={summary.optimizationsCount}
+        onClick={() => navigateTo({ section: 'optimizations' })}
+      />
+      <SectionNavCard
+        icon={ClipboardList}
+        title="Actions Log"
+        description="Select actions to include in report"
+        selected={summary.actionsCount > 0}
+        selectedCount={summary.actionsCount}
+        onClick={() => navigateTo({ section: 'actions' })}
+      />
+    </div>
+  );
+
+  // Render AI Visibility section
+  const renderAIVisibilityView = () => (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground mb-6">
+        Select which AI visibility metrics to include in your report.
+      </p>
+      
+      <SelectableItem
+        label="Visibility Score"
+        meta="Overall brand AI visibility score"
+        selected={sections.score.enabled}
+        onToggle={() => toggleSection('score')}
+      />
+      <SelectableItem
+        label="Total Mentions"
+        meta="Aggregate mention count across platforms"
+        selected={sections.mentions.enabled}
+        onToggle={() => toggleSection('mentions')}
+      />
+      
+      <Separator className="my-4" />
+      
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-sm font-medium text-foreground">Platform Coverage</span>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => selectAllItems("platformCoverage", platforms.map(p => p.id))}
+            className="text-xs text-primary hover:underline"
+          >
+            Select all
+          </button>
+          <button 
+            onClick={() => deselectAllItems("platformCoverage")}
+            className="text-xs text-muted-foreground hover:underline"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+      
+      <div className="space-y-1">
+        {platforms.map(platform => (
+          <SelectableItem
+            key={platform.id}
+            label={platform.name}
+            meta={`${platform.mentions.toLocaleString()} mentions`}
+            selected={sections.platformCoverage.items?.includes(platform.id) || false}
+            onToggle={() => toggleItem('platformCoverage', platform.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+
+  // Render Prompts section
+  const renderPromptsView = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm text-muted-foreground">
+          Select prompts and queries to include.
+        </p>
+        <div className="flex gap-2">
+          <FilterButton 
+            label="All" 
+            active={promptFilter === 'all'} 
+            onClick={() => setPromptFilter('all')} 
+          />
+          <FilterButton 
+            label="AI-Ready" 
+            active={promptFilter === 'ai-ready'} 
+            onClick={() => setPromptFilter('ai-ready')}
+            variant="success"
+          />
+          <FilterButton 
+            label="Needs Improvement" 
+            active={promptFilter === 'needs-improvement'} 
+            onClick={() => setPromptFilter('needs-improvement')}
+            variant="warning"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center justify-end gap-3 mb-3">
+        <button 
+          onClick={() => selectAllItems("prompts", filteredPrompts.map(p => p.id))}
+          className="text-xs text-primary hover:underline"
+        >
+          Select all
+        </button>
+        <button 
+          onClick={() => deselectAllItems("prompts")}
+          className="text-xs text-muted-foreground hover:underline"
+        >
+          Clear
+        </button>
+      </div>
+
+      <div className="space-y-1">
+        {filteredPrompts.map(prompt => (
+          <SelectableItem
+            key={prompt.id}
+            label={prompt.text}
+            meta={`${prompt.mentions} mentions · ${prompt.platform}`}
+            selected={sections.prompts.items?.includes(prompt.id) || false}
+            onToggle={() => toggleItem('prompts', prompt.id)}
+            badge={prompt.status === 'ai-ready' ? 'AI-Ready' : 'Needs Improvement'}
+            badgeVariant={prompt.status === 'ai-ready' ? 'success' : 'warning'}
+          />
+        ))}
+      </div>
+    </div>
+  );
+
+  // Render Products section
+  const renderProductsView = () => {
+    // Check if we're viewing a specific product
+    if ('productId' in currentPath && currentPath.productId) {
+      const product = mockProducts.find(p => p.id === currentPath.productId);
+      if (!product) return null;
+
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 mb-6">
+            <Badge variant={product.status === 'ai-ready' ? 'default' : 'secondary'} 
+              className={cn(
+                product.status === 'ai-ready' 
+                  ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' 
+                  : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+              )}>
+              {product.status === 'ai-ready' ? 'AI-Ready' : 'Needs Improvement'}
+            </Badge>
+          </div>
+          
+          <p className="text-sm text-muted-foreground mb-4">
+            Select which prompts for this product to include in the report.
+          </p>
+
+          <div className="flex items-center justify-end gap-3 mb-3">
+            <button 
+              onClick={() => selectAllItems("productPrompts", product.prompts.map(p => p.id))}
+              className="text-xs text-primary hover:underline"
+            >
+              Select all
+            </button>
+            <button 
+              onClick={() => deselectAllItems("productPrompts")}
+              className="text-xs text-muted-foreground hover:underline"
+            >
+              Clear
+            </button>
+          </div>
+
+          <div className="space-y-1">
+            {product.prompts.map(prompt => (
+              <SelectableItem
+                key={prompt.id}
+                label={prompt.text}
+                meta={`${prompt.mentions} mentions`}
+                selected={sections.productPrompts.items?.includes(prompt.id) || false}
+                onToggle={() => toggleItem('productPrompts', prompt.id)}
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Products list view
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm text-muted-foreground">
+            Select products to include in your report.
+          </p>
+          <div className="flex gap-2">
+            <FilterButton 
+              label="All" 
+              active={productFilter === 'all'} 
+              onClick={() => setProductFilter('all')} 
+            />
+            <FilterButton 
+              label="AI-Ready" 
+              active={productFilter === 'ai-ready'} 
+              onClick={() => setProductFilter('ai-ready')}
+              variant="success"
+            />
+            <FilterButton 
+              label="Needs Improvement" 
+              active={productFilter === 'needs-improvement'} 
+              onClick={() => setProductFilter('needs-improvement')}
+              variant="warning"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-3 mb-3">
+          <button 
+            onClick={() => selectAllItems("products", filteredProducts.map(p => p.id))}
+            className="text-xs text-primary hover:underline"
+          >
+            Select all
+          </button>
+          <button 
+            onClick={() => deselectAllItems("products")}
+            className="text-xs text-muted-foreground hover:underline"
+          >
+            Clear
+          </button>
+        </div>
+
+        <div className="space-y-1">
+          {filteredProducts.map(product => (
+            <ProductItem
+              key={product.id}
+              product={product}
+              selected={sections.products.items?.includes(product.id) || false}
+              onToggle={() => toggleItem('products', product.id)}
+              onNavigate={() => navigateTo({ section: 'products', productId: product.id })}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // Render Optimizations section
+  const renderOptimizationsView = () => {
+    // Check if we're viewing a specific optimization
+    if ('optimizationId' in currentPath && currentPath.optimizationId) {
+      const opt = mockOptimizations.find(o => o.id === currentPath.optimizationId);
+      if (!opt) return null;
+
+      const detailItems = [
+        { id: `${opt.id}-title`, label: 'Title', value: opt.title },
+        { id: `${opt.id}-url`, label: 'URL Slug', value: opt.urlSlug },
+        ...opt.headers.map((h, i) => ({ id: `${opt.id}-h${i}`, label: 'Header', value: h })),
+      ];
+
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-6">
+            <Badge variant="outline" className="text-xs">
+              {opt.associatedWith.type === 'product' ? 'Product' : 'Brand'}: {opt.associatedWith.name}
+            </Badge>
+            <span className="text-xs text-muted-foreground">{opt.createdAt}</span>
+          </div>
+          
+          <p className="text-sm text-muted-foreground mb-4">
+            Select which elements of this content to include.
+          </p>
+
+          <div className="flex items-center justify-end gap-3 mb-3">
+            <button 
+              onClick={() => selectAllItems("optimizationDetails", detailItems.map(d => d.id))}
+              className="text-xs text-primary hover:underline"
+            >
+              Select all
+            </button>
+            <button 
+              onClick={() => deselectAllItems("optimizationDetails")}
+              className="text-xs text-muted-foreground hover:underline"
+            >
+              Clear
+            </button>
+          </div>
+
+          <div className="space-y-1">
+            {detailItems.map(item => (
+              <SelectableItem
+                key={item.id}
+                label={item.value}
+                meta={item.label}
+                selected={sections.optimizationDetails.items?.includes(item.id) || false}
+                onToggle={() => toggleItem('optimizationDetails', item.id)}
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Optimizations list view
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground mb-4">
+          Select on-site content optimizations to include.
+        </p>
+
+        <div className="flex items-center justify-end gap-3 mb-3">
+          <button 
+            onClick={() => selectAllItems("optimizations", mockOptimizations.map(o => o.id))}
+            className="text-xs text-primary hover:underline"
+          >
+            Select all
+          </button>
+          <button 
+            onClick={() => deselectAllItems("optimizations")}
+            className="text-xs text-muted-foreground hover:underline"
+          >
+            Clear
+          </button>
+        </div>
+
+        <div className="space-y-1">
+          {mockOptimizations.map(opt => (
+            <OptimizationItem
+              key={opt.id}
+              optimization={opt}
+              selected={sections.optimizations.items?.includes(opt.id) || false}
+              onToggle={() => toggleItem('optimizations', opt.id)}
+              onNavigate={() => navigateTo({ section: 'optimizations', optimizationId: opt.id })}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // Render Actions section
+  const renderActionsView = () => (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground mb-4">
+        Select actions to include in your report.
+      </p>
+
+      <div className="flex items-center justify-end gap-3 mb-3">
+        <button 
+          onClick={() => selectAllItems("actions", mockActions.map(a => a.id))}
+          className="text-xs text-primary hover:underline"
+        >
+          Select all
+        </button>
+        <button 
+          onClick={() => deselectAllItems("actions")}
+          className="text-xs text-muted-foreground hover:underline"
+        >
+          Clear
+        </button>
+      </div>
+
+      <div className="space-y-1">
+        {mockActions.map(action => (
+          <SelectableItem
+            key={action.id}
+            label={action.title}
+            meta={`${action.date} · ${action.type}`}
+            selected={sections.actions.items?.includes(action.id) || false}
+            onToggle={() => toggleItem('actions', action.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+
+  // Render current view based on path
+  const renderCurrentView = () => {
+    switch (currentPath.section) {
+      case 'ai-visibility':
+        return renderAIVisibilityView();
+      case 'prompts':
+        return renderPromptsView();
+      case 'products':
+        return renderProductsView();
+      case 'optimizations':
+        return renderOptimizationsView();
+      case 'actions':
+        return renderActionsView();
+      default:
+        return renderRootView();
+    }
+  };
+
+  const breadcrumbs = getBreadcrumbs();
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Minimal Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="max-w-5xl mx-auto px-8 h-14 flex items-center justify-between">
           <button 
@@ -323,315 +878,195 @@ const Reports = () => {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-8 py-16">
-        {/* Page Title */}
-        <div className="mb-16">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">Step 1 of 2</span>
-          </div>
-          <h1 className="text-3xl font-light tracking-tight text-foreground">
-            Configure Report
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Select what to include, then customize in the next step
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-20">
-          {/* Left - Configuration */}
-          <div className="lg:col-span-3 space-y-12">
-            
-            {/* Time Period */}
-            <section>
-              <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-4">
-                Report Period
-              </label>
-              <div className="flex items-center gap-3">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="text-foreground hover:text-foreground/70 transition-colors">
-                      {startDate ? format(startDate, "MMM d, yyyy") : "Start"}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={startDate}
-                      onSelect={setStartDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <span className="text-muted-foreground">—</span>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="text-foreground hover:text-foreground/70 transition-colors">
-                      {endDate ? format(endDate, "MMM d, yyyy") : "End"}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={endDate}
-                      onSelect={setEndDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </section>
-
-            <Separator />
-
-            {/* Sections */}
-            <section>
-              <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-6">
-                Sections
-              </label>
-              
-              <div className="space-y-0">
-                {/* Score */}
-                <SectionToggle
-                  title="Visibility Score"
-                  enabled={sections.score.enabled}
-                  onToggle={() => toggleSection("score")}
-                />
-
-                {/* Mentions */}
-                <SectionToggle
-                  title="Total Mentions"
-                  enabled={sections.mentions.enabled}
-                  onToggle={() => toggleSection("mentions")}
-                />
-
-                {/* Platform Coverage - Expandable */}
-                <ExpandableSection
-                  title="Platform Coverage"
-                  subtitle={`${sections.platformCoverage.items?.length || 0} of ${platforms.length} platforms`}
-                  enabled={sections.platformCoverage.enabled}
-                  onToggle={() => toggleSection("platformCoverage")}
-                  expanded={expandedSection === "platformCoverage"}
-                  onExpand={() => setExpandedSection(expandedSection === "platformCoverage" ? null : "platformCoverage")}
-                >
-                  <ItemList
-                    items={platforms.map(p => ({ id: p.id, label: p.name, meta: `${p.mentions.toLocaleString()} mentions` }))}
-                    selectedIds={sections.platformCoverage.items || []}
-                    onToggle={(id) => toggleItem("platformCoverage", id)}
-                    onSelectAll={() => selectAllItems("platformCoverage", platforms.map(p => p.id))}
-                    onClear={() => deselectAllItems("platformCoverage")}
-                  />
-                </ExpandableSection>
-
-                {/* Prompts - Expandable */}
-                <ExpandableSection
-                  title="Prompts & Queries"
-                  subtitle={`${sections.prompts.items?.length || 0} of ${mockPrompts.length} prompts`}
-                  enabled={sections.prompts.enabled}
-                  onToggle={() => toggleSection("prompts")}
-                  expanded={expandedSection === "prompts"}
-                  onExpand={() => setExpandedSection(expandedSection === "prompts" ? null : "prompts")}
-                >
-                  <ItemList
-                    items={mockPrompts.map(p => ({ id: p.id, label: p.text, meta: `${p.mentions} mentions · ${p.platform}` }))}
-                    selectedIds={sections.prompts.items || []}
-                    onToggle={(id) => toggleItem("prompts", id)}
-                    onSelectAll={() => selectAllItems("prompts", mockPrompts.map(p => p.id))}
-                    onClear={() => deselectAllItems("prompts")}
-                  />
-                </ExpandableSection>
-
-                {/* On-site Optimization */}
-                <SectionToggle
-                  title="On-site Optimization"
-                  enabled={sections.optimization.enabled}
-                  onToggle={() => toggleSection("optimization")}
-                />
-
-                {/* Products - Expandable */}
-                <ExpandableSection
-                  title="Optimized Products"
-                  subtitle={`${sections.products.items?.length || 0} of ${mockProducts.length} products`}
-                  enabled={sections.products.enabled}
-                  onToggle={() => toggleSection("products")}
-                  expanded={expandedSection === "products"}
-                  onExpand={() => setExpandedSection(expandedSection === "products" ? null : "products")}
-                >
-                  <ItemList
-                    items={mockProducts.map(p => ({ id: p.id, label: p.name, meta: `${p.prompts} prompts` }))}
-                    selectedIds={sections.products.items || []}
-                    onToggle={(id) => toggleItem("products", id)}
-                    onSelectAll={() => selectAllItems("products", mockProducts.map(p => p.id))}
-                    onClear={() => deselectAllItems("products")}
-                  />
-                </ExpandableSection>
-
-                {/* Sources - Expandable */}
-                <ExpandableSection
-                  title="Authority Sources"
-                  subtitle={`${sections.sources.items?.length || 0} of ${mockSources.length} sources`}
-                  enabled={sections.sources.enabled}
-                  onToggle={() => toggleSection("sources")}
-                  expanded={expandedSection === "sources"}
-                  onExpand={() => setExpandedSection(expandedSection === "sources" ? null : "sources")}
-                >
-                  <ItemList
-                    items={mockSources.map(s => ({ id: s.id, label: s.url, meta: `${s.traffic} traffic · ${s.citations} citations` }))}
-                    selectedIds={sections.sources.items || []}
-                    onToggle={(id) => toggleItem("sources", id)}
-                    onSelectAll={() => selectAllItems("sources", mockSources.map(s => s.id))}
-                    onClear={() => deselectAllItems("sources")}
-                  />
-                </ExpandableSection>
-
-                {/* Actions - Expandable */}
-                <ExpandableSection
-                  title="Actions Log"
-                  subtitle={`${sections.actions.items?.length || 0} of ${mockActions.length} actions`}
-                  enabled={sections.actions.enabled}
-                  onToggle={() => toggleSection("actions")}
-                  expanded={expandedSection === "actions"}
-                  onExpand={() => setExpandedSection(expandedSection === "actions" ? null : "actions")}
-                >
-                  <ItemList
-                    items={mockActions.map(a => ({ id: a.id, label: a.title, meta: `${a.date} · ${a.type}` }))}
-                    selectedIds={sections.actions.items || []}
-                    onToggle={(id) => toggleItem("actions", id)}
-                    onSelectAll={() => selectAllItems("actions", mockActions.map(a => a.id))}
-                    onClear={() => deselectAllItems("actions")}
-                  />
-                </ExpandableSection>
-              </div>
-            </section>
-
-            <Separator />
-
-            {/* Branding */}
-            <section>
-              <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-6">
-                Branding
-              </label>
-              
-              <div className="space-y-6">
-                <div>
-                  <label className="text-sm text-foreground mb-2 block">Report Title</label>
-                  <Input
-                    value={reportTitle}
-                    onChange={(e) => setReportTitle(e.target.value)}
-                    className="max-w-sm border-0 border-b border-border rounded-none px-0 focus-visible:ring-0 focus-visible:border-foreground bg-transparent h-10"
-                    placeholder="Enter report title"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm text-foreground mb-2 block">Logo</label>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="hidden"
-                  />
-                  {customLogo ? (
-                    <div className="flex items-center gap-3">
-                      <img src={customLogo} alt="Logo" className="h-8 object-contain" />
-                      <button 
-                        onClick={() => setCustomLogo(null)}
-                        className="text-sm text-destructive hover:underline"
-                      >
-                        Remove
-                      </button>
-                    </div>
+      <main className="max-w-5xl mx-auto px-8 py-12">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb className="mb-8">
+          <BreadcrumbList>
+            {breadcrumbs.map((crumb, index) => (
+              <React.Fragment key={index}>
+                <BreadcrumbItem>
+                  {index === breadcrumbs.length - 1 ? (
+                    <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                   ) : (
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+                    <BreadcrumbLink 
+                      className="cursor-pointer hover:text-foreground"
+                      onClick={() => navigateTo(crumb.path)}
                     >
-                      Upload logo
-                    </button>
+                      {crumb.label}
+                    </BreadcrumbLink>
                   )}
-                </div>
+                </BreadcrumbItem>
+                {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+              </React.Fragment>
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
 
-                <div className="flex items-center justify-between max-w-sm">
-                  <span className="text-sm text-foreground">Page numbers</span>
-                  <Switch
-                    checked={showPageNumbers}
-                    onCheckedChange={setShowPageNumbers}
-                  />
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
+          {/* Left - Navigation & Selection */}
+          <div className="lg:col-span-3">
+            {currentPath.section === 'root' && (
+              <div className="mb-8">
+                <h1 className="text-2xl font-light tracking-tight text-foreground mb-2">
+                  Configure Report
+                </h1>
+                <p className="text-muted-foreground text-sm">
+                  Select sections to include, then customize in the next step
+                </p>
               </div>
-            </section>
+            )}
+
+            {renderCurrentView()}
           </div>
 
-          {/* Right - Preview */}
+          {/* Right - Settings & Preview */}
           <div className="lg:col-span-2">
-            <div className="sticky top-24">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-4">
-                Preview
-              </label>
-              
-              {/* Mini Document Preview */}
-              <div className="bg-card border border-border rounded-lg shadow-sm overflow-hidden aspect-[8.5/11]">
-                <div className="p-6 h-full flex flex-col text-left">
-                  {/* Cover content */}
-                  <div className="flex-1">
-                    {customLogo && (
-                      <img src={customLogo} alt="Logo" className="h-5 object-contain mb-4" />
-                    )}
-                    <h3 className="text-base font-light text-foreground mb-1">
-                      {reportTitle}
-                    </h3>
-                    <p className="text-[10px] text-muted-foreground mb-6">
-                      {startDate && endDate && `${format(startDate, "MM/dd/yyyy")} — ${format(endDate, "MM/dd/yyyy")}`}
-                    </p>
-                    
-                    {/* Section placeholders */}
-                    <div className="space-y-3">
-                      {sections.score.enabled && (
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded bg-muted/50" />
-                          <div className="flex-1">
-                            <div className="h-1.5 bg-muted/50 rounded w-16 mb-1" />
-                            <div className="h-1 bg-muted/30 rounded w-10" />
-                          </div>
-                        </div>
-                      )}
-                      {sections.mentions.enabled && (
-                        <div className="h-1.5 bg-muted/40 rounded w-20" />
-                      )}
-                      {sections.platformCoverage.enabled && (
-                        <div className="space-y-1 pt-2">
-                          {(sections.platformCoverage.items || []).slice(0, 3).map((_, i) => (
-                            <div key={i} className="flex justify-between">
-                              <div className="h-1 bg-muted/30 rounded w-12" />
-                              <div className="h-1 bg-muted/20 rounded w-6" />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {sections.prompts.enabled && (sections.prompts.items?.length || 0) > 0 && (
-                        <div className="space-y-1 pt-2">
-                          {(sections.prompts.items || []).slice(0, 3).map((_, i) => (
-                            <div key={i} className="h-1 bg-muted/20 rounded w-full" />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Footer */}
-                  {showPageNumbers && (
-                    <div className="flex justify-between items-center text-[8px] text-muted-foreground pt-3 border-t border-border/50">
-                      <span>{customLogo ? "" : "Your Brand"}</span>
-                      <span>01</span>
-                    </div>
-                  )}
+            <div className="sticky top-24 space-y-8">
+              {/* Date Range */}
+              <div>
+                <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-3">
+                  Report Period
+                </label>
+                <div className="flex items-center gap-2 text-sm">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-foreground hover:text-foreground/70 transition-colors">
+                        {startDate ? format(startDate, "MMM d, yyyy") : "Start"}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={startDate}
+                        onSelect={setStartDate}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <span className="text-muted-foreground">—</span>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-foreground hover:text-foreground/70 transition-colors">
+                        {endDate ? format(endDate, "MMM d, yyyy") : "End"}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={endDate}
+                        onSelect={setEndDate}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
 
-              {/* Summary */}
-              <p className="mt-4 text-sm text-muted-foreground">
-                {enabledSectionsCount} sections selected
-              </p>
+              <Separator />
+
+              {/* Branding */}
+              <div>
+                <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-4">
+                  Branding
+                </label>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-foreground mb-2 block">Report Title</label>
+                    <Input
+                      value={reportTitle}
+                      onChange={(e) => setReportTitle(e.target.value)}
+                      className="border-0 border-b border-border rounded-none px-0 focus-visible:ring-0 focus-visible:border-foreground bg-transparent h-9"
+                      placeholder="Enter report title"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm text-foreground mb-2 block">Logo</label>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                    />
+                    {customLogo ? (
+                      <div className="flex items-center gap-3">
+                        <img src={customLogo} alt="Logo" className="h-6 object-contain" />
+                        <button 
+                          onClick={() => setCustomLogo(null)}
+                          className="text-xs text-destructive hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+                      >
+                        Upload logo
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-foreground">Page numbers</span>
+                    <Switch
+                      checked={showPageNumbers}
+                      onCheckedChange={setShowPageNumbers}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Selection Summary */}
+              <div>
+                <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-3">
+                  Selected
+                </label>
+                <div className="space-y-2 text-sm">
+                  {summary.aiVisibility.length > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">AI Visibility</span>
+                      <span className="text-foreground">{summary.aiVisibility.join(', ')}</span>
+                    </div>
+                  )}
+                  {summary.promptsCount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Prompts</span>
+                      <span className="text-foreground">{summary.promptsCount} selected</span>
+                    </div>
+                  )}
+                  {summary.productsCount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Products</span>
+                      <span className="text-foreground">{summary.productsCount} selected</span>
+                    </div>
+                  )}
+                  {summary.optimizationsCount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Optimizations</span>
+                      <span className="text-foreground">{summary.optimizationsCount} selected</span>
+                    </div>
+                  )}
+                  {summary.actionsCount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Actions</span>
+                      <span className="text-foreground">{summary.actionsCount} selected</span>
+                    </div>
+                  )}
+                  {summary.aiVisibility.length === 0 && summary.promptsCount === 0 && 
+                   summary.productsCount === 0 && summary.optimizationsCount === 0 && 
+                   summary.actionsCount === 0 && (
+                    <p className="text-muted-foreground italic">No sections selected</p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -640,144 +1075,196 @@ const Reports = () => {
   );
 };
 
-// Simple section toggle
-interface SectionToggleProps {
+// Component: Section Navigation Card
+interface SectionNavCardProps {
+  icon: React.ElementType;
   title: string;
-  enabled: boolean;
-  onToggle: () => void;
+  description: string;
+  selected: boolean;
+  selectedCount: number;
+  onClick: () => void;
 }
 
-const SectionToggle = ({ title, enabled, onToggle }: SectionToggleProps) => (
+const SectionNavCard = ({ icon: Icon, title, description, selected, selectedCount, onClick }: SectionNavCardProps) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left group",
+      selected 
+        ? "border-primary/30 bg-primary/5" 
+        : "border-border hover:border-border/80 hover:bg-muted/30"
+    )}
+  >
+    <div className={cn(
+      "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+      selected ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+    )}>
+      <Icon className="w-5 h-5" />
+    </div>
+    <div className="flex-1 min-w-0">
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-medium text-foreground">{title}</span>
+        {selectedCount > 0 && (
+          <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+            {selectedCount}
+          </Badge>
+        )}
+      </div>
+      <p className="text-xs text-muted-foreground truncate">{description}</p>
+    </div>
+    <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+  </button>
+);
+
+// Component: Selectable Item
+interface SelectableItemProps {
+  label: string;
+  meta: string;
+  selected: boolean;
+  onToggle: () => void;
+  badge?: string;
+  badgeVariant?: 'success' | 'warning';
+}
+
+const SelectableItem = ({ label, meta, selected, onToggle, badge, badgeVariant }: SelectableItemProps) => (
   <button
     onClick={onToggle}
-    className="w-full flex items-center justify-between py-4 border-b border-border/50 text-left group"
+    className={cn(
+      "w-full flex items-center gap-3 py-3 px-3 rounded-lg text-left transition-colors",
+      selected ? "bg-primary/5" : "hover:bg-muted/30"
+    )}
   >
-    <span className={cn(
-      "text-sm transition-colors",
-      enabled ? "text-foreground" : "text-muted-foreground"
-    )}>
-      {title}
-    </span>
     <div className={cn(
-      "w-5 h-5 rounded-full border flex items-center justify-center transition-all",
-      enabled 
-        ? "bg-foreground border-foreground" 
-        : "border-border"
+      "w-4 h-4 rounded border flex items-center justify-center transition-all shrink-0",
+      selected ? "bg-primary border-primary" : "border-border"
     )}>
-      {enabled && <Check className="h-3 w-3 text-background" />}
+      {selected && <Check className="h-2.5 w-2.5 text-primary-foreground" />}
+    </div>
+    <div className="flex-1 min-w-0">
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-foreground truncate">{label}</span>
+        {badge && (
+          <Badge 
+            variant="outline" 
+            className={cn(
+              "text-[10px] h-4 px-1.5",
+              badgeVariant === 'success' && "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+              badgeVariant === 'warning' && "bg-amber-500/10 text-amber-600 border-amber-500/20"
+            )}
+          >
+            {badge}
+          </Badge>
+        )}
+      </div>
+      <span className="text-xs text-muted-foreground">{meta}</span>
     </div>
   </button>
 );
 
-// Expandable section with items
-interface ExpandableSectionProps {
-  title: string;
-  subtitle: string;
-  enabled: boolean;
+// Component: Product Item with drill-down
+interface ProductItemProps {
+  product: typeof mockProducts[0];
+  selected: boolean;
   onToggle: () => void;
-  expanded: boolean;
-  onExpand: () => void;
-  children: React.ReactNode;
+  onNavigate: () => void;
 }
 
-const ExpandableSection = ({ title, subtitle, enabled, onToggle, expanded, onExpand, children }: ExpandableSectionProps) => (
-  <div className="border-b border-border/50">
-    <div className="flex items-center py-4">
-      <button
-        onClick={onToggle}
-        className="flex-1 flex items-center justify-between text-left"
-      >
-        <div>
-          <span className={cn(
-            "text-sm transition-colors block",
-            enabled ? "text-foreground" : "text-muted-foreground"
-          )}>
-            {title}
-          </span>
-          {enabled && (
-            <span className="text-xs text-muted-foreground">{subtitle}</span>
-          )}
-        </div>
-        <div className={cn(
-          "w-5 h-5 rounded-full border flex items-center justify-center transition-all mr-3",
-          enabled 
-            ? "bg-foreground border-foreground" 
-            : "border-border"
-        )}>
-          {enabled && <Check className="h-3 w-3 text-background" />}
-        </div>
-      </button>
-      {enabled && (
-        <button
-          onClick={onExpand}
-          className="p-1 text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ChevronDown className={cn(
-            "h-4 w-4 transition-transform",
-            expanded && "rotate-180"
-          )} />
-        </button>
-      )}
-    </div>
-    {enabled && expanded && (
-      <div className="pb-4">
-        {children}
+const ProductItem = ({ product, selected, onToggle, onNavigate }: ProductItemProps) => (
+  <div className={cn(
+    "flex items-center gap-3 py-3 px-3 rounded-lg transition-colors",
+    selected ? "bg-primary/5" : "hover:bg-muted/30"
+  )}>
+    <button onClick={onToggle} className="shrink-0">
+      <div className={cn(
+        "w-4 h-4 rounded border flex items-center justify-center transition-all",
+        selected ? "bg-primary border-primary" : "border-border"
+      )}>
+        {selected && <Check className="h-2.5 w-2.5 text-primary-foreground" />}
       </div>
-    )}
+    </button>
+    <button onClick={onNavigate} className="flex-1 flex items-center gap-3 text-left min-w-0">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-foreground truncate">{product.name}</span>
+          <Badge 
+            variant="outline" 
+            className={cn(
+              "text-[10px] h-4 px-1.5",
+              product.status === 'ai-ready' 
+                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+            )}
+          >
+            {product.status === 'ai-ready' ? 'AI-Ready' : 'Needs Improvement'}
+          </Badge>
+        </div>
+        <span className="text-xs text-muted-foreground">{product.prompts.length} prompts</span>
+      </div>
+      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+    </button>
   </div>
 );
 
-// Item list for selection
-interface ItemListProps {
-  items: { id: string; label: string; meta: string }[];
-  selectedIds: string[];
-  onToggle: (id: string) => void;
-  onSelectAll: () => void;
-  onClear: () => void;
+// Component: Optimization Item with drill-down
+interface OptimizationItemProps {
+  optimization: typeof mockOptimizations[0];
+  selected: boolean;
+  onToggle: () => void;
+  onNavigate: () => void;
 }
 
-const ItemList = ({ items, selectedIds, onToggle, onSelectAll, onClear }: ItemListProps) => (
-  <div className="pl-0">
-    <div className="flex items-center justify-end gap-4 mb-3">
-      <button 
-        onClick={onSelectAll}
-        className="text-xs text-primary hover:underline"
-      >
-        Select all
-      </button>
-      <button 
-        onClick={onClear}
-        className="text-xs text-muted-foreground hover:underline"
-      >
-        Clear
-      </button>
-    </div>
-    <div className="space-y-0">
-      {items.map(item => (
-        <button
-          key={item.id}
-          onClick={() => onToggle(item.id)}
-          className={cn(
-            "w-full flex items-center gap-3 py-3 px-0 text-left border-b border-border/30 last:border-0",
-            "hover:bg-muted/20 transition-colors"
-          )}
-        >
-          <div className={cn(
-            "w-4 h-4 rounded border flex items-center justify-center transition-all shrink-0",
-            selectedIds.includes(item.id)
-              ? "bg-foreground border-foreground" 
-              : "border-border"
-          )}>
-            {selectedIds.includes(item.id) && <Check className="h-2.5 w-2.5 text-background" />}
-          </div>
-          <div className="flex-1 min-w-0">
-            <span className="text-sm text-foreground block truncate">{item.label}</span>
-            <span className="text-xs text-muted-foreground">{item.meta}</span>
-          </div>
-        </button>
-      ))}
-    </div>
+const OptimizationItem = ({ optimization, selected, onToggle, onNavigate }: OptimizationItemProps) => (
+  <div className={cn(
+    "flex items-center gap-3 py-3 px-3 rounded-lg transition-colors",
+    selected ? "bg-primary/5" : "hover:bg-muted/30"
+  )}>
+    <button onClick={onToggle} className="shrink-0">
+      <div className={cn(
+        "w-4 h-4 rounded border flex items-center justify-center transition-all",
+        selected ? "bg-primary border-primary" : "border-border"
+      )}>
+        {selected && <Check className="h-2.5 w-2.5 text-primary-foreground" />}
+      </div>
+    </button>
+    <button onClick={onNavigate} className="flex-1 flex items-center gap-3 text-left min-w-0">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-foreground truncate">{optimization.title}</span>
+          <Badge variant="outline" className="text-[10px] h-4 px-1.5">
+            {optimization.associatedWith.type === 'product' ? 'Product' : 'Brand'}
+          </Badge>
+        </div>
+        <span className="text-xs text-muted-foreground truncate">{optimization.urlSlug}</span>
+      </div>
+      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+    </button>
   </div>
+);
+
+// Component: Filter Button
+interface FilterButtonProps {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  variant?: 'default' | 'success' | 'warning';
+}
+
+const FilterButton = ({ label, active, onClick, variant = 'default' }: FilterButtonProps) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      "px-3 py-1 text-xs rounded-full border transition-colors",
+      active 
+        ? variant === 'success' 
+          ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30"
+          : variant === 'warning'
+            ? "bg-amber-500/10 text-amber-600 border-amber-500/30"
+            : "bg-primary/10 text-primary border-primary/30"
+        : "border-border text-muted-foreground hover:text-foreground hover:border-border/80"
+    )}
+  >
+    {label}
+  </button>
 );
 
 export default Reports;
