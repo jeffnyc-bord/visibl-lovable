@@ -182,11 +182,14 @@ const ReportEditor = ({
     setDraggedIndex(null);
   };
 
+  const formatDate = (date: Date | undefined) => 
+    date ? format(date, "MMM d, yyyy") : "—";
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="max-w-4xl mx-auto px-8 h-14 flex items-center justify-between">
+        <div className="max-w-[1600px] mx-auto px-6 h-14 flex items-center justify-between">
           <button 
             onClick={onBack}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -215,180 +218,265 @@ const ReportEditor = ({
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-8 py-12">
-        {/* Editable Title */}
-        <div className="mb-8 group">
-          {editingTitle ? (
-            <div className="flex items-center gap-3">
-              <Input
-                value={reportTitle}
-                onChange={(e) => onTitleChange(e.target.value)}
-                className="text-3xl font-light border-0 border-b border-border rounded-none px-0 h-auto py-2 focus-visible:ring-0 bg-transparent"
-                autoFocus
-              />
-              <button
-                onClick={() => setEditingTitle(false)}
-                className="p-2 text-muted-foreground hover:text-foreground"
-              >
-                <Check className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setEditingTitle(true)}
-              className="text-left w-full"
-            >
-              <h1 className="text-3xl font-light tracking-tight text-foreground inline-flex items-center gap-3">
-                {reportTitle}
-                <Edit3 className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-              </h1>
-            </button>
-          )}
-          {dateRange && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {dateRange.start ? format(dateRange.start, "MMM d, yyyy") : "—"} — {dateRange.end ? format(dateRange.end, "MMM d, yyyy") : "—"}
-            </p>
-          )}
-        </div>
-
-        {/* Visual Preview Section - AI Visibility Data */}
-        {sections && (sections.score.enabled || sections.mentions.enabled || (sections.platformCoverage.items?.length || 0) > 0) && (
-          <div className="mb-10 p-6 bg-muted/30 rounded-xl border border-border/50">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">Report Cover Preview</span>
-              {customLogo && (
-                <img src={customLogo} alt="Logo" className="h-6 object-contain" />
+      {/* Main Content - Split View */}
+      <div className="flex-1 flex">
+        {/* Left Panel - Editor */}
+        <div className="flex-1 overflow-auto border-r border-border/50">
+          <div className="max-w-2xl mx-auto px-8 py-10">
+            {/* Editable Title */}
+            <div className="mb-8 group">
+              {editingTitle ? (
+                <div className="flex items-center gap-3">
+                  <Input
+                    value={reportTitle}
+                    onChange={(e) => onTitleChange(e.target.value)}
+                    className="text-2xl font-light border-0 border-b border-border rounded-none px-0 h-auto py-2 focus-visible:ring-0 bg-transparent"
+                    autoFocus
+                  />
+                  <button
+                    onClick={() => setEditingTitle(false)}
+                    className="p-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <Check className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setEditingTitle(true)}
+                  className="text-left w-full"
+                >
+                  <h1 className="text-2xl font-light tracking-tight text-foreground inline-flex items-center gap-3">
+                    {reportTitle}
+                    <Edit3 className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h1>
+                </button>
+              )}
+              {dateRange && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {formatDate(dateRange.start)} — {formatDate(dateRange.end)}
+                </p>
               )}
             </div>
-            
-            {/* Score with Trend Chart */}
-            {sections.score.enabled && (
-              <div className="mb-6">
-                <div className="flex items-end gap-3 mb-4">
-                  <span className="text-5xl font-light text-foreground" style={{ letterSpacing: '-0.03em' }}>87</span>
-                  <div className="flex items-center gap-1 text-emerald-600 text-sm pb-2">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>+5 pts</span>
+
+            <p className="text-muted-foreground mb-6 text-sm">
+              Add commentary, insights, or additional content. Changes update live in the preview.
+            </p>
+
+            {/* Blocks */}
+            <div className="space-y-4">
+              {blocks.map((block, index) => (
+                <div
+                  key={block.id}
+                  draggable
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={cn(
+                    "group relative",
+                    draggedIndex === index && "opacity-50"
+                  )}
+                >
+                  <BlockRenderer
+                    block={block}
+                    isEditing={editingBlockId === block.id}
+                    onEdit={() => setEditingBlockId(block.id)}
+                    onSave={() => setEditingBlockId(null)}
+                    onUpdate={(content) => updateBlock(block.id, content)}
+                    onDelete={() => deleteBlock(block.id)}
+                    onMoveUp={() => moveBlock(index, 'up')}
+                    onMoveDown={() => moveBlock(index, 'down')}
+                    canMoveUp={index > 0}
+                    canMoveDown={index < blocks.length - 1}
+                  />
+                  
+                  {/* Add block button between items */}
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <AddBlockButton onAdd={(type) => addBlock(type, index)} />
                   </div>
                 </div>
-                
-                {/* Mini Trend Chart */}
-                <div className="h-12 flex items-end gap-1">
-                  {trendData.map((value, i) => (
-                    <div
-                      key={i}
-                      className="flex-1 bg-gradient-to-t from-primary/40 to-primary/80 rounded-t-sm transition-all"
-                      style={{ height: `${value}%` }}
-                    />
-                  ))}
-                </div>
-                <div className="flex justify-between mt-1">
-                  <span className="text-xs text-muted-foreground">Jan</span>
-                  <span className="text-xs text-muted-foreground">Dec</span>
-                </div>
-              </div>
-            )}
-
-            {/* Mentions */}
-            {sections.mentions.enabled && (
-              <div className="mb-6">
-                <span className="text-3xl font-light text-foreground" style={{ letterSpacing: '-0.02em' }}>12,847</span>
-                <p className="text-sm text-muted-foreground mt-1">total brand mentions across AI platforms</p>
-              </div>
-            )}
-
-            {/* Platform Coverage with Logos */}
-            {(sections.platformCoverage.items?.length || 0) > 0 && platforms && (
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Platform Coverage</p>
-                <div className="flex flex-wrap gap-2">
-                  {sections.platformCoverage.items?.slice(0, 5).map((platformId) => {
-                    const platform = platforms.find(p => p.id === platformId);
-                    const logo = platformLogos[platformId];
-                    if (!platform) return null;
-                    return (
-                      <div key={platformId} className="flex items-center gap-2 bg-background rounded-full px-3 py-1.5 border border-border/50">
-                        {logo && (
-                          <img src={logo} alt={platform.name} className="w-4 h-4 object-contain rounded-sm" />
-                        )}
-                        <span className="text-sm text-foreground">{platform.name}</span>
-                        <span className="text-xs text-muted-foreground">{(platform.mentions / 1000).toFixed(1)}k</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Summary */}
-            <div className="mt-6 pt-4 border-t border-border/50 flex flex-wrap gap-4 text-xs text-muted-foreground">
-              {(sections.prompts.items?.length || 0) > 0 && (
-                <span>{sections.prompts.items?.length} prompts included</span>
-              )}
-              {(sections.products.items?.length || 0) > 0 && (
-                <span>{sections.products.items?.length} products included</span>
-              )}
-              {(sections.optimizations.items?.length || 0) > 0 && (
-                <span>{sections.optimizations.items?.length} optimizations included</span>
-              )}
-              {(sections.actions.items?.length || 0) > 0 && (
-                <span>{sections.actions.items?.length} actions included</span>
-              )}
+              ))}
             </div>
+
+            {/* Add block at end */}
+            {blocks.length === 0 ? (
+              <div className="border-2 border-dashed border-border rounded-lg p-10 text-center">
+                <p className="text-muted-foreground mb-4 text-sm">No content blocks yet</p>
+                <AddBlockButton onAdd={addBlock} variant="large" />
+              </div>
+            ) : (
+              <div className="mt-8 flex justify-center">
+                <AddBlockButton onAdd={addBlock} variant="large" />
+              </div>
+            )}
           </div>
-        )}
-
-        <p className="text-muted-foreground mb-6 text-sm">
-          Add commentary, insights, or additional content below. Drag to reorder.
-        </p>
-
-        {/* Blocks */}
-        <div className="space-y-4">
-          {blocks.map((block, index) => (
-            <div
-              key={block.id}
-              draggable
-              onDragStart={() => handleDragStart(index)}
-              onDragOver={(e) => handleDragOver(e, index)}
-              onDragEnd={handleDragEnd}
-              className={cn(
-                "group relative",
-                draggedIndex === index && "opacity-50"
-              )}
-            >
-              <BlockRenderer
-                block={block}
-                isEditing={editingBlockId === block.id}
-                onEdit={() => setEditingBlockId(block.id)}
-                onSave={() => setEditingBlockId(null)}
-                onUpdate={(content) => updateBlock(block.id, content)}
-                onDelete={() => deleteBlock(block.id)}
-                onMoveUp={() => moveBlock(index, 'up')}
-                onMoveDown={() => moveBlock(index, 'down')}
-                canMoveUp={index > 0}
-                canMoveDown={index < blocks.length - 1}
-              />
-              
-              {/* Add block button between items */}
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                <AddBlockButton onAdd={(type) => addBlock(type, index)} />
-              </div>
-            </div>
-          ))}
         </div>
 
-        {/* Add block at end */}
-        {blocks.length === 0 ? (
-          <div className="border-2 border-dashed border-border rounded-lg p-12 text-center">
-            <p className="text-muted-foreground mb-4">No content blocks yet</p>
-            <AddBlockButton onAdd={addBlock} variant="large" />
+        {/* Right Panel - Live Preview */}
+        <div className="w-[420px] bg-muted/30 overflow-auto hidden lg:block">
+          <div className="sticky top-0 bg-muted/50 backdrop-blur-sm border-b border-border/50 px-4 py-3 flex items-center justify-between">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">Live Preview</span>
+            <span className="text-xs text-muted-foreground">{blocks.length} blocks</span>
           </div>
-        ) : (
-          <div className="mt-8 flex justify-center">
-            <AddBlockButton onAdd={addBlock} variant="large" />
+          
+          <div className="p-4">
+            {/* PDF Preview - Cover Page */}
+            <div 
+              className="bg-white rounded-lg shadow-lg overflow-hidden mb-4"
+              style={{ fontFamily: "'Google Sans', system-ui, sans-serif", aspectRatio: '8.5/11' }}
+            >
+              <div className="p-6 flex flex-col h-full">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-auto">
+                  {customLogo ? (
+                    <img src={customLogo} alt="Logo" className="h-5 object-contain" />
+                  ) : (
+                    <span className="text-[8px] text-[#86868b] tracking-wide">{brandName}</span>
+                  )}
+                  <span className="text-[7px] text-[#86868b]">
+                    {formatDate(dateRange?.start)} — {formatDate(dateRange?.end)}
+                  </span>
+                </div>
+
+                {/* Title */}
+                <div className="flex-1 flex flex-col justify-center py-4">
+                  <h1 className="text-lg font-light text-[#1d1d1f] tracking-tight leading-tight mb-1">
+                    {reportTitle}
+                  </h1>
+                  <p className="text-[8px] text-[#86868b]">
+                    AI Visibility Report • {brandName}
+                  </p>
+
+                  {/* Score Section with Trend Chart */}
+                  {sections?.score.enabled && (
+                    <div className="mt-4">
+                      <div className="flex items-end gap-2 mb-2">
+                        <span className="text-2xl font-light text-[#1d1d1f]">87</span>
+                        <div className="flex items-center gap-0.5 text-emerald-600 text-[8px] pb-0.5">
+                          <TrendingUp className="w-2.5 h-2.5" />
+                          <span>+5 pts</span>
+                        </div>
+                      </div>
+                      
+                      {/* Mini Trend Chart */}
+                      <div className="h-6 flex items-end gap-0.5">
+                        {trendData.map((value, i) => (
+                          <div
+                            key={i}
+                            className="flex-1 bg-gradient-to-t from-primary/40 to-primary/80 rounded-t-sm"
+                            style={{ height: `${value}%` }}
+                          />
+                        ))}
+                      </div>
+                      <div className="flex justify-between mt-0.5">
+                        <span className="text-[6px] text-[#86868b]">Jan</span>
+                        <span className="text-[6px] text-[#86868b]">Dec</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mentions */}
+                  {sections?.mentions.enabled && (
+                    <div className="mt-3">
+                      <span className="text-xl font-light text-[#1d1d1f]">12,847</span>
+                      <p className="text-[7px] text-[#86868b] mt-0.5">total brand mentions</p>
+                    </div>
+                  )}
+
+                  {/* Platform Coverage with Logos */}
+                  {(sections?.platformCoverage.items?.length || 0) > 0 && platforms && (
+                    <div className="mt-3">
+                      <p className="text-[6px] text-[#86868b] uppercase tracking-wider mb-1.5">Platform Coverage</p>
+                      <div className="flex flex-wrap gap-1">
+                        {sections?.platformCoverage.items?.slice(0, 5).map((platformId) => {
+                          const platform = platforms.find(p => p.id === platformId);
+                          const logo = platformLogos[platformId];
+                          if (!platform) return null;
+                          return (
+                            <div key={platformId} className="flex items-center gap-1 bg-[#f5f5f7] rounded-full px-1.5 py-0.5">
+                              {logo && (
+                                <img src={logo} alt={platform.name} className="w-2.5 h-2.5 object-contain rounded-sm" />
+                              )}
+                              <span className="text-[6px] text-[#1d1d1f]">{platform.name}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Page Number */}
+                <div className="text-[6px] text-[#86868b] text-right">01</div>
+              </div>
+            </div>
+
+            {/* Content Pages Preview */}
+            {blocks.length > 0 && (
+              <div 
+                className="bg-white rounded-lg shadow-lg overflow-hidden"
+                style={{ fontFamily: "'Google Sans', system-ui, sans-serif", aspectRatio: '8.5/11' }}
+              >
+                <div className="p-6 h-full flex flex-col">
+                  <div className="flex-1 overflow-hidden">
+                    {blocks.slice(0, 4).map((block) => (
+                      <div key={block.id} className="mb-3">
+                        {block.type === 'text' && (
+                          <div>
+                            {block.content.title && (
+                              <h3 className="text-[9px] font-medium text-[#1d1d1f] mb-0.5">{block.content.title}</h3>
+                            )}
+                            {block.content.body && (
+                              <p className="text-[7px] text-[#515154] line-clamp-3">{block.content.body}</p>
+                            )}
+                          </div>
+                        )}
+                        {block.type === 'stat' && (
+                          <div className="py-1">
+                            <span className="text-lg font-light text-[#1d1d1f]">{block.content.statValue}</span>
+                            <p className="text-[7px] text-[#86868b]">{block.content.statLabel}</p>
+                          </div>
+                        )}
+                        {block.type === 'quote' && (
+                          <div className="pl-2 border-l border-[#d2d2d7] py-1">
+                            <p className="text-[8px] italic text-[#1d1d1f] line-clamp-2">"{block.content.quoteText}"</p>
+                            {block.content.quoteAuthor && (
+                              <p className="text-[6px] text-[#86868b] mt-0.5">— {block.content.quoteAuthor}</p>
+                            )}
+                          </div>
+                        )}
+                        {block.type === 'image' && block.content.imageUrl && (
+                          <div>
+                            <img 
+                              src={block.content.imageUrl} 
+                              alt={block.content.imageCaption || ''} 
+                              className="w-full h-16 object-cover rounded"
+                            />
+                            {block.content.imageCaption && (
+                              <p className="text-[6px] text-[#86868b] italic mt-0.5 text-center">{block.content.imageCaption}</p>
+                            )}
+                          </div>
+                        )}
+                        {block.type === 'section' && (
+                          <div>
+                            <span className="text-[6px] text-[#86868b] uppercase tracking-wider">{block.content.sectionType}</span>
+                            <h2 className="text-[10px] font-light text-[#1d1d1f]">{block.content.title}</h2>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {blocks.length > 4 && (
+                      <p className="text-[7px] text-[#86868b] text-center mt-2">
+                        +{blocks.length - 4} more blocks...
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-[6px] text-[#86868b] text-right">02</div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </main>
+        </div>
+      </div>
     </div>
   );
 };
