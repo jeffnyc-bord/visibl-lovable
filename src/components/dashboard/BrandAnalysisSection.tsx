@@ -105,7 +105,14 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
       icon: Brain,
       description: "More prompts mean broader coverage of how customers actually search using AI. Higher prompt count increases score confidence and ensures your products appear across diverse customer queries and use cases."
     },
-    { label: "Market Presence", current: 78, max: 100, icon: BarChart3, isPercentage: true },
+    { 
+      label: "Market Presence", 
+      current: 78, 
+      max: 100, 
+      icon: BarChart3, 
+      isPercentage: true,
+      description: "The percentage of tracked prompts where your product or brand was mentioned in AI responses. Higher market presence means your brand is being recommended more frequently across customer queries."
+    },
     { 
       label: "Content Freshness", 
       current: 85, 
