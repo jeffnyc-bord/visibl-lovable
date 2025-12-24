@@ -215,8 +215,8 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
         {/* Minimal Header */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-medium tracking-[0.1em] uppercase" style={{ color: '#86868B' }}>Products</p>
-            <h1 className="text-[28px] font-semibold tracking-[-0.02em] mt-0.5" style={{ color: '#1D1D1F' }}>AI Readiness</h1>
+          <p className="text-sm text-muted-foreground tracking-wide uppercase mb-1">Products</p>
+          <h1 className="text-3xl font-light tracking-tight text-foreground">AI Readiness</h1>
           </div>
           <AddProductDialog 
             onProductAdded={handleProductAdded}
@@ -279,45 +279,45 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                     }}
                   />
                 </svg>
-                {/* Center content */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-[36px] font-bold tabular-nums tracking-tight" style={{ color: '#1D1D1F' }}>82</span>
-                  <span className="text-[13px] font-medium -mt-1" style={{ color: '#86868B' }}>%</span>
-                </div>
+              {/* Center content */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-[40px] font-extralight tabular-nums tracking-tighter" style={{ color: '#1D1D1F' }}>82</span>
+                <span className="text-[13px] font-light -mt-1" style={{ color: '#86868B' }}>%</span>
               </div>
-              
-              {/* Upsell Pill Button */}
-              <button 
-                onClick={() => setUpgradeSheetOpen(true)}
-                className="mt-5 px-4 py-1.5 rounded-full text-[11px] font-medium transition-all hover:scale-[1.02] active:scale-[0.98]"
-                style={{ 
-                  background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(88, 86, 214, 0.1))',
-                  color: '#007AFF',
-                }}
-              >
-                <Zap className="w-3 h-3 inline mr-1.5 -mt-0.5" />
-                Boost Accuracy: Track 2 More Chatbots
-              </button>
+            </div>
+            
+            {/* Upsell Pill Button */}
+            <button 
+              onClick={() => setUpgradeSheetOpen(true)}
+              className="mt-5 px-4 py-1.5 rounded-full text-[11px] font-medium transition-all hover:scale-[1.02] active:scale-[0.98]"
+              style={{ 
+                background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(88, 86, 214, 0.1))',
+                color: '#007AFF',
+              }}
+            >
+              <Zap className="w-3 h-3 inline mr-1.5 -mt-0.5" />
+              Boost Accuracy: Track 2 More Chatbots
+            </button>
             </div>
 
-            {/* Center: Stats Stack */}
+          {/* Center: Stats Stack */}
             <div className="flex flex-col justify-center py-2 min-w-[140px]">
               <div className="mb-6">
                 <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-1" style={{ color: '#86868B' }}>TOTAL PRODUCTS</p>
                 <p 
-                  className="text-[32px] font-bold tabular-nums tracking-tight leading-none"
+                  className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none"
                   style={{ color: isAtLimit ? '#FF9500' : '#1D1D1F' }}
                 >
-                  {currentProductCount}<span className="text-[18px] font-medium" style={{ color: '#86868B' }}>/{maxProducts >= 999999 ? '∞' : maxProducts}</span>
+                  {currentProductCount}<span className="text-[20px] font-light" style={{ color: '#86868B' }}>/{maxProducts >= 999999 ? '∞' : maxProducts}</span>
                 </p>
               </div>
               <div className="mb-6">
                 <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-1" style={{ color: '#86868B' }}>NEEDS ATTENTION</p>
-                <p className="text-[32px] font-bold tabular-nums tracking-tight leading-none" style={{ color: '#FF3B30' }}>89</p>
+                <p className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#FF3B30' }}>89</p>
               </div>
               <div>
                 <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-1" style={{ color: '#86868B' }}>AI-READY</p>
-                <p className="text-[32px] font-bold tabular-nums tracking-tight leading-none" style={{ color: '#34C759' }}>156</p>
+                <p className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#34C759' }}>156</p>
               </div>
             </div>
 
@@ -348,7 +348,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                       style={{ background: item.color.includes('gradient') ? item.color.replace('linear-gradient(135deg, ', '').split(',')[0] : item.color }} 
                     />
                     <span className="text-[11px]" style={{ color: '#86868B' }}>{item.label}</span>
-                    <span className="text-[11px] font-semibold tabular-nums" style={{ color: '#1D1D1F' }}>{item.count}</span>
+                    <span className="text-[11px] font-medium tabular-nums" style={{ color: '#1D1D1F' }}>{item.count}</span>
                   </div>
                 ))}
               </div>
@@ -379,8 +379,8 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                 <pillar.icon className="w-5 h-5" style={{ color: '#86868B' }} />
                 <div className="text-left">
                   <p className="text-[11px] font-medium tracking-[0.04em] uppercase" style={{ color: '#86868B' }}>{pillar.label}</p>
-                  <p className="text-[24px] font-bold tabular-nums tracking-tight leading-tight" style={{ color: '#1D1D1F' }}>
-                    {pillar.isPercentage ? `${pillar.current}%` : <>{pillar.current}<span className="text-[14px] font-medium" style={{ color: '#86868B' }}>/{pillar.max}</span></>}
+                  <p className="text-[24px] font-extralight tabular-nums tracking-tighter leading-tight" style={{ color: '#1D1D1F' }}>
+                    {pillar.isPercentage ? `${pillar.current}%` : <>{pillar.current}<span className="text-[14px] font-light" style={{ color: '#86868B' }}>/{pillar.max}</span></>}
                   </p>
                 </div>
                 <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity -ml-1" style={{ color: '#86868B' }} />
@@ -407,7 +407,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
               <AlertTriangle className="w-4 h-4" style={{ color: activeListTab === 'attention' ? '#FF3B30' : '#86868B' }} />
               Needs Attention
               <span 
-                className="text-[11px] font-semibold px-2 py-0.5 rounded-full tabular-nums"
+                className="text-[11px] font-medium px-2 py-0.5 rounded-full tabular-nums"
                 style={{ 
                   background: activeListTab === 'attention' ? 'rgba(255, 59, 48, 0.12)' : 'rgba(0,0,0,0.06)',
                   color: activeListTab === 'attention' ? '#FF3B30' : '#86868B'
@@ -428,7 +428,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
               <Sparkles className="w-4 h-4" style={{ color: activeListTab === 'ready' ? '#34C759' : '#86868B' }} />
               Top AI-Ready
               <span 
-                className="text-[11px] font-semibold px-2 py-0.5 rounded-full tabular-nums"
+                className="text-[11px] font-medium px-2 py-0.5 rounded-full tabular-nums"
                 style={{ 
                   background: activeListTab === 'ready' ? 'rgba(52, 199, 89, 0.12)' : 'rgba(0,0,0,0.06)',
                   color: activeListTab === 'ready' ? '#34C759' : '#86868B'
@@ -475,7 +475,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
 
                 <div className="flex items-center gap-8">
                   <span 
-                    className="text-[15px] font-semibold tabular-nums"
+                    className="text-[15px] font-light tabular-nums"
                     style={{ color: activeListTab === 'ready' ? '#34C759' : '#FF3B30' }}
                   >
                     {product.score}%
@@ -503,7 +503,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                   <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(52, 199, 89, 0.12)' }}>
                     <CheckCircle className="w-6 h-6" style={{ color: '#34C759' }} />
                   </div>
-                  <p className="text-[15px] font-semibold" style={{ color: '#1D1D1F' }}>All products performing well</p>
+                  <p className="text-[15px] font-light" style={{ color: '#1D1D1F' }}>All products performing well</p>
                   <p className="text-[13px] mt-1" style={{ color: '#86868B' }}>No products need attention</p>
                 </>
               ) : (
@@ -511,7 +511,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                   <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(0,0,0,0.04)' }}>
                     <Star className="w-6 h-6" style={{ color: '#86868B' }} />
                   </div>
-                  <p className="text-[15px] font-semibold" style={{ color: '#1D1D1F' }}>No top performers yet</p>
+                  <p className="text-[15px] font-light" style={{ color: '#1D1D1F' }}>No top performers yet</p>
                   <p className="text-[13px] mt-1" style={{ color: '#86868B' }}>Optimize products to reach 90%+</p>
                 </>
               )}
@@ -522,7 +522,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
         {/* All Products Section */}
         <div className="pt-4">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-[17px] font-semibold" style={{ color: '#1D1D1F' }}>All Products</h2>
+            <h2 className="text-xl font-light" style={{ color: '#1D1D1F' }}>All Products</h2>
             <span className="text-[13px]" style={{ color: '#86868B' }}>
               {allProducts.length} of 1,247
             </span>
@@ -670,7 +670,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                   
                   <div className="col-span-2">
                     <span 
-                      className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                      className="text-[11px] font-medium px-2.5 py-1 rounded-full"
                       style={{
                         background: product.status === "analyzing" ? 'rgba(0, 122, 255, 0.12)' : product.score >= 90 ? 'rgba(52, 199, 89, 0.12)' : product.score >= 70 ? 'rgba(255, 149, 0, 0.12)' : 'rgba(255, 59, 48, 0.12)',
                         color: product.status === "analyzing" ? '#007AFF' : product.score >= 90 ? '#34C759' : product.score >= 70 ? '#FF9500' : '#FF3B30'
@@ -694,7 +694,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                             }}
                           />
                         </div>
-                        <span className="text-[13px] font-semibold tabular-nums" style={{ color: '#1D1D1F' }}>{product.score}%</span>
+                        <span className="text-[13px] font-light tabular-nums" style={{ color: '#1D1D1F' }}>{product.score}%</span>
                       </div>
                     )}
                   </div>
