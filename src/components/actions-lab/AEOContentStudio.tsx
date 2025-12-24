@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Pencil, Eye } from 'lucide-react';
 import { PromptSource } from './PromptSourceSelector';
 import { ContentType } from './ContentTypeSelector';
 import { ReviewHandoffPanel } from './ReviewHandoffPanel';
@@ -288,7 +289,8 @@ const EditableText = ({
   className = '', 
   placeholder = '',
   multiline = false,
-  showSparkle = false
+  showSparkle = false,
+  disabled = false
 }: { 
   value: string; 
   onChange: (value: string) => void; 
@@ -296,6 +298,7 @@ const EditableText = ({
   placeholder?: string;
   multiline?: boolean;
   showSparkle?: boolean;
+  disabled?: boolean;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localValue, setLocalValue] = useState(value);
@@ -330,7 +333,7 @@ const EditableText = ({
     }
   };
 
-  if (isEditing) {
+  if (isEditing && !disabled) {
     const Component = multiline ? 'textarea' : 'input';
     return (
       <Component
@@ -353,14 +356,16 @@ const EditableText = ({
 
   return (
     <span 
-      onClick={() => setIsEditing(true)}
+      onClick={() => !disabled && setIsEditing(true)}
       className={cn(
-        "cursor-text hover:bg-muted/50 rounded px-2 py-1 -mx-2 -my-1 transition-colors group relative inline-block",
+        "rounded px-2 py-1 -mx-2 -my-1 transition-colors group relative inline-block",
+        !disabled && "cursor-text hover:bg-muted/50",
+        disabled && "cursor-default select-text",
         className
       )}
     >
       {value || <span className="text-muted-foreground/50">{placeholder}</span>}
-      {showSparkle && (
+      {showSparkle && !disabled && (
         <Sparkles className="w-3.5 h-3.5 text-primary/40 absolute -right-5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
       )}
     </span>
@@ -386,6 +391,9 @@ export const AEOContentStudio = ({
   const contentAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  // Mode: 'edit' for editing content, 'review' for commenting
+  const [studioMode, setStudioMode] = useState<'edit' | 'review'>('edit');
+
   // Inline annotation state
   const [annotations, setAnnotations] = useState<InlineAnnotation[]>([]);
   const [showAnnotationBubble, setShowAnnotationBubble] = useState(false);
@@ -393,8 +401,11 @@ export const AEOContentStudio = ({
   const [selectedText, setSelectedText] = useState('');
   const [activeAnnotationId, setActiveAnnotationId] = useState<string | null>(null);
 
-  // Handle text selection for annotations
+  // Handle text selection for annotations - only in review mode
   const handleTextSelection = useCallback(() => {
+    // Only allow annotations in review mode
+    if (studioMode !== 'review') return;
+    
     const selection = window.getSelection();
     if (selection && selection.toString().trim().length > 0) {
       const range = selection.getRangeAt(0);
@@ -404,13 +415,13 @@ export const AEOContentStudio = ({
       if (contentAreaRef.current?.contains(range.commonAncestorContainer as Node)) {
         setSelectedText(selection.toString().trim());
         setAnnotationPosition({
-          top: rect.top + window.scrollY,
+          top: rect.top,
           left: rect.left + rect.width / 2
         });
         setShowAnnotationBubble(true);
       }
     }
-  }, []);
+  }, [studioMode]);
 
   // Add annotation
   const handleAddAnnotation = useCallback((comment: string) => {
@@ -677,6 +688,39 @@ ${s.content}`).join('\n\n')}`;
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Edit / Review Mode Toggle */}
+            <div className="flex items-center bg-muted/50 rounded-lg p-0.5">
+              <button
+                onClick={() => setStudioMode('edit')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                  studioMode === 'edit' 
+                    ? "bg-background text-foreground shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Pencil className="w-3 h-3" />
+                Edit
+              </button>
+              <button
+                onClick={() => setStudioMode('review')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                  studioMode === 'review' 
+                    ? "bg-background text-foreground shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Eye className="w-3 h-3" />
+                Review
+                {annotations.length > 0 && (
+                  <span className="w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] flex items-center justify-center">
+                    {annotations.length}
+                  </span>
+                )}
+              </button>
+            </div>
+
             {isGenerating && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -845,9 +889,24 @@ ${s.content}`).join('\n\n')}`;
             className="flex-1 overflow-y-auto"
           >
             <div ref={contentAreaRef} className="max-w-2xl mx-auto py-16 px-12 relative">
-              {/* Inline Annotation Bubble */}
+              {/* Review mode indicator */}
+              {studioMode === 'review' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 px-4 py-3 rounded-xl bg-primary/5 border border-primary/20 flex items-center gap-3"
+                >
+                  <Eye className="w-4 h-4 text-primary" />
+                  <div>
+                    <p className="text-xs font-medium text-foreground">Review Mode</p>
+                    <p className="text-[10px] text-muted-foreground">Select any text to add a comment</p>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Inline Annotation Bubble - Only in review mode */}
               <AnimatePresence>
-                {showAnnotationBubble && selectedText && (
+                {showAnnotationBubble && selectedText && studioMode === 'review' && (
                   <div className="annotation-bubble">
                     <InlineAnnotationBubble
                       position={annotationPosition}
@@ -863,8 +922,8 @@ ${s.content}`).join('\n\n')}`;
                 )}
               </AnimatePresence>
 
-              {/* Annotation Markers in Margin */}
-              {annotations.map((annotation) => (
+              {/* Annotation Markers in Margin - Only in review mode */}
+              {studioMode === 'review' && annotations.map((annotation) => (
                 <div key={annotation.id} className="relative">
                   <AnnotationMarker
                     annotation={annotation}
@@ -900,6 +959,7 @@ ${s.content}`).join('\n\n')}`;
                     onChange={(v) => setContent(prev => ({ ...prev, title: v }))}
                     className="text-xl font-semibold text-foreground block"
                     showSparkle
+                    disabled={studioMode === 'review'}
                   />
                 )}
 
@@ -915,6 +975,7 @@ ${s.content}`).join('\n\n')}`;
                       value={content.urlSlug}
                       onChange={(v) => setContent(prev => ({ ...prev, urlSlug: v }))}
                       className="text-primary"
+                      disabled={studioMode === 'review'}
                     />
                   )}
                 </div>
@@ -937,6 +998,7 @@ ${s.content}`).join('\n\n')}`;
                     onChange={(v) => setContent(prev => ({ ...prev, h1: v }))}
                     className="text-2xl font-bold text-foreground block"
                     showSparkle
+                    disabled={studioMode === 'review'}
                   />
                 )}
               </motion.div>
@@ -965,6 +1027,7 @@ ${s.content}`).join('\n\n')}`;
                     onChange={(v) => setContent(prev => ({ ...prev, tldr: v }))}
                     className="text-sm text-muted-foreground leading-relaxed block"
                     multiline
+                    disabled={studioMode === 'review'}
                   />
                 )}
               </motion.div>
@@ -986,77 +1049,81 @@ ${s.content}`).join('\n\n')}`;
                       exit={{ opacity: 0, scale: 0.95 }}
                       className="group relative"
                     >
-                      {/* Controls bar - appears on hover */}
-                      <div className="absolute -left-12 top-0 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {/* Drag handle */}
-                        <div className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-muted rounded text-muted-foreground">
-                          <GripVertical className="w-4 h-4" />
+                      {/* Controls bar - appears on hover, only in edit mode */}
+                      {studioMode === 'edit' && (
+                        <div className="absolute -left-12 top-0 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {/* Drag handle */}
+                          <div className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-muted rounded text-muted-foreground">
+                            <GripVertical className="w-4 h-4" />
+                          </div>
+                          {/* Delete button */}
+                          <button
+                            onClick={() => deleteSection(section.id)}
+                            className="p-1.5 hover:bg-destructive/10 rounded text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                        {/* Delete button */}
-                        <button
-                          onClick={() => deleteSection(section.id)}
-                          className="p-1.5 hover:bg-destructive/10 rounded text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                      )}
 
                       {section.type === 'text' && (
                         <div className="space-y-3">
-                          {/* Styling toolbar */}
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => toggleSectionStyle(section.id, 'bold')}
-                              className={cn(
-                                "p-1.5 rounded hover:bg-muted transition-colors",
-                                section.style?.bold && "bg-muted text-primary"
-                              )}
-                              title="Bold"
-                            >
-                              <Bold className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => toggleSectionStyle(section.id, 'italic')}
-                              className={cn(
-                                "p-1.5 rounded hover:bg-muted transition-colors",
-                                section.style?.italic && "bg-muted text-primary"
-                              )}
-                              title="Italic"
-                            >
-                              <Italic className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => toggleSectionStyle(section.id, 'underline')}
-                              className={cn(
-                                "p-1.5 rounded hover:bg-muted transition-colors",
-                                section.style?.underline && "bg-muted text-primary"
-                              )}
-                              title="Underline"
-                            >
-                              <Underline className="w-3.5 h-3.5" />
-                            </button>
-                            <div className="w-px h-4 bg-border mx-1" />
-                            <button
-                              onClick={() => setSectionHeadingLevel(section.id, 'h2')}
-                              className={cn(
-                                "p-1.5 rounded hover:bg-muted transition-colors",
-                                section.style?.headingLevel === 'h2' && "bg-muted text-primary"
-                              )}
-                              title="Heading 2"
-                            >
-                              <Heading1 className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => setSectionHeadingLevel(section.id, 'h3')}
-                              className={cn(
-                                "p-1.5 rounded hover:bg-muted transition-colors",
-                                section.style?.headingLevel === 'h3' && "bg-muted text-primary"
-                              )}
-                              title="Heading 3"
-                            >
-                              <Heading2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
+                          {/* Styling toolbar - only in edit mode */}
+                          {studioMode === 'edit' && (
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => toggleSectionStyle(section.id, 'bold')}
+                                className={cn(
+                                  "p-1.5 rounded hover:bg-muted transition-colors",
+                                  section.style?.bold && "bg-muted text-primary"
+                                )}
+                                title="Bold"
+                              >
+                                <Bold className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => toggleSectionStyle(section.id, 'italic')}
+                                className={cn(
+                                  "p-1.5 rounded hover:bg-muted transition-colors",
+                                  section.style?.italic && "bg-muted text-primary"
+                                )}
+                                title="Italic"
+                              >
+                                <Italic className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => toggleSectionStyle(section.id, 'underline')}
+                                className={cn(
+                                  "p-1.5 rounded hover:bg-muted transition-colors",
+                                  section.style?.underline && "bg-muted text-primary"
+                                )}
+                                title="Underline"
+                              >
+                                <Underline className="w-3.5 h-3.5" />
+                              </button>
+                              <div className="w-px h-4 bg-border mx-1" />
+                              <button
+                                onClick={() => setSectionHeadingLevel(section.id, 'h2')}
+                                className={cn(
+                                  "p-1.5 rounded hover:bg-muted transition-colors",
+                                  section.style?.headingLevel === 'h2' && "bg-muted text-primary"
+                                )}
+                                title="Heading 2"
+                              >
+                                <Heading1 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => setSectionHeadingLevel(section.id, 'h3')}
+                                className={cn(
+                                  "p-1.5 rounded hover:bg-muted transition-colors",
+                                  section.style?.headingLevel === 'h3' && "bg-muted text-primary"
+                                )}
+                                title="Heading 3"
+                              >
+                                <Heading2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
 
                           <EditableText
                             value={section.heading}
@@ -1067,6 +1134,7 @@ ${s.content}`).join('\n\n')}`;
                               section.style?.headingLevel === 'h3' ? "text-base" : "text-lg"
                             )}
                             showSparkle={section.isAiGenerated}
+                            disabled={studioMode === 'review'}
                           />
                           <EditableText
                             value={section.content}
@@ -1078,6 +1146,7 @@ ${s.content}`).join('\n\n')}`;
                               section.style?.underline && "underline"
                             )}
                             multiline
+                            disabled={studioMode === 'review'}
                           />
                         </div>
                       )}
@@ -1115,6 +1184,7 @@ ${s.content}`).join('\n\n')}`;
                             className="text-lg text-muted-foreground"
                             multiline
                             placeholder="Enter quote..."
+                            disabled={studioMode === 'review'}
                           />
                         </blockquote>
                       )}
@@ -1123,47 +1193,49 @@ ${s.content}`).join('\n\n')}`;
                 </AnimatePresence>
               </Reorder.Group>
 
-                {/* Add section button */}
-                <div className="relative pt-4" ref={addMenuRef}>
-                  <button
-                    onClick={() => setShowAddMenu(!showAddMenu)}
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add section
-                  </button>
+                {/* Add section button - only in edit mode */}
+                {studioMode === 'edit' && (
+                  <div className="relative pt-4" ref={addMenuRef}>
+                    <button
+                      onClick={() => setShowAddMenu(!showAddMenu)}
+                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add section
+                    </button>
 
-                  <AnimatePresence>
-                    {showAddMenu && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute left-0 top-full mt-1 bg-popover border border-border rounded-xl shadow-lg z-10 overflow-hidden"
-                      >
-                        <div className="p-1">
-                          {[
-                            { type: 'text' as const, icon: Type, label: 'Text Section' },
-                            { type: 'image' as const, icon: Image, label: 'Image' },
-                            { type: 'quote' as const, icon: Quote, label: 'Quote' }
-                          ].map((item) => (
-                            <button
-                              key={item.type}
-                              onClick={() => addSection(item.type)}
-                              className="flex items-center gap-3 w-full px-4 py-2.5 text-sm hover:bg-muted rounded-lg transition-colors"
-                            >
-                              <item.icon className="w-4 h-4 text-muted-foreground" />
-                              {item.label}
-                            </button>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                    <AnimatePresence>
+                      {showAddMenu && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute left-0 top-full mt-1 bg-popover border border-border rounded-xl shadow-lg z-10 overflow-hidden"
+                        >
+                          <div className="p-1">
+                            {[
+                              { type: 'text' as const, icon: Type, label: 'Text Section' },
+                              { type: 'image' as const, icon: Image, label: 'Image' },
+                              { type: 'quote' as const, icon: Quote, label: 'Quote' }
+                            ].map((item) => (
+                              <button
+                                key={item.type}
+                                onClick={() => addSection(item.type)}
+                                className="flex items-center gap-3 w-full px-4 py-2.5 text-sm hover:bg-muted rounded-lg transition-colors"
+                              >
+                                <item.icon className="w-4 h-4 text-muted-foreground" />
+                                {item.label}
+                              </button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )}
 
-              {/* Annotation count indicator */}
-              {annotations.length > 0 && (
+              {/* Annotation count indicator - only show in review mode */}
+              {studioMode === 'review' && annotations.length > 0 && (
                 <div className="fixed bottom-6 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 flex items-center gap-2">
                   <MessageCircle className="w-3.5 h-3.5 text-primary" />
                   <span className="text-xs font-medium text-primary">
