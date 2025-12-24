@@ -39,6 +39,7 @@ import { GhostProductSlot } from "@/components/ui/ghost-product-slot";
 import { FidelityMeter } from "@/components/ui/fidelity-meter";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { UpgradeDialog } from "@/components/ui/upgrade-dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // AI Platform Logos
 import chatGPTLogo from "@/assets/chatGPT_logo.png";
@@ -109,9 +110,37 @@ export const ProductDetail = () => {
     pagesCrawled: 12
   };
 
-  // Apple-style pillar data
+  // Apple-style pillar data with platform details
+  const platformDetails: Record<string, { name: string; active: boolean; benefit: string }> = {
+    'ChatGPT': { 
+      name: 'ChatGPT', 
+      active: true, 
+      benefit: 'Largest user base with 100M+ weekly active users. Essential for consumer discovery.' 
+    },
+    'Gemini': { 
+      name: 'Gemini', 
+      active: true, 
+      benefit: 'Integrated with Google Search. Critical for SEO-adjacent AI visibility.' 
+    },
+    'Perplexity': { 
+      name: 'Perplexity', 
+      active: false, 
+      benefit: 'Research-focused AI with citation support. Key for B2B and technical audiences.' 
+    },
+    'Grok': { 
+      name: 'Grok', 
+      active: false, 
+      benefit: 'Real-time X/Twitter integration. Valuable for social commerce and trending topics.' 
+    }
+  };
+
   const pillars = {
-    platformCoverage: { current: 2, total: 4, platforms: ['ChatGPT', 'Gemini', 'Perplexity', 'Grok'] },
+    platformCoverage: { 
+      current: 2, 
+      total: 4, 
+      platforms: ['ChatGPT', 'Gemini', 'Perplexity', 'Grok'],
+      platformDetails
+    },
     intelligenceDepth: { current: 12, total: 25 },
     marketPresence: { mentions: 1247, trend: [45, 52, 48, 61, 55, 72, 68] },
     contentFreshness: { activePages: 8, lastSync: '2m ago' }
@@ -582,28 +611,83 @@ export const ProductDetail = () => {
                     <span className="text-lg font-semibold text-foreground">{pillars.platformCoverage.current}/{pillars.platformCoverage.total} <span className="text-sm font-normal text-muted-foreground">Platforms</span></span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {pillars.platformCoverage.platforms.map((platform, idx) => {
-                        const isActive = idx < pillars.platformCoverage.current;
-                        return (
-                          <div 
-                            key={platform}
-                            className={`flex items-center justify-center w-9 h-9 rounded-xl transition-all overflow-hidden ${
-                              isActive 
-                                ? 'bg-background shadow-sm ring-1 ring-border/40' 
-                                : 'bg-muted/30 grayscale opacity-40'
-                            }`}
-                            title={platform}
-                          >
-                            <img 
-                              src={platformLogos[platform]} 
-                              alt={platform}
-                              className="w-6 h-6 object-contain"
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <TooltipProvider delayDuration={200}>
+                      <div className="flex items-center gap-3">
+                        {pillars.platformCoverage.platforms.map((platform) => {
+                          const details = platformDetails[platform];
+                          const isActive = details?.active ?? false;
+                          return (
+                            <Tooltip key={platform}>
+                              <TooltipTrigger asChild>
+                                <div 
+                                  className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all overflow-hidden cursor-pointer group ${
+                                    isActive 
+                                      ? 'bg-background shadow-sm ring-1 ring-border/40 hover:ring-primary/40 hover:shadow-md' 
+                                      : 'bg-muted/30 hover:bg-muted/50'
+                                  }`}
+                                >
+                                  <img 
+                                    src={platformLogos[platform]} 
+                                    alt={platform}
+                                    className={`w-6 h-6 object-contain transition-all ${
+                                      isActive ? '' : 'grayscale opacity-40 group-hover:opacity-60'
+                                    }`}
+                                  />
+                                  {/* Lock indicator for inactive platforms */}
+                                  {!isActive && (
+                                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-muted border border-background flex items-center justify-center">
+                                      <svg className="w-2 h-2 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                      </svg>
+                                    </div>
+                                  )}
+                                  {/* Active indicator */}
+                                  {isActive && (
+                                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-success border border-background flex items-center justify-center">
+                                      <Check className="w-2.5 h-2.5 text-success-foreground" />
+                                    </div>
+                                  )}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent 
+                                side="bottom" 
+                                className="max-w-xs p-3"
+                                style={{
+                                  background: 'rgba(0, 0, 0, 0.85)',
+                                  backdropFilter: 'blur(10px)',
+                                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                                }}
+                              >
+                                <div className="space-y-1.5">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-primary-foreground text-sm">{platform}</span>
+                                    <Badge 
+                                      variant={isActive ? "default" : "secondary"}
+                                      className={`text-[10px] px-1.5 py-0 h-4 ${
+                                        isActive 
+                                          ? 'bg-success/20 text-success border-success/30' 
+                                          : 'bg-muted/30 text-muted-foreground/80 border-muted-foreground/20'
+                                      }`}
+                                    >
+                                      {isActive ? 'Active' : 'Locked'}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground/90 leading-relaxed">
+                                    {details?.benefit}
+                                  </p>
+                                  {!isActive && (
+                                    <p className="text-xs text-primary/80 font-medium pt-1">
+                                      Upgrade to Pro to unlock
+                                    </p>
+                                  )}
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          );
+                        })}
+                      </div>
+                    </TooltipProvider>
                     <button 
                       onClick={() => {
                         setUpgradeReason('platform_expansion');
