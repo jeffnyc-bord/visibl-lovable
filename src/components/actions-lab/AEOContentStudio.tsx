@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import {
   Sparkles,
@@ -26,7 +26,9 @@ import {
   FileText,
   ExternalLink,
   Copy,
-  X
+  X,
+  MessageCircle,
+  Send
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -34,6 +36,188 @@ import { PromptSource } from './PromptSourceSelector';
 import { ContentType } from './ContentTypeSelector';
 import { ReviewHandoffPanel } from './ReviewHandoffPanel';
 import { useToast } from '@/hooks/use-toast';
+
+// Inline annotation types
+interface InlineAnnotation {
+  id: string;
+  selectedText: string;
+  comment: string;
+  author: string;
+  authorInitials: string;
+  timestamp: Date;
+  position: { top: number; left: number };
+  resolved: boolean;
+}
+
+// Floating annotation bubble component
+const InlineAnnotationBubble = ({
+  position,
+  onSubmit,
+  onClose,
+  selectedText
+}: {
+  position: { top: number; left: number };
+  onSubmit: (comment: string) => void;
+  onClose: () => void;
+  selectedText: string;
+}) => {
+  const [comment, setComment] = useState('');
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const handleSubmit = () => {
+    if (comment.trim()) {
+      onSubmit(comment);
+      setComment('');
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9, y: -10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9, y: -10 }}
+      className="fixed z-[100] frosted-glass-vibrant rounded-xl shadow-2xl border border-border/50 p-3 w-72"
+      style={{ top: position.top + 30, left: Math.max(16, Math.min(position.left - 100, window.innerWidth - 300)) }}
+    >
+      {/* Selected text preview */}
+      <div className="mb-2 px-2 py-1.5 bg-primary/5 rounded-lg border-l-2 border-primary">
+        <p className="text-[10px] text-muted-foreground line-clamp-2 italic">"{selectedText}"</p>
+      </div>
+
+      {/* Comment input */}
+      <div className="relative">
+        <textarea
+          ref={inputRef}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Add a comment..."
+          className="w-full px-3 py-2 text-xs bg-muted/30 border border-border/50 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+          rows={2}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit();
+            }
+            if (e.key === 'Escape') {
+              onClose();
+            }
+          }}
+        />
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center justify-between mt-2">
+        <button
+          onClick={onClose}
+          className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Cancel
+        </button>
+        <Button
+          size="sm"
+          onClick={handleSubmit}
+          disabled={!comment.trim()}
+          className="h-7 px-3 gap-1.5 text-[10px]"
+        >
+          <Send className="w-3 h-3" />
+          Add Comment
+        </Button>
+      </div>
+
+      {/* Bubble pointer */}
+      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 bg-background/80 backdrop-blur-xl border-l border-t border-border/50" />
+    </motion.div>
+  );
+};
+
+// Annotation marker component (shows in margin)
+const AnnotationMarker = ({
+  annotation,
+  onClick,
+  isActive
+}: {
+  annotation: InlineAnnotation;
+  onClick: () => void;
+  isActive: boolean;
+}) => (
+  <motion.button
+    initial={{ scale: 0, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1 }}
+    className={cn(
+      "absolute -right-8 w-6 h-6 rounded-full flex items-center justify-center transition-all cursor-pointer",
+      isActive 
+        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" 
+        : "bg-primary/10 text-primary hover:bg-primary/20"
+    )}
+    style={{ top: annotation.position.top - 12 }}
+    onClick={onClick}
+    title={`Comment by ${annotation.author}`}
+  >
+    <MessageCircle className="w-3 h-3" />
+  </motion.button>
+);
+
+// Annotation detail popover
+const AnnotationDetail = ({
+  annotation,
+  onResolve,
+  onClose
+}: {
+  annotation: InlineAnnotation;
+  onResolve: () => void;
+  onClose: () => void;
+}) => (
+  <motion.div
+    initial={{ opacity: 0, x: 10 }}
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: 10 }}
+    className="absolute -right-80 top-0 w-72 frosted-glass-vibrant rounded-xl shadow-2xl border border-border/50 p-3 z-50"
+  >
+    {/* Header */}
+    <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-semibold text-primary">
+          {annotation.authorInitials}
+        </div>
+        <div>
+          <div className="text-xs font-medium text-foreground">{annotation.author}</div>
+          <div className="text-[9px] text-muted-foreground">
+            {annotation.timestamp.toLocaleDateString()}
+          </div>
+        </div>
+      </div>
+      <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+        <X className="w-3.5 h-3.5" />
+      </button>
+    </div>
+
+    {/* Selected text */}
+    <div className="mb-2 px-2 py-1.5 bg-primary/5 rounded-lg border-l-2 border-primary">
+      <p className="text-[10px] text-muted-foreground line-clamp-2 italic">"{annotation.selectedText}"</p>
+    </div>
+
+    {/* Comment */}
+    <p className="text-xs text-foreground leading-relaxed mb-3">{annotation.comment}</p>
+
+    {/* Actions */}
+    <div className="flex items-center justify-between pt-2 border-t border-border/30">
+      <button className="text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+        Reply
+      </button>
+      <button
+        onClick={onResolve}
+        className="flex items-center gap-1 text-[10px] text-emerald-600 hover:text-emerald-700 transition-colors"
+      >
+        <CheckCircle2 className="w-3 h-3" />
+        Resolve
+      </button>
+    </div>
+  </motion.div>
+);
 
 interface GeneratedSection {
   id: string;
@@ -199,7 +383,87 @@ export const AEOContentStudio = ({
   const [showAddMenu, setShowAddMenu] = useState(false);
   const addMenuRef = useRef<HTMLDivElement>(null);
   const shareSheetRef = useRef<HTMLDivElement>(null);
+  const contentAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Inline annotation state
+  const [annotations, setAnnotations] = useState<InlineAnnotation[]>([]);
+  const [showAnnotationBubble, setShowAnnotationBubble] = useState(false);
+  const [annotationPosition, setAnnotationPosition] = useState({ top: 0, left: 0 });
+  const [selectedText, setSelectedText] = useState('');
+  const [activeAnnotationId, setActiveAnnotationId] = useState<string | null>(null);
+
+  // Handle text selection for annotations
+  const handleTextSelection = useCallback(() => {
+    const selection = window.getSelection();
+    if (selection && selection.toString().trim().length > 0) {
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      
+      // Only trigger if selection is within content area
+      if (contentAreaRef.current?.contains(range.commonAncestorContainer as Node)) {
+        setSelectedText(selection.toString().trim());
+        setAnnotationPosition({
+          top: rect.top + window.scrollY,
+          left: rect.left + rect.width / 2
+        });
+        setShowAnnotationBubble(true);
+      }
+    }
+  }, []);
+
+  // Add annotation
+  const handleAddAnnotation = useCallback((comment: string) => {
+    const newAnnotation: InlineAnnotation = {
+      id: Date.now().toString(),
+      selectedText,
+      comment,
+      author: 'You',
+      authorInitials: 'Y',
+      timestamp: new Date(),
+      position: { top: annotationPosition.top - (contentAreaRef.current?.getBoundingClientRect().top || 0), left: annotationPosition.left },
+      resolved: false
+    };
+    setAnnotations(prev => [...prev, newAnnotation]);
+    setShowAnnotationBubble(false);
+    setSelectedText('');
+    window.getSelection()?.removeAllRanges();
+    toast({ title: "Comment added", description: "Your annotation has been saved." });
+  }, [selectedText, annotationPosition, toast]);
+
+  // Resolve annotation
+  const handleResolveAnnotation = useCallback((id: string) => {
+    setAnnotations(prev => prev.filter(a => a.id !== id));
+    setActiveAnnotationId(null);
+    toast({ title: "Comment resolved", description: "The annotation has been removed." });
+  }, [toast]);
+
+  // Listen for mouseup to detect selection
+  useEffect(() => {
+    const handleMouseUp = () => {
+      // Small delay to allow selection to complete
+      setTimeout(handleTextSelection, 10);
+    };
+
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => document.removeEventListener('mouseup', handleMouseUp);
+  }, [handleTextSelection]);
+
+  // Close annotation bubble on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showAnnotationBubble) {
+        const target = e.target as HTMLElement;
+        if (!target.closest('.annotation-bubble')) {
+          setShowAnnotationBubble(false);
+          setSelectedText('');
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showAnnotationBubble]);
   
   // Editable content state
   const [content, setContent] = useState<GeneratedContent>({
@@ -580,7 +844,46 @@ ${s.content}`).join('\n\n')}`;
             transition={{ delay: 0.4 }}
             className="flex-1 overflow-y-auto"
           >
-            <div className="max-w-2xl mx-auto py-16 px-12">
+            <div ref={contentAreaRef} className="max-w-2xl mx-auto py-16 px-12 relative">
+              {/* Inline Annotation Bubble */}
+              <AnimatePresence>
+                {showAnnotationBubble && selectedText && (
+                  <div className="annotation-bubble">
+                    <InlineAnnotationBubble
+                      position={annotationPosition}
+                      selectedText={selectedText}
+                      onSubmit={handleAddAnnotation}
+                      onClose={() => {
+                        setShowAnnotationBubble(false);
+                        setSelectedText('');
+                        window.getSelection()?.removeAllRanges();
+                      }}
+                    />
+                  </div>
+                )}
+              </AnimatePresence>
+
+              {/* Annotation Markers in Margin */}
+              {annotations.map((annotation) => (
+                <div key={annotation.id} className="relative">
+                  <AnnotationMarker
+                    annotation={annotation}
+                    isActive={activeAnnotationId === annotation.id}
+                    onClick={() => setActiveAnnotationId(
+                      activeAnnotationId === annotation.id ? null : annotation.id
+                    )}
+                  />
+                  <AnimatePresence>
+                    {activeAnnotationId === annotation.id && (
+                      <AnnotationDetail
+                        annotation={annotation}
+                        onResolve={() => handleResolveAnnotation(annotation.id)}
+                        onClose={() => setActiveAnnotationId(null)}
+                      />
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
               {/* Meta */}
               <div className="mb-10 pb-6 border-b border-border/20">
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-2">
@@ -858,6 +1161,16 @@ ${s.content}`).join('\n\n')}`;
                     )}
                   </AnimatePresence>
                 </div>
+
+              {/* Annotation count indicator */}
+              {annotations.length > 0 && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 flex items-center gap-2">
+                  <MessageCircle className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-xs font-medium text-primary">
+                    {annotations.length} comment{annotations.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              )}
             </div>
           </motion.main>
 
