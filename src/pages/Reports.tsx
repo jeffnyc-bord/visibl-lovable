@@ -11,8 +11,6 @@ import {
   Package,
   FileText,
   ClipboardList,
-  TrendingUp,
-  AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -31,6 +29,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import ReportEditor, { ReportBlock } from '@/components/reports/ReportEditor';
+import ReportPreview from '@/components/reports/ReportPreview';
 import { downloadReportPDF } from '@/utils/reportPdfExport';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -150,19 +149,14 @@ const Reports = () => {
   
   // Selection state
   const [sections, setSections] = useState<Record<string, SectionConfig>>({
-    // AI Visibility
     score: { enabled: true },
     mentions: { enabled: true },
     platformCoverage: { enabled: true, items: platforms.map(p => p.id) },
-    // Prompts
     prompts: { enabled: true, items: mockPrompts.map(p => p.id) },
-    // Products
     products: { enabled: false, items: [] },
     productPrompts: { enabled: false, items: [] },
-    // Optimizations
     optimizations: { enabled: false, items: [] },
     optimizationDetails: { enabled: false, items: [] },
-    // Actions
     actions: { enabled: false, items: [] },
   });
   
@@ -436,10 +430,10 @@ const Reports = () => {
     );
   }
 
-  // Render section navigation cards (root view)
+  // Render section navigation items (root view) - clean list with dividers
   const renderRootView = () => (
-    <div className="space-y-3">
-      <SectionNavCard
+    <div className="divide-y divide-border/50">
+      <SectionNavItem
         icon={BarChart3}
         title="AI Visibility Overview"
         description="Score, mentions, and platform coverage"
@@ -447,7 +441,7 @@ const Reports = () => {
         selectedCount={summary.aiVisibility.length}
         onClick={() => navigateTo({ section: 'ai-visibility' })}
       />
-      <SectionNavCard
+      <SectionNavItem
         icon={MessageSquare}
         title="Prompts & Queries"
         description="Standalone prompts and queries"
@@ -455,7 +449,7 @@ const Reports = () => {
         selectedCount={summary.promptsCount}
         onClick={() => navigateTo({ section: 'prompts' })}
       />
-      <SectionNavCard
+      <SectionNavItem
         icon={Package}
         title="Products"
         description="Products and their associated prompts"
@@ -463,7 +457,7 @@ const Reports = () => {
         selectedCount={summary.productsCount}
         onClick={() => navigateTo({ section: 'products' })}
       />
-      <SectionNavCard
+      <SectionNavItem
         icon={FileText}
         title="On-site Optimizations"
         description="Content created with titles, URLs, and headers"
@@ -471,7 +465,7 @@ const Reports = () => {
         selectedCount={summary.optimizationsCount}
         onClick={() => navigateTo({ section: 'optimizations' })}
       />
-      <SectionNavCard
+      <SectionNavItem
         icon={ClipboardList}
         title="Actions Log"
         description="Select actions to include in report"
@@ -484,29 +478,31 @@ const Reports = () => {
 
   // Render AI Visibility section
   const renderAIVisibilityView = () => (
-    <div className="space-y-4">
+    <div className="space-y-1">
       <p className="text-sm text-muted-foreground mb-6">
         Select which AI visibility metrics to include in your report.
       </p>
       
-      <SelectableItem
-        label="Visibility Score"
-        meta="Overall brand AI visibility score"
-        selected={sections.score.enabled}
-        onToggle={() => toggleSection('score')}
-      />
-      <SelectableItem
-        label="Total Mentions"
-        meta="Aggregate mention count across platforms"
-        selected={sections.mentions.enabled}
-        onToggle={() => toggleSection('mentions')}
-      />
+      <div className="divide-y divide-border/30">
+        <SelectableRow
+          label="Visibility Score"
+          meta="Overall brand AI visibility score"
+          selected={sections.score.enabled}
+          onToggle={() => toggleSection('score')}
+        />
+        <SelectableRow
+          label="Total Mentions"
+          meta="Aggregate mention count across platforms"
+          selected={sections.mentions.enabled}
+          onToggle={() => toggleSection('mentions')}
+        />
+      </div>
       
-      <Separator className="my-4" />
+      <Separator className="my-6" />
       
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-foreground">Platform Coverage</span>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <button 
             onClick={() => selectAllItems("platformCoverage", platforms.map(p => p.id))}
             className="text-xs text-primary hover:underline"
@@ -522,9 +518,9 @@ const Reports = () => {
         </div>
       </div>
       
-      <div className="space-y-1">
+      <div className="divide-y divide-border/30">
         {platforms.map(platform => (
-          <SelectableItem
+          <SelectableRow
             key={platform.id}
             label={platform.name}
             meta={`${platform.mentions.toLocaleString()} mentions`}
@@ -544,18 +540,18 @@ const Reports = () => {
           Select prompts and queries to include.
         </p>
         <div className="flex gap-2">
-          <FilterButton 
+          <FilterPill 
             label="All" 
             active={promptFilter === 'all'} 
             onClick={() => setPromptFilter('all')} 
           />
-          <FilterButton 
+          <FilterPill 
             label="AI-Ready" 
             active={promptFilter === 'ai-ready'} 
             onClick={() => setPromptFilter('ai-ready')}
             variant="success"
           />
-          <FilterButton 
+          <FilterPill 
             label="Needs Improvement" 
             active={promptFilter === 'needs-improvement'} 
             onClick={() => setPromptFilter('needs-improvement')}
@@ -564,7 +560,7 @@ const Reports = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-3 mb-3">
+      <div className="flex items-center justify-end gap-4 mb-2">
         <button 
           onClick={() => selectAllItems("prompts", filteredPrompts.map(p => p.id))}
           className="text-xs text-primary hover:underline"
@@ -579,9 +575,9 @@ const Reports = () => {
         </button>
       </div>
 
-      <div className="space-y-1">
+      <div className="divide-y divide-border/30">
         {filteredPrompts.map(prompt => (
-          <SelectableItem
+          <SelectableRow
             key={prompt.id}
             label={prompt.text}
             meta={`${prompt.mentions} mentions · ${prompt.platform}`}
@@ -597,7 +593,6 @@ const Reports = () => {
 
   // Render Products section
   const renderProductsView = () => {
-    // Check if we're viewing a specific product
     if ('productId' in currentPath && currentPath.productId) {
       const product = mockProducts.find(p => p.id === currentPath.productId);
       if (!product) return null;
@@ -607,6 +602,7 @@ const Reports = () => {
           <div className="flex items-center gap-3 mb-6">
             <Badge variant={product.status === 'ai-ready' ? 'default' : 'secondary'} 
               className={cn(
+                "text-xs",
                 product.status === 'ai-ready' 
                   ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' 
                   : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
@@ -619,7 +615,7 @@ const Reports = () => {
             Select which prompts for this product to include in the report.
           </p>
 
-          <div className="flex items-center justify-end gap-3 mb-3">
+          <div className="flex items-center justify-end gap-4 mb-2">
             <button 
               onClick={() => selectAllItems("productPrompts", product.prompts.map(p => p.id))}
               className="text-xs text-primary hover:underline"
@@ -634,9 +630,9 @@ const Reports = () => {
             </button>
           </div>
 
-          <div className="space-y-1">
+          <div className="divide-y divide-border/30">
             {product.prompts.map(prompt => (
-              <SelectableItem
+              <SelectableRow
                 key={prompt.id}
                 label={prompt.text}
                 meta={`${prompt.mentions} mentions`}
@@ -649,7 +645,6 @@ const Reports = () => {
       );
     }
 
-    // Products list view
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-4">
@@ -657,18 +652,18 @@ const Reports = () => {
             Select products to include in your report.
           </p>
           <div className="flex gap-2">
-            <FilterButton 
+            <FilterPill 
               label="All" 
               active={productFilter === 'all'} 
               onClick={() => setProductFilter('all')} 
             />
-            <FilterButton 
+            <FilterPill 
               label="AI-Ready" 
               active={productFilter === 'ai-ready'} 
               onClick={() => setProductFilter('ai-ready')}
               variant="success"
             />
-            <FilterButton 
+            <FilterPill 
               label="Needs Improvement" 
               active={productFilter === 'needs-improvement'} 
               onClick={() => setProductFilter('needs-improvement')}
@@ -677,7 +672,7 @@ const Reports = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 mb-3">
+        <div className="flex items-center justify-end gap-4 mb-2">
           <button 
             onClick={() => selectAllItems("products", filteredProducts.map(p => p.id))}
             className="text-xs text-primary hover:underline"
@@ -692,9 +687,9 @@ const Reports = () => {
           </button>
         </div>
 
-        <div className="space-y-1">
+        <div className="divide-y divide-border/30">
           {filteredProducts.map(product => (
-            <ProductItem
+            <ProductRow
               key={product.id}
               product={product}
               selected={sections.products.items?.includes(product.id) || false}
@@ -709,7 +704,6 @@ const Reports = () => {
 
   // Render Optimizations section
   const renderOptimizationsView = () => {
-    // Check if we're viewing a specific optimization
     if ('optimizationId' in currentPath && currentPath.optimizationId) {
       const opt = mockOptimizations.find(o => o.id === currentPath.optimizationId);
       if (!opt) return null;
@@ -733,7 +727,7 @@ const Reports = () => {
             Select which elements of this content to include.
           </p>
 
-          <div className="flex items-center justify-end gap-3 mb-3">
+          <div className="flex items-center justify-end gap-4 mb-2">
             <button 
               onClick={() => selectAllItems("optimizationDetails", detailItems.map(d => d.id))}
               className="text-xs text-primary hover:underline"
@@ -748,9 +742,9 @@ const Reports = () => {
             </button>
           </div>
 
-          <div className="space-y-1">
+          <div className="divide-y divide-border/30">
             {detailItems.map(item => (
-              <SelectableItem
+              <SelectableRow
                 key={item.id}
                 label={item.value}
                 meta={item.label}
@@ -763,14 +757,13 @@ const Reports = () => {
       );
     }
 
-    // Optimizations list view
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground mb-4">
           Select on-site content optimizations to include.
         </p>
 
-        <div className="flex items-center justify-end gap-3 mb-3">
+        <div className="flex items-center justify-end gap-4 mb-2">
           <button 
             onClick={() => selectAllItems("optimizations", mockOptimizations.map(o => o.id))}
             className="text-xs text-primary hover:underline"
@@ -785,9 +778,9 @@ const Reports = () => {
           </button>
         </div>
 
-        <div className="space-y-1">
+        <div className="divide-y divide-border/30">
           {mockOptimizations.map(opt => (
-            <OptimizationItem
+            <OptimizationRow
               key={opt.id}
               optimization={opt}
               selected={sections.optimizations.items?.includes(opt.id) || false}
@@ -807,7 +800,7 @@ const Reports = () => {
         Select actions to include in your report.
       </p>
 
-      <div className="flex items-center justify-end gap-3 mb-3">
+      <div className="flex items-center justify-end gap-4 mb-2">
         <button 
           onClick={() => selectAllItems("actions", mockActions.map(a => a.id))}
           className="text-xs text-primary hover:underline"
@@ -822,9 +815,9 @@ const Reports = () => {
         </button>
       </div>
 
-      <div className="space-y-1">
+      <div className="divide-y divide-border/30">
         {mockActions.map(action => (
-          <SelectableItem
+          <SelectableRow
             key={action.id}
             label={action.title}
             meta={`${action.date} · ${action.type}`}
@@ -859,7 +852,7 @@ const Reports = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="max-w-5xl mx-auto px-8 h-14 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-8 h-14 flex items-center justify-between">
           <button 
             onClick={() => navigate('/')}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -878,7 +871,7 @@ const Reports = () => {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-8 py-12">
+      <main className="max-w-6xl mx-auto px-8 py-12">
         {/* Breadcrumb Navigation */}
         <Breadcrumb className="mb-8">
           <BreadcrumbList>
@@ -902,9 +895,9 @@ const Reports = () => {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Left - Navigation & Selection */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-7">
             {currentPath.section === 'root' && (
               <div className="mb-8">
                 <h1 className="text-2xl font-light tracking-tight text-foreground mb-2">
@@ -919,83 +912,79 @@ const Reports = () => {
             {renderCurrentView()}
           </div>
 
-          {/* Right - Settings & Preview */}
-          <div className="lg:col-span-2">
-            <div className="sticky top-24 space-y-8">
-              {/* Date Range */}
-              <div>
-                <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-3">
-                  Report Period
-                </label>
-                <div className="flex items-center gap-2 text-sm">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className="text-foreground hover:text-foreground/70 transition-colors">
-                        {startDate ? format(startDate, "MMM d, yyyy") : "Start"}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
-                        mode="single"
-                        selected={startDate}
-                        onSelect={setStartDate}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <span className="text-muted-foreground">—</span>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className="text-foreground hover:text-foreground/70 transition-colors">
-                        {endDate ? format(endDate, "MMM d, yyyy") : "End"}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
-                        mode="single"
-                        selected={endDate}
-                        onSelect={setEndDate}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+          {/* Right - Live Preview */}
+          <div className="lg:col-span-5">
+            <div className="sticky top-24 space-y-6">
+              {/* Settings */}
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">
+                    Report Period
+                  </label>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="text-foreground hover:text-foreground/70 transition-colors">
+                          {startDate ? format(startDate, "MMM d, yyyy") : "Start"}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={startDate}
+                          onSelect={setStartDate}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <span className="text-muted-foreground">—</span>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="text-foreground hover:text-foreground/70 transition-colors">
+                          {endDate ? format(endDate, "MMM d, yyyy") : "End"}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={endDate}
+                          onSelect={setEndDate}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
-              </div>
 
-              <Separator />
+                <Separator />
 
-              {/* Branding */}
-              <div>
-                <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-4">
-                  Branding
-                </label>
-                
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div>
-                    <label className="text-sm text-foreground mb-2 block">Report Title</label>
+                    <label className="text-xs text-muted-foreground block mb-1.5">Report Title</label>
                     <Input
                       value={reportTitle}
                       onChange={(e) => setReportTitle(e.target.value)}
-                      className="border-0 border-b border-border rounded-none px-0 focus-visible:ring-0 focus-visible:border-foreground bg-transparent h-9"
+                      className="border-0 border-b border-border rounded-none px-0 focus-visible:ring-0 focus-visible:border-foreground bg-transparent h-8 text-sm"
                       placeholder="Enter report title"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-sm text-foreground mb-2 block">Logo</label>
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="hidden"
-                    />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                  />
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Logo</span>
                     {customLogo ? (
-                      <div className="flex items-center gap-3">
-                        <img src={customLogo} alt="Logo" className="h-6 object-contain" />
-                        <button 
+                      <div className="flex items-center gap-2">
+                        <img src={customLogo} alt="Logo" className="h-4 object-contain" />
+                        <button
                           onClick={() => setCustomLogo(null)}
                           className="text-xs text-destructive hover:underline"
                         >
@@ -1005,18 +994,19 @@ const Reports = () => {
                     ) : (
                       <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
                       >
-                        Upload logo
+                        Upload
                       </button>
                     )}
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-foreground">Page numbers</span>
+                    <span className="text-xs text-muted-foreground">Page numbers</span>
                     <Switch
                       checked={showPageNumbers}
                       onCheckedChange={setShowPageNumbers}
+                      className="scale-75"
                     />
                   </div>
                 </div>
@@ -1024,48 +1014,27 @@ const Reports = () => {
 
               <Separator />
 
-              {/* Selection Summary */}
+              {/* Live Preview */}
               <div>
                 <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-3">
-                  Selected
+                  Preview
                 </label>
-                <div className="space-y-2 text-sm">
-                  {summary.aiVisibility.length > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">AI Visibility</span>
-                      <span className="text-foreground">{summary.aiVisibility.join(', ')}</span>
-                    </div>
-                  )}
-                  {summary.promptsCount > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Prompts</span>
-                      <span className="text-foreground">{summary.promptsCount} selected</span>
-                    </div>
-                  )}
-                  {summary.productsCount > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Products</span>
-                      <span className="text-foreground">{summary.productsCount} selected</span>
-                    </div>
-                  )}
-                  {summary.optimizationsCount > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Optimizations</span>
-                      <span className="text-foreground">{summary.optimizationsCount} selected</span>
-                    </div>
-                  )}
-                  {summary.actionsCount > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Actions</span>
-                      <span className="text-foreground">{summary.actionsCount} selected</span>
-                    </div>
-                  )}
-                  {summary.aiVisibility.length === 0 && summary.promptsCount === 0 && 
-                   summary.productsCount === 0 && summary.optimizationsCount === 0 && 
-                   summary.actionsCount === 0 && (
-                    <p className="text-muted-foreground italic">No sections selected</p>
-                  )}
-                </div>
+                <ReportPreview
+                  reportTitle={reportTitle}
+                  dateRange={{ start: startDate, end: endDate }}
+                  customLogo={customLogo}
+                  brandName="Nike"
+                  sections={{
+                    score: sections.score,
+                    mentions: sections.mentions,
+                    platformCoverage: sections.platformCoverage,
+                    prompts: sections.prompts,
+                    products: sections.products,
+                    optimizations: sections.optimizations,
+                    actions: sections.actions,
+                  }}
+                  platforms={platforms}
+                />
               </div>
             </div>
           </div>
@@ -1075,8 +1044,8 @@ const Reports = () => {
   );
 };
 
-// Component: Section Navigation Card
-interface SectionNavCardProps {
+// Clean list item component (no card styling)
+interface SectionNavItemProps {
   icon: React.ElementType;
   title: string;
   description: string;
@@ -1085,29 +1054,24 @@ interface SectionNavCardProps {
   onClick: () => void;
 }
 
-const SectionNavCard = ({ icon: Icon, title, description, selected, selectedCount, onClick }: SectionNavCardProps) => (
+const SectionNavItem = ({ icon: Icon, title, description, selected, selectedCount, onClick }: SectionNavItemProps) => (
   <button
     onClick={onClick}
-    className={cn(
-      "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left group",
-      selected 
-        ? "border-primary/30 bg-primary/5" 
-        : "border-border hover:border-border/80 hover:bg-muted/30"
-    )}
+    className="w-full flex items-center gap-4 py-4 transition-colors text-left group hover:bg-muted/20"
   >
     <div className={cn(
-      "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
-      selected ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+      "w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-colors",
+      selected ? "bg-primary/10 text-primary" : "bg-muted/50 text-muted-foreground"
     )}>
-      <Icon className="w-5 h-5" />
+      <Icon className="w-4 h-4" />
     </div>
     <div className="flex-1 min-w-0">
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-foreground">{title}</span>
         {selectedCount > 0 && (
-          <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+          <span className="text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
             {selectedCount}
-          </Badge>
+          </span>
         )}
       </div>
       <p className="text-xs text-muted-foreground truncate">{description}</p>
@@ -1116,8 +1080,8 @@ const SectionNavCard = ({ icon: Icon, title, description, selected, selectedCoun
   </button>
 );
 
-// Component: Selectable Item
-interface SelectableItemProps {
+// Clean selectable row (no card)
+interface SelectableRowProps {
   label: string;
   meta: string;
   selected: boolean;
@@ -1126,13 +1090,10 @@ interface SelectableItemProps {
   badgeVariant?: 'success' | 'warning';
 }
 
-const SelectableItem = ({ label, meta, selected, onToggle, badge, badgeVariant }: SelectableItemProps) => (
+const SelectableRow = ({ label, meta, selected, onToggle, badge, badgeVariant }: SelectableRowProps) => (
   <button
     onClick={onToggle}
-    className={cn(
-      "w-full flex items-center gap-3 py-3 px-3 rounded-lg text-left transition-colors",
-      selected ? "bg-primary/5" : "hover:bg-muted/30"
-    )}
+    className="w-full flex items-center gap-3 py-3 text-left transition-colors hover:bg-muted/20"
   >
     <div className={cn(
       "w-4 h-4 rounded border flex items-center justify-center transition-all shrink-0",
@@ -1144,16 +1105,13 @@ const SelectableItem = ({ label, meta, selected, onToggle, badge, badgeVariant }
       <div className="flex items-center gap-2">
         <span className="text-sm text-foreground truncate">{label}</span>
         {badge && (
-          <Badge 
-            variant="outline" 
-            className={cn(
-              "text-[10px] h-4 px-1.5",
-              badgeVariant === 'success' && "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-              badgeVariant === 'warning' && "bg-amber-500/10 text-amber-600 border-amber-500/20"
-            )}
-          >
+          <span className={cn(
+            "text-[10px] px-1.5 py-0.5 rounded-full",
+            badgeVariant === 'success' && "bg-emerald-500/10 text-emerald-600",
+            badgeVariant === 'warning' && "bg-amber-500/10 text-amber-600"
+          )}>
             {badge}
-          </Badge>
+          </span>
         )}
       </div>
       <span className="text-xs text-muted-foreground">{meta}</span>
@@ -1161,19 +1119,16 @@ const SelectableItem = ({ label, meta, selected, onToggle, badge, badgeVariant }
   </button>
 );
 
-// Component: Product Item with drill-down
-interface ProductItemProps {
+// Product row with drill-down
+interface ProductRowProps {
   product: typeof mockProducts[0];
   selected: boolean;
   onToggle: () => void;
   onNavigate: () => void;
 }
 
-const ProductItem = ({ product, selected, onToggle, onNavigate }: ProductItemProps) => (
-  <div className={cn(
-    "flex items-center gap-3 py-3 px-3 rounded-lg transition-colors",
-    selected ? "bg-primary/5" : "hover:bg-muted/30"
-  )}>
+const ProductRow = ({ product, selected, onToggle, onNavigate }: ProductRowProps) => (
+  <div className="flex items-center gap-3 py-3 transition-colors hover:bg-muted/20">
     <button onClick={onToggle} className="shrink-0">
       <div className={cn(
         "w-4 h-4 rounded border flex items-center justify-center transition-all",
@@ -1186,17 +1141,14 @@ const ProductItem = ({ product, selected, onToggle, onNavigate }: ProductItemPro
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm text-foreground truncate">{product.name}</span>
-          <Badge 
-            variant="outline" 
-            className={cn(
-              "text-[10px] h-4 px-1.5",
-              product.status === 'ai-ready' 
-                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                : "bg-amber-500/10 text-amber-600 border-amber-500/20"
-            )}
-          >
+          <span className={cn(
+            "text-[10px] px-1.5 py-0.5 rounded-full",
+            product.status === 'ai-ready' 
+              ? "bg-emerald-500/10 text-emerald-600"
+              : "bg-amber-500/10 text-amber-600"
+          )}>
             {product.status === 'ai-ready' ? 'AI-Ready' : 'Needs Improvement'}
-          </Badge>
+          </span>
         </div>
         <span className="text-xs text-muted-foreground">{product.prompts.length} prompts</span>
       </div>
@@ -1205,19 +1157,16 @@ const ProductItem = ({ product, selected, onToggle, onNavigate }: ProductItemPro
   </div>
 );
 
-// Component: Optimization Item with drill-down
-interface OptimizationItemProps {
+// Optimization row with drill-down
+interface OptimizationRowProps {
   optimization: typeof mockOptimizations[0];
   selected: boolean;
   onToggle: () => void;
   onNavigate: () => void;
 }
 
-const OptimizationItem = ({ optimization, selected, onToggle, onNavigate }: OptimizationItemProps) => (
-  <div className={cn(
-    "flex items-center gap-3 py-3 px-3 rounded-lg transition-colors",
-    selected ? "bg-primary/5" : "hover:bg-muted/30"
-  )}>
+const OptimizationRow = ({ optimization, selected, onToggle, onNavigate }: OptimizationRowProps) => (
+  <div className="flex items-center gap-3 py-3 transition-colors hover:bg-muted/20">
     <button onClick={onToggle} className="shrink-0">
       <div className={cn(
         "w-4 h-4 rounded border flex items-center justify-center transition-all",
@@ -1230,9 +1179,9 @@ const OptimizationItem = ({ optimization, selected, onToggle, onNavigate }: Opti
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm text-foreground truncate">{optimization.title}</span>
-          <Badge variant="outline" className="text-[10px] h-4 px-1.5">
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
             {optimization.associatedWith.type === 'product' ? 'Product' : 'Brand'}
-          </Badge>
+          </span>
         </div>
         <span className="text-xs text-muted-foreground truncate">{optimization.urlSlug}</span>
       </div>
@@ -1241,26 +1190,26 @@ const OptimizationItem = ({ optimization, selected, onToggle, onNavigate }: Opti
   </div>
 );
 
-// Component: Filter Button
-interface FilterButtonProps {
+// Filter pill component
+interface FilterPillProps {
   label: string;
   active: boolean;
   onClick: () => void;
   variant?: 'default' | 'success' | 'warning';
 }
 
-const FilterButton = ({ label, active, onClick, variant = 'default' }: FilterButtonProps) => (
+const FilterPill = ({ label, active, onClick, variant = 'default' }: FilterPillProps) => (
   <button
     onClick={onClick}
     className={cn(
-      "px-3 py-1 text-xs rounded-full border transition-colors",
+      "px-3 py-1 text-xs rounded-full transition-colors",
       active 
         ? variant === 'success' 
-          ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30"
+          ? "bg-emerald-500/10 text-emerald-600"
           : variant === 'warning'
-            ? "bg-amber-500/10 text-amber-600 border-amber-500/30"
-            : "bg-primary/10 text-primary border-primary/30"
-        : "border-border text-muted-foreground hover:text-foreground hover:border-border/80"
+            ? "bg-amber-500/10 text-amber-600"
+            : "bg-primary/10 text-primary"
+        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
     )}
   >
     {label}
