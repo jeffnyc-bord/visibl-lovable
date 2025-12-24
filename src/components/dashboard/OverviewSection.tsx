@@ -587,7 +587,10 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                       <span className="text-sm text-foreground">{platform.platform}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-foreground tabular-nums">{platform.mentions}</span>
+                      <div className="text-right">
+                        <span className="text-sm font-medium text-foreground tabular-nums">{platform.mentions}</span>
+                        <span className="text-xs text-muted-foreground ml-1">mentions</span>
+                      </div>
                       <span 
                         className="text-xs px-1.5 py-0.5 rounded-full"
                         style={{
