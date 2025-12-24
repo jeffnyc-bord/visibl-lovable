@@ -1050,15 +1050,13 @@ ${s.content}`).join('\n\n')}`;
               {/* Review mode indicator */}
               {studioMode === 'review' && (
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 px-4 py-3 rounded-xl bg-primary/5 border border-primary/20 flex items-center gap-3"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mb-8 text-center"
                 >
-                  <Eye className="w-4 h-4 text-primary" />
-                  <div>
-                    <p className="text-xs font-medium text-foreground">Review Mode</p>
-                    <p className="text-[10px] text-muted-foreground">Select any text to add a comment</p>
-                  </div>
+                  <span className="text-[11px] text-muted-foreground">
+                    Select text to add a comment
+                  </span>
                 </motion.div>
               )}
 
