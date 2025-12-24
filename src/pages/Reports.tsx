@@ -430,6 +430,16 @@ const Reports = () => {
   };
 
   if (step === 'edit') {
+    const pdfSections = {
+      score: { enabled: sections.score.enabled },
+      mentions: { enabled: sections.mentions.enabled },
+      platformCoverage: { enabled: sections.platformCoverage.enabled, items: sections.platformCoverage.items },
+      prompts: { enabled: sections.prompts.enabled, items: sections.prompts.items },
+      products: { enabled: sections.products.enabled, items: sections.products.items },
+      optimizations: { enabled: sections.optimizations.enabled, items: sections.optimizations.items },
+      actions: { enabled: sections.actions.enabled, items: sections.actions.items },
+    };
+    
     return (
       <ReportEditor
         blocks={editorBlocks}
@@ -439,6 +449,11 @@ const Reports = () => {
         reportTitle={reportTitle}
         onTitleChange={setReportTitle}
         isExporting={isExporting}
+        sections={pdfSections}
+        platforms={platforms}
+        dateRange={{ start: startDate, end: endDate }}
+        brandName="Nike"
+        customLogo={customLogo}
       />
     );
   }
