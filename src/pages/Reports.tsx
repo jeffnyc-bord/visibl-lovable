@@ -16,6 +16,7 @@ import {
   Eye,
   Clock,
   Calendar,
+  Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,17 @@ import ReportPreview from '@/components/reports/ReportPreview';
 import { downloadReportPDF } from '@/utils/reportPdfExport';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 // Mock data
 const mockPrompts = [
@@ -144,8 +156,8 @@ interface SectionConfig {
   items?: string[];
 }
 
-// Mock saved reports for dashboard
-const mockSavedReports = [
+// Initial saved reports data
+const initialSavedReports = [
   {
     id: "1",
     title: "Q4 2024 AI Visibility Report",
@@ -169,14 +181,26 @@ const mockSavedReports = [
   },
 ];
 
+type SavedReport = typeof initialSavedReports[0];
+
 type ViewMode = 'dashboard' | 'wizard' | 'editor';
 
 const Reports = () => {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
+  const [savedReports, setSavedReports] = useState<SavedReport[]>(initialSavedReports);
   const [currentStep, setCurrentStep] = useState<WizardStep>('setup');
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(2024, 0, 1));
   const [endDate, setEndDate] = useState<Date | undefined>(new Date());
+  const { toast } = useToast();
+
+  const handleDeleteReport = (reportId: string) => {
+    setSavedReports(prev => prev.filter(r => r.id !== reportId));
+    toast({
+      title: "Report deleted",
+      description: "The report has been removed.",
+    });
+  };
   
   // Selection state
   const [sections, setSections] = useState<Record<string, SectionConfig>>({
@@ -200,7 +224,6 @@ const Reports = () => {
   const [customLogo, setCustomLogo] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const { toast } = useToast();
   const [editorBlocks, setEditorBlocks] = useState<ReportBlock[]>([]);
 
   // Step navigation
@@ -518,11 +541,11 @@ const Reports = () => {
               Saved Reports
             </h2>
             <span className="text-xs text-muted-foreground">
-              {mockSavedReports.length} reports
+              {savedReports.length} reports
             </span>
           </div>
 
-          {mockSavedReports.length === 0 ? (
+          {savedReports.length === 0 ? (
             <div className="border border-dashed border-border rounded-lg p-12 text-center">
               <FileText className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">No reports yet</h3>
@@ -536,7 +559,7 @@ const Reports = () => {
             </div>
           ) : (
             <div className="grid gap-4">
-              {mockSavedReports.map((report) => (
+              {savedReports.map((report) => (
                 <div
                   key={report.id}
                   className="group bg-card border border-border rounded-lg p-5 hover:border-primary/30 transition-colors"
@@ -564,6 +587,30 @@ const Reports = () => {
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                         <Download className="w-4 h-4" />
                       </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete report?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will permanently delete "{report.title}". This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteReport(report.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                 </div>
