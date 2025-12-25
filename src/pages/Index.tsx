@@ -312,7 +312,7 @@ const Index = () => {
   // Available dashboard sections - now organized into groups
   const mainSections = [
     { key: "overview", label: "AI Visibility Overview", icon: Home },
-    { key: "brand", label: "Brand & Products Visibility", icon: Building },
+    { key: "brand", label: "Product Lab", icon: Building },
     { key: "queries", label: "Prompt Blast Lab", icon: Zap },
     { key: "recommendations", label: "Actions Lab", icon: Lightbulb }
   ];
