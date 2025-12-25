@@ -62,6 +62,7 @@ export const ProductDetail = () => {
   const [showTransitionModal, setShowTransitionModal] = useState(false);
   const [selectedGapId, setSelectedGapId] = useState<number | null>(null);
   const [showUpgradeSheet, setShowUpgradeSheet] = useState(false);
+  const [showOptimizeModal, setShowOptimizeModal] = useState(false);
 
   // Platform logo mapping
   const platformLogos: Record<string, string> = {
@@ -502,6 +503,15 @@ export const ProductDetail = () => {
                   {isPinned ? <Pin className="w-4 h-4" /> : <PinOff className="w-4 h-4" />}
                 </Button>
                 <Button 
+                  onClick={() => setShowOptimizeModal(true)}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full border-border/60"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Optimize
+                </Button>
+                <Button 
                   onClick={handleReanalyze}
                   disabled={isReanalyzing}
                   variant="outline"
@@ -560,20 +570,9 @@ export const ProductDetail = () => {
                   </div>
                 </div>
                 
-                {/* AI Readiness Label + Fix Now Button */}
-                <div className="flex items-center gap-4 mb-8">
+                {/* AI Readiness Label */}
+                <div className="mb-8">
                   <p className="text-sm text-muted-foreground">AI Readiness Score</p>
-                  <button
-                    onClick={() => {
-                      setSelectedGapId(1);
-                      setShowTransitionModal(true);
-                    }}
-                    className="group flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/20 transition-all duration-200"
-                  >
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                    <span className="text-xs font-medium text-amber-600">Fix Now</span>
-                    <ArrowRight className="w-3 h-3 text-amber-500 group-hover:translate-x-0.5 transition-transform duration-200" />
-                  </button>
                 </div>
 
                 {/* Key Metrics - Minimal */}
@@ -1103,11 +1102,96 @@ export const ProductDetail = () => {
         );
       })()}
 
+      {/* Optimize Modal */}
+      {showOptimizeModal && (
+        <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-background/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4 animate-scale-in border border-border/50">
+            <div className="space-y-6">
+              {/* Header */}
+              <div className="text-center space-y-2">
+                <div className="w-14 h-14 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-7 h-7 text-primary" />
+                </div>
+                <h3 className="text-xl font-medium text-foreground">Optimize Data Fidelity</h3>
+                <p className="text-sm text-muted-foreground">
+                  Improve your product's AI visibility by expanding discovery or optimizing content.
+                </p>
+              </div>
+
+              {/* Options */}
+              <div className="space-y-3">
+                {/* Add Prompts Option */}
+                <button
+                  onClick={() => {
+                    setShowOptimizeModal(false);
+                    if (prompts.length >= MAX_PROMPTS) {
+                      setShowUpgradeSheet(true);
+                    } else {
+                      setShowAddPrompt(true);
+                    }
+                  }}
+                  className="w-full group p-4 rounded-2xl border border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 text-left"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+                      <Plus className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-foreground">Add More Prompts</p>
+                        <span className="text-xs text-muted-foreground">
+                          ({prompts.length}/{MAX_PROMPTS} used)
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        Expand AI discovery by tracking additional search queries
+                      </p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
+                  </div>
+                </button>
+
+                {/* On-site Optimization Option */}
+                <button
+                  onClick={() => {
+                    setShowOptimizeModal(false);
+                    navigate(`/?tab=recommendations&subtab=on-site&productId=${productId}`);
+                  }}
+                  className="w-full group p-4 rounded-2xl border border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 text-left"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                      <Wrench className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-foreground">Optimize Product Content</p>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        Improve on-site content to boost AI ranking signals
+                      </p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
+                  </div>
+                </button>
+              </div>
+
+              {/* Cancel Button */}
+              <Button 
+                variant="ghost" 
+                className="w-full rounded-full"
+                onClick={() => setShowOptimizeModal(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Upgrade Sheet */}
       <UpgradeSheet 
         open={showUpgradeSheet} 
         onOpenChange={setShowUpgradeSheet} 
-        type="chatbot_coverage"
+        type="prompt_fidelity"
       />
     </>
   );
