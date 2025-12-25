@@ -105,20 +105,13 @@ export const SourceInsightsSheet = ({
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Source Authority
             </h3>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <div className="p-4 rounded-xl bg-secondary/30 border border-border/30">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Users className="w-3.5 h-3.5 text-muted-foreground" />
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Monthly Traffic</span>
                 </div>
                 <p className="text-xl font-semibold">{source.trafficEstimate.monthlyVisitors}</p>
-              </div>
-              <div className="p-4 rounded-xl bg-secondary/30 border border-border/30">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <BarChart3 className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">LLM Referrals</span>
-                </div>
-                <p className="text-xl font-semibold">{source.trafficEstimate.llmReferrals.toLocaleString()}</p>
               </div>
               <div className="p-4 rounded-xl bg-secondary/30 border border-border/30">
                 <div className="flex items-center gap-1.5 mb-2">
