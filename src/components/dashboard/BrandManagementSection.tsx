@@ -83,7 +83,7 @@ interface BrandManagementSectionProps {
 
 export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDuration = 6 }: BrandManagementSectionProps) => {
   const { toast } = useToast();
-  const { tier, limits, brandsTracked, canAddBrand, swapsUsed, swapsRemaining, canSwap, refreshSubscription } = useSubscription();
+  const { tier, limits, chatbotsTracked, canAddChatbot, swapsUsed, swapsRemaining, canSwap, refreshSubscription } = useSubscription();
   const [isAddingBrand, setIsAddingBrand] = useState(false);
   const [addBrandProgress, setAddBrandProgress] = useState(0);
   const [showAddBrandDialog, setShowAddBrandDialog] = useState(false);
@@ -103,7 +103,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
     reportFrequency: ""
   });
   
-  const maxBrands = limits.maxBrands;
+  const maxBrands = limits.maxChatbots;
   const currentTier = tier;
   
   // Use selected brand as the primary brand
@@ -182,10 +182,10 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
 
   const competitorCount = competitors.length;
   // Total brands = actual brands from database
-  const totalBrandsTracked = brandsTracked;
+  const totalBrandsTracked = chatbotsTracked;
   const currentBrandCount = totalBrandsTracked;
   const brandsRemaining = Math.max(0, maxBrands - totalBrandsTracked);
-  const isAtLimit = !canAddBrand;
+  const isAtLimit = !canAddChatbot;
 
   const handleToggleMonitoring = (competitorId: number) => {
     setCompetitors(prev => prev.map(competitor => 
@@ -356,7 +356,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
 
   const handleAddBrandClick = () => {
     // Check if user can add more brands
-    if (!canAddBrand) {
+    if (!canAddChatbot) {
       setShowUpgradeDialog(true);
       return;
     }
@@ -367,7 +367,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
     if (!newBrandData.name.trim() || !newBrandData.url.trim() || !newBrandData.reportFrequency) return;
     
     // Double check brand limit
-    if (!canAddBrand) {
+    if (!canAddChatbot) {
       toast({
         title: "Brand Limit Reached",
         description: `You've reached the maximum of ${maxBrands} brand${maxBrands !== 1 ? 's' : ''} for the ${currentTier} tier. Upgrade to add more brands.`,
@@ -1183,7 +1183,7 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
 
             <div className="space-y-3 pt-4">
               <div className="grid grid-cols-1 gap-3">
-                {currentTier === 'free' && (
+                {currentTier === 'starter' && (
                   <div className="border border-primary/20 bg-primary/5 rounded-lg p-4 text-left">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold text-foreground">Pro Plan</h3>

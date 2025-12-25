@@ -19,7 +19,7 @@ export function AddProductDialog({ trigger, onProductAdded }: AddProductDialogPr
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const { canAddProduct, productsTracked, limits, refreshSubscription } = useSubscription();
+  const { canAddChatbot, chatbotsTracked, limits, refreshSubscription } = useSubscription();
   
   const [formData, setFormData] = useState({
     name: "",
@@ -55,7 +55,7 @@ export function AddProductDialog({ trigger, onProductAdded }: AddProductDialogPr
     e.preventDefault();
     
     // Check product limit
-    if (!canAddProduct) {
+    if (!canAddChatbot) {
       setShowUpgradeDialog(true);
       return;
     }
@@ -125,9 +125,9 @@ export function AddProductDialog({ trigger, onProductAdded }: AddProductDialogPr
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           {trigger || (
-            <Button className="flex items-center space-x-2" disabled={!canAddProduct}>
+            <Button className="flex items-center space-x-2" disabled={!canAddChatbot}>
               <Plus className="w-4 h-4" />
-              <span>Add Product/Service {!canAddProduct && '(Limit Reached)'}</span>
+              <span>Add Product/Service {!canAddChatbot && '(Limit Reached)'}</span>
             </Button>
           )}
         </DialogTrigger>
@@ -138,7 +138,7 @@ export function AddProductDialog({ trigger, onProductAdded }: AddProductDialogPr
               <span>Add Product/Service</span>
             </DialogTitle>
             <DialogDescription>
-              Manually add a product or service for AI readiness analysis ({productsTracked}/{limits.maxProducts === 999999 ? '∞' : limits.maxProducts} products used)
+              Manually add a product or service for AI readiness analysis ({chatbotsTracked}/{limits.maxChatbots === 999999 ? '∞' : limits.maxChatbots} tracked)
             </DialogDescription>
           </DialogHeader>
           
