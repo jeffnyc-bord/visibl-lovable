@@ -1233,7 +1233,7 @@ const Index = () => {
               onLastClientWarningChange={setShowLastClientWarning}
             />
           )}
-          {activeView === "settings" && <SettingsPage userRole={userRole} />}
+          {activeView === "settings" && <SettingsPage userRole={userRole} onBack={() => setActiveView("overview")} />}
         </main>
       </div>
 

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { 
   User, 
   CircleUser, 
@@ -8,7 +9,8 @@ import {
   Monitor, 
   Sparkles, 
   Palette,
-  CreditCard
+  CreditCard,
+  ArrowLeft
 } from "lucide-react";
 import { ProfileSettings } from "@/components/settings/ProfileSettings";
 import { AccountSettingsPanel } from "@/components/settings/AccountSettingsPanel";
@@ -20,6 +22,7 @@ import { ThemeSettings } from "@/components/settings/ThemeSettings";
 import { ColorSchemeSettings } from "@/components/settings/ColorSchemeSettings";
 import { BillingSettingsPanel } from "@/components/settings/BillingSettingsPanel";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface SettingsProps {
   userRole: "business_user" | "agency_admin";
@@ -74,8 +77,17 @@ const navSections: NavSection[] = [
   },
 ];
 
-export const Settings = ({ userRole }: SettingsProps) => {
+export const Settings = ({ userRole, onBack }: SettingsProps & { onBack?: () => void }) => {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+
+  // Handle tab from URL query param
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['profile', 'account', 'password', 'invite', 'people', 'appearance', 'theme', 'color-scheme', 'billing'].includes(tabParam)) {
+      setActiveTab(tabParam as SettingsTab);
+    }
+  }, [searchParams]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -107,6 +119,18 @@ export const Settings = ({ userRole }: SettingsProps) => {
       <div className="flex max-w-6xl mx-auto">
         {/* Left Sidebar Navigation */}
         <aside className="w-64 shrink-0 border-r border-border py-6 pr-6">
+          {/* Back Button */}
+          {onBack && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBack}
+              className="mb-4 gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </Button>
+          )}
           <nav className="space-y-6">
             {navSections.map((section) => (
               <div key={section.title}>
