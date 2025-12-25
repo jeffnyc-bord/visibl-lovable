@@ -101,20 +101,13 @@ export const PromptInsightsSheet = ({
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Traffic Estimates
             </h3>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <div className="p-4 rounded-xl bg-secondary/30 border border-border/30">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Eye className="w-3.5 h-3.5 text-muted-foreground" />
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Impressions</span>
                 </div>
                 <p className="text-xl font-semibold">{prompt.trafficEstimate.impressions.toLocaleString()}</p>
-              </div>
-              <div className="p-4 rounded-xl bg-secondary/30 border border-border/30">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Users className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Est. Clicks</span>
-                </div>
-                <p className="text-xl font-semibold">{prompt.trafficEstimate.clicks.toLocaleString()}</p>
               </div>
               <div className="p-4 rounded-xl bg-secondary/30 border border-border/30">
                 <div className="flex items-center gap-1.5 mb-2">
@@ -229,21 +222,6 @@ export const PromptInsightsSheet = ({
             )}
           </section>
 
-          {/* Competitors Mentioned */}
-          {prompt.competitorsMentioned.length > 0 && (
-            <section className="space-y-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Competitors Also Mentioned
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {prompt.competitorsMentioned.map((competitor) => (
-                  <Badge key={competitor} variant="outline" className="text-xs">
-                    {competitor}
-                  </Badge>
-                ))}
-              </div>
-            </section>
-          )}
         </div>
       </SheetContent>
     </Sheet>
