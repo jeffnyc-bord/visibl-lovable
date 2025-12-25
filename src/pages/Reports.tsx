@@ -122,15 +122,17 @@ const platforms = [
   { id: "grok", name: "Grok", mentions: 1892 },
 ];
 
-type NavigationPath = 
-  | { section: 'root' }
-  | { section: 'ai-visibility' }
-  | { section: 'prompts' }
-  | { section: 'products' }
-  | { section: 'products'; productId: string }
-  | { section: 'optimizations' }
-  | { section: 'optimizations'; optimizationId: string }
-  | { section: 'actions' };
+// Wizard steps
+type WizardStep = 'setup' | 'ai-visibility' | 'prompts' | 'products' | 'optimizations' | 'actions';
+
+const WIZARD_STEPS: { key: WizardStep; label: string; icon: React.ElementType }[] = [
+  { key: 'setup', label: 'Report Setup', icon: BarChart3 },
+  { key: 'ai-visibility', label: 'AI Overview', icon: BarChart3 },
+  { key: 'prompts', label: 'Prompts & Queries', icon: MessageSquare },
+  { key: 'products', label: 'Products', icon: Package },
+  { key: 'optimizations', label: 'On-Site Optimizations', icon: FileText },
+  { key: 'actions', label: 'Actions Log', icon: ClipboardList },
+];
 
 interface SectionConfig {
   enabled: boolean;
@@ -139,12 +141,10 @@ interface SectionConfig {
 
 const Reports = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<'configure' | 'edit'>('configure');
+  const [currentStep, setCurrentStep] = useState<WizardStep>('setup');
+  const [isEditing, setIsEditing] = useState(false);
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(2024, 0, 1));
   const [endDate, setEndDate] = useState<Date | undefined>(new Date());
-  
-  // Navigation state
-  const [currentPath, setCurrentPath] = useState<NavigationPath>({ section: 'root' });
   
   // Selection state
   const [sections, setSections] = useState<Record<string, SectionConfig>>({
@@ -171,39 +171,32 @@ const Reports = () => {
   const { toast } = useToast();
   const [editorBlocks, setEditorBlocks] = useState<ReportBlock[]>([]);
 
-  // Navigation helpers
-  const navigateTo = (path: NavigationPath) => setCurrentPath(path);
-  
-  const getBreadcrumbs = (): { label: string; path: NavigationPath }[] => {
-    const crumbs: { label: string; path: NavigationPath }[] = [
-      { label: 'Report Sections', path: { section: 'root' } }
-    ];
-    
-    if (currentPath.section === 'ai-visibility') {
-      crumbs.push({ label: 'AI Visibility Overview', path: { section: 'ai-visibility' } });
-    } else if (currentPath.section === 'prompts') {
-      crumbs.push({ label: 'Prompts & Queries', path: { section: 'prompts' } });
-    } else if (currentPath.section === 'products') {
-      crumbs.push({ label: 'Products', path: { section: 'products' } });
-      if ('productId' in currentPath && currentPath.productId) {
-        const product = mockProducts.find(p => p.id === currentPath.productId);
-        if (product) {
-          crumbs.push({ label: product.name, path: currentPath });
-        }
-      }
-    } else if (currentPath.section === 'optimizations') {
-      crumbs.push({ label: 'On-site Optimizations', path: { section: 'optimizations' } });
-      if ('optimizationId' in currentPath && currentPath.optimizationId) {
-        const opt = mockOptimizations.find(o => o.id === currentPath.optimizationId);
-        if (opt) {
-          crumbs.push({ label: opt.title, path: currentPath });
-        }
-      }
-    } else if (currentPath.section === 'actions') {
-      crumbs.push({ label: 'Actions Log', path: { section: 'actions' } });
+  // Step navigation
+  const currentStepIndex = WIZARD_STEPS.findIndex(s => s.key === currentStep);
+  const isFirstStep = currentStepIndex === 0;
+  const isLastStep = currentStepIndex === WIZARD_STEPS.length - 1;
+
+  const goToNextStep = () => {
+    if (isLastStep) {
+      // Proceed to editor
+      setEditorBlocks(generateBlocks());
+      setIsEditing(true);
+    } else {
+      setCurrentStep(WIZARD_STEPS[currentStepIndex + 1].key);
     }
-    
-    return crumbs;
+  };
+
+  const goToPreviousStep = () => {
+    if (!isFirstStep) {
+      setCurrentStep(WIZARD_STEPS[currentStepIndex - 1].key);
+    }
+  };
+
+  const goToStep = (step: WizardStep) => {
+    const stepIndex = WIZARD_STEPS.findIndex(s => s.key === step);
+    if (stepIndex <= currentStepIndex) {
+      setCurrentStep(step);
+    }
   };
 
   // Toggle helpers
@@ -382,7 +375,7 @@ const Reports = () => {
 
   const handleProceedToEdit = () => {
     setEditorBlocks(generateBlocks());
-    setStep('edit');
+    setIsEditing(true);
   };
 
   const handleExport = async () => {
@@ -428,7 +421,7 @@ const Reports = () => {
     }
   };
 
-  if (step === 'edit') {
+  if (isEditing) {
     const pdfSections = {
       score: { enabled: sections.score.enabled },
       mentions: { enabled: sections.mentions.enabled },
@@ -443,7 +436,7 @@ const Reports = () => {
       <ReportEditor
         blocks={editorBlocks}
         onBlocksChange={setEditorBlocks}
-        onBack={() => setStep('configure')}
+        onBack={() => setIsEditing(false)}
         onExport={handleExport}
         reportTitle={reportTitle}
         onTitleChange={setReportTitle}
@@ -457,49 +450,101 @@ const Reports = () => {
     );
   }
 
-  // Render section navigation items (root view) - clean list with dividers
-  const renderRootView = () => (
-    <div className="divide-y divide-border/50">
-      <SectionNavItem
-        icon={BarChart3}
-        title="AI Visibility Overview"
-        description="Score, mentions, and platform coverage"
-        selected={summary.aiVisibility.length > 0}
-        selectedCount={summary.aiVisibility.length}
-        onClick={() => navigateTo({ section: 'ai-visibility' })}
-      />
-      <SectionNavItem
-        icon={MessageSquare}
-        title="Prompts & Queries"
-        description="Standalone prompts and queries"
-        selected={summary.promptsCount > 0}
-        selectedCount={summary.promptsCount}
-        onClick={() => navigateTo({ section: 'prompts' })}
-      />
-      <SectionNavItem
-        icon={Package}
-        title="Products"
-        description="Products and their associated prompts"
-        selected={summary.productsCount > 0}
-        selectedCount={summary.productsCount}
-        onClick={() => navigateTo({ section: 'products' })}
-      />
-      <SectionNavItem
-        icon={FileText}
-        title="On-site Optimizations"
-        description="Content created with titles, URLs, and headers"
-        selected={summary.optimizationsCount > 0}
-        selectedCount={summary.optimizationsCount}
-        onClick={() => navigateTo({ section: 'optimizations' })}
-      />
-      <SectionNavItem
-        icon={ClipboardList}
-        title="Actions Log"
-        description="Select actions to include in report"
-        selected={summary.actionsCount > 0}
-        selectedCount={summary.actionsCount}
-        onClick={() => navigateTo({ section: 'actions' })}
-      />
+  // Render Setup step
+  const renderSetupView = () => (
+    <div className="space-y-6">
+      <div>
+        <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">
+          Report Period
+        </label>
+        <div className="flex items-center gap-2 text-sm">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-foreground hover:text-foreground/70 transition-colors px-3 py-2 border border-border rounded-lg">
+                {startDate ? format(startDate, "MMM d, yyyy") : "Start"}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <CalendarComponent
+                mode="single"
+                selected={startDate}
+                onSelect={setStartDate}
+                initialFocus
+                className="pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+          <span className="text-muted-foreground">—</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-foreground hover:text-foreground/70 transition-colors px-3 py-2 border border-border rounded-lg">
+                {endDate ? format(endDate, "MMM d, yyyy") : "End"}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <CalendarComponent
+                mode="single"
+                selected={endDate}
+                onSelect={setEndDate}
+                initialFocus
+                className="pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <div>
+          <label className="text-xs text-muted-foreground block mb-1.5">Report Title</label>
+          <Input
+            value={reportTitle}
+            onChange={(e) => setReportTitle(e.target.value)}
+            className="border border-border rounded-lg px-3 bg-transparent h-10 text-sm"
+            placeholder="Enter report title"
+          />
+        </div>
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          accept="image/*"
+          onChange={handleLogoUpload}
+        />
+
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">Logo</span>
+          {customLogo ? (
+            <div className="flex items-center gap-2">
+              <img src={customLogo} alt="Logo" className="h-6 object-contain" />
+              <button
+                onClick={() => setCustomLogo(null)}
+                className="text-xs text-destructive hover:underline"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="text-sm text-primary hover:underline"
+            >
+              Upload
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">Page numbers</span>
+          <Switch
+            checked={showPageNumbers}
+            onCheckedChange={setShowPageNumbers}
+          />
+        </div>
+      </div>
     </div>
   );
 
@@ -618,207 +663,100 @@ const Reports = () => {
     </div>
   );
 
-  // Render Products section
-  const renderProductsView = () => {
-    if ('productId' in currentPath && currentPath.productId) {
-      const product = mockProducts.find(p => p.id === currentPath.productId);
-      if (!product) return null;
-
-      return (
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 mb-6">
-            <Badge variant={product.status === 'ai-ready' ? 'default' : 'secondary'} 
-              className={cn(
-                "text-xs",
-                product.status === 'ai-ready' 
-                  ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' 
-                  : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
-              )}>
-              {product.status === 'ai-ready' ? 'AI-Ready' : 'Needs Improvement'}
-            </Badge>
-          </div>
-          
-          <p className="text-sm text-muted-foreground mb-4">
-            Select which prompts for this product to include in the report.
-          </p>
-
-          <div className="flex items-center justify-end gap-4 mb-2">
-            <button 
-              onClick={() => selectAllItems("productPrompts", product.prompts.map(p => p.id))}
-              className="text-xs text-primary hover:underline"
-            >
-              Select all
-            </button>
-            <button 
-              onClick={() => deselectAllItems("productPrompts")}
-              className="text-xs text-muted-foreground hover:underline"
-            >
-              Clear
-            </button>
-          </div>
-
-          <div className="divide-y divide-border/30">
-            {product.prompts.map(prompt => (
-              <SelectableRow
-                key={prompt.id}
-                label={prompt.text}
-                meta={`${prompt.mentions} mentions`}
-                selected={sections.productPrompts.items?.includes(prompt.id) || false}
-                onToggle={() => toggleItem('productPrompts', prompt.id)}
-              />
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-muted-foreground">
-            Select products to include in your report.
-          </p>
-          <div className="flex gap-2">
-            <FilterPill 
-              label="All" 
-              active={productFilter === 'all'} 
-              onClick={() => setProductFilter('all')} 
-            />
-            <FilterPill 
-              label="AI-Ready" 
-              active={productFilter === 'ai-ready'} 
-              onClick={() => setProductFilter('ai-ready')}
-              variant="success"
-            />
-            <FilterPill 
-              label="Needs Improvement" 
-              active={productFilter === 'needs-improvement'} 
-              onClick={() => setProductFilter('needs-improvement')}
-              variant="warning"
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center justify-end gap-4 mb-2">
-          <button 
-            onClick={() => selectAllItems("products", filteredProducts.map(p => p.id))}
-            className="text-xs text-primary hover:underline"
-          >
-            Select all
-          </button>
-          <button 
-            onClick={() => deselectAllItems("products")}
-            className="text-xs text-muted-foreground hover:underline"
-          >
-            Clear
-          </button>
-        </div>
-
-        <div className="divide-y divide-border/30">
-          {filteredProducts.map(product => (
-            <ProductRow
-              key={product.id}
-              product={product}
-              selected={sections.products.items?.includes(product.id) || false}
-              onToggle={() => toggleItem('products', product.id)}
-              onNavigate={() => navigateTo({ section: 'products', productId: product.id })}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  // Render Optimizations section
-  const renderOptimizationsView = () => {
-    if ('optimizationId' in currentPath && currentPath.optimizationId) {
-      const opt = mockOptimizations.find(o => o.id === currentPath.optimizationId);
-      if (!opt) return null;
-
-      const detailItems = [
-        { id: `${opt.id}-title`, label: 'Title', value: opt.title },
-        { id: `${opt.id}-url`, label: 'URL Slug', value: opt.urlSlug },
-        ...opt.headers.map((h, i) => ({ id: `${opt.id}-h${i}`, label: 'Header', value: h })),
-      ];
-
-      return (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-6">
-            <Badge variant="outline" className="text-xs">
-              {opt.associatedWith.type === 'product' ? 'Product' : 'Brand'}: {opt.associatedWith.name}
-            </Badge>
-            <span className="text-xs text-muted-foreground">{opt.createdAt}</span>
-          </div>
-          
-          <p className="text-sm text-muted-foreground mb-4">
-            Select which elements of this content to include.
-          </p>
-
-          <div className="flex items-center justify-end gap-4 mb-2">
-            <button 
-              onClick={() => selectAllItems("optimizationDetails", detailItems.map(d => d.id))}
-              className="text-xs text-primary hover:underline"
-            >
-              Select all
-            </button>
-            <button 
-              onClick={() => deselectAllItems("optimizationDetails")}
-              className="text-xs text-muted-foreground hover:underline"
-            >
-              Clear
-            </button>
-          </div>
-
-          <div className="divide-y divide-border/30">
-            {detailItems.map(item => (
-              <SelectableRow
-                key={item.id}
-                label={item.value}
-                meta={item.label}
-                selected={sections.optimizationDetails.items?.includes(item.id) || false}
-                onToggle={() => toggleItem('optimizationDetails', item.id)}
-              />
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-4">
-        <p className="text-sm text-muted-foreground mb-4">
-          Select on-site content optimizations to include.
+  // Render Products section (simplified - no drill-down)
+  const renderProductsView = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm text-muted-foreground">
+          Select products to include in your report.
         </p>
-
-        <div className="flex items-center justify-end gap-4 mb-2">
-          <button 
-            onClick={() => selectAllItems("optimizations", mockOptimizations.map(o => o.id))}
-            className="text-xs text-primary hover:underline"
-          >
-            Select all
-          </button>
-          <button 
-            onClick={() => deselectAllItems("optimizations")}
-            className="text-xs text-muted-foreground hover:underline"
-          >
-            Clear
-          </button>
-        </div>
-
-        <div className="divide-y divide-border/30">
-          {mockOptimizations.map(opt => (
-            <OptimizationRow
-              key={opt.id}
-              optimization={opt}
-              selected={sections.optimizations.items?.includes(opt.id) || false}
-              onToggle={() => toggleItem('optimizations', opt.id)}
-              onNavigate={() => navigateTo({ section: 'optimizations', optimizationId: opt.id })}
-            />
-          ))}
+        <div className="flex gap-2">
+          <FilterPill 
+            label="All" 
+            active={productFilter === 'all'} 
+            onClick={() => setProductFilter('all')} 
+          />
+          <FilterPill 
+            label="AI-Ready" 
+            active={productFilter === 'ai-ready'} 
+            onClick={() => setProductFilter('ai-ready')}
+            variant="success"
+          />
+          <FilterPill 
+            label="Needs Improvement" 
+            active={productFilter === 'needs-improvement'} 
+            onClick={() => setProductFilter('needs-improvement')}
+            variant="warning"
+          />
         </div>
       </div>
-    );
-  };
+
+      <div className="flex items-center justify-end gap-4 mb-2">
+        <button 
+          onClick={() => selectAllItems("products", filteredProducts.map(p => p.id))}
+          className="text-xs text-primary hover:underline"
+        >
+          Select all
+        </button>
+        <button 
+          onClick={() => deselectAllItems("products")}
+          className="text-xs text-muted-foreground hover:underline"
+        >
+          Clear
+        </button>
+      </div>
+
+      <div className="divide-y divide-border/30">
+        {filteredProducts.map(product => (
+          <SelectableRow
+            key={product.id}
+            label={product.name}
+            meta={`${product.prompts.length} prompts`}
+            selected={sections.products.items?.includes(product.id) || false}
+            onToggle={() => toggleItem('products', product.id)}
+            badge={product.status === 'ai-ready' ? 'AI-Ready' : 'Needs Improvement'}
+            badgeVariant={product.status === 'ai-ready' ? 'success' : 'warning'}
+          />
+        ))}
+      </div>
+    </div>
+  );
+
+  // Render Optimizations section (simplified - no drill-down)
+  const renderOptimizationsView = () => (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground mb-4">
+        Select on-site content optimizations to include.
+      </p>
+
+      <div className="flex items-center justify-end gap-4 mb-2">
+        <button 
+          onClick={() => selectAllItems("optimizations", mockOptimizations.map(o => o.id))}
+          className="text-xs text-primary hover:underline"
+        >
+          Select all
+        </button>
+        <button 
+          onClick={() => deselectAllItems("optimizations")}
+          className="text-xs text-muted-foreground hover:underline"
+        >
+          Clear
+        </button>
+      </div>
+
+      <div className="divide-y divide-border/30">
+        {mockOptimizations.map(opt => (
+          <SelectableRow
+            key={opt.id}
+            label={opt.title}
+            meta={`${opt.urlSlug} · ${opt.associatedWith.type}: ${opt.associatedWith.name}`}
+            selected={sections.optimizations.items?.includes(opt.id) || false}
+            onToggle={() => toggleItem('optimizations', opt.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
 
   // Render Actions section
   const renderActionsView = () => (
@@ -856,9 +794,11 @@ const Reports = () => {
     </div>
   );
 
-  // Render current view based on path
-  const renderCurrentView = () => {
-    switch (currentPath.section) {
+  // Render current step content
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 'setup':
+        return renderSetupView();
       case 'ai-visibility':
         return renderAIVisibilityView();
       case 'prompts':
@@ -870,73 +810,76 @@ const Reports = () => {
       case 'actions':
         return renderActionsView();
       default:
-        return renderRootView();
+        return renderSetupView();
     }
   };
 
-  const breadcrumbs = getBreadcrumbs();
+  const currentStepConfig = WIZARD_STEPS[currentStepIndex];
 
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="max-w-6xl mx-auto px-8 h-14 flex items-center justify-between">
           <button 
-            onClick={() => navigate('/')}
+            onClick={() => isFirstStep ? navigate('/') : goToPreviousStep()}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Back</span>
+            <span className="text-sm">{isFirstStep ? 'Exit' : 'Back'}</span>
           </button>
           
           <Button 
-            onClick={handleProceedToEdit}
+            onClick={goToNextStep}
             className="h-9 px-5 rounded-full"
           >
-            Continue
+            {isLastStep ? 'Preview Report' : 'Continue'}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-8 py-12">
-        {/* Breadcrumb Navigation */}
-        <Breadcrumb className="mb-8">
-          <BreadcrumbList>
-            {breadcrumbs.map((crumb, index) => (
-              <React.Fragment key={index}>
-                <BreadcrumbItem>
-                  {index === breadcrumbs.length - 1 ? (
-                    <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                  ) : (
-                    <BreadcrumbLink 
-                      className="cursor-pointer hover:text-foreground"
-                      onClick={() => navigateTo(crumb.path)}
-                    >
-                      {crumb.label}
-                    </BreadcrumbLink>
+        {/* Step Progress */}
+        <div className="mb-10">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            {WIZARD_STEPS.map((step, index) => (
+              <React.Fragment key={step.key}>
+                <button
+                  onClick={() => goToStep(step.key)}
+                  disabled={index > currentStepIndex}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-colors",
+                    index === currentStepIndex 
+                      ? "bg-primary text-primary-foreground font-medium"
+                      : index < currentStepIndex
+                        ? "text-foreground hover:bg-muted cursor-pointer"
+                        : "text-muted-foreground cursor-not-allowed"
                   )}
-                </BreadcrumbItem>
-                {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+                >
+                  {index < currentStepIndex && <Check className="w-3.5 h-3.5" />}
+                  {step.label}
+                </button>
+                {index < WIZARD_STEPS.length - 1 && (
+                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                )}
               </React.Fragment>
             ))}
-          </BreadcrumbList>
-        </Breadcrumb>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Left - Navigation & Selection */}
+          {/* Left - Step Content */}
           <div className="lg:col-span-7">
-            {currentPath.section === 'root' && (
-              <div className="mb-8">
-                <h1 className="text-2xl font-light tracking-tight text-foreground mb-2">
-                  Configure Report
-                </h1>
-                <p className="text-muted-foreground text-sm">
-                  Select sections to include, then customize in the next step
-                </p>
-              </div>
-            )}
+            <div className="mb-8">
+              <h1 className="text-2xl font-light tracking-tight text-foreground mb-2">
+                {currentStepConfig.label}
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                Step {currentStepIndex + 1} of {WIZARD_STEPS.length}
+              </p>
+            </div>
 
-            {renderCurrentView()}
+            {renderStepContent()}
           </div>
 
           {/* Right - Live Preview */}
