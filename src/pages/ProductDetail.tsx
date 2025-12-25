@@ -505,7 +505,7 @@ export const ProductDetail = () => {
                 <Button 
                   onClick={() => setShowOptimizeModal(true)}
                   size="sm"
-                  className="rounded-full bg-primary text-primary-foreground border border-primary/20 hover:bg-primary/90 transition-all"
+                  className="rounded-full bg-primary text-primary-foreground border border-primary/20 hover:bg-primary/90 transition-all px-5"
                 >
                   <Sparkles className="w-4 h-4 mr-2" />
                   Optimize
