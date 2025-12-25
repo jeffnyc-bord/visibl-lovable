@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus,
   FileText,
@@ -14,7 +14,10 @@ import {
   Layers,
   Target,
   Zap,
-  ArrowUpRight
+  ArrowUpRight,
+  Crown,
+  X,
+  Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +30,97 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AEOContentStudio } from './AEOContentStudio';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useNavigate } from 'react-router-dom';
+
+// Article Limit Paywall Component
+const ArticleLimitPaywall = ({ 
+  isOpen, 
+  onClose 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void;
+}) => {
+  const navigate = useNavigate();
+  
+  if (!isOpen) return null;
+
+  const features = [
+    '15 AI Search Optimized articles/month',
+    'Advanced AEO scoring & optimization',
+    'Priority content generation',
+    'Team collaboration features'
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-background/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        className="bg-card border border-border rounded-2xl p-6 max-w-md mx-4 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <Crown className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground">Article Limit Reached</h3>
+              <p className="text-xs text-muted-foreground">You've used all your articles this month</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Message */}
+        <div className="p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50/50 dark:from-amber-950/30 dark:to-orange-950/20 border border-amber-200/50 dark:border-amber-800/30 mb-5">
+          <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
+            Upgrade to Pro to unlock more AI-optimized articles and dominate AI search results with comprehensive coverage.
+          </p>
+        </div>
+
+        {/* Features */}
+        <div className="space-y-2.5 mb-6">
+          {features.map((feature, i) => (
+            <div key={i} className="flex items-center gap-2.5">
+              <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                <Check className="w-3 h-3 text-emerald-600" />
+              </div>
+              <span className="text-sm text-muted-foreground">{feature}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={onClose} className="flex-1">
+            Maybe Later
+          </Button>
+          <Button 
+            onClick={() => {
+              navigate('/settings?tab=billing');
+              onClose();
+            }} 
+            className="flex-1 gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
+          >
+            <Crown className="w-4 h-4" />
+            Expand your coverage
+          </Button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 interface ContentItem {
   id: string;
@@ -167,7 +261,8 @@ export const ContentStudioLibrary = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isStudioOpen, setIsStudioOpen] = useState(false);
   const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
-  const { articlesUsed, limits, tier } = useSubscription();
+  const [showPaywall, setShowPaywall] = useState(false);
+  const { articlesUsed, limits, tier, canGenerateArticle } = useSubscription();
 
   const articlesRemaining = limits.maxArticles - articlesUsed;
 
@@ -177,6 +272,10 @@ export const ContentStudioLibrary = () => {
   );
 
   const handleCreateNew = () => {
+    if (!canGenerateArticle) {
+      setShowPaywall(true);
+      return;
+    }
     setSelectedContent(null);
     setIsStudioOpen(true);
   };
@@ -203,6 +302,16 @@ export const ContentStudioLibrary = () => {
   }
 
   return (
+    <>
+      <AnimatePresence>
+        {showPaywall && (
+          <ArticleLimitPaywall 
+            isOpen={showPaywall} 
+            onClose={() => setShowPaywall(false)} 
+          />
+        )}
+      </AnimatePresence>
+      
     <div className="h-full flex gap-0">
       {/* Main Content - Center Stage */}
       <div className="flex-1 flex flex-col min-w-0 pr-8">
@@ -212,12 +321,55 @@ export const ContentStudioLibrary = () => {
           animate={{ opacity: 1, y: 0 }}
           className="pb-10"
         >
-          <h1 className="text-[32px] font-semibold tracking-tight text-[#1D1D1F] dark:text-foreground">
-            Content Studio
-          </h1>
-          <p className="text-[15px] text-[#86868B] mt-1">
-            Create and manage AI-optimized content
-          </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-[32px] font-semibold tracking-tight text-[#1D1D1F] dark:text-foreground">
+                Content Studio
+              </h1>
+              <p className="text-[15px] text-[#86868B] mt-1">
+                Create and manage AI-optimized content
+              </p>
+            </div>
+            
+            {/* Articles Remaining Badge */}
+            <div 
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-colors cursor-pointer ${
+                articlesRemaining <= 2 
+                  ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50' 
+                  : 'bg-muted/50 border-border/50 hover:bg-muted'
+              }`}
+              onClick={() => articlesRemaining === 0 && setShowPaywall(true)}
+            >
+              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                articlesRemaining <= 2 
+                  ? 'bg-amber-500/20' 
+                  : 'bg-primary/10'
+              }`}>
+                <FileText className={`w-3.5 h-3.5 ${
+                  articlesRemaining <= 2 ? 'text-amber-600' : 'text-primary'
+                }`} />
+              </div>
+              <div className="text-left">
+                <div className={`text-sm font-semibold tabular-nums ${
+                  articlesRemaining <= 2 ? 'text-amber-700 dark:text-amber-300' : 'text-foreground'
+                }`}>
+                  {articlesRemaining}/{limits.maxArticles}
+                </div>
+                <div className="text-[10px] text-muted-foreground">articles left</div>
+              </div>
+              {articlesRemaining === 0 && (
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowPaywall(true);
+                  }}
+                  className="ml-1 px-2 py-1 rounded-md text-[10px] font-medium bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition-colors"
+                >
+                  Expand your coverage
+                </button>
+              )}
+            </div>
+          </div>
         </motion.div>
 
         {/* Search Bar - Floating Style */}
@@ -475,6 +627,7 @@ export const ContentStudioLibrary = () => {
         </div>
       </motion.div>
     </div>
+    </>
   );
 };
 
