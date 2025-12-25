@@ -118,7 +118,6 @@ const mockOptimizations = [
 const platforms = [
   { id: "chatgpt", name: "ChatGPT", mentions: 4234 },
   { id: "gemini", name: "Gemini", mentions: 3456 },
-  { id: "claude", name: "Claude", mentions: 2847 },
   { id: "perplexity", name: "Perplexity", mentions: 2310 },
   { id: "grok", name: "Grok", mentions: 1892 },
 ];
