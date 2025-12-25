@@ -504,9 +504,8 @@ export const ProductDetail = () => {
                 </Button>
                 <Button 
                   onClick={() => setShowOptimizeModal(true)}
-                  variant="outline"
                   size="sm"
-                  className="rounded-full border-border/60"
+                  className="relative rounded-full bg-gradient-to-r from-primary/90 to-primary text-primary-foreground border-0 overflow-hidden group before:absolute before:inset-0 before:bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] before:bg-[length:200%_100%] hover:before:animate-[shimmer_1.5s_ease-in-out_infinite] before:opacity-0 hover:before:opacity-100 transition-all shadow-[0_0_20px_rgba(var(--primary)/0.3)] hover:shadow-[0_0_30px_rgba(var(--primary)/0.5)]"
                 >
                   <Sparkles className="w-4 h-4 mr-2" />
                   Optimize
@@ -1119,7 +1118,7 @@ export const ProductDetail = () => {
               </div>
 
               {/* Options */}
-              <div className="space-y-3">
+              <div className="divide-y divide-border/40">
                 {/* Add Prompts Option */}
                 <button
                   onClick={() => {
@@ -1130,9 +1129,9 @@ export const ProductDetail = () => {
                       setShowAddPrompt(true);
                     }
                   }}
-                  className="w-full group p-4 rounded-2xl border border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 text-left"
+                  className="w-full group py-4 hover:bg-primary/5 transition-all duration-200 text-left"
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
                       <Plus className="w-5 h-5 text-blue-600" />
                     </div>
@@ -1147,7 +1146,7 @@ export const ProductDetail = () => {
                         Expand AI discovery by tracking additional search queries
                       </p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
                   </div>
                 </button>
 
@@ -1157,9 +1156,9 @@ export const ProductDetail = () => {
                     setShowOptimizeModal(false);
                     navigate(`/?tab=recommendations&subtab=on-site&productId=${productId}`);
                   }}
-                  className="w-full group p-4 rounded-2xl border border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 text-left"
+                  className="w-full group py-4 hover:bg-primary/5 transition-all duration-200 text-left"
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
                       <Wrench className="w-5 h-5 text-emerald-600" />
                     </div>
@@ -1169,7 +1168,7 @@ export const ProductDetail = () => {
                         Improve on-site content to boost AI ranking signals
                       </p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
                   </div>
                 </button>
               </div>
