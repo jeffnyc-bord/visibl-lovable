@@ -33,7 +33,7 @@ export const ConfidenceBadge = ({
         <Info className="w-2.5 h-2.5" />
         <span>Low Confidence</span>
         <span className="text-muted-foreground/60">·</span>
-        <span>Add {neededPrompts} more probes</span>
+        <span>Improve data integrity</span>
       </Badge>
       <button
         onClick={onClick}
