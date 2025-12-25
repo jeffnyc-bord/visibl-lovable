@@ -90,31 +90,40 @@ export type Database = {
       }
       profiles: {
         Row: {
+          articles_used: number
+          chatbots_tracked: number
           created_at: string
           email: string | null
           full_name: string | null
           id: string
           products_tracked: number
+          prompts_used: number
           subscription_tier: Database["public"]["Enums"]["subscription_tier"]
           swaps_used: number
           updated_at: string
         }
         Insert: {
+          articles_used?: number
+          chatbots_tracked?: number
           created_at?: string
           email?: string | null
           full_name?: string | null
           id: string
           products_tracked?: number
+          prompts_used?: number
           subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
           swaps_used?: number
           updated_at?: string
         }
         Update: {
+          articles_used?: number
+          chatbots_tracked?: number
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
           products_tracked?: number
+          prompts_used?: number
           subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
           swaps_used?: number
           updated_at?: string
@@ -129,7 +138,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      subscription_tier: "free" | "pro" | "enterprise"
+      subscription_tier: "starter" | "pro" | "enterprise"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -257,7 +266,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      subscription_tier: ["free", "pro", "enterprise"],
+      subscription_tier: ["starter", "pro", "enterprise"],
     },
   },
 } as const
