@@ -119,18 +119,6 @@ export const Settings = ({ userRole, onBack }: SettingsProps & { onBack?: () => 
       <div className="flex max-w-6xl mx-auto">
         {/* Left Sidebar Navigation */}
         <aside className="w-64 shrink-0 border-r border-border py-6 pr-6">
-          {/* Back Button */}
-          {onBack && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBack}
-              className="mb-4 gap-2 text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Dashboard
-            </Button>
-          )}
           <nav className="space-y-6">
             {navSections.map((section) => (
               <div key={section.title}>
