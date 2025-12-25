@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AEOContentStudio } from './AEOContentStudio';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 interface ContentItem {
   id: string;
@@ -166,6 +167,9 @@ export const ContentStudioLibrary = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isStudioOpen, setIsStudioOpen] = useState(false);
   const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
+  const { articlesUsed, limits, tier } = useSubscription();
+
+  const articlesRemaining = limits.maxArticles - articlesUsed;
 
   const filteredItems = contentItems.filter(item =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -184,7 +188,7 @@ export const ContentStudioLibrary = () => {
 
   const publishedCount = contentItems.filter(i => i.status === 'published').length;
   const avgScore = Math.round(contentItems.reduce((acc, i) => acc + (i.aeoScore || 0), 0) / contentItems.length);
-  const dataConfidence = 60;
+  const dataConfidence = Math.min(100, Math.round((articlesUsed / Math.max(limits.maxArticles, 1)) * 100));
 
   if (isStudioOpen) {
     return (
@@ -406,25 +410,28 @@ export const ContentStudioLibrary = () => {
             </div>
           </div>
 
-          {/* Data Confidence Gauge */}
+          {/* Articles Remaining */}
           <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50/50 dark:from-amber-950/30 dark:to-orange-950/20 border border-amber-200/50 dark:border-amber-800/30">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[13px] font-semibold text-amber-800 dark:text-amber-200">Data Confidence</span>
+              <span className="text-[13px] font-semibold text-amber-800 dark:text-amber-200">Articles Remaining</span>
               <Zap className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             </div>
             <div className="flex items-center gap-3 mb-3">
               <div className="flex-1 h-2 bg-amber-200/50 dark:bg-amber-800/30 rounded-full overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
-                  animate={{ width: `${dataConfidence}%` }}
+                  animate={{ width: `${Math.max(0, (articlesRemaining / limits.maxArticles) * 100)}%` }}
                   transition={{ duration: 1, ease: [0.32, 0.72, 0, 1] }}
                   className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"
                 />
               </div>
-              <span className="text-[15px] font-semibold text-amber-800 dark:text-amber-200 tabular-nums">{dataConfidence}%</span>
+              <span className="text-[15px] font-semibold text-amber-800 dark:text-amber-200 tabular-nums">{articlesRemaining}/{limits.maxArticles}</span>
             </div>
             <p className="text-[12px] text-amber-700/80 dark:text-amber-300/70 leading-relaxed">
-              Unlock Pro to access 25 daily prompts and deeper AEO accuracy.
+              {tier === 'enterprise' 
+                ? 'Unlimited AEO-optimized articles available.'
+                : `Upgrade to Pro for 15 AI Search Optimized articles from AEO Content Studio.`
+              }
             </p>
           </div>
 
