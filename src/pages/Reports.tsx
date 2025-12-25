@@ -11,6 +11,11 @@ import {
   Package,
   FileText,
   ClipboardList,
+  Plus,
+  Download,
+  Eye,
+  Clock,
+  Calendar,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -139,10 +144,37 @@ interface SectionConfig {
   items?: string[];
 }
 
+// Mock saved reports for dashboard
+const mockSavedReports = [
+  {
+    id: "1",
+    title: "Q4 2024 AI Visibility Report",
+    createdAt: new Date(2024, 11, 20),
+    dateRange: { start: new Date(2024, 9, 1), end: new Date(2024, 11, 31) },
+    status: "completed" as const,
+  },
+  {
+    id: "2",
+    title: "November Performance Analysis",
+    createdAt: new Date(2024, 10, 30),
+    dateRange: { start: new Date(2024, 10, 1), end: new Date(2024, 10, 30) },
+    status: "completed" as const,
+  },
+  {
+    id: "3",
+    title: "Product Launch Report",
+    createdAt: new Date(2024, 10, 15),
+    dateRange: { start: new Date(2024, 9, 15), end: new Date(2024, 10, 15) },
+    status: "completed" as const,
+  },
+];
+
+type ViewMode = 'dashboard' | 'wizard' | 'editor';
+
 const Reports = () => {
   const navigate = useNavigate();
+  const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const [currentStep, setCurrentStep] = useState<WizardStep>('setup');
-  const [isEditing, setIsEditing] = useState(false);
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(2024, 0, 1));
   const [endDate, setEndDate] = useState<Date | undefined>(new Date());
   
@@ -180,7 +212,7 @@ const Reports = () => {
     if (isLastStep) {
       // Proceed to editor
       setEditorBlocks(generateBlocks());
-      setIsEditing(true);
+      setViewMode('editor');
     } else {
       setCurrentStep(WIZARD_STEPS[currentStepIndex + 1].key);
     }
@@ -375,7 +407,32 @@ const Reports = () => {
 
   const handleProceedToEdit = () => {
     setEditorBlocks(generateBlocks());
-    setIsEditing(true);
+    setViewMode('editor');
+  };
+
+  const handleStartNewReport = () => {
+    // Reset state for new report
+    setCurrentStep('setup');
+    setReportTitle("AI Visibility Report");
+    setStartDate(new Date(2024, 0, 1));
+    setEndDate(new Date());
+    setCustomLogo(null);
+    setSections({
+      score: { enabled: true },
+      mentions: { enabled: true },
+      platformCoverage: { enabled: true, items: platforms.map(p => p.id) },
+      prompts: { enabled: true, items: mockPrompts.map(p => p.id) },
+      products: { enabled: false, items: [] },
+      productPrompts: { enabled: false, items: [] },
+      optimizations: { enabled: false, items: [] },
+      optimizationDetails: { enabled: false, items: [] },
+      actions: { enabled: false, items: [] },
+    });
+    setViewMode('wizard');
+  };
+
+  const handleExitWizard = () => {
+    setViewMode('dashboard');
   };
 
   const handleExport = async () => {
@@ -421,7 +478,108 @@ const Reports = () => {
     }
   };
 
-  if (isEditing) {
+  // Dashboard view
+  const renderDashboard = () => (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        <div className="max-w-6xl mx-auto px-8 h-14 flex items-center justify-between">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm">Dashboard</span>
+          </button>
+          
+          <Button 
+            onClick={handleStartNewReport}
+            className="h-9 px-5 rounded-full"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Report
+          </Button>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-8 py-12">
+        <div className="mb-10">
+          <h1 className="text-3xl font-light tracking-tight text-foreground mb-2">
+            Reports
+          </h1>
+          <p className="text-muted-foreground">
+            View and manage your AI visibility reports.
+          </p>
+        </div>
+
+        {/* Saved Reports */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-medium text-foreground uppercase tracking-wider">
+              Saved Reports
+            </h2>
+            <span className="text-xs text-muted-foreground">
+              {mockSavedReports.length} reports
+            </span>
+          </div>
+
+          {mockSavedReports.length === 0 ? (
+            <div className="border border-dashed border-border rounded-lg p-12 text-center">
+              <FileText className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No reports yet</h3>
+              <p className="text-sm text-muted-foreground mb-6">
+                Create your first AI visibility report to get started.
+              </p>
+              <Button onClick={handleStartNewReport} className="rounded-full">
+                <Plus className="w-4 h-4 mr-2" />
+                Create Report
+              </Button>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {mockSavedReports.map((report) => (
+                <div
+                  key={report.id}
+                  className="group bg-card border border-border rounded-lg p-5 hover:border-primary/30 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-foreground mb-1 truncate">
+                        {report.title}
+                      </h3>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {format(report.dateRange.start, "MMM d")} – {format(report.dateRange.end, "MMM d, yyyy")}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5" />
+                          Created {format(report.createdAt, "MMM d, yyyy")}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <Download className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+
+  if (viewMode === 'dashboard') {
+    return renderDashboard();
+  }
+
+  if (viewMode === 'editor') {
     const pdfSections = {
       score: { enabled: sections.score.enabled },
       mentions: { enabled: sections.mentions.enabled },
@@ -436,7 +594,7 @@ const Reports = () => {
       <ReportEditor
         blocks={editorBlocks}
         onBlocksChange={setEditorBlocks}
-        onBack={() => setIsEditing(false)}
+        onBack={() => setViewMode('wizard')}
         onExport={handleExport}
         reportTitle={reportTitle}
         onTitleChange={setReportTitle}
@@ -821,7 +979,7 @@ const Reports = () => {
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="max-w-6xl mx-auto px-8 h-14 flex items-center justify-between">
           <button 
-            onClick={() => isFirstStep ? navigate('/') : goToPreviousStep()}
+            onClick={() => isFirstStep ? handleExitWizard() : goToPreviousStep()}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
