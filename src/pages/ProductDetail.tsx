@@ -873,8 +873,9 @@ export const ProductDetail = () => {
                       </button>
                     </TableHead>
                     <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Query</TableHead>
-                    <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Model</TableHead>
-                    <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Status</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Top Platform</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Mentions</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Date</TableHead>
                     <TableHead className="text-xs uppercase tracking-wider text-muted-foreground font-medium w-12"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -913,22 +914,20 @@ export const ProductDetail = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm text-muted-foreground">{prompt.model}</span>
+                        <div className="flex items-center gap-2">
+                          <img 
+                            src={platformLogos[prompt.model]} 
+                            alt={prompt.model} 
+                            className="w-5 h-5 rounded"
+                          />
+                          <span className="text-sm text-muted-foreground">{prompt.model}</span>
+                        </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          {prompt.status === 'completed' ? (
-                            <Badge variant="secondary" className="bg-green-50/80 text-green-700 border-0 text-xs">
-                              <CheckCircle2 className="w-3 h-3 mr-1" />
-                              Complete
-                            </Badge>
-                          ) : (
-                            <Badge variant="secondary" className="bg-amber-50/80 text-amber-700 border-0 text-xs">
-                              <Clock className="w-3 h-3 mr-1" />
-                              Queued
-                            </Badge>
-                          )}
-                        </div>
+                        <span className="text-sm text-foreground font-medium">{prompt.mentions}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-muted-foreground">{prompt.date}</span>
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
