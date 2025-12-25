@@ -32,6 +32,18 @@ interface DeveloperControlsProps {
   demoMode: boolean;
   onDemoModeChange: (enabled: boolean) => void;
   onTriggerLastClientWarning?: () => void;
+  // Subscription simulation
+  subscriptionOverrides?: {
+    articlesUsed?: number;
+    promptsUsed?: number;
+    chatbotsTracked?: number;
+  };
+  onSubscriptionOverrideChange?: (field: 'articlesUsed' | 'promptsUsed' | 'chatbotsTracked', value: number) => void;
+  subscriptionLimits?: {
+    maxArticles: number;
+    maxPrompts: number;
+    maxChatbots: number;
+  };
 }
 
 const gradientOptions = [
@@ -47,7 +59,7 @@ const gradientOptions = [
   { id: "gradient10", name: "Neon Dreams", colors: ["#84CC16", "#06B6D4", "#8B5CF6"] },
 ];
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange, onTriggerLastClientWarning }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange, onTriggerLastClientWarning, subscriptionOverrides, onSubscriptionOverrideChange, subscriptionLimits }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -247,6 +259,55 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                   </div>
                 </div>
               </div>
+              
+              {/* Subscription Simulation Section */}
+              {onSubscriptionOverrideChange && subscriptionLimits && (
+                <div className="pt-2 border-t space-y-3">
+                  <Label className="text-sm font-medium text-primary">Subscription Limits Simulation</Label>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-xs text-muted-foreground">
+                      AEO Articles Used ({subscriptionOverrides?.articlesUsed ?? 0}/{subscriptionLimits.maxArticles})
+                    </Label>
+                    <Input
+                      type="range"
+                      min="0"
+                      max={subscriptionLimits.maxArticles + 1}
+                      value={subscriptionOverrides?.articlesUsed ?? 0}
+                      onChange={(e) => onSubscriptionOverrideChange('articlesUsed', Number(e.target.value))}
+                      className="h-8"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-xs text-muted-foreground">
+                      Prompts Used ({subscriptionOverrides?.promptsUsed ?? 0}/{subscriptionLimits.maxPrompts})
+                    </Label>
+                    <Input
+                      type="range"
+                      min="0"
+                      max={subscriptionLimits.maxPrompts + 1}
+                      value={subscriptionOverrides?.promptsUsed ?? 0}
+                      onChange={(e) => onSubscriptionOverrideChange('promptsUsed', Number(e.target.value))}
+                      className="h-8"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-xs text-muted-foreground">
+                      Chatbots Tracked ({subscriptionOverrides?.chatbotsTracked ?? 0}/{subscriptionLimits.maxChatbots})
+                    </Label>
+                    <Input
+                      type="range"
+                      min="0"
+                      max={subscriptionLimits.maxChatbots + 1}
+                      value={subscriptionOverrides?.chatbotsTracked ?? 0}
+                      onChange={(e) => onSubscriptionOverrideChange('chatbotsTracked', Number(e.target.value))}
+                      className="h-8"
+                    />
+                  </div>
+                </div>
+              )}
               
               {onTriggerLastClientWarning && (
                 <div className="pt-2 border-t">

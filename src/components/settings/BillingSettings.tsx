@@ -10,28 +10,28 @@ interface BillingSettingsProps {
 }
 
 export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
-  const { tier, limits, productsTracked } = useSubscription();
+  const { tier, limits, chatbotsTracked, promptsUsed, articlesUsed } = useSubscription();
   
   // Map subscription tier to display values
   const tierNames = {
-    free: 'Free',
+    starter: 'Starter',
     pro: 'Pro',
     enterprise: 'Enterprise'
   };
   
   const tierPrices = {
-    free: '$0/month',
+    starter: '$0/month (Trial)',
     pro: '$99/month',
     enterprise: 'Custom pricing'
   };
   
   const currentPlan = tierNames[tier];
   const planPrice = tierPrices[tier];
-  const planFeatures = tier === 'free'
-    ? ['Twice weekly tracking', 'Up to 10 products', 'Basic analytics', 'Community support']
+  const planFeatures = tier === 'starter'
+    ? ['Twice weekly tracking', '2 chatbots', '10 prompts (5 auto-generated)', '5 AEO articles', 'Community support']
     : tier === 'pro'
-    ? ['Daily tracking', 'Up to 25 products', 'Advanced analytics', 'Priority support']
-    : ['Daily tracking', 'Unlimited products', 'Dedicated account manager', 'Custom integrations', 'SLA guarantee'];
+    ? ['Daily tracking', '10 chatbots', '50 prompts', '25 AEO articles', 'Priority support']
+    : ['Daily tracking', 'Unlimited chatbots', 'Unlimited prompts', 'Unlimited AEO articles', 'Dedicated account manager', 'Custom integrations', 'SLA guarantee'];
 
   const billingHistory = [
     { date: "2024-01-01", amount: "$99.00", status: "Paid", invoice: "INV-2024-001" },
@@ -71,17 +71,23 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 gap-4 p-4 bg-muted rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
             <div>
-              <p className="text-sm font-medium">Products Tracked</p>
+              <p className="text-sm font-medium">Chatbots Tracked</p>
               <p className="text-2xl font-semibold">
-                {productsTracked} / {limits.maxProducts === 999999 ? '∞' : limits.maxProducts}
+                {chatbotsTracked} / {limits.maxChatbots === 999999 ? '∞' : limits.maxChatbots}
               </p>
             </div>
             <div>
-              <p className="text-sm font-medium">Tracking Frequency</p>
-              <p className="text-2xl font-semibold capitalize">
-                {limits.trackingFrequency === 'twice_weekly' ? 'Twice Weekly' : 'Daily'}
+              <p className="text-sm font-medium">Prompts Used</p>
+              <p className="text-2xl font-semibold">
+                {promptsUsed} / {limits.maxPrompts === 999999 ? '∞' : limits.maxPrompts}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium">AEO Articles Generated</p>
+              <p className="text-2xl font-semibold">
+                {articlesUsed} / {limits.maxArticles === 999999 ? '∞' : limits.maxArticles}
               </p>
             </div>
           </div>
@@ -172,15 +178,16 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 md:grid-cols-3">
-              {/* Free Plan */}
-              <div className={`border rounded-lg p-6 space-y-4 ${tier === 'free' ? 'border-primary' : ''}`}>
-                {tier === 'free' && <Badge className="mb-2">Current Plan</Badge>}
+              {/* Starter Plan */}
+              <div className={`border rounded-lg p-6 space-y-4 ${tier === 'starter' ? 'border-primary' : ''}`}>
+                {tier === 'starter' && <Badge className="mb-2">Current Plan</Badge>}
                 <div>
-                  <h3 className="text-lg font-semibold">Free</h3>
+                  <h3 className="text-lg font-semibold">Starter</h3>
                   <div className="mt-2">
                     <span className="text-3xl font-bold">$0</span>
                     <span className="text-muted-foreground">/month</span>
                   </div>
+                  <p className="text-xs text-muted-foreground mt-1">Free Trial</p>
                 </div>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
@@ -189,18 +196,18 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Up to 10 products
+                    2 chatbots
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Basic analytics
+                    10 prompts
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Community support
+                    5 AEO articles
                   </li>
                 </ul>
-                {tier === 'free' && (
+                {tier === 'starter' && (
                   <Button variant="outline" className="w-full" disabled>
                     Current Plan
                   </Button>
@@ -228,11 +235,15 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Up to 25 products
+                    10 chatbots
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Advanced analytics
+                    50 prompts
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    25 AEO articles
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -259,15 +270,19 @@ export const BillingSettings = ({ userRole }: BillingSettingsProps) => {
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Unlimited products
+                    Unlimited chatbots
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Unlimited prompts
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Unlimited AEO articles
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                     Dedicated account manager
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Custom integrations
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />

@@ -43,18 +43,18 @@ export const UpgradeDialog = ({ open, onOpenChange, reason }: UpgradeDialogProps
   const getMessage = () => {
     switch (reason) {
       case 'product_limit':
-        return tier === 'free'
-          ? 'You\'ve reached the limit of 10 products on the Free plan.'
-          : 'You\'ve reached the limit of 25 products on the Pro plan.';
+        return tier === 'starter'
+          ? 'You\'ve reached the limit of 2 chatbots on the Starter plan.'
+          : 'You\'ve reached the limit of 10 chatbots on the Pro plan.';
       case 'tracking_frequency':
         return 'Daily tracking is only available on Pro and Enterprise plans.';
       case 'platform_expansion':
-        return tier === 'free'
+        return tier === 'starter'
           ? 'Expand your AI coverage beyond 2 platforms. Upgrade to Pro for access to 4 AI platforms or Enterprise for unlimited coverage.'
           : 'Unlock all AI platforms with an Enterprise plan for maximum coverage.';
       case 'prompt_limit':
-        return tier === 'free'
-          ? 'You\'ve reached the limit of 5 prompts on the Free plan. Upgrade to Pro for up to 50 prompts.'
+        return tier === 'starter'
+          ? 'You\'ve reached the limit of 10 prompts on the Starter plan. Upgrade to Pro for up to 50 prompts.'
           : 'Unlock unlimited prompts with an Enterprise plan.';
       default:
         return 'Upgrade your plan to unlock more features.';

@@ -36,6 +36,7 @@ import { BrandLoadingCard } from "@/components/ui/brand-loading-card";
 import { DeveloperControls } from "@/components/ui/developer-controls";
 import { StatusIndicators } from "@/components/ui/status-indicators";
 import { useToast } from "@/hooks/use-toast";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import {
   Bell,
   Search,
@@ -207,6 +208,7 @@ const mockTrackedBrands: BrandData[] = [
 const Index = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { limits, devOverrides, setDevOverrides } = useSubscription();
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [hasAnalysis, setHasAnalysis] = useState(true);
@@ -462,6 +464,9 @@ const Index = () => {
           setActiveView("agency");
           setShowLastClientWarning(true);
         }}
+        subscriptionOverrides={devOverrides}
+        onSubscriptionOverrideChange={(field, value) => setDevOverrides({ ...devOverrides, [field]: value })}
+        subscriptionLimits={limits}
       />
       {/* Sidebar - Cloudflare-inspired design */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-72'} bg-background border-r border-border flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
