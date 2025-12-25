@@ -741,17 +741,26 @@ export const ProductDetail = () => {
                   </div>
                   {/* Sparkline */}
                   <div className="flex items-end gap-1 h-8">
-                    {pillars.marketPresence.trend.map((value, idx) => {
-                      const maxVal = Math.max(...pillars.marketPresence.trend);
-                      const height = (value / maxVal) * 100;
-                      return (
-                        <div 
-                          key={idx}
-                          className="flex-1 rounded-sm bg-foreground/20 transition-all hover:bg-foreground/40"
-                          style={{ height: `${height}%` }}
-                        />
-                      );
-                    })}
+                    <TooltipProvider delayDuration={0}>
+                      {pillars.marketPresence.trend.map((value, idx) => {
+                        const maxVal = Math.max(...pillars.marketPresence.trend);
+                        const height = (value / maxVal) * 100;
+                        const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        return (
+                          <Tooltip key={idx}>
+                            <TooltipTrigger asChild>
+                              <div 
+                                className="flex-1 rounded-sm bg-foreground/20 transition-all hover:bg-foreground/40 cursor-pointer"
+                                style={{ height: `${height}%` }}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-xs">
+                              <p className="font-medium">{dayLabels[idx]}: {value} mentions</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      })}
+                    </TooltipProvider>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">Last 7 days</p>
                 </div>
