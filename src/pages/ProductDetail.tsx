@@ -505,7 +505,7 @@ export const ProductDetail = () => {
                 <Button 
                   onClick={() => setShowOptimizeModal(true)}
                   size="sm"
-                  className="relative rounded-full bg-gradient-to-r from-primary/90 to-primary text-primary-foreground border-0 overflow-hidden group before:absolute before:inset-0 before:bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] before:bg-[length:200%_100%] hover:before:animate-[shimmer_1.5s_ease-in-out_infinite] before:opacity-0 hover:before:opacity-100 transition-all shadow-[0_0_20px_rgba(var(--primary)/0.3)] hover:shadow-[0_0_30px_rgba(var(--primary)/0.5)]"
+                  className="rounded-full bg-primary text-primary-foreground border border-primary/20 hover:bg-primary/90 transition-all"
                 >
                   <Sparkles className="w-4 h-4 mr-2" />
                   Optimize
@@ -1118,7 +1118,7 @@ export const ProductDetail = () => {
               </div>
 
               {/* Options */}
-              <div className="divide-y divide-border/40">
+              <div className="divide-y divide-border/30">
                 {/* Add Prompts Option */}
                 <button
                   onClick={() => {
@@ -1129,24 +1129,24 @@ export const ProductDetail = () => {
                       setShowAddPrompt(true);
                     }
                   }}
-                  className="w-full group py-4 hover:bg-primary/5 transition-all duration-200 text-left"
+                  className="w-full group py-4 px-1 hover:bg-muted/50 transition-colors duration-150 text-left rounded-lg -mx-1"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
-                      <Plus className="w-5 h-5 text-blue-600" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                      <Plus className="w-4 h-4 text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-foreground">Add More Prompts</p>
+                        <p className="text-sm font-medium text-foreground">Add More Prompts</p>
                         <span className="text-xs text-muted-foreground">
-                          ({prompts.length}/{MAX_PROMPTS} used)
+                          ({prompts.length}/{MAX_PROMPTS})
                         </span>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-0.5">
-                        Expand AI discovery by tracking additional search queries
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Track additional search queries
                       </p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
                   </div>
                 </button>
 
@@ -1156,19 +1156,19 @@ export const ProductDetail = () => {
                     setShowOptimizeModal(false);
                     navigate(`/?tab=recommendations&subtab=on-site&productId=${productId}`);
                   }}
-                  className="w-full group py-4 hover:bg-primary/5 transition-all duration-200 text-left"
+                  className="w-full group py-4 px-1 hover:bg-muted/50 transition-colors duration-150 text-left rounded-lg -mx-1"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                      <Wrench className="w-5 h-5 text-emerald-600" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                      <Wrench className="w-4 h-4 text-emerald-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground">Optimize Product Content</p>
-                      <p className="text-sm text-muted-foreground mt-0.5">
-                        Improve on-site content to boost AI ranking signals
+                      <p className="text-sm font-medium text-foreground">Optimize Product Content</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Improve on-site content for AI ranking
                       </p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
                   </div>
                 </button>
               </div>
