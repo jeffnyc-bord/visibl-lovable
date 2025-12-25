@@ -141,15 +141,15 @@ export const UpgradeSheet = ({
             <h4 className="text-xs font-medium uppercase tracking-wider text-[#6B7280] mb-3">
               What's Included
             </h4>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2">
               {[
-                "Real-time sentiment analysis",
-                "Competitor mention tracking",
-                "Historical trend analysis",
-                "Priority support",
+                "Track up to 4 chatbots (ChatGPT, Gemini, Perplexity, Grok)",
+                "Send more prompts/day (higher limits for prompt lab, e.g., 25)",
+                "15 AI Search Optimized articles from AEO Content Studio",
+                "Advanced Reporting",
               ].map((feature, index) => (
                 <div key={index} className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-gradient-to-br from-cyan-400/20 to-teal-400/20 flex items-center justify-center">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-br from-cyan-400/20 to-teal-400/20 flex items-center justify-center flex-shrink-0">
                     <Check className="w-2.5 h-2.5 text-cyan-400" />
                   </div>
                   <span className="text-[#D1D5DB] text-sm">{feature}</span>
