@@ -623,6 +623,25 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                 <SelectItem value="trend-desc">Trending</SelectItem>
               </SelectContent>
             </Select>
+            
+            {/* Add Product Button - Right aligned */}
+            <div className="ml-auto">
+              <AddProductDialog
+                trigger={
+                  <Button
+                    size="sm"
+                    className="h-9 rounded-xl text-[13px] gap-2"
+                    style={{ 
+                      background: 'linear-gradient(180deg, hsl(0 0% 15%) 0%, hsl(0 0% 9%) 100%)',
+                      color: 'white'
+                    }}
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Product
+                  </Button>
+                }
+              />
+            </div>
           </div>
 
           {/* All Products Table */}
