@@ -627,7 +627,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                               <span className="font-medium text-primary-foreground text-sm">{platform.platform}</span>
                               <Badge 
                                 variant="secondary"
-                                className="text-[10px] px-1.5 py-0 h-4 bg-muted/30 text-muted-foreground/80 border-muted-foreground/20"
+                                className="text-[10px] px-1.5 py-0 h-4 bg-white/20 text-white/90 border border-white/30"
                               >
                                 Locked
                               </Badge>
