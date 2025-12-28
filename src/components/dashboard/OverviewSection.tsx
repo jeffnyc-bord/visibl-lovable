@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
 import { TrendingUp, FileText, ChevronDown, ChevronUp, ArrowUpRight, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { ConfidenceBadge } from "@/components/ui/confidence-badge";
 import { LockedPlatformIndicator } from "@/components/ui/locked-platform-indicator";
 import { UpgradeSheet, UpgradeType } from "@/components/ui/upgrade-sheet";
@@ -513,39 +513,120 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             {/* Right: Platform Coverage */}
             <div className="lg:col-span-4">
               <p className="text-xs text-muted-foreground uppercase tracking-wide mb-4">Platform Coverage</p>
-              <AIInsightsModal
-                trigger={
-                  <div className="flex items-center gap-3 cursor-pointer group mb-4">
-                    <div className="flex -space-x-2">
-                      {activePlatformMentions.map((platform, i) => (
-                        <img 
-                          key={platform.platform}
-                          src={platform.logo} 
-                          alt={platform.platform}
-                          className="w-8 h-8 rounded-full border-2 border-background object-contain bg-background"
-                          style={{ zIndex: activePlatformMentions.length - i }}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                      {activePlatformMentions.length} active
-                    </span>
+              <div className="flex items-center gap-3 mb-4">
+                <TooltipProvider delayDuration={200}>
+                  <div className="flex items-center gap-2">
+                    {activePlatformMentions.map((platform) => (
+                      <Tooltip key={platform.platform}>
+                        <TooltipTrigger asChild>
+                          <div 
+                            className="relative flex items-center justify-center w-10 h-10 rounded-xl transition-all cursor-pointer group bg-background shadow-sm ring-1 ring-border/40 hover:ring-primary/40 hover:shadow-md"
+                          >
+                            <img 
+                              src={platform.logo} 
+                              alt={platform.platform}
+                              className="w-6 h-6 object-contain"
+                            />
+                            {/* Active indicator */}
+                            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-success border border-background flex items-center justify-center">
+                              <svg className="w-2.5 h-2.5 text-success-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </div>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent 
+                          side="bottom" 
+                          sideOffset={8}
+                          className="max-w-xs p-3 z-[100]"
+                          style={{
+                            background: 'rgba(0, 0, 0, 0.85)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                          }}
+                        >
+                          <div className="space-y-1.5">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-primary-foreground text-sm">{platform.platform}</span>
+                              <Badge 
+                                variant="default"
+                                className="text-[10px] px-1.5 py-0 h-4 bg-success/20 text-success border-success/30"
+                              >
+                                Active
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground/90 leading-relaxed">
+                              {platform.platform === 'ChatGPT' 
+                                ? 'Largest user base with 100M+ weekly active users. Essential for consumer discovery.'
+                                : 'Integrated with Google Search. Critical for SEO-adjacent AI visibility.'}
+                            </p>
+                            <div className="flex items-center gap-2 pt-1 text-xs text-muted-foreground/70">
+                              <span>{platform.mentions} mentions</span>
+                              <span>•</span>
+                              <span className="text-success">{platform.trend}</span>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                    {lockedPlatforms.map((platform) => (
+                      <Tooltip key={platform.platform}>
+                        <TooltipTrigger asChild>
+                          <div 
+                            onClick={() => handleUpgradeClick("chatbot_coverage")}
+                            className="relative flex items-center justify-center w-10 h-10 rounded-xl transition-all cursor-pointer group bg-muted/30 hover:bg-muted/50"
+                          >
+                            <img 
+                              src={platform.logo} 
+                              alt={platform.platform}
+                              className="w-6 h-6 object-contain grayscale opacity-40 group-hover:opacity-60 transition-all"
+                            />
+                            {/* Lock indicator */}
+                            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-muted border border-background flex items-center justify-center">
+                              <svg className="w-2 h-2 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                              </svg>
+                            </div>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent 
+                          side="bottom" 
+                          sideOffset={8}
+                          className="max-w-xs p-3 z-[100]"
+                          style={{
+                            background: 'rgba(0, 0, 0, 0.85)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                          }}
+                        >
+                          <div className="space-y-1.5">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-primary-foreground text-sm">{platform.platform}</span>
+                              <Badge 
+                                variant="secondary"
+                                className="text-[10px] px-1.5 py-0 h-4 bg-muted/30 text-muted-foreground/80 border-muted-foreground/20"
+                              >
+                                Locked
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground/90 leading-relaxed">
+                              {platform.platform === 'Grok' 
+                                ? 'Real-time X/Twitter integration. Valuable for social commerce and trending topics.'
+                                : 'Research-focused AI with citation support. Key for B2B and technical audiences.'}
+                            </p>
+                            <p className="text-xs text-primary/80 font-medium pt-1">
+                              Upgrade to Pro to unlock
+                            </p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
                   </div>
-                }
-                platforms={activePlatformMentions}
-              />
-              <div className="flex items-center gap-2">
-                <LockedPlatformIndicator
-                  platformName="Grok"
-                  platformIcon={<img src={grokLogo} alt="Grok" className="w-full h-full" />}
-                  onClick={() => handleUpgradeClick("chatbot_coverage")}
-                />
-                <LockedPlatformIndicator
-                  platformName="Perplexity"
-                  platformIcon={<img src="/lovable-uploads/921c76c7-1c98-41d6-a192-8308c4b7fd49.png" alt="Perplexity" className="w-full h-full" />}
-                  onClick={() => handleUpgradeClick("chatbot_coverage")}
-                />
-                <span className="text-xs text-muted-foreground ml-1">locked</span>
+                </TooltipProvider>
+                <span className="text-sm text-muted-foreground">
+                  {activePlatformMentions.length}/{activePlatformMentions.length + lockedPlatforms.length}
+                </span>
               </div>
             </div>
           </div>
@@ -664,7 +745,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   tickLine={false}
                   width={40}
                 />
-                <Tooltip 
+                <RechartsTooltip 
                   contentStyle={{
                     backgroundColor: 'hsl(var(--background) / 0.95)',
                     backdropFilter: 'blur(8px)',
