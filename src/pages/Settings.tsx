@@ -10,8 +10,9 @@ import {
   Sparkles, 
   Palette,
   CreditCard,
-  ArrowLeft
+  LogOut
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { ProfileSettings } from "@/components/settings/ProfileSettings";
 import { AccountSettingsPanel } from "@/components/settings/AccountSettingsPanel";
 import { PasswordSettings } from "@/components/settings/PasswordSettings";
@@ -80,6 +81,7 @@ const navSections: NavSection[] = [
 export const Settings = ({ userRole, onBack }: SettingsProps & { onBack?: () => void }) => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+  const { signOut } = useAuth();
 
   // Handle tab from URL query param
   useEffect(() => {
@@ -149,6 +151,17 @@ export const Settings = ({ userRole, onBack }: SettingsProps & { onBack?: () => 
               </div>
             ))}
           </nav>
+          
+          {/* Logout Button */}
+          <div className="mt-6 pt-6 border-t border-border">
+            <button
+              onClick={signOut}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-destructive hover:bg-destructive/10 transition-colors"
+            >
+              <LogOut className="h-4 w-4 shrink-0" />
+              <span>Log out</span>
+            </button>
+          </div>
         </aside>
 
         {/* Main Content Area */}
