@@ -624,21 +624,22 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
               </SelectContent>
             </Select>
             
-            {/* Add Product Button - Right aligned */}
+            {/* Add Product Button - Right aligned, Apple style */}
             <div className="ml-auto">
               <AddProductDialog
                 trigger={
-                  <Button
-                    size="sm"
-                    className="h-9 rounded-xl text-[13px] gap-2"
+                  <button
+                    className="h-9 px-4 rounded-full text-[13px] font-medium flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
                     style={{ 
-                      background: 'linear-gradient(180deg, hsl(0 0% 15%) 0%, hsl(0 0% 9%) 100%)',
-                      color: 'white'
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
+                      background: 'linear-gradient(180deg, #1d1d1f 0%, #000000 100%)',
+                      color: 'white',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)'
                     }}
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-3.5 h-3.5" />
                     Add Product
-                  </Button>
+                  </button>
                 }
               />
             </div>
