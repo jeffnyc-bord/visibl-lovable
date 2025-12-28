@@ -314,8 +314,8 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                 </svg>
               {/* Center content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-[40px] font-extralight tabular-nums tracking-tighter" style={{ color: '#1D1D1F' }}>82</span>
-                <span className="text-[13px] font-light -mt-1" style={{ color: '#86868B' }}>%</span>
+                <span className="text-[40px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#1D1D1F' }}>82</span>
+                <span className="text-[13px] font-light mt-0.5" style={{ color: '#86868B' }}>%</span>
               </div>
             </div>
             
