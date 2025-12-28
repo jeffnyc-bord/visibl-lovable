@@ -34,6 +34,7 @@ import { DashboardSkeleton, ChartWidgetSkeleton, ScorecardSkeleton, TableSkeleto
 import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from "@/components/ui/error-states";
 import { BrandLoadingCard } from "@/components/ui/brand-loading-card";
 import { DeveloperControls } from "@/components/ui/developer-controls";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { StatusIndicators } from "@/components/ui/status-indicators";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
@@ -304,6 +305,9 @@ const Index = () => {
   // Demo mode state
   const [demoMode, setDemoMode] = useState(false);
   
+  // Admin dashboard state
+  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
+  
   // Last client warning state (for dev controls)
   const [showLastClientWarning, setShowLastClientWarning] = useState(false);
 
@@ -468,7 +472,16 @@ const Index = () => {
         subscriptionOverrides={devOverrides}
         onSubscriptionOverrideChange={(field, value) => setDevOverrides({ ...devOverrides, [field]: value })}
         subscriptionLimits={limits}
+        showAdminDashboard={showAdminDashboard}
+        onShowAdminDashboard={setShowAdminDashboard}
       />
+      
+      {/* Admin Dashboard Overlay */}
+      <AnimatePresence>
+        {showAdminDashboard && (
+          <AdminDashboard onClose={() => setShowAdminDashboard(false)} />
+        )}
+      </AnimatePresence>
       {/* Sidebar - Cloudflare-inspired design */}
       <div className={`${sidebarCollapsed ? 'w-14' : 'w-72'} bg-background border-r border-border flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto`}>
         {/* Logo/Brand Header */}

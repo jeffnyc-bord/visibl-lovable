@@ -44,6 +44,9 @@ interface DeveloperControlsProps {
     maxPrompts: number;
     maxChatbots: number;
   };
+  // Admin dashboard
+  showAdminDashboard?: boolean;
+  onShowAdminDashboard?: (show: boolean) => void;
 }
 
 const gradientOptions = [
@@ -59,7 +62,7 @@ const gradientOptions = [
   { id: "gradient10", name: "Neon Dreams", colors: ["#84CC16", "#06B6D4", "#8B5CF6"] },
 ];
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange, onTriggerLastClientWarning, subscriptionOverrides, onSubscriptionOverrideChange, subscriptionLimits }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange, onTriggerLastClientWarning, subscriptionOverrides, onSubscriptionOverrideChange, subscriptionLimits, showAdminDashboard, onShowAdminDashboard }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -258,6 +261,27 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                     </p>
                   </div>
                 </div>
+                
+                {onShowAdminDashboard && (
+                  <div className="flex items-start space-x-3">
+                    <Switch
+                      id="adminDashboard"
+                      checked={showAdminDashboard ?? false}
+                      onCheckedChange={onShowAdminDashboard}
+                    />
+                    <div className="space-y-1 flex-1">
+                      <Label
+                        htmlFor="adminDashboard"
+                        className="text-sm font-medium leading-none"
+                      >
+                        Admin Dashboard
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Open the admin console for system management
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
               
               {/* Subscription Simulation Section */}
