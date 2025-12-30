@@ -253,6 +253,7 @@ const Index = () => {
   const [queriesSubTab, setQueriesSubTab] = useState<'generate' | 'monitor' | 'test'>('generate');
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ queries: true, recommendations: true });
   const [preselectedProductId, setPreselectedProductId] = useState<string | null>(null);
+  const [returnToProductId, setReturnToProductId] = useState<string | null>(null);
   const [previousScrollPosition, setPreviousScrollPosition] = useState<number>(0);
 
   // Check for tab parameter in URL on component mount
@@ -270,9 +271,10 @@ const Index = () => {
         setRecommendationsSubTab('on-site');
       }
       
-      // Handle preselected product
+      // Handle preselected product (coming from product detail page)
       if (productIdParam) {
         setPreselectedProductId(productIdParam);
+        setReturnToProductId(productIdParam);
       }
       
       // Clear the URL parameter after setting the tab
@@ -1129,6 +1131,7 @@ const Index = () => {
                               demoMode={demoMode} 
                               onOptimizeProduct={(productId, productName) => {
                                 setPreselectedProductId(productId);
+                                setReturnToProductId(productId);
                                 setActiveTab('recommendations');
                                 setRecommendationsSubTab('on-site');
                               }}
@@ -1227,8 +1230,13 @@ const Index = () => {
                               preselectedProductId={preselectedProductId}
                               onProductUsed={() => setPreselectedProductId(null)}
                               onBackToProductLab={() => {
-                                setActiveTab('brandanalysis');
+                                if (returnToProductId) {
+                                  navigate(`/product/${returnToProductId}`);
+                                } else {
+                                  setActiveTab('brandanalysis');
+                                }
                                 setPreselectedProductId(null);
+                                setReturnToProductId(null);
                               }}
                             />
                           )}
