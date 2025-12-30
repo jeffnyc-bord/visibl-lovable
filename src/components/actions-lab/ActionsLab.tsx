@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { ContentGenerationWorkflow } from './ContentGenerationWorkflow';
 import { UnifiedAuthorityLab } from '@/components/authority-lab';
 import { recommendations } from './data';
@@ -14,6 +15,19 @@ interface ActionsLabProps {
 
 export const ActionsLab = ({ demoMode = false, activeTab = 'on-site', preselectedProductId, onProductUsed, onBackToProductLab }: ActionsLabProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const [showBackButton, setShowBackButton] = useState(false);
+
+  // Track when user came from Product Lab
+  useEffect(() => {
+    if (preselectedProductId) {
+      setShowBackButton(true);
+    }
+  }, [preselectedProductId]);
+
+  const handleBack = () => {
+    setShowBackButton(false);
+    onBackToProductLab?.();
+  };
 
   const completedCount = 0;
   const totalCount = recommendations.length;
@@ -50,6 +64,17 @@ export const ActionsLab = ({ demoMode = false, activeTab = 'on-site', preselecte
           {activeTab === 'on-site' && (
             <>
               <div className="hidden lg:block mb-6">
+                {/* Back Button - Show when came from Product Lab */}
+                {showBackButton && onBackToProductLab && (
+                  <button
+                    onClick={handleBack}
+                    className="flex items-center gap-2 text-[13px] font-medium transition-all duration-200 group mb-4"
+                    style={{ color: '#007AFF' }}
+                  >
+                    <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
+                    <span>Back to Product Lab</span>
+                  </button>
+                )}
                 <h2 className="text-xl font-medium text-foreground tracking-tight">
                   On-Site Optimization
                 </h2>
