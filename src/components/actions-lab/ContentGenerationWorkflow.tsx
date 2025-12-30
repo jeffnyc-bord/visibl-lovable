@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { ProductSourceSelector, ProductSource } from './ProductSourceSelector';
 import { PromptSourceSelector, PromptSource } from './PromptSourceSelector';
 import { ContentTypeSelector, ContentType } from './ContentTypeSelector';
@@ -96,9 +97,10 @@ interface ContentGenerationWorkflowProps {
   demoMode?: boolean;
   preselectedProductId?: string | null;
   onProductUsed?: () => void;
+  onBack?: () => void;
 }
 
-export const ContentGenerationWorkflow = ({ demoMode = false, preselectedProductId, onProductUsed }: ContentGenerationWorkflowProps) => {
+export const ContentGenerationWorkflow = ({ demoMode = false, preselectedProductId, onProductUsed, onBack }: ContentGenerationWorkflowProps) => {
   const [workflowMode, setWorkflowMode] = useState<WorkflowMode | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<ProductSource | null>(null);
   const [selectedPrompt, setSelectedPrompt] = useState<PromptSource | null>(null);
@@ -109,6 +111,7 @@ export const ContentGenerationWorkflow = ({ demoMode = false, preselectedProduct
   const [schemaEnabled, setSchemaEnabled] = useState(false);
   const [productNotes, setProductNotes] = useState('');
   const [sessionContext, setSessionContext] = useState<ContextNote[]>([]);
+  const [cameFromProductLab, setCameFromProductLab] = useState(false);
 
   // Handle preselected product from external navigation
   useEffect(() => {
@@ -117,10 +120,17 @@ export const ContentGenerationWorkflow = ({ demoMode = false, preselectedProduct
       if (product) {
         setWorkflowMode('product');
         setSelectedProduct(product);
+        setCameFromProductLab(true);
         onProductUsed?.();
       }
     }
   }, [preselectedProductId, onProductUsed]);
+
+  const handleBackToProductLab = () => {
+    if (onBack) {
+      onBack();
+    }
+  };
 
   const handleSelectMode = (mode: WorkflowMode) => {
     setWorkflowMode(mode);
@@ -197,6 +207,18 @@ export const ContentGenerationWorkflow = ({ demoMode = false, preselectedProduct
 
   return (
     <div className={cn("flex gap-8 relative", demoMode && "demo-card-1")}>
+      {/* Back Button - Show when came from Product Lab */}
+      {cameFromProductLab && onBack && (
+        <button
+          onClick={handleBackToProductLab}
+          className="absolute -top-12 left-0 flex items-center gap-2 text-[13px] font-medium transition-all duration-200 group"
+          style={{ color: '#007AFF' }}
+        >
+          <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
+          <span>Back to Product Lab</span>
+        </button>
+      )}
+      
       {/* Main Content Area */}
       <div className="flex-1 min-w-0 pb-8">
         {/* Step 0: Workflow Mode */}

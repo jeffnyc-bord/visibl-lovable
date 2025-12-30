@@ -1226,6 +1226,10 @@ const Index = () => {
                               activeSubTab={recommendationsSubTab} 
                               preselectedProductId={preselectedProductId}
                               onProductUsed={() => setPreselectedProductId(null)}
+                              onBackToProductLab={() => {
+                                setActiveTab('brandanalysis');
+                                setPreselectedProductId(null);
+                              }}
                             />
                           )}
                         </>
