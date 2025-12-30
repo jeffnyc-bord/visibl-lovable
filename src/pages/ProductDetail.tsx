@@ -1163,7 +1163,7 @@ export const ProductDetail = () => {
                 <button
                   onClick={() => {
                     setShowOptimizeModal(false);
-                    navigate(`/?tab=recommendations&subtab=on-site&productId=${productId}`);
+                    navigate(`/?tab=recommendations&subtab=on-site&productId=${productId}&productName=${encodeURIComponent(mockProduct.name)}`);
                   }}
                   className="w-full group py-4 px-1 hover:bg-muted/50 transition-colors duration-150 text-left rounded-lg -mx-1"
                 >
