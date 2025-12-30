@@ -86,26 +86,100 @@ export const ProductDetail = () => {
     status: PromptStatus;
   };
   
-  const [prompts, setPrompts] = useState<Prompt[]>([
-    { id: 1, model: "ChatGPT", query: "best running shoes 2024", excerpt: "Nike Air Max 1 offers excellent cushioning for daily runs with its Air Max technology providing superior comfort and impact protection.", sentiment: "positive", url: "nike.com/air-max-1", date: "2 hours ago", mentions: 156, queued: false, status: "completed" },
-    { id: 2, model: "Gemini", query: "comfortable athletic footwear", excerpt: "The Nike Air Max 1 combines classic design with reliable cushioning technology, making it a solid choice for both casual wear and light athletic activities.", sentiment: "positive", url: "nike.com/air-max-1", date: "4 hours ago", mentions: 124, queued: false, status: "completed" },
-    { id: 3, model: "Perplexity", query: "retro sneakers style", excerpt: "Air Max 1 maintains its classic appeal while incorporating modern comfort technologies, though some newer models offer better performance.", sentiment: "neutral", url: "nike.com/heritage", date: "6 hours ago", mentions: 89, queued: false, status: "completed" },
-    { id: 4, model: "Grok", query: "athletic shoes innovation", excerpt: "Nike Air Max 1 represents a breakthrough in sneaker design with its visible air cushioning technology that revolutionized athletic footwear.", sentiment: "positive", url: "nike.com/innovation", date: "8 hours ago", mentions: 178, queued: false, status: "completed" }
-  ]);
+  // Product-specific data map matching BrandAnalysisSection scores
+  const productDataMap: Record<string, {
+    name: string;
+    score: number;
+    category: string;
+    mentions: number;
+    trend: number;
+    prompts: Prompt[];
+  }> = {
+    "1": {
+      name: "Nike Air Max 1",
+      score: 92,
+      category: "Footwear",
+      mentions: 547,
+      trend: 5,
+      prompts: [
+        { id: 1, model: "ChatGPT", query: "best running shoes 2024", excerpt: "Nike Air Max 1 offers excellent cushioning for daily runs with its Air Max technology providing superior comfort and impact protection.", sentiment: "positive", url: "nike.com/air-max-1", date: "2 hours ago", mentions: 156, queued: false, status: "completed" },
+        { id: 2, model: "Gemini", query: "comfortable athletic footwear", excerpt: "The Nike Air Max 1 combines classic design with reliable cushioning technology, making it a solid choice for both casual wear and light athletic activities.", sentiment: "positive", url: "nike.com/air-max-1", date: "4 hours ago", mentions: 124, queued: false, status: "completed" },
+        { id: 3, model: "Perplexity", query: "retro sneakers style", excerpt: "Air Max 1 maintains its classic appeal while incorporating modern comfort technologies, though some newer models offer better performance.", sentiment: "neutral", url: "nike.com/heritage", date: "6 hours ago", mentions: 89, queued: false, status: "completed" },
+        { id: 4, model: "Grok", query: "athletic shoes innovation", excerpt: "Nike Air Max 1 represents a breakthrough in sneaker design with its visible air cushioning technology that revolutionized athletic footwear.", sentiment: "positive", url: "nike.com/innovation", date: "8 hours ago", mentions: 178, queued: false, status: "completed" }
+      ]
+    },
+    "2": {
+      name: "Nike Dunk Low",
+      score: 85,
+      category: "Footwear",
+      mentions: 423,
+      trend: 3,
+      prompts: [
+        { id: 1, model: "ChatGPT", query: "best casual sneakers 2024", excerpt: "Nike Dunk Low stands out as a versatile everyday sneaker with its classic basketball heritage and modern comfort features.", sentiment: "positive", url: "nike.com/dunk-low", date: "1 hour ago", mentions: 134, queued: false, status: "completed" },
+        { id: 2, model: "Gemini", query: "streetwear sneakers", excerpt: "The Dunk Low has become a streetwear staple, offering timeless style that works with any outfit.", sentiment: "positive", url: "nike.com/dunk-low", date: "3 hours ago", mentions: 112, queued: false, status: "completed" },
+        { id: 3, model: "Perplexity", query: "nike skate shoes", excerpt: "Originally designed for basketball, the Dunk Low found new life in skate culture and remains popular for its durability.", sentiment: "positive", url: "nike.com/sb", date: "5 hours ago", mentions: 98, queued: false, status: "completed" },
+        { id: 4, model: "Grok", query: "trendy sneakers", excerpt: "Nike Dunk Low continues to dominate sneaker culture with limited colorways driving high demand.", sentiment: "positive", url: "nike.com/trending", date: "7 hours ago", mentions: 79, queued: false, status: "completed" }
+      ]
+    },
+    "3": {
+      name: "Nike Pegasus 41",
+      score: 78,
+      category: "Running",
+      mentions: 312,
+      trend: -2,
+      prompts: [
+        { id: 1, model: "ChatGPT", query: "best daily running shoes", excerpt: "Nike Pegasus 41 offers reliable cushioning for everyday training with React foam technology.", sentiment: "positive", url: "nike.com/pegasus", date: "2 hours ago", mentions: 98, queued: false, status: "completed" },
+        { id: 2, model: "Gemini", query: "marathon training shoes", excerpt: "The Pegasus 41 provides good value for runners looking for a versatile trainer, though elite runners may prefer more responsive options.", sentiment: "neutral", url: "nike.com/pegasus", date: "4 hours ago", mentions: 87, queued: false, status: "completed" },
+        { id: 3, model: "Perplexity", query: "nike running shoes comparison", excerpt: "Pegasus 41 sits in the mid-range of Nike's running lineup, suitable for beginners and intermediate runners.", sentiment: "neutral", url: "nike.com/running", date: "6 hours ago", mentions: 72, queued: false, status: "completed" },
+        { id: 4, model: "Grok", query: "comfortable running shoes", excerpt: "Nike Pegasus 41 delivers consistent comfort mile after mile with its updated Air Zoom unit.", sentiment: "positive", url: "nike.com/pegasus", date: "8 hours ago", mentions: 55, queued: false, status: "completed" }
+      ]
+    },
+    "4": {
+      name: "Nike Air Force 1",
+      score: 88,
+      category: "Footwear",
+      mentions: 489,
+      trend: 4,
+      prompts: [
+        { id: 1, model: "ChatGPT", query: "classic white sneakers", excerpt: "Nike Air Force 1 remains the quintessential white sneaker, offering timeless style and durability.", sentiment: "positive", url: "nike.com/air-force-1", date: "1 hour ago", mentions: 167, queued: false, status: "completed" },
+        { id: 2, model: "Gemini", query: "iconic sneakers", excerpt: "The Air Force 1 has maintained its cultural relevance for over 40 years as a fashion and basketball icon.", sentiment: "positive", url: "nike.com/air-force-1", date: "3 hours ago", mentions: 143, queued: false, status: "completed" },
+        { id: 3, model: "Perplexity", query: "best leather sneakers", excerpt: "Air Force 1 offers premium leather construction at an accessible price point, making it a popular choice.", sentiment: "positive", url: "nike.com/classics", date: "5 hours ago", mentions: 98, queued: false, status: "completed" },
+        { id: 4, model: "Grok", query: "nike heritage shoes", excerpt: "Nike Air Force 1 continues to influence sneaker culture with countless collaborations and colorways.", sentiment: "positive", url: "nike.com/heritage", date: "7 hours ago", mentions: 81, queued: false, status: "completed" }
+      ]
+    },
+    "5": {
+      name: "Nike ZoomX Vaporfly",
+      score: 65,
+      category: "Performance",
+      mentions: 198,
+      trend: -5,
+      prompts: [
+        { id: 1, model: "ChatGPT", query: "fastest marathon shoes", excerpt: "Nike ZoomX Vaporfly is engineered for elite marathon performance with its carbon fiber plate technology.", sentiment: "positive", url: "nike.com/vaporfly", date: "2 hours ago", mentions: 67, queued: false, status: "completed" },
+        { id: 2, model: "Gemini", query: "racing shoes comparison", excerpt: "While Vaporfly leads in performance, its high price point and limited durability are considerations for recreational runners.", sentiment: "neutral", url: "nike.com/racing", date: "4 hours ago", mentions: 54, queued: false, status: "completed" },
+        { id: 3, model: "Perplexity", query: "carbon plate running shoes", excerpt: "Vaporfly pioneered the carbon plate revolution but faces stiff competition from newer alternatives.", sentiment: "neutral", url: "nike.com/innovation", date: "6 hours ago", mentions: 42, queued: false, status: "completed" },
+        { id: 4, model: "Grok", query: "professional running shoes", excerpt: "Nike Vaporfly remains a top choice for competitive runners seeking personal bests.", sentiment: "positive", url: "nike.com/racing", date: "8 hours ago", mentions: 35, queued: false, status: "completed" }
+      ]
+    }
+  };
+
+  // Get product data based on productId, fallback to product 1
+  const currentProductData = productDataMap[productId || "1"] || productDataMap["1"];
+
+  const [prompts, setPrompts] = useState<Prompt[]>(currentProductData.prompts);
   const [showAddPrompt, setShowAddPrompt] = useState(false);
   const MAX_PROMPTS = 5;
 
   // Calculate total mentions from prompts
   const totalMentions = prompts.reduce((sum, p) => sum + p.mentions, 0);
 
-  // Mock product data - in real app this would come from API
+  // Product data using the map
   const mockProduct = {
     id: productId,
-    name: "Nike Air Max 1",
-    sku: "AIR-MAX-001",
-    score: 82,
-    trend: 2,
-    category: "Footwear",
+    name: currentProductData.name,
+    sku: `${currentProductData.name.toUpperCase().replace(/\s+/g, '-')}-${String(productId).padStart(3, '0')}`,
+    score: currentProductData.score,
+    trend: currentProductData.trend,
+    category: currentProductData.category,
     image: "/placeholder-product.jpg",
     lastAnalyzed: "2 hours ago",
     mentions: totalMentions,
