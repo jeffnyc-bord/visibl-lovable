@@ -95,6 +95,9 @@ export const ProductDetail = () => {
   const [showAddPrompt, setShowAddPrompt] = useState(false);
   const MAX_PROMPTS = 5;
 
+  // Calculate total mentions from prompts
+  const totalMentions = prompts.reduce((sum, p) => sum + p.mentions, 0);
+
   // Mock product data - in real app this would come from API
   const mockProduct = {
     id: productId,
@@ -105,7 +108,7 @@ export const ProductDetail = () => {
     category: "Footwear",
     image: "/placeholder-product.jpg",
     lastAnalyzed: "2 hours ago",
-    mentions: 10,
+    mentions: totalMentions,
     avgRank: 3,
     pagesCrawled: 12
   };
@@ -133,9 +136,6 @@ export const ProductDetail = () => {
       benefit: 'Real-time X/Twitter integration. Valuable for social commerce and trending topics.' 
     }
   };
-
-  // Calculate total mentions from prompts
-  const totalMentions = prompts.reduce((sum, p) => sum + p.mentions, 0);
 
   const pillars = {
     platformCoverage: { 
