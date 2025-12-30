@@ -207,18 +207,6 @@ export const ContentGenerationWorkflow = ({ demoMode = false, preselectedProduct
 
   return (
     <div className={cn("flex gap-8 relative", demoMode && "demo-card-1")}>
-      {/* Back Button - Show when came from Product Lab */}
-      {cameFromProductLab && onBack && (
-        <button
-          onClick={handleBackToProductLab}
-          className="absolute -top-12 left-0 flex items-center gap-2 text-[13px] font-medium transition-all duration-200 group"
-          style={{ color: '#007AFF' }}
-        >
-          <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
-          <span>Back to Product Lab</span>
-        </button>
-      )}
-      
       {/* Main Content Area */}
       <div className="flex-1 min-w-0 pb-8">
         {/* Step 0: Workflow Mode */}
