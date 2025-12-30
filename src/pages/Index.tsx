@@ -137,9 +137,11 @@ const mockTrackedBrands: BrandData[] = [
       { name: "Perplexity", mentions: 2310, sentiment: "positive", coverage: 91, trend: "up" }
     ],
     products: [
-      { id: 1, name: "Air Max", category: "Footwear", visibilityScore: 92, mentions: 3421, sentiment: "positive", lastOptimized: "2024-01-12" },
-      { id: 2, name: "Air Jordan", category: "Footwear", visibilityScore: 94, mentions: 4123, sentiment: "positive", lastOptimized: "2024-01-10" },
-      { id: 3, name: "Nike Pro", category: "Apparel", visibilityScore: 78, mentions: 1892, sentiment: "neutral", lastOptimized: "2024-01-08" }
+      { id: 1, name: "Nike Air Max 90", category: "Running Shoes", visibilityScore: 78, mentions: 203, sentiment: "neutral", lastOptimized: "2024-01-12" },
+      { id: 2, name: "Nike Pegasus 41", category: "Performance Running", visibilityScore: 65, mentions: 145, sentiment: "negative", lastOptimized: "2024-01-10" },
+      { id: 3, name: "Nike Dunk Low", category: "Lifestyle", visibilityScore: 82, mentions: 312, sentiment: "positive", lastOptimized: "2024-01-08" },
+      { id: 4, name: "Nike Air Force 1", category: "Lifestyle", visibilityScore: 91, mentions: 456, sentiment: "positive", lastOptimized: "2024-01-05" },
+      { id: 5, name: "Nike ZoomX Vaporfly", category: "Performance Running", visibilityScore: 95, mentions: 289, sentiment: "positive", lastOptimized: "2024-01-03" }
     ],
     competitors: [
       { name: "Adidas", visibilityScore: 84, mentions: 11234, trend: "up" },

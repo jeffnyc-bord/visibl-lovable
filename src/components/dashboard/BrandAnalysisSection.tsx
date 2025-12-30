@@ -140,15 +140,25 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
   }));
 
   const allProducts = [...newProducts, ...mockProducts];
-  const topProducts = allProducts.filter(p => p.score >= 90).slice(0, 5);
+  const topProducts = allProducts.filter(p => p.score >= 90 && p.status === "complete").slice(0, 5);
   const bottomProducts = allProducts.filter(p => p.score < 70 && p.status === "complete").slice(0, 5);
 
-  // Score distribution for battery bar
+  // Dynamic stats based on actual product scores
+  const needsAttentionCount = allProducts.filter(p => p.score < 70 && p.status === "complete").length;
+  const aiReadyCount = allProducts.filter(p => p.score >= 90 && p.status === "complete").length;
+
+  // Score distribution for battery bar - calculated from actual products
+  const excellentCount = allProducts.filter(p => p.score >= 90 && p.status === "complete").length;
+  const goodCount = allProducts.filter(p => p.score >= 70 && p.score < 90 && p.status === "complete").length;
+  const fairCount = allProducts.filter(p => p.score >= 50 && p.score < 70 && p.status === "complete").length;
+  const poorCount = allProducts.filter(p => p.score < 50 && p.status === "complete").length;
+  const totalComplete = allProducts.filter(p => p.status === "complete").length;
+
   const scoreDistribution = [
-    { label: "Excellent", count: 156, percentage: 12, color: "linear-gradient(135deg, #34C759, #30D158)" },
-    { label: "Good", count: 423, percentage: 34, color: "linear-gradient(135deg, #007AFF, #5AC8FA)" },
-    { label: "Fair", count: 579, percentage: 46, color: "linear-gradient(135deg, #FF9500, #FFCC00)" },
-    { label: "Poor", count: 89, percentage: 8, color: "linear-gradient(135deg, #FF3B30, #FF6961)" },
+    { label: "Excellent", count: excellentCount, percentage: totalComplete > 0 ? Math.round((excellentCount / totalComplete) * 100) : 0, color: "linear-gradient(135deg, #34C759, #30D158)" },
+    { label: "Good", count: goodCount, percentage: totalComplete > 0 ? Math.round((goodCount / totalComplete) * 100) : 0, color: "linear-gradient(135deg, #007AFF, #5AC8FA)" },
+    { label: "Fair", count: fairCount, percentage: totalComplete > 0 ? Math.round((fairCount / totalComplete) * 100) : 0, color: "linear-gradient(135deg, #FF9500, #FFCC00)" },
+    { label: "Poor", count: poorCount, percentage: totalComplete > 0 ? Math.round((poorCount / totalComplete) * 100) : 0, color: "linear-gradient(135deg, #FF3B30, #FF6961)" },
   ];
 
   const handleSelectAll = (checked: boolean) => {
@@ -346,11 +356,11 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
               </div>
               <div className="mb-6">
                 <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-1" style={{ color: '#86868B' }}>NEEDS ATTENTION</p>
-                <p className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#FF3B30' }}>2</p>
+                <p className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#FF3B30' }}>{needsAttentionCount}</p>
               </div>
               <div>
                 <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-1" style={{ color: '#86868B' }}>AI-READY</p>
-                <p className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#34C759' }}>3</p>
+                <p className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#34C759' }}>{aiReadyCount}</p>
               </div>
             </div>
 
@@ -585,7 +595,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-xl font-light" style={{ color: '#1D1D1F' }}>All Products</h2>
             <span className="text-[13px]" style={{ color: '#86868B' }}>
-              {allProducts.length} of 1,247
+              {allProducts.length} products
             </span>
           </div>
 
@@ -831,10 +841,10 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
             </div>
           )}
 
-          {/* Pagination */}
-          {allProducts.length > 0 && (
+          {/* Pagination - only show if more than 10 products */}
+          {allProducts.length > 10 && (
             <div className="flex items-center justify-between mt-6">
-              <span className="text-[13px]" style={{ color: '#86868B' }}>Showing {allProducts.length} of 1,247</span>
+              <span className="text-[13px]" style={{ color: '#86868B' }}>Showing {allProducts.length} products</span>
               <div className="flex gap-1">
                 <Button variant="ghost" size="sm" className="text-[13px] h-8 px-3 rounded-lg" style={{ color: '#86868B' }}>Previous</Button>
                 <Button variant="ghost" size="sm" className="text-[13px] h-8 px-3 rounded-lg" style={{ color: '#007AFF' }}>Next</Button>
