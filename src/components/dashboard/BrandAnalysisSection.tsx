@@ -346,11 +346,11 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
               </div>
               <div className="mb-6">
                 <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-1" style={{ color: '#86868B' }}>NEEDS ATTENTION</p>
-                <p className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#FF3B30' }}>89</p>
+                <p className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#FF3B30' }}>2</p>
               </div>
               <div>
                 <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-1" style={{ color: '#86868B' }}>AI-READY</p>
-                <p className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#34C759' }}>156</p>
+                <p className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none" style={{ color: '#34C759' }}>3</p>
               </div>
             </div>
 
