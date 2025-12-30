@@ -105,7 +105,7 @@ export const ProductDetail = () => {
     category: "Footwear",
     image: "/placeholder-product.jpg",
     lastAnalyzed: "2 hours ago",
-    mentions: 847,
+    mentions: 10,
     avgRank: 3,
     pagesCrawled: 12
   };
@@ -134,6 +134,9 @@ export const ProductDetail = () => {
     }
   };
 
+  // Calculate total mentions from prompts
+  const totalMentions = prompts.reduce((sum, p) => sum + p.mentions, 0);
+
   const pillars = {
     platformCoverage: { 
       current: 2, 
@@ -141,8 +144,8 @@ export const ProductDetail = () => {
       platforms: ['ChatGPT', 'Gemini', 'Perplexity', 'Grok'],
       platformDetails
     },
-    intelligenceDepth: { current: 12, total: 25 },
-    marketPresence: { mentions: 1247, trend: [45, 52, 48, 61, 55, 72, 68] },
+    intelligenceDepth: { current: prompts.length, total: MAX_PROMPTS },
+    marketPresence: { mentions: totalMentions, trend: [45, 52, 48, 61, 55, 72, 68] },
     contentFreshness: { activePages: 8, lastSync: '2m ago' }
   };
 
