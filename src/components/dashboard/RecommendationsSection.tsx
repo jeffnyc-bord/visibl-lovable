@@ -42,8 +42,9 @@ interface RecommendationsSectionProps {
   activeSubTab?: 'on-site' | 'authority' | 'contentstudio';
   preselectedProductId?: string | null;
   onProductUsed?: () => void;
+  onBackToProductLab?: () => void;
 }
 
-export const RecommendationsSection = ({ brandData, demoMode = false, activeSubTab = 'on-site', preselectedProductId, onProductUsed }: RecommendationsSectionProps = {}) => {
-  return <ActionsLab demoMode={demoMode} activeTab={activeSubTab === 'contentstudio' ? 'on-site' : activeSubTab} preselectedProductId={preselectedProductId} onProductUsed={onProductUsed} />;
+export const RecommendationsSection = ({ brandData, demoMode = false, activeSubTab = 'on-site', preselectedProductId, onProductUsed, onBackToProductLab }: RecommendationsSectionProps = {}) => {
+  return <ActionsLab demoMode={demoMode} activeTab={activeSubTab === 'contentstudio' ? 'on-site' : activeSubTab} preselectedProductId={preselectedProductId} onProductUsed={onProductUsed} onBackToProductLab={onBackToProductLab} />;
 };

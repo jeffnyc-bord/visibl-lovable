@@ -9,9 +9,10 @@ interface ActionsLabProps {
   activeTab?: TabType;
   preselectedProductId?: string | null;
   onProductUsed?: () => void;
+  onBackToProductLab?: () => void;
 }
 
-export const ActionsLab = ({ demoMode = false, activeTab = 'on-site', preselectedProductId, onProductUsed }: ActionsLabProps) => {
+export const ActionsLab = ({ demoMode = false, activeTab = 'on-site', preselectedProductId, onProductUsed, onBackToProductLab }: ActionsLabProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const completedCount = 0;
@@ -56,7 +57,7 @@ export const ActionsLab = ({ demoMode = false, activeTab = 'on-site', preselecte
                   Generate AI-optimized content from your Prompt Blast Lab insights
                 </p>
               </div>
-              <ContentGenerationWorkflow demoMode={demoMode} preselectedProductId={preselectedProductId} onProductUsed={onProductUsed} />
+              <ContentGenerationWorkflow demoMode={demoMode} preselectedProductId={preselectedProductId} onProductUsed={onProductUsed} onBack={onBackToProductLab} />
             </>
           )}
 
