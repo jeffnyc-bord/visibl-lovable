@@ -9,20 +9,23 @@ interface ActionsLabProps {
   demoMode?: boolean;
   activeTab?: TabType;
   preselectedProductId?: string | null;
+  returnToProductName?: string | null;
   onProductUsed?: () => void;
   onBackToProductLab?: () => void;
 }
 
-export const ActionsLab = ({ demoMode = false, activeTab = 'on-site', preselectedProductId, onProductUsed, onBackToProductLab }: ActionsLabProps) => {
+export const ActionsLab = ({ demoMode = false, activeTab = 'on-site', preselectedProductId, returnToProductName, onProductUsed, onBackToProductLab }: ActionsLabProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [showBackButton, setShowBackButton] = useState(false);
+  const [productName, setProductName] = useState<string | null>(null);
 
   // Track when user came from Product Lab
   useEffect(() => {
     if (preselectedProductId) {
       setShowBackButton(true);
+      setProductName(returnToProductName || null);
     }
-  }, [preselectedProductId]);
+  }, [preselectedProductId, returnToProductName]);
 
   const handleBack = () => {
     setShowBackButton(false);
@@ -72,7 +75,7 @@ export const ActionsLab = ({ demoMode = false, activeTab = 'on-site', preselecte
                     style={{ color: '#007AFF' }}
                   >
                     <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
-                    <span>Back to Product Lab</span>
+                    <span>Back to {productName || 'Product Lab'}</span>
                   </button>
                 )}
                 <h2 className="text-xl font-medium text-foreground tracking-tight">

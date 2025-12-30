@@ -254,6 +254,7 @@ const Index = () => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ queries: true, recommendations: true });
   const [preselectedProductId, setPreselectedProductId] = useState<string | null>(null);
   const [returnToProductId, setReturnToProductId] = useState<string | null>(null);
+  const [returnToProductName, setReturnToProductName] = useState<string | null>(null);
   const [previousScrollPosition, setPreviousScrollPosition] = useState<number>(0);
 
   // Check for tab parameter in URL on component mount
@@ -275,6 +276,9 @@ const Index = () => {
       if (productIdParam) {
         setPreselectedProductId(productIdParam);
         setReturnToProductId(productIdParam);
+        // Try to get product name from URL or use a default
+        const productNameParam = urlParams.get('productName');
+        setReturnToProductName(productNameParam || 'Product');
       }
       
       // Clear the URL parameter after setting the tab
@@ -1132,6 +1136,7 @@ const Index = () => {
                               onOptimizeProduct={(productId, productName) => {
                                 setPreselectedProductId(productId);
                                 setReturnToProductId(productId);
+                                setReturnToProductName(productName);
                                 setActiveTab('recommendations');
                                 setRecommendationsSubTab('on-site');
                               }}
@@ -1228,6 +1233,7 @@ const Index = () => {
                               demoMode={demoMode} 
                               activeSubTab={recommendationsSubTab} 
                               preselectedProductId={preselectedProductId}
+                              returnToProductName={returnToProductName}
                               onProductUsed={() => setPreselectedProductId(null)}
                               onBackToProductLab={() => {
                                 if (returnToProductId) {
@@ -1237,6 +1243,7 @@ const Index = () => {
                                 }
                                 setPreselectedProductId(null);
                                 setReturnToProductId(null);
+                                setReturnToProductName(null);
                               }}
                             />
                           )}
