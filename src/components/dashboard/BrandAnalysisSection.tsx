@@ -505,12 +505,29 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
             activeListProducts.map((product, index) => (
               <div 
                 key={product.id}
-                className="flex items-center justify-between px-6 py-4 cursor-pointer transition-all group hover:bg-white/60"
+                className="flex items-center justify-between px-6 py-4 cursor-pointer transition-all duration-200 group relative"
+                style={{ 
+                  background: 'transparent',
+                }}
                 onClick={() => window.location.href = `/product/${product.id}`}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 122, 255, 0.04)';
+                  e.currentTarget.style.transform = 'scale(1.005)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
               >
+                {/* Hover indicator bar */}
+                <div 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-8 rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  style={{ background: 'linear-gradient(180deg, #007AFF, #5AC8FA)' }}
+                />
+                
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div className="min-w-0">
-                    <p className="text-[14px] font-medium truncate transition-colors" style={{ color: '#1D1D1F' }}>
+                    <p className="text-[14px] font-medium truncate transition-colors duration-200 group-hover:text-[#007AFF]" style={{ color: '#1D1D1F' }}>
                       {product.name}
                     </p>
                     <p className="text-[12px] truncate" style={{ color: '#86868B' }}>{product.sku}</p>
@@ -534,8 +551,8 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                   </div>
 
                   <ChevronRight 
-                    className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0.5" 
-                    style={{ color: '#86868B' }} 
+                    className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1" 
+                    style={{ color: '#007AFF' }} 
                   />
                 </div>
               </div>
@@ -698,12 +715,32 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
               {allProducts.map((product) => (
                 <div 
                   key={product.id} 
-                  className={`grid grid-cols-12 gap-4 py-4 px-6 items-center transition-all group ${
-                    product.status === "analyzing" ? "" : "hover:bg-white/60 cursor-pointer"
+                  className={`grid grid-cols-12 gap-4 py-4 px-6 items-center transition-all duration-200 group relative ${
+                    product.status === "analyzing" ? "" : "cursor-pointer"
                   }`}
                   style={{ background: product.status === "analyzing" ? 'rgba(0, 122, 255, 0.04)' : 'transparent' }}
                   onClick={() => product.status !== "analyzing" && (window.location.href = `/product/${product.id}`)}
+                  onMouseEnter={(e) => {
+                    if (product.status !== "analyzing") {
+                      e.currentTarget.style.background = 'rgba(0, 122, 255, 0.04)';
+                      e.currentTarget.style.transform = 'scale(1.002)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (product.status !== "analyzing") {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }
+                  }}
                 >
+                  {/* Hover indicator bar for table rows */}
+                  {product.status !== "analyzing" && (
+                    <div 
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-10 rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                      style={{ background: 'linear-gradient(180deg, #007AFF, #5AC8FA)' }}
+                    />
+                  )}
+                  
                   <div className="col-span-1" onClick={(e) => e.stopPropagation()}>
                     {product.status !== "analyzing" && (
                       <button
@@ -722,7 +759,7 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
                   <div className="col-span-4">
                     <div className="flex items-center gap-3">
                       <div className="min-w-0">
-                        <p className="text-[14px] font-medium truncate" style={{ color: product.status === "analyzing" ? '#007AFF' : '#1D1D1F' }}>
+                        <p className="text-[14px] font-medium truncate transition-colors duration-200 group-hover:text-[#007AFF]" style={{ color: product.status === "analyzing" ? '#007AFF' : '#1D1D1F' }}>
                           {product.name}
                         </p>
                         <p className="text-[12px] truncate" style={{ color: '#86868B' }}>{product.sku}</p>
