@@ -140,12 +140,12 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
   }));
 
   const allProducts = [...newProducts, ...mockProducts];
-  const topProducts = allProducts.filter(p => p.score >= 90 && p.status === "complete").slice(0, 5);
-  const bottomProducts = allProducts.filter(p => p.score < 70 && p.status === "complete").slice(0, 5);
+  const topProducts = allProducts.filter(p => p.score >= 80 && p.status === "complete").slice(0, 5);
+  const bottomProducts = allProducts.filter(p => p.score < 80 && p.status === "complete").slice(0, 5);
 
-  // Dynamic stats based on actual product scores
-  const needsAttentionCount = allProducts.filter(p => p.score < 70 && p.status === "complete").length;
-  const aiReadyCount = allProducts.filter(p => p.score >= 90 && p.status === "complete").length;
+  // Dynamic stats based on actual product scores - threshold at 80 so all products are categorized
+  const needsAttentionCount = allProducts.filter(p => p.score < 80 && p.status === "complete").length;
+  const aiReadyCount = allProducts.filter(p => p.score >= 80 && p.status === "complete").length;
 
   // Score distribution for battery bar - calculated from actual products
   const excellentCount = allProducts.filter(p => p.score >= 90 && p.status === "complete").length;
