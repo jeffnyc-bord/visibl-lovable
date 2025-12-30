@@ -51,6 +51,14 @@ const mockProducts: ProductSource[] = [
     mentions: 456,
     brandLogo: nikeLogo,
   },
+  {
+    id: '5',
+    name: 'Nike ZoomX Vaporfly',
+    category: 'Performance Running',
+    visibilityScore: 95,
+    mentions: 289,
+    brandLogo: nikeLogo,
+  },
 ];
 
 // Mock prompt data from Prompt Blast Lab
