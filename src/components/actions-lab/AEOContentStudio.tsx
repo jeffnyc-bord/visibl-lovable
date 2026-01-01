@@ -28,7 +28,9 @@ import {
   Copy,
   X,
   MessageCircle,
-  Send
+  Send,
+  Save,
+  Check
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -515,6 +517,9 @@ export const AEOContentStudio = ({
   const [contentStatus, setContentStatus] = useState<'draft' | 'ready' | 'approved'>('draft');
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const addMenuRef = useRef<HTMLDivElement>(null);
   const shareSheetRef = useRef<HTMLDivElement>(null);
   const contentAreaRef = useRef<HTMLDivElement>(null);
@@ -739,7 +744,30 @@ ${s.content}`).join('\n\n')}`;
         s.id === id ? { ...s, [field]: value, isAiGenerated: false } : s
       )
     }));
+    setHasUnsavedChanges(true);
   };
+
+  // Save content handler
+  const handleSave = async () => {
+    setIsSaving(true);
+    // Simulate save operation (in real app, this would persist to backend)
+    await new Promise(resolve => setTimeout(resolve, 800));
+    setIsSaving(false);
+    setLastSaved(new Date());
+    setHasUnsavedChanges(false);
+    toast({ 
+      title: "Changes saved", 
+      description: "Your content has been saved successfully." 
+    });
+  };
+
+  // Track content changes for unsaved indicator
+  useEffect(() => {
+    if (!isGenerating && lastSaved === null) {
+      // Don't mark as unsaved during initial generation
+      return;
+    }
+  }, [content, isGenerating, lastSaved]);
 
   const addSection = (type: 'text' | 'image' | 'list' | 'quote') => {
     const newSection: GeneratedSection = {
@@ -755,6 +783,7 @@ ${s.content}`).join('\n\n')}`;
       sections: [...prev.sections, newSection]
     }));
     setShowAddMenu(false);
+    setHasUnsavedChanges(true);
   };
 
   const deleteSection = (id: string) => {
@@ -762,6 +791,7 @@ ${s.content}`).join('\n\n')}`;
       ...prev,
       sections: prev.sections.filter(s => s.id !== id)
     }));
+    setHasUnsavedChanges(true);
   };
 
   const reorderSections = (newOrder: GeneratedSection[]) => {
@@ -769,6 +799,7 @@ ${s.content}`).join('\n\n')}`;
       ...prev,
       sections: newOrder
     }));
+    setHasUnsavedChanges(true);
   };
 
   const toggleSectionStyle = (id: string, style: 'bold' | 'italic' | 'underline') => {
@@ -780,6 +811,7 @@ ${s.content}`).join('\n\n')}`;
           : s
       )
     }));
+    setHasUnsavedChanges(true);
   };
 
   const setSectionHeadingLevel = (id: string, level: 'h2' | 'h3') => {
@@ -791,6 +823,7 @@ ${s.content}`).join('\n\n')}`;
           : s
       )
     }));
+    setHasUnsavedChanges(true);
   };
 
   useEffect(() => {
@@ -889,12 +922,66 @@ ${s.content}`).join('\n\n')}`;
                 {contentStatus === 'ready' ? 'Ready' : 'Approved'}
               </span>
             )}
+
+            {/* Save Button with Status Indicator */}
+            <div className="flex items-center gap-2">
+              <AnimatePresence mode="wait">
+                {lastSaved && !hasUnsavedChanges && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    className="flex items-center gap-1.5 text-success"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span className="text-[10px]">Saved</span>
+                  </motion.div>
+                )}
+                {hasUnsavedChanges && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-[10px] text-muted-foreground"
+                  >
+                    Unsaved changes
+                  </motion.span>
+                )}
+              </AnimatePresence>
+              <Button
+                onClick={handleSave}
+                disabled={isGenerating || isSaving || (!hasUnsavedChanges && lastSaved !== null)}
+                variant={hasUnsavedChanges ? "default" : "outline"}
+                size="sm"
+                className={cn(
+                  "h-8 gap-1.5 text-xs transition-all",
+                  hasUnsavedChanges && "animate-pulse"
+                )}
+              >
+                {isSaving ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                    </motion.div>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-3.5 h-3.5" />
+                    Save
+                  </>
+                )}
+              </Button>
+            </div>
             
             {/* Share Button with Sheet */}
             <div className="relative" ref={shareSheetRef}>
               <Button
                 onClick={() => setShowShareSheet(!showShareSheet)}
                 disabled={isGenerating}
+                variant="outline"
                 size="sm"
                 className="h-8 gap-1.5 text-xs"
               >
