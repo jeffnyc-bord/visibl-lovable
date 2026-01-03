@@ -1072,147 +1072,17 @@ const Reports = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Left - Step Content */}
-          <div className="lg:col-span-7">
-            <div className="mb-8">
-              <h1 className="text-2xl font-light tracking-tight text-foreground mb-2">
-                {currentStepConfig.label}
-              </h1>
-              <p className="text-muted-foreground text-sm">
-                Step {currentStepIndex + 1} of {WIZARD_STEPS.length}
-              </p>
-            </div>
-
-            {renderStepContent()}
+        <div className="max-w-2xl">
+          <div className="mb-8">
+            <h1 className="text-2xl font-light tracking-tight text-foreground mb-2">
+              {currentStepConfig.label}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Step {currentStepIndex + 1} of {WIZARD_STEPS.length}
+            </p>
           </div>
 
-          {/* Right - Live Preview */}
-          <div className="lg:col-span-5">
-            <div className="sticky top-24 space-y-6">
-              {/* Settings */}
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">
-                    Report Period
-                  </label>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button className="text-foreground hover:text-foreground/70 transition-colors">
-                          {startDate ? format(startDate, "MMM d, yyyy") : "Start"}
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <CalendarComponent
-                          mode="single"
-                          selected={startDate}
-                          onSelect={setStartDate}
-                          initialFocus
-                          className="pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <span className="text-muted-foreground">—</span>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button className="text-foreground hover:text-foreground/70 transition-colors">
-                          {endDate ? format(endDate, "MMM d, yyyy") : "End"}
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <CalendarComponent
-                          mode="single"
-                          selected={endDate}
-                          onSelect={setEndDate}
-                          initialFocus
-                          className="pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs text-muted-foreground block mb-1.5">Report Title</label>
-                    <Input
-                      value={reportTitle}
-                      onChange={(e) => setReportTitle(e.target.value)}
-                      className="border-0 border-b border-border rounded-none px-0 focus-visible:ring-0 focus-visible:border-foreground bg-transparent h-8 text-sm"
-                      placeholder="Enter report title"
-                    />
-                  </div>
-
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                  />
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Logo</span>
-                    {customLogo ? (
-                      <div className="flex items-center gap-2">
-                        <img src={customLogo} alt="Logo" className="h-4 object-contain" />
-                        <button
-                          onClick={() => setCustomLogo(null)}
-                          className="text-xs text-destructive hover:underline"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
-                      >
-                        Upload
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Page numbers</span>
-                    <Switch
-                      checked={showPageNumbers}
-                      onCheckedChange={setShowPageNumbers}
-                      className="scale-75"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Live Preview */}
-              <div>
-                <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-3">
-                  Preview
-                </label>
-                <ReportPreview
-                  reportTitle={reportTitle}
-                  dateRange={{ start: startDate, end: endDate }}
-                  customLogo={customLogo}
-                  brandName="Nike"
-                  sections={{
-                    score: sections.score,
-                    mentions: sections.mentions,
-                    platformCoverage: sections.platformCoverage,
-                    prompts: sections.prompts,
-                    products: sections.products,
-                    optimizations: sections.optimizations,
-                    actions: sections.actions,
-                  }}
-                  platforms={platforms}
-                />
-              </div>
-            </div>
-          </div>
+          {renderStepContent()}
         </div>
       </main>
     </div>
