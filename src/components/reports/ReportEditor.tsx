@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   ArrowLeft,
   Download,
@@ -13,20 +13,42 @@ import {
   ChevronDown,
   Edit3,
   Check,
-  X,
-  Loader2
+  Loader2,
+  Settings2,
+  Minus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Slider } from '@/components/ui/slider';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { format } from 'date-fns';
+
+// Block styling options
+export interface BlockStyles {
+  fontSize: number; // in px
+  lineHeight: number; // multiplier
+  marginBottom: number; // in px
+}
+
+const defaultBlockStyles: Record<string, BlockStyles> = {
+  section: { fontSize: 14, lineHeight: 1.4, marginBottom: 12 },
+  text: { fontSize: 11, lineHeight: 1.5, marginBottom: 10 },
+  stat: { fontSize: 24, lineHeight: 1.2, marginBottom: 12 },
+  quote: { fontSize: 11, lineHeight: 1.4, marginBottom: 10 },
+  image: { fontSize: 10, lineHeight: 1.4, marginBottom: 12 },
+};
 
 export interface ReportBlock {
   id: string;
@@ -42,6 +64,7 @@ export interface ReportBlock {
     quoteAuthor?: string;
     sectionType?: string;
   };
+  styles?: BlockStyles;
 }
 
 interface ReportEditorProps {
@@ -53,7 +76,17 @@ interface ReportEditorProps {
   onTitleChange: (title: string) => void;
   isExporting?: boolean;
   dateRange?: { start: Date | undefined; end: Date | undefined };
+  brandName?: string;
 }
+
+// A4 dimensions at 96 DPI (standard screen): 794px x 1123px
+// We'll use a scaled version for the canvas
+const PAGE_WIDTH = 595; // ~A4 width in points
+const PAGE_HEIGHT = 842; // ~A4 height in points
+const PAGE_PADDING = 40;
+const HEADER_HEIGHT = 60;
+const FOOTER_HEIGHT = 30;
+const CONTENT_HEIGHT = PAGE_HEIGHT - PAGE_PADDING * 2 - HEADER_HEIGHT - FOOTER_HEIGHT;
 
 const ReportEditor = ({ 
   blocks, 
@@ -63,7 +96,8 @@ const ReportEditor = ({
   reportTitle,
   onTitleChange,
   isExporting = false,
-  dateRange
+  dateRange,
+  brandName = 'Brand'
 }: ReportEditorProps) => {
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState(false);
@@ -87,11 +121,22 @@ const ReportEditor = ({
     ));
   };
 
+  const updateBlockStyles = (id: string, styles: Partial<BlockStyles>) => {
+    onBlocksChange(blocks.map(b => 
+      b.id === id ? { ...b, styles: { ...getBlockStyles(b), ...styles } } : b
+    ));
+  };
+
+  const getBlockStyles = (block: ReportBlock): BlockStyles => {
+    return block.styles || defaultBlockStyles[block.type] || defaultBlockStyles.text;
+  };
+
   const addBlock = (type: ReportBlock['type'], afterIndex?: number) => {
     const newBlock: ReportBlock = {
       id: `block-${Date.now()}`,
       type,
       content: getDefaultContent(type),
+      styles: { ...defaultBlockStyles[type] },
     };
     
     if (afterIndex !== undefined) {
@@ -142,10 +187,72 @@ const ReportEditor = ({
   const formatDate = (date: Date | undefined) => 
     date ? format(date, "MMM d, yyyy") : "—";
 
+  // Calculate which blocks go on which page
+  const pages = useMemo(() => {
+    const result: { blocks: ReportBlock[]; pageNum: number }[] = [];
+    let currentPage: ReportBlock[] = [];
+    let currentHeight = 0;
+    let pageNum = 1;
+
+    // First page has title section
+    const titleHeight = 50;
+    currentHeight = titleHeight;
+
+    blocks.forEach((block) => {
+      const styles = getBlockStyles(block);
+      const blockHeight = estimateBlockHeight(block, styles);
+
+      if (currentHeight + blockHeight > CONTENT_HEIGHT && currentPage.length > 0) {
+        result.push({ blocks: currentPage, pageNum });
+        currentPage = [block];
+        currentHeight = blockHeight;
+        pageNum++;
+      } else {
+        currentPage.push(block);
+        currentHeight += blockHeight;
+      }
+    });
+
+    if (currentPage.length > 0 || result.length === 0) {
+      result.push({ blocks: currentPage, pageNum });
+    }
+
+    return result;
+  }, [blocks]);
+
+  // Estimate block height based on content and styles
+  function estimateBlockHeight(block: ReportBlock, styles: BlockStyles): number {
+    const lineHeight = styles.lineHeight * styles.fontSize;
+    const margin = styles.marginBottom;
+    
+    switch (block.type) {
+      case 'section': {
+        const titleLines = Math.ceil((block.content.title?.length || 0) / 50);
+        const bodyLines = Math.ceil((block.content.body?.length || 0) / 70);
+        return 20 + titleLines * 18 + bodyLines * lineHeight + margin;
+      }
+      case 'text': {
+        const titleLines = block.content.title ? 1 : 0;
+        const bodyLines = Math.ceil((block.content.body?.length || 0) / 70);
+        return titleLines * 16 + bodyLines * lineHeight + margin;
+      }
+      case 'stat':
+        return 40 + margin;
+      case 'quote': {
+        const lines = Math.ceil((block.content.quoteText?.length || 0) / 60);
+        return lines * lineHeight + 20 + margin;
+      }
+      case 'image':
+        return block.content.imageUrl ? 120 + margin : 60 + margin;
+      default:
+        return 40 + margin;
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-muted/30 flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border">
         <div className="max-w-[1600px] mx-auto px-6 h-14 flex items-center justify-between">
           <button 
             onClick={onBack}
@@ -154,118 +261,168 @@ const ReportEditor = ({
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm">Back</span>
           </button>
-          
-          <Button 
-            onClick={onExport}
-            className="h-9 px-5 rounded-full"
-            disabled={isExporting}
-          >
-            {isExporting ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Exporting...
-              </>
-            ) : (
-              <>
-                <Download className="w-4 h-4 mr-2" />
-                Export PDF
-              </>
-            )}
-          </Button>
+
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">
+              {pages.length} page{pages.length !== 1 ? 's' : ''}
+            </span>
+            <Button 
+              onClick={onExport}
+              className="h-9 px-5 rounded-full"
+              disabled={isExporting}
+            >
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export PDF
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-2xl mx-auto px-8 py-10">
-          {/* Editable Title */}
-          <div className="mb-8 group">
-            {editingTitle ? (
-              <div className="flex items-center gap-3">
-                <Input
-                  value={reportTitle}
-                  onChange={(e) => onTitleChange(e.target.value)}
-                  className="text-2xl font-light border-0 border-b border-border rounded-none px-0 h-auto py-2 focus-visible:ring-0 bg-transparent"
-                  autoFocus
-                />
-                <button
-                  onClick={() => setEditingTitle(false)}
-                  className="p-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Check className="w-4 h-4" />
-                </button>
+      {/* Page Canvas */}
+      <div className="flex-1 overflow-auto py-8 px-4">
+        <div className="flex flex-col items-center gap-6">
+          {pages.map((page, pageIndex) => (
+            <div key={pageIndex} className="relative">
+              {/* Page number indicator */}
+              <div className="absolute -left-16 top-4 text-xs text-muted-foreground">
+                Page {page.pageNum}
               </div>
-            ) : (
-              <button
-                onClick={() => setEditingTitle(true)}
-                className="text-left w-full"
+              
+              {/* Page */}
+              <div 
+                className="bg-white shadow-lg rounded-sm relative"
+                style={{ 
+                  width: PAGE_WIDTH, 
+                  minHeight: PAGE_HEIGHT,
+                  padding: PAGE_PADDING,
+                }}
               >
-                <h1 className="text-2xl font-light tracking-tight text-foreground inline-flex items-center gap-3">
-                  {reportTitle}
-                  <Edit3 className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </h1>
-              </button>
-            )}
-            {dateRange && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {formatDate(dateRange.start)} — {formatDate(dateRange.end)}
-              </p>
-            )}
-          </div>
-
-          <p className="text-muted-foreground mb-6 text-sm">
-            Add commentary, insights, or additional content to your report.
-          </p>
-
-          {/* Blocks */}
-          <div className="space-y-4">
-            {blocks.map((block, index) => (
-              <div
-                key={block.id}
-                draggable
-                onDragStart={() => handleDragStart(index)}
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDragEnd={handleDragEnd}
-                className={cn(
-                  "group relative",
-                  draggedIndex === index && "opacity-50"
+                {/* Header on first page */}
+                {pageIndex === 0 && (
+                  <div className="border-b border-gray-200 pb-3 mb-4" style={{ height: HEADER_HEIGHT }}>
+                    <div className="flex justify-between items-start">
+                      <span className="text-[9px] text-gray-500">{brandName}</span>
+                      <span className="text-[8px] text-gray-400">
+                        {formatDate(dateRange?.start)} — {formatDate(dateRange?.end)}
+                      </span>
+                    </div>
+                    {/* Editable Title */}
+                    <div className="mt-2 group">
+                      {editingTitle ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            value={reportTitle}
+                            onChange={(e) => onTitleChange(e.target.value)}
+                            className="text-[18px] font-light text-gray-900 border-0 border-b border-gray-300 bg-transparent w-full focus:outline-none focus:border-primary"
+                            autoFocus
+                            onBlur={() => setEditingTitle(false)}
+                            onKeyDown={(e) => e.key === 'Enter' && setEditingTitle(false)}
+                          />
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setEditingTitle(true)}
+                          className="text-left w-full"
+                        >
+                          <h1 className="text-[18px] font-light text-gray-900 inline-flex items-center gap-2">
+                            {reportTitle}
+                            <Edit3 className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </h1>
+                        </button>
+                      )}
+                      <p className="text-[8px] text-gray-500 mt-0.5">AI Visibility Report • {brandName}</p>
+                    </div>
+                  </div>
                 )}
-              >
-                <BlockRenderer
-                  block={block}
-                  isEditing={editingBlockId === block.id}
-                  onEdit={() => setEditingBlockId(block.id)}
-                  onSave={() => setEditingBlockId(null)}
-                  onUpdate={(content) => updateBlock(block.id, content)}
-                  onDelete={() => deleteBlock(block.id)}
-                  onMoveUp={() => moveBlock(index, 'up')}
-                  onMoveDown={() => moveBlock(index, 'down')}
-                  canMoveUp={index > 0}
-                  canMoveDown={index < blocks.length - 1}
-                />
-                
-                {/* Add block button between items */}
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                  <AddBlockButton onAdd={(type) => addBlock(type, index)} />
-                </div>
-              </div>
-            ))}
-          </div>
 
-          {/* Add block at end */}
-          {blocks.length === 0 ? (
-            <div className="border-2 border-dashed border-border rounded-lg p-10 text-center">
-              <p className="text-muted-foreground mb-4 text-sm">No content blocks yet</p>
-              <AddBlockButton onAdd={addBlock} variant="large" />
+                {/* Content blocks */}
+                <div className="space-y-0">
+                  {page.blocks.map((block, blockIndex) => {
+                    const globalIndex = blocks.findIndex(b => b.id === block.id);
+                    const styles = getBlockStyles(block);
+                    
+                    return (
+                      <div
+                        key={block.id}
+                        draggable
+                        onDragStart={() => handleDragStart(globalIndex)}
+                        onDragOver={(e) => handleDragOver(e, globalIndex)}
+                        onDragEnd={handleDragEnd}
+                        className={cn(
+                          "group relative",
+                          draggedIndex === globalIndex && "opacity-50"
+                        )}
+                        style={{ marginBottom: styles.marginBottom }}
+                      >
+                        <PageBlock
+                          block={block}
+                          styles={styles}
+                          isEditing={editingBlockId === block.id}
+                          onEdit={() => setEditingBlockId(block.id)}
+                          onSave={() => setEditingBlockId(null)}
+                          onUpdate={(content) => updateBlock(block.id, content)}
+                          onUpdateStyles={(newStyles) => updateBlockStyles(block.id, newStyles)}
+                          onDelete={() => deleteBlock(block.id)}
+                          onMoveUp={() => moveBlock(globalIndex, 'up')}
+                          onMoveDown={() => moveBlock(globalIndex, 'down')}
+                          canMoveUp={globalIndex > 0}
+                          canMoveDown={globalIndex < blocks.length - 1}
+                          onAddAfter={(type) => addBlock(type, globalIndex)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Add block button when page is empty or at end */}
+                {page.blocks.length === 0 && pageIndex === 0 && (
+                  <div className="border border-dashed border-gray-300 rounded p-6 text-center mt-4">
+                    <p className="text-[10px] text-gray-400 mb-3">Add content blocks</p>
+                    <AddBlockButton onAdd={addBlock} variant="large" />
+                  </div>
+                )}
+
+                {/* Footer */}
+                <div 
+                  className="absolute bottom-0 left-0 right-0 flex justify-between items-center text-[8px] text-gray-400 border-t border-gray-100"
+                  style={{ 
+                    padding: `8px ${PAGE_PADDING}px`,
+                    height: FOOTER_HEIGHT 
+                  }}
+                >
+                  <span>{brandName}</span>
+                  <span>Page {page.pageNum} of {pages.length}</span>
+                </div>
+
+                {/* Page break indicator */}
+                {pageIndex < pages.length - 1 && (
+                  <div className="absolute -bottom-3 left-0 right-0 flex items-center justify-center">
+                    <div className="bg-amber-100 text-amber-700 text-[9px] px-2 py-0.5 rounded-full">
+                      Page break
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          ) : (
-            <div className="mt-8 flex justify-center">
+          ))}
+
+          {/* Add new block at end */}
+          {blocks.length > 0 && (
+            <div className="py-4">
               <AddBlockButton onAdd={addBlock} variant="large" />
             </div>
           )}
         </div>
       </div>
-
     </div>
   );
 };
@@ -280,63 +437,148 @@ const AddBlockButton = ({ onAdd, variant = 'small' }: AddBlockButtonProps) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       {variant === 'large' ? (
-        <Button variant="outline" className="rounded-full">
-          <Plus className="w-4 h-4 mr-2" />
+        <Button variant="outline" size="sm" className="rounded-full text-xs">
+          <Plus className="w-3 h-3 mr-1" />
           Add Block
         </Button>
       ) : (
-        <button className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:scale-110 transition-transform">
+        <button className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:scale-110 transition-transform">
           <Plus className="w-3 h-3" />
         </button>
       )}
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="center" className="w-48">
-      <DropdownMenuItem onClick={() => onAdd('text')}>
-        <Type className="w-4 h-4 mr-2" />
+    <DropdownMenuContent align="center" className="w-40">
+      <DropdownMenuItem onClick={() => onAdd('text')} className="text-xs">
+        <Type className="w-3 h-3 mr-2" />
         Text Block
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => onAdd('image')}>
-        <Image className="w-4 h-4 mr-2" />
+      <DropdownMenuItem onClick={() => onAdd('image')} className="text-xs">
+        <Image className="w-3 h-3 mr-2" />
         Image
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => onAdd('stat')}>
-        <Hash className="w-4 h-4 mr-2" />
+      <DropdownMenuItem onClick={() => onAdd('stat')} className="text-xs">
+        <Hash className="w-3 h-3 mr-2" />
         Statistic
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => onAdd('quote')}>
-        <Quote className="w-4 h-4 mr-2" />
+      <DropdownMenuItem onClick={() => onAdd('quote')} className="text-xs">
+        <Quote className="w-3 h-3 mr-2" />
         Quote
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 );
 
-// Block Renderer
-interface BlockRendererProps {
+// Formatting Controls Popover
+interface FormattingControlsProps {
+  styles: BlockStyles;
+  onUpdate: (styles: Partial<BlockStyles>) => void;
+  blockType: string;
+}
+
+const FormattingControls = ({ styles, onUpdate, blockType }: FormattingControlsProps) => (
+  <Popover>
+    <PopoverTrigger asChild>
+      <button className="p-1 rounded bg-white border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors">
+        <Settings2 className="w-3 h-3" />
+      </button>
+    </PopoverTrigger>
+    <PopoverContent className="w-56 p-3" align="end">
+      <div className="space-y-4">
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Font Size</label>
+            <span className="text-[10px] text-foreground font-medium">{styles.fontSize}px</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => onUpdate({ fontSize: Math.max(8, styles.fontSize - 1) })}
+              className="p-1 rounded border border-border hover:bg-muted"
+            >
+              <Minus className="w-3 h-3" />
+            </button>
+            <Slider
+              value={[styles.fontSize]}
+              onValueChange={([v]) => onUpdate({ fontSize: v })}
+              min={8}
+              max={blockType === 'stat' ? 48 : 24}
+              step={1}
+              className="flex-1"
+            />
+            <button 
+              onClick={() => onUpdate({ fontSize: Math.min(blockType === 'stat' ? 48 : 24, styles.fontSize + 1) })}
+              className="p-1 rounded border border-border hover:bg-muted"
+            >
+              <Plus className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Line Height</label>
+            <span className="text-[10px] text-foreground font-medium">{styles.lineHeight.toFixed(1)}</span>
+          </div>
+          <Slider
+            value={[styles.lineHeight * 10]}
+            onValueChange={([v]) => onUpdate({ lineHeight: v / 10 })}
+            min={10}
+            max={24}
+            step={1}
+            className="w-full"
+          />
+        </div>
+
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Spacing After</label>
+            <span className="text-[10px] text-foreground font-medium">{styles.marginBottom}px</span>
+          </div>
+          <Slider
+            value={[styles.marginBottom]}
+            onValueChange={([v]) => onUpdate({ marginBottom: v })}
+            min={0}
+            max={40}
+            step={2}
+            className="w-full"
+          />
+        </div>
+      </div>
+    </PopoverContent>
+  </Popover>
+);
+
+// Page Block Renderer
+interface PageBlockProps {
   block: ReportBlock;
+  styles: BlockStyles;
   isEditing: boolean;
   onEdit: () => void;
   onSave: () => void;
   onUpdate: (content: Partial<ReportBlock['content']>) => void;
+  onUpdateStyles: (styles: Partial<BlockStyles>) => void;
   onDelete: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
   canMoveUp: boolean;
   canMoveDown: boolean;
+  onAddAfter: (type: ReportBlock['type']) => void;
 }
 
-const BlockRenderer = ({
+const PageBlock = ({
   block,
+  styles,
   isEditing,
   onEdit,
   onSave,
   onUpdate,
+  onUpdateStyles,
   onDelete,
   onMoveUp,
   onMoveDown,
   canMoveUp,
   canMoveDown,
-}: BlockRendererProps) => {
+  onAddAfter,
+}: PageBlockProps) => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -352,262 +594,292 @@ const BlockRenderer = ({
 
   return (
     <div className={cn(
-      "relative border border-transparent rounded-lg transition-all",
-      isEditing ? "border-border bg-muted/30 p-4" : "hover:border-border/50 group"
+      "relative rounded transition-all",
+      isEditing ? "ring-1 ring-primary bg-blue-50/30 p-2 -mx-2" : "hover:bg-gray-50/50"
     )}>
-      {/* Controls */}
+      {/* Controls - left side */}
       {!isEditing && (
-        <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center gap-1">
-          <button className="p-1 text-muted-foreground hover:text-foreground cursor-grab">
-            <GripVertical className="w-4 h-4" />
+        <div className="absolute -left-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center gap-0.5">
+          <button className="p-0.5 text-gray-400 hover:text-gray-600 cursor-grab">
+            <GripVertical className="w-3 h-3" />
           </button>
           {canMoveUp && (
-            <button onClick={onMoveUp} className="p-1 text-muted-foreground hover:text-foreground">
+            <button onClick={onMoveUp} className="p-0.5 text-gray-400 hover:text-gray-600">
               <ChevronUp className="w-3 h-3" />
             </button>
           )}
           {canMoveDown && (
-            <button onClick={onMoveDown} className="p-1 text-muted-foreground hover:text-foreground">
+            <button onClick={onMoveDown} className="p-0.5 text-gray-400 hover:text-gray-600">
               <ChevronDown className="w-3 h-3" />
             </button>
           )}
         </div>
       )}
 
-      {/* Edit/Delete buttons */}
-      {!isEditing && block.type !== 'section' && (
-        <div className="absolute -right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-          <button
-            onClick={onEdit}
-            className="p-1.5 rounded-md bg-background border border-border text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Edit3 className="w-3 h-3" />
-          </button>
+      {/* Controls - right side */}
+      {!isEditing && (
+        <div className="absolute -right-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center gap-1">
+          <FormattingControls 
+            styles={styles} 
+            onUpdate={onUpdateStyles} 
+            blockType={block.type}
+          />
+          {block.type !== 'section' && (
+            <button
+              onClick={onEdit}
+              className="p-1 rounded bg-white border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors"
+            >
+              <Edit3 className="w-3 h-3" />
+            </button>
+          )}
           <button
             onClick={onDelete}
-            className="p-1.5 rounded-md bg-background border border-border text-muted-foreground hover:text-destructive transition-colors"
+            className="p-1 rounded bg-white border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-300 transition-colors"
           >
             <Trash2 className="w-3 h-3" />
           </button>
         </div>
       )}
 
-      {/* Content based on type */}
+      {/* Add block after - bottom center */}
+      {!isEditing && (
+        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+          <AddBlockButton onAdd={onAddAfter} />
+        </div>
+      )}
+
+      {/* Content */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
+
       {block.type === 'section' && (
-        <SectionBlock block={block} isEditing={isEditing} onUpdate={onUpdate} />
+        <SectionBlockContent block={block} styles={styles} isEditing={isEditing} onUpdate={onUpdate} />
       )}
-
       {block.type === 'text' && (
-        <TextBlock block={block} isEditing={isEditing} onUpdate={onUpdate} />
+        <TextBlockContent block={block} styles={styles} isEditing={isEditing} onUpdate={onUpdate} />
       )}
-
       {block.type === 'image' && (
-        <>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="hidden"
-          />
-          <ImageBlock 
-            block={block} 
-            isEditing={isEditing} 
-            onUpdate={onUpdate}
-            onUpload={() => fileInputRef.current?.click()}
-          />
-        </>
+        <ImageBlockContent 
+          block={block} 
+          styles={styles}
+          isEditing={isEditing} 
+          onUpdate={onUpdate}
+          onUpload={() => fileInputRef.current?.click()}
+        />
       )}
-
       {block.type === 'stat' && (
-        <StatBlock block={block} isEditing={isEditing} onUpdate={onUpdate} />
+        <StatBlockContent block={block} styles={styles} isEditing={isEditing} onUpdate={onUpdate} />
       )}
-
       {block.type === 'quote' && (
-        <QuoteBlock block={block} isEditing={isEditing} onUpdate={onUpdate} />
+        <QuoteBlockContent block={block} styles={styles} isEditing={isEditing} onUpdate={onUpdate} />
       )}
 
       {/* Save button when editing */}
       {isEditing && (
-        <div className="flex justify-end mt-4 pt-4 border-t border-border/50">
-          <Button size="sm" onClick={onSave} className="rounded-full">
-            <Check className="w-3 h-3 mr-1" />
+        <div className="flex justify-end mt-2 pt-2 border-t border-gray-200">
+          <button 
+            onClick={onSave} 
+            className="text-[10px] bg-primary text-primary-foreground px-3 py-1 rounded-full hover:bg-primary/90"
+          >
             Done
-          </Button>
+          </button>
         </div>
       )}
     </div>
   );
 };
 
-// Section Block (auto-generated from config)
-const SectionBlock = ({ block, isEditing, onUpdate }: { 
+// Block Content Components
+const SectionBlockContent = ({ block, styles, isEditing, onUpdate }: { 
   block: ReportBlock; 
+  styles: BlockStyles;
   isEditing: boolean;
   onUpdate: (content: Partial<ReportBlock['content']>) => void;
 }) => (
-  <div className="py-4">
-    <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
+  <div style={{ lineHeight: styles.lineHeight }}>
+    <div className="text-[7px] text-gray-500 uppercase tracking-wider mb-1">
       {block.content.sectionType}
     </div>
     {isEditing ? (
-      <Input
+      <input
         value={block.content.title || ''}
         onChange={(e) => onUpdate({ title: e.target.value })}
-        className="text-xl font-light border-0 border-b border-border rounded-none px-0 h-auto py-1 focus-visible:ring-0 bg-transparent"
+        style={{ fontSize: styles.fontSize }}
+        className="font-light text-gray-900 border-0 border-b border-gray-300 bg-transparent w-full focus:outline-none focus:border-primary"
       />
     ) : (
-      <h2 className="text-xl font-light text-foreground">{block.content.title}</h2>
+      <h2 style={{ fontSize: styles.fontSize }} className="font-light text-gray-900">
+        {block.content.title}
+      </h2>
     )}
     {block.content.body && (
-      <p className="text-muted-foreground mt-2 text-sm">{block.content.body}</p>
+      <p className="text-gray-600 mt-1" style={{ fontSize: styles.fontSize * 0.7, lineHeight: styles.lineHeight }}>
+        {block.content.body}
+      </p>
     )}
   </div>
 );
 
-// Text Block
-const TextBlock = ({ block, isEditing, onUpdate }: { 
+const TextBlockContent = ({ block, styles, isEditing, onUpdate }: { 
   block: ReportBlock; 
+  styles: BlockStyles;
   isEditing: boolean;
   onUpdate: (content: Partial<ReportBlock['content']>) => void;
 }) => (
-  <div className="py-4">
+  <div style={{ lineHeight: styles.lineHeight }}>
     {isEditing ? (
-      <div className="space-y-3">
-        <Input
+      <div className="space-y-2">
+        <input
           value={block.content.title || ''}
           onChange={(e) => onUpdate({ title: e.target.value })}
-          placeholder="Section title (optional)"
-          className="font-medium border-0 border-b border-border rounded-none px-0 h-auto py-1 focus-visible:ring-0 bg-transparent"
+          placeholder="Title (optional)"
+          style={{ fontSize: styles.fontSize + 2 }}
+          className="font-medium text-gray-900 border-0 border-b border-gray-300 bg-transparent w-full focus:outline-none focus:border-primary"
         />
-        <Textarea
+        <textarea
           value={block.content.body || ''}
           onChange={(e) => onUpdate({ body: e.target.value })}
-          placeholder="Write your commentary..."
-          className="min-h-[100px] border-0 px-0 focus-visible:ring-0 bg-transparent resize-none"
+          placeholder="Write content..."
+          style={{ fontSize: styles.fontSize, lineHeight: styles.lineHeight }}
+          className="text-gray-600 border-0 bg-transparent w-full focus:outline-none resize-none min-h-[60px]"
         />
       </div>
     ) : (
       <>
         {block.content.title && (
-          <h3 className="font-medium text-foreground mb-2">{block.content.title}</h3>
+          <h3 style={{ fontSize: styles.fontSize + 2 }} className="font-medium text-gray-900 mb-1">
+            {block.content.title}
+          </h3>
         )}
-        <p className="text-muted-foreground whitespace-pre-wrap">{block.content.body}</p>
+        <p style={{ fontSize: styles.fontSize, lineHeight: styles.lineHeight }} className="text-gray-600 whitespace-pre-wrap">
+          {block.content.body}
+        </p>
       </>
     )}
   </div>
 );
 
-// Image Block
-const ImageBlock = ({ block, isEditing, onUpdate, onUpload }: { 
+const ImageBlockContent = ({ block, styles, isEditing, onUpdate, onUpload }: { 
   block: ReportBlock; 
+  styles: BlockStyles;
   isEditing: boolean;
   onUpdate: (content: Partial<ReportBlock['content']>) => void;
   onUpload: () => void;
 }) => (
-  <div className="py-4">
+  <div>
     {block.content.imageUrl ? (
-      <div className="space-y-3">
+      <div>
         <img 
           src={block.content.imageUrl} 
           alt={block.content.imageCaption || 'Report image'} 
-          className="rounded-lg max-h-80 object-contain"
+          className="max-h-[100px] object-contain rounded"
         />
         {isEditing ? (
-          <div className="flex items-center gap-3">
-            <Input
+          <div className="flex items-center gap-2 mt-1">
+            <input
               value={block.content.imageCaption || ''}
               onChange={(e) => onUpdate({ imageCaption: e.target.value })}
-              placeholder="Add caption..."
-              className="flex-1 text-sm border-0 border-b border-border rounded-none px-0 h-auto py-1 focus-visible:ring-0 bg-transparent"
+              placeholder="Caption..."
+              style={{ fontSize: styles.fontSize }}
+              className="flex-1 text-gray-500 italic border-0 border-b border-gray-200 bg-transparent focus:outline-none"
             />
-            <button
-              onClick={onUpload}
-              className="text-xs text-primary hover:underline"
-            >
+            <button onClick={onUpload} className="text-[9px] text-primary hover:underline">
               Replace
             </button>
           </div>
         ) : (
           block.content.imageCaption && (
-            <p className="text-sm text-muted-foreground italic">{block.content.imageCaption}</p>
+            <p style={{ fontSize: styles.fontSize }} className="text-gray-500 italic mt-1">
+              {block.content.imageCaption}
+            </p>
           )
         )}
       </div>
     ) : (
       <button
         onClick={onUpload}
-        className="w-full h-40 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-foreground/30 hover:text-foreground transition-colors"
+        className="w-full h-20 border border-dashed border-gray-300 rounded flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-gray-400 hover:text-gray-500 transition-colors"
       >
-        <Image className="w-6 h-6" />
-        <span className="text-sm">Click to upload image</span>
+        <Image className="w-4 h-4" />
+        <span className="text-[9px]">Upload image</span>
       </button>
     )}
   </div>
 );
 
-// Stat Block
-const StatBlock = ({ block, isEditing, onUpdate }: { 
+const StatBlockContent = ({ block, styles, isEditing, onUpdate }: { 
   block: ReportBlock; 
+  styles: BlockStyles;
   isEditing: boolean;
   onUpdate: (content: Partial<ReportBlock['content']>) => void;
 }) => (
-  <div className="py-6">
+  <div className="flex items-baseline gap-2">
     {isEditing ? (
-      <div className="flex items-end gap-4">
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Value</label>
-          <Input
-            value={block.content.statValue || ''}
-            onChange={(e) => onUpdate({ statValue: e.target.value })}
-            className="text-4xl font-light w-32 border-0 border-b border-border rounded-none px-0 h-auto py-1 focus-visible:ring-0 bg-transparent"
-          />
-        </div>
-        <div className="flex-1">
-          <label className="text-xs text-muted-foreground mb-1 block">Label</label>
-          <Input
-            value={block.content.statLabel || ''}
-            onChange={(e) => onUpdate({ statLabel: e.target.value })}
-            className="border-0 border-b border-border rounded-none px-0 h-auto py-1 focus-visible:ring-0 bg-transparent"
-          />
-        </div>
-      </div>
+      <>
+        <input
+          value={block.content.statValue || ''}
+          onChange={(e) => onUpdate({ statValue: e.target.value })}
+          style={{ fontSize: styles.fontSize }}
+          className="font-light text-gray-900 border-0 border-b border-gray-300 bg-transparent w-24 focus:outline-none"
+        />
+        <input
+          value={block.content.statLabel || ''}
+          onChange={(e) => onUpdate({ statLabel: e.target.value })}
+          style={{ fontSize: styles.fontSize * 0.4 }}
+          className="text-gray-500 border-0 border-b border-gray-200 bg-transparent flex-1 focus:outline-none"
+        />
+      </>
     ) : (
-      <div className="flex items-baseline gap-3">
-        <span className="text-4xl font-light text-foreground">{block.content.statValue}</span>
-        <span className="text-muted-foreground">{block.content.statLabel}</span>
-      </div>
+      <>
+        <span style={{ fontSize: styles.fontSize }} className="font-light text-gray-900">
+          {block.content.statValue}
+        </span>
+        <span style={{ fontSize: styles.fontSize * 0.4 }} className="text-gray-500">
+          {block.content.statLabel}
+        </span>
+      </>
     )}
   </div>
 );
 
-// Quote Block
-const QuoteBlock = ({ block, isEditing, onUpdate }: { 
+const QuoteBlockContent = ({ block, styles, isEditing, onUpdate }: { 
   block: ReportBlock; 
+  styles: BlockStyles;
   isEditing: boolean;
   onUpdate: (content: Partial<ReportBlock['content']>) => void;
 }) => (
-  <div className="py-6 pl-6 border-l-2 border-foreground/20">
+  <div className="pl-3 border-l-2 border-gray-300" style={{ lineHeight: styles.lineHeight }}>
     {isEditing ? (
-      <div className="space-y-3">
-        <Textarea
+      <div className="space-y-1">
+        <textarea
           value={block.content.quoteText || ''}
           onChange={(e) => onUpdate({ quoteText: e.target.value })}
           placeholder="Enter quote..."
-          className="text-lg italic border-0 px-0 focus-visible:ring-0 bg-transparent resize-none min-h-[60px]"
+          style={{ fontSize: styles.fontSize, lineHeight: styles.lineHeight }}
+          className="italic text-gray-900 border-0 bg-transparent w-full focus:outline-none resize-none min-h-[40px]"
         />
-        <Input
+        <input
           value={block.content.quoteAuthor || ''}
           onChange={(e) => onUpdate({ quoteAuthor: e.target.value })}
-          placeholder="Attribution (optional)"
-          className="text-sm border-0 border-b border-border rounded-none px-0 h-auto py-1 focus-visible:ring-0 bg-transparent"
+          placeholder="Attribution"
+          style={{ fontSize: styles.fontSize * 0.8 }}
+          className="text-gray-500 border-0 border-b border-gray-200 bg-transparent w-full focus:outline-none"
         />
       </div>
     ) : (
       <>
-        <p className="text-lg italic text-foreground">"{block.content.quoteText}"</p>
+        <p style={{ fontSize: styles.fontSize, lineHeight: styles.lineHeight }} className="italic text-gray-900">
+          "{block.content.quoteText}"
+        </p>
         {block.content.quoteAuthor && (
-          <p className="text-sm text-muted-foreground mt-2">— {block.content.quoteAuthor}</p>
+          <p style={{ fontSize: styles.fontSize * 0.8 }} className="text-gray-500 mt-1">
+            — {block.content.quoteAuthor}
+          </p>
         )}
       </>
     )}
