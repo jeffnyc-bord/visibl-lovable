@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BrandEmpowermentModal } from "@/components/ui/brand-empowerment-modal";
 import { 
   Plus, 
   Globe, 
@@ -95,6 +96,8 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
   const [selectedCompetitor, setSelectedCompetitor] = useState<number | null>(null);
   const [editedName, setEditedName] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState("");
+  const [showEmpowermentModal, setShowEmpowermentModal] = useState(false);
+  const [empowermentBrandName, setEmpowermentBrandName] = useState("");
   const [newBrandData, setNewBrandData] = useState({
     name: "",
     url: "",
@@ -425,13 +428,12 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
     // Close dialog and reset
     setShowAddBrandDialog(false);
     setAddBrandStep(1);
-    setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "", reportFrequency: "" });
     
-    // Show success toast
-    toast({
-      title: "Brand Added to Watchlist",
-      description: `${newCompetitor.name} is being set up. You can continue exploring while we process the data.`,
-    });
+    // Show empowerment modal
+    setEmpowermentBrandName(newCompetitor.name);
+    setShowEmpowermentModal(true);
+    
+    setNewBrandData({ name: "", url: "", logoFile: null, logoPreview: "", reportFrequency: "" });
     
     // Simulate progress updates for the specific competitor
     const progressInterval = setInterval(() => {
@@ -1318,6 +1320,19 @@ export const BrandManagementSection = ({ selectedBrand, trackedBrands, loadingDu
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Brand Empowerment Modal */}
+      <BrandEmpowermentModal
+        isOpen={showEmpowermentModal}
+        brandName={empowermentBrandName}
+        onComplete={() => {
+          setShowEmpowermentModal(false);
+          toast({
+            title: "Setup Complete",
+            description: `${empowermentBrandName} is now being monitored across AI platforms.`,
+          });
+        }}
+      />
      </div>
    </>
   );
