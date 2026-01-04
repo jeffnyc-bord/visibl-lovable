@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer';
-import { ReportBlock } from '@/components/reports/ReportEditor';
+import { ReportBlock, BlockStyles } from '@/components/reports/ReportEditor';
 
 interface ReportPDFConfig {
   blocks: ReportBlock[];
@@ -10,7 +10,20 @@ interface ReportPDFConfig {
   brandName?: string;
 }
 
-// Clean, compact PDF styles matching the editor preview
+// Default styles matching the editor
+const defaultBlockStyles: Record<string, BlockStyles> = {
+  section: { fontSize: 14, lineHeight: 1.4, marginBottom: 12 },
+  text: { fontSize: 11, lineHeight: 1.5, marginBottom: 10 },
+  stat: { fontSize: 24, lineHeight: 1.2, marginBottom: 12 },
+  quote: { fontSize: 11, lineHeight: 1.4, marginBottom: 10 },
+  image: { fontSize: 10, lineHeight: 1.4, marginBottom: 12 },
+};
+
+const getBlockStyles = (block: ReportBlock): BlockStyles => {
+  return block.styles || defaultBlockStyles[block.type] || defaultBlockStyles.text;
+};
+
+// Base PDF styles
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
@@ -20,13 +33,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
     fontFamily: 'Helvetica',
   },
-  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    paddingBottom: 12,
+    marginBottom: 16,
+    paddingBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
   },
@@ -43,114 +55,19 @@ const styles = StyleSheet.create({
     fontSize: 8,
     color: '#9ca3af',
   },
-  // Title section
   titleSection: {
-    marginBottom: 16,
+    marginBottom: 12,
   },
   reportTitle: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'light',
     color: '#1f2937',
-    marginBottom: 4,
-    letterSpacing: -0.3,
+    marginBottom: 2,
   },
   reportSubtitle: {
-    fontSize: 9,
-    color: '#6b7280',
-  },
-  // Section block - compact
-  sectionBlock: {
-    marginBottom: 12,
-    paddingTop: 4,
-  },
-  sectionType: {
-    fontSize: 7,
-    color: '#6b7280',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: 'light',
-    color: '#1f2937',
-    marginBottom: 4,
-  },
-  sectionBody: {
-    fontSize: 9,
-    lineHeight: 1.5,
-    color: '#6b7280',
-  },
-  // Text block - compact
-  textBlock: {
-    marginBottom: 10,
-    paddingTop: 4,
-  },
-  textTitle: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 3,
-  },
-  textBody: {
-    fontSize: 9,
-    lineHeight: 1.5,
-    color: '#6b7280',
-  },
-  // Stat block - compact
-  statBlock: {
-    marginBottom: 12,
-    paddingVertical: 6,
-  },
-  statRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 6,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'light',
-    color: '#1f2937',
-  },
-  statLabel: {
-    fontSize: 9,
-    color: '#6b7280',
-  },
-  // Quote block - compact
-  quoteBlock: {
-    marginBottom: 10,
-    paddingLeft: 10,
-    paddingVertical: 4,
-    borderLeftWidth: 2,
-    borderLeftColor: '#d1d5db',
-  },
-  quoteText: {
-    fontSize: 10,
-    fontStyle: 'italic',
-    color: '#1f2937',
-    lineHeight: 1.4,
-    marginBottom: 3,
-  },
-  quoteAuthor: {
     fontSize: 8,
     color: '#6b7280',
   },
-  // Image block - compact
-  imageBlock: {
-    marginBottom: 12,
-  },
-  image: {
-    maxWidth: '100%',
-    maxHeight: 180,
-    objectFit: 'contain',
-  },
-  imageCaption: {
-    fontSize: 8,
-    color: '#6b7280',
-    fontStyle: 'italic',
-    marginTop: 4,
-  },
-  // Footer
   footer: {
     position: 'absolute',
     bottom: 20,
@@ -171,62 +88,111 @@ const styles = StyleSheet.create({
     fontSize: 8,
     color: '#9ca3af',
   },
+  // Base block styles (will be overridden by inline styles)
+  sectionType: {
+    fontSize: 7,
+    color: '#6b7280',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 3,
+  },
+  quoteContainer: {
+    paddingLeft: 8,
+    borderLeftWidth: 2,
+    borderLeftColor: '#d1d5db',
+  },
+  image: {
+    maxWidth: '100%',
+    maxHeight: 120,
+    objectFit: 'contain',
+  },
 });
 
-// Block Renderers - matching editor exactly
-const SectionBlockPDF = ({ block }: { block: ReportBlock }) => (
-  <View style={styles.sectionBlock}>
-    {block.content.sectionType && (
-      <Text style={styles.sectionType}>{block.content.sectionType}</Text>
-    )}
-    {block.content.title && (
-      <Text style={styles.sectionTitle}>{block.content.title}</Text>
-    )}
-    {block.content.body && (
-      <Text style={styles.sectionBody}>{block.content.body}</Text>
-    )}
-  </View>
-);
-
-const TextBlockPDF = ({ block }: { block: ReportBlock }) => (
-  <View style={styles.textBlock}>
-    {block.content.title && (
-      <Text style={styles.textTitle}>{block.content.title}</Text>
-    )}
-    {block.content.body && (
-      <Text style={styles.textBody}>{block.content.body}</Text>
-    )}
-  </View>
-);
-
-const StatBlockPDF = ({ block }: { block: ReportBlock }) => (
-  <View style={styles.statBlock}>
-    <View style={styles.statRow}>
-      <Text style={styles.statValue}>{block.content.statValue}</Text>
-      <Text style={styles.statLabel}>{block.content.statLabel}</Text>
+// Block Renderers - using block's custom styles
+const SectionBlockPDF = ({ block }: { block: ReportBlock }) => {
+  const s = getBlockStyles(block);
+  return (
+    <View style={{ marginBottom: s.marginBottom }}>
+      {block.content.sectionType && (
+        <Text style={styles.sectionType}>{block.content.sectionType}</Text>
+      )}
+      {block.content.title && (
+        <Text style={{ fontSize: s.fontSize, color: '#1f2937', marginBottom: 3 }}>
+          {block.content.title}
+        </Text>
+      )}
+      {block.content.body && (
+        <Text style={{ fontSize: s.fontSize * 0.7, lineHeight: s.lineHeight, color: '#6b7280' }}>
+          {block.content.body}
+        </Text>
+      )}
     </View>
-  </View>
-);
+  );
+};
 
-const QuoteBlockPDF = ({ block }: { block: ReportBlock }) => (
-  <View style={styles.quoteBlock}>
-    <Text style={styles.quoteText}>"{block.content.quoteText}"</Text>
-    {block.content.quoteAuthor && (
-      <Text style={styles.quoteAuthor}>— {block.content.quoteAuthor}</Text>
-    )}
-  </View>
-);
+const TextBlockPDF = ({ block }: { block: ReportBlock }) => {
+  const s = getBlockStyles(block);
+  return (
+    <View style={{ marginBottom: s.marginBottom }}>
+      {block.content.title && (
+        <Text style={{ fontSize: s.fontSize + 2, fontWeight: 'bold', color: '#1f2937', marginBottom: 2 }}>
+          {block.content.title}
+        </Text>
+      )}
+      {block.content.body && (
+        <Text style={{ fontSize: s.fontSize, lineHeight: s.lineHeight, color: '#6b7280' }}>
+          {block.content.body}
+        </Text>
+      )}
+    </View>
+  );
+};
 
-const ImageBlockPDF = ({ block }: { block: ReportBlock }) => (
-  <View style={styles.imageBlock}>
-    {block.content.imageUrl && (
-      <Image style={styles.image} src={block.content.imageUrl} />
-    )}
-    {block.content.imageCaption && (
-      <Text style={styles.imageCaption}>{block.content.imageCaption}</Text>
-    )}
-  </View>
-);
+const StatBlockPDF = ({ block }: { block: ReportBlock }) => {
+  const s = getBlockStyles(block);
+  return (
+    <View style={{ marginBottom: s.marginBottom, flexDirection: 'row', alignItems: 'baseline', gap: 6 }}>
+      <Text style={{ fontSize: s.fontSize, color: '#1f2937' }}>
+        {block.content.statValue}
+      </Text>
+      <Text style={{ fontSize: s.fontSize * 0.4, color: '#6b7280' }}>
+        {block.content.statLabel}
+      </Text>
+    </View>
+  );
+};
+
+const QuoteBlockPDF = ({ block }: { block: ReportBlock }) => {
+  const s = getBlockStyles(block);
+  return (
+    <View style={[styles.quoteContainer, { marginBottom: s.marginBottom }]}>
+      <Text style={{ fontSize: s.fontSize, fontStyle: 'italic', lineHeight: s.lineHeight, color: '#1f2937', marginBottom: 2 }}>
+        "{block.content.quoteText}"
+      </Text>
+      {block.content.quoteAuthor && (
+        <Text style={{ fontSize: s.fontSize * 0.8, color: '#6b7280' }}>
+          — {block.content.quoteAuthor}
+        </Text>
+      )}
+    </View>
+  );
+};
+
+const ImageBlockPDF = ({ block }: { block: ReportBlock }) => {
+  const s = getBlockStyles(block);
+  return (
+    <View style={{ marginBottom: s.marginBottom }}>
+      {block.content.imageUrl && (
+        <Image style={styles.image} src={block.content.imageUrl} />
+      )}
+      {block.content.imageCaption && (
+        <Text style={{ fontSize: s.fontSize, color: '#6b7280', fontStyle: 'italic', marginTop: 3 }}>
+          {block.content.imageCaption}
+        </Text>
+      )}
+    </View>
+  );
+};
 
 // Render a block based on its type
 const renderBlock = (block: ReportBlock) => {
@@ -246,40 +212,51 @@ const renderBlock = (block: ReportBlock) => {
   }
 };
 
-// Split blocks into pages - more blocks per page with compact styling
+// Split blocks into pages using actual block styles
 const splitBlocksIntoPages = (blocks: ReportBlock[]): ReportBlock[][] => {
   const pages: ReportBlock[][] = [];
   let currentPage: ReportBlock[] = [];
-  let currentWeight = 0;
+  let currentHeight = 0;
+  const maxHeight = 680; // Approximate usable height on A4 page
 
   blocks.forEach(block => {
-    let weight = 0.8;
+    const s = getBlockStyles(block);
+    const lineHeight = s.fontSize * s.lineHeight;
+    let blockHeight = s.marginBottom;
+
     switch (block.type) {
-      case 'section':
-        weight = 1;
+      case 'section': {
+        const titleLines = Math.ceil((block.content.title?.length || 0) / 50);
+        const bodyLines = Math.ceil((block.content.body?.length || 0) / 70);
+        blockHeight += 15 + titleLines * s.fontSize + bodyLines * (s.fontSize * 0.7);
         break;
+      }
+      case 'text': {
+        const titleLines = block.content.title ? 1 : 0;
+        const bodyLines = Math.ceil((block.content.body?.length || 0) / 70);
+        blockHeight += titleLines * (s.fontSize + 4) + bodyLines * lineHeight;
+        break;
+      }
       case 'stat':
-        weight = 0.8;
+        blockHeight += s.fontSize + 10;
         break;
-      case 'quote':
-        weight = 0.7;
+      case 'quote': {
+        const lines = Math.ceil((block.content.quoteText?.length || 0) / 60);
+        blockHeight += lines * lineHeight + 15;
         break;
+      }
       case 'image':
-        weight = 2;
-        break;
-      case 'text':
-        const textLength = (block.content.body?.length || 0) + (block.content.title?.length || 0);
-        weight = Math.max(0.6, Math.min(2, textLength / 300));
+        blockHeight += block.content.imageUrl ? 130 : 40;
         break;
     }
 
-    if (currentWeight + weight > 8 && currentPage.length > 0) {
+    if (currentHeight + blockHeight > maxHeight && currentPage.length > 0) {
       pages.push(currentPage);
       currentPage = [block];
-      currentWeight = weight;
+      currentHeight = blockHeight;
     } else {
       currentPage.push(block);
-      currentWeight += weight;
+      currentHeight += blockHeight;
     }
   });
 
