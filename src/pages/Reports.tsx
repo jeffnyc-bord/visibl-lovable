@@ -359,7 +359,7 @@ const Reports = () => {
         content: {
           sectionType: 'Platform Coverage',
           title: 'AI Platform Mention Distribution',
-          body: 'Comprehensive analysis of brand mentions across leading AI platforms.'
+          body: `Your brand was mentioned across ${sections.platformCoverage.items.length} AI platforms: ${sections.platformCoverage.items.map(id => platforms.find(p => p.id === id)?.name).filter(Boolean).join(', ')}.`
         }
       });
     }
@@ -376,7 +376,7 @@ const Reports = () => {
       });
       
       const selectedPrompts = mockPrompts.filter(p => sections.prompts.items?.includes(p.id));
-      selectedPrompts.slice(0, 3).forEach((prompt) => {
+      selectedPrompts.forEach((prompt) => {
         blocks.push({
           id: `prompt-${prompt.id}`,
           type: 'quote',
@@ -395,8 +395,33 @@ const Reports = () => {
         content: {
           sectionType: 'Products',
           title: 'Product AI Visibility',
-          body: 'Products analyzed for AI visibility with their associated prompts.'
+          body: 'Products analyzed for AI visibility with their associated prompts and sources.'
         }
+      });
+
+      const selectedProducts = mockProducts.filter(p => sections.products.items?.includes(p.id));
+      selectedProducts.forEach((product) => {
+        // Add product as a text block
+        blocks.push({
+          id: `product-${product.id}`,
+          type: 'text',
+          content: {
+            title: product.name,
+            body: `Status: ${product.status === 'ai-ready' ? 'AI-Ready' : 'Needs Improvement'} • ${product.prompts.length} associated prompts`
+          }
+        });
+
+        // Add associated prompts for this product
+        product.prompts.forEach((prompt) => {
+          blocks.push({
+            id: `product-${product.id}-prompt-${prompt.id}`,
+            type: 'quote',
+            content: {
+              quoteText: prompt.text,
+              quoteAuthor: `${prompt.mentions} mentions`
+            }
+          });
+        });
       });
     }
 
@@ -405,10 +430,22 @@ const Reports = () => {
         id: 'optimizations-section',
         type: 'section',
         content: {
-          sectionType: 'On-site Optimizations',
+          sectionType: 'On-Site Optimizations',
           title: 'Content Optimization Summary',
           body: 'Content created and optimized for AI visibility.'
         }
+      });
+
+      const selectedOptimizations = mockOptimizations.filter(o => sections.optimizations.items?.includes(o.id));
+      selectedOptimizations.forEach((opt) => {
+        blocks.push({
+          id: `optimization-${opt.id}`,
+          type: 'text',
+          content: {
+            title: opt.title,
+            body: `URL: ${opt.urlSlug}\nAssociated with: ${opt.associatedWith.type} - ${opt.associatedWith.name}\nCreated: ${opt.createdAt}\n\nHeaders: ${opt.headers.join(' → ')}`
+          }
+        });
       });
     }
 
@@ -421,6 +458,18 @@ const Reports = () => {
           title: 'Recent Actions & Optimizations',
           body: 'Summary of optimization actions taken during this period.'
         }
+      });
+
+      const selectedActions = mockActions.filter(a => sections.actions.items?.includes(a.id));
+      selectedActions.forEach((action) => {
+        blocks.push({
+          id: `action-${action.id}`,
+          type: 'text',
+          content: {
+            title: action.title,
+            body: `${action.date} • ${action.type}`
+          }
+        });
       });
     }
 
