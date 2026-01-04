@@ -23,29 +23,33 @@ const getBlockStyles = (block: ReportBlock): BlockStyles => {
   return block.styles || defaultBlockStyles[block.type] || defaultBlockStyles.text;
 };
 
-// Base PDF styles
+// PDF dimensions matching canvas exactly (A4 in points)
+const PAGE_PADDING = 40;
+const HEADER_HEIGHT = 50;
+const FOOTER_HEIGHT = 25;
+
+// Base PDF styles - matching canvas exactly
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
-    paddingTop: 40,
-    paddingBottom: 50,
-    paddingHorizontal: 48,
+    paddingTop: PAGE_PADDING,
+    paddingBottom: PAGE_PADDING,
+    paddingHorizontal: PAGE_PADDING,
     fontFamily: 'Helvetica',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-    paddingBottom: 10,
+    height: HEADER_HEIGHT,
+    flexDirection: 'column',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
+    paddingBottom: 8,
+    marginBottom: 8,
   },
-  headerLogo: {
-    width: 60,
-    height: 20,
-    objectFit: 'contain',
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   headerBrand: {
     fontSize: 9,
@@ -56,11 +60,10 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
   },
   titleSection: {
-    marginBottom: 12,
+    marginTop: 4,
   },
   reportTitle: {
     fontSize: 18,
-    fontWeight: 'light',
     color: '#1f2937',
     marginBottom: 2,
   },
@@ -70,15 +73,16 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 20,
-    left: 48,
-    right: 48,
+    bottom: PAGE_PADDING,
+    left: PAGE_PADDING,
+    right: PAGE_PADDING,
+    height: FOOTER_HEIGHT,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#f3f4f6',
+    paddingTop: 6,
   },
   footerBrand: {
     fontSize: 8,
@@ -88,7 +92,6 @@ const styles = StyleSheet.create({
     fontSize: 8,
     color: '#9ca3af',
   },
-  // Base block styles (will be overridden by inline styles)
   sectionType: {
     fontSize: 7,
     color: '#6b7280',
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
   },
   image: {
     maxWidth: '100%',
-    maxHeight: 120,
+    maxHeight: 100,
     objectFit: 'contain',
   },
 });
@@ -281,26 +284,20 @@ const ReportPDFDocument = ({ config }: { config: ReportPDFConfig }) => {
         <Page key={pageIndex} size="A4" style={styles.page}>
           {/* Header - only on first page */}
           {pageIndex === 0 && (
-            <>
-              <View style={styles.header}>
-                {config.customLogo ? (
-                  <Image style={styles.headerLogo} src={config.customLogo} />
-                ) : (
-                  <Text style={styles.headerBrand}>{config.brandName || 'Report'}</Text>
-                )}
+            <View style={styles.header}>
+              <View style={styles.headerRow}>
+                <Text style={styles.headerBrand}>{config.brandName || 'Report'}</Text>
                 <Text style={styles.headerDate}>
                   {formatDate(config.dateRange.start)} — {formatDate(config.dateRange.end)}
                 </Text>
               </View>
-
-              {/* Title */}
               <View style={styles.titleSection}>
                 <Text style={styles.reportTitle}>{config.reportTitle}</Text>
                 <Text style={styles.reportSubtitle}>
                   AI Visibility Report • {config.brandName || 'Brand'}
                 </Text>
               </View>
-            </>
+            </View>
           )}
 
           {/* Content blocks */}
