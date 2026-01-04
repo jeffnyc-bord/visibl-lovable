@@ -344,15 +344,46 @@ export const BrandAnalysisSection = ({ brandData, demoMode = false, onOptimizePr
             </div>
 
           {/* Center: Stats Stack */}
-            <div className="flex flex-col justify-center py-2 min-w-[140px]">
+            <div className="flex flex-col justify-center py-2 min-w-[180px]">
+              {/* Products Tracked with Progress */}
               <div className="mb-6">
-                <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-1" style={{ color: '#86868B' }}>TOTAL PRODUCTS</p>
-                <p 
-                  className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none"
-                  style={{ color: isAtLimit ? '#FF9500' : '#1D1D1F' }}
-                >
-                  {currentProductCount}<span className="text-[20px] font-light" style={{ color: '#86868B' }}>/{maxProducts >= 999999 ? '∞' : maxProducts}</span>
-                </p>
+                <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-1" style={{ color: '#86868B' }}>PRODUCTS TRACKED</p>
+                <div className="flex items-baseline gap-2">
+                  <p 
+                    className="text-[36px] font-extralight tabular-nums tracking-tighter leading-none"
+                    style={{ color: '#1D1D1F' }}
+                  >
+                    {currentProductCount}
+                  </p>
+                  <span className="text-[13px] font-light" style={{ color: '#86868B' }}>
+                    of {maxProducts >= 999999 ? 'unlimited' : maxProducts} limit
+                  </span>
+                </div>
+                {/* Mini progress bar */}
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,0.06)', maxWidth: '100px' }}>
+                    <div 
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ 
+                        width: `${Math.min((currentProductCount / maxProducts) * 100, 100)}%`,
+                        background: isAtLimit 
+                          ? 'linear-gradient(135deg, #FF9500, #FFCC00)' 
+                          : currentProductCount >= maxProducts * 0.8 
+                            ? 'linear-gradient(135deg, #FF9500, #FFCC00)'
+                            : 'linear-gradient(135deg, #34C759, #30D158)'
+                      }}
+                    />
+                  </div>
+                  {currentProductCount >= maxProducts * 0.6 && (
+                    <button 
+                      onClick={() => setUpgradeSheetOpen(true)}
+                      className="text-[10px] font-medium transition-all hover:underline"
+                      style={{ color: '#007AFF' }}
+                    >
+                      {isAtLimit ? 'Unlock more' : 'Expand'}
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="mb-6">
                 <p className="text-[11px] font-medium tracking-[0.08em] uppercase mb-1" style={{ color: '#86868B' }}>NEEDS ATTENTION</p>
