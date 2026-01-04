@@ -47,6 +47,8 @@ interface DeveloperControlsProps {
   // Admin dashboard
   showAdminDashboard?: boolean;
   onShowAdminDashboard?: (show: boolean) => void;
+  // Brand empowerment modal
+  onTriggerEmpowermentModal?: () => void;
 }
 
 const gradientOptions = [
@@ -62,7 +64,7 @@ const gradientOptions = [
   { id: "gradient10", name: "Neon Dreams", colors: ["#84CC16", "#06B6D4", "#8B5CF6"] },
 ];
 
-export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange, onTriggerLastClientWarning, subscriptionOverrides, onSubscriptionOverrideChange, subscriptionLimits, showAdminDashboard, onShowAdminDashboard }: DeveloperControlsProps) {
+export function DeveloperControls({ states, onStateChange, userRole, onRoleChange, loadingDuration, onLoadingDurationChange, topSourceUrl, onTopSourceUrlChange, dataPointsCount, onDataPointsCountChange, selectedGradient, onGradientChange, onNavigateToAuth, demoMode, onDemoModeChange, onTriggerLastClientWarning, subscriptionOverrides, onSubscriptionOverrideChange, subscriptionLimits, showAdminDashboard, onShowAdminDashboard, onTriggerEmpowermentModal }: DeveloperControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -330,6 +332,19 @@ export function DeveloperControls({ states, onStateChange, userRole, onRoleChang
                       className="h-8"
                     />
                   </div>
+                </div>
+              )}
+              
+              {onTriggerEmpowermentModal && (
+                <div className="pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={onTriggerEmpowermentModal}
+                  >
+                    Show Brand Empowerment Modal
+                  </Button>
                 </div>
               )}
               
