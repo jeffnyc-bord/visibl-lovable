@@ -318,22 +318,60 @@ export function BrandEmpowermentModal({
               Gathering insights from 40 AI responses across ChatGPT, Gemini, Perplexity, and Grok
             </motion.p>
 
-            {/* Footer */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="mt-12"
-              style={{
-                fontFamily: 'Google Sans Flex, system-ui, sans-serif',
-                fontWeight: 400,
-                fontSize: '0.8125rem',
-                color: '#86868B',
-                letterSpacing: '-0.01em'
-              }}
+            {/* Progress Bar Loader */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="mt-16 w-full max-w-sm mx-auto"
             >
-              Almost there
-            </motion.p>
+              {/* Progress text */}
+              <p
+                className="text-center mb-4"
+                style={{
+                  fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '1rem',
+                  color: '#007AFF',
+                  letterSpacing: '-0.01em'
+                }}
+              >
+                Building your visibility blueprint...
+              </p>
+
+              {/* Progress bar */}
+              <div 
+                className="h-1 w-full rounded-full overflow-hidden"
+                style={{ backgroundColor: '#E5E5EA' }}
+              >
+                <motion.div
+                  initial={{ width: '0%' }}
+                  animate={{ width: '60%' }}
+                  transition={{ 
+                    duration: 3.5, 
+                    ease: "easeInOut"
+                  }}
+                  className="h-full rounded-full"
+                  style={{ 
+                    background: 'linear-gradient(90deg, #007AFF 0%, #5856D6 100%)'
+                  }}
+                />
+              </div>
+
+              {/* Time estimate */}
+              <p
+                className="text-center mt-4"
+                style={{
+                  fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '0.8125rem',
+                  color: '#86868B',
+                  letterSpacing: '-0.01em'
+                }}
+              >
+                This usually takes about 30 seconds
+              </p>
+            </motion.div>
           </motion.div>
         ) : (
           <motion.div
