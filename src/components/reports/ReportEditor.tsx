@@ -298,6 +298,7 @@ const ReportEditor = ({
 
         {/* Formatting Toolbar - always visible */}
         <div className="px-4 h-10 flex items-center gap-1 bg-muted/30">
+          <span className="text-[10px] text-muted-foreground mr-2 font-medium">Apply to all:</span>
           {/* Font Size */}
           <div className="flex items-center">
             <Select onValueChange={(v) => applyStyleToAll({ fontSize: parseInt(v) })}>
@@ -456,10 +457,14 @@ const ReportEditor = ({
                         onDragOver={(e) => handleDragOver(e, globalIndex)}
                         onDragEnd={handleDragEnd}
                         className={cn(
-                          "group relative",
-                          draggedIndex === globalIndex && "opacity-50"
+                          "group relative transition-all duration-300 ease-out",
+                          draggedIndex === globalIndex && "opacity-40 scale-[0.98] shadow-lg ring-2 ring-primary/20 rounded-md",
+                          draggedIndex !== null && draggedIndex !== globalIndex && "transition-transform duration-300 ease-out"
                         )}
-                        style={{ marginBottom: styles.marginBottom }}
+                        style={{ 
+                          marginBottom: styles.marginBottom,
+                          transform: draggedIndex !== null && draggedIndex !== globalIndex ? 'translateY(0)' : undefined,
+                        }}
                       >
                         <PageBlock
                           block={block}
