@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import {
   ArrowLeft,
   Download,
@@ -14,7 +14,9 @@ import {
   Edit3,
   Loader2,
   Minus,
-  ChevronDown as ChevronDownIcon
+  ChevronDown as ChevronDownIcon,
+  Undo2,
+  Redo2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -102,34 +104,93 @@ const ReportEditor = ({
   const [editingTitle, setEditingTitle] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  
+  // Undo/Redo history
+  const [history, setHistory] = useState<ReportBlock[][]>([blocks]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
+  
+  // Track block changes for history
+  const pushToHistory = useCallback((newBlocks: ReportBlock[]) => {
+    setHistory(prev => {
+      const newHistory = prev.slice(0, historyIndex + 1);
+      newHistory.push(newBlocks);
+      // Limit history to 50 states
+      if (newHistory.length > 50) newHistory.shift();
+      return newHistory;
+    });
+    setHistoryIndex(prev => Math.min(prev + 1, 49));
+  }, [historyIndex]);
+  
+  const handleBlocksChange = useCallback((newBlocks: ReportBlock[]) => {
+    pushToHistory(newBlocks);
+    onBlocksChange(newBlocks);
+  }, [onBlocksChange, pushToHistory]);
+  
+  const undo = useCallback(() => {
+    if (!canUndo) return;
+    const newIndex = historyIndex - 1;
+    setHistoryIndex(newIndex);
+    onBlocksChange(history[newIndex]);
+  }, [canUndo, historyIndex, history, onBlocksChange]);
+  
+  const redo = useCallback(() => {
+    if (!canRedo) return;
+    const newIndex = historyIndex + 1;
+    setHistoryIndex(newIndex);
+    onBlocksChange(history[newIndex]);
+  }, [canRedo, historyIndex, history, onBlocksChange]);
+  
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        if (e.shiftKey) {
+          e.preventDefault();
+          redo();
+        } else {
+          e.preventDefault();
+          undo();
+        }
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'y') {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo]);
 
   const moveBlock = (index: number, direction: 'up' | 'down') => {
     const newBlocks = [...blocks];
     const newIndex = direction === 'up' ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= blocks.length) return;
     [newBlocks[index], newBlocks[newIndex]] = [newBlocks[newIndex], newBlocks[index]];
-    onBlocksChange(newBlocks);
+    handleBlocksChange(newBlocks);
   };
 
   const deleteBlock = (id: string) => {
-    onBlocksChange(blocks.filter(b => b.id !== id));
+    handleBlocksChange(blocks.filter(b => b.id !== id));
   };
 
   const updateBlock = (id: string, content: Partial<ReportBlock['content']>) => {
-    onBlocksChange(blocks.map(b => 
+    handleBlocksChange(blocks.map(b => 
       b.id === id ? { ...b, content: { ...b.content, ...content } } : b
     ));
   };
 
   const updateBlockStyles = (id: string, styles: Partial<BlockStyles>) => {
-    onBlocksChange(blocks.map(b => 
+    handleBlocksChange(blocks.map(b => 
       b.id === id ? { ...b, styles: { ...getBlockStyles(b), ...styles } } : b
     ));
   };
 
   // Apply style to all blocks
   const applyStyleToAll = (styles: Partial<BlockStyles>) => {
-    onBlocksChange(blocks.map(b => ({
+    handleBlocksChange(blocks.map(b => ({
       ...b,
       styles: { ...getBlockStyles(b), ...styles }
     })));
@@ -150,9 +211,9 @@ const ReportEditor = ({
     if (afterIndex !== undefined) {
       const newBlocks = [...blocks];
       newBlocks.splice(afterIndex + 1, 0, newBlock);
-      onBlocksChange(newBlocks);
+      handleBlocksChange(newBlocks);
     } else {
-      onBlocksChange([...blocks, newBlock]);
+      handleBlocksChange([...blocks, newBlock]);
     }
     setEditingBlockId(newBlock.id);
   };
@@ -184,7 +245,7 @@ const ReportEditor = ({
     const draggedBlock = newBlocks[draggedIndex];
     newBlocks.splice(draggedIndex, 1);
     newBlocks.splice(index, 0, draggedBlock);
-    onBlocksChange(newBlocks);
+    handleBlocksChange(newBlocks);
     setDraggedIndex(index);
   };
 
@@ -298,6 +359,38 @@ const ReportEditor = ({
 
         {/* Formatting Toolbar - always visible */}
         <div className="px-4 h-10 flex items-center gap-1 bg-muted/30">
+          {/* Undo/Redo */}
+          <div className="flex items-center gap-0.5 mr-2">
+            <button
+              onClick={undo}
+              disabled={!canUndo}
+              className={cn(
+                "p-1.5 rounded-md transition-colors",
+                canUndo 
+                  ? "hover:bg-muted text-foreground" 
+                  : "text-muted-foreground/40 cursor-not-allowed"
+              )}
+              title="Undo (⌘Z)"
+            >
+              <Undo2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={redo}
+              disabled={!canRedo}
+              className={cn(
+                "p-1.5 rounded-md transition-colors",
+                canRedo 
+                  ? "hover:bg-muted text-foreground" 
+                  : "text-muted-foreground/40 cursor-not-allowed"
+              )}
+              title="Redo (⌘⇧Z)"
+            >
+              <Redo2 className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="w-px h-5 bg-border mx-1" />
+          
           <span className="text-[10px] text-muted-foreground mr-2 font-medium">Apply to all:</span>
           {/* Font Size */}
           <div className="flex items-center">
