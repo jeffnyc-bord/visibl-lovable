@@ -102,7 +102,7 @@ export function BrandEmpowermentModal({
                 <img 
                   src={boardLabsIcon} 
                   alt="Board Labs"
-                  className="w-7 h-7 object-contain"
+                  className="w-7 h-7 object-contain brightness-0 invert"
                 />
               </div>
             </motion.div>
@@ -253,7 +253,7 @@ export function BrandEmpowermentModal({
                 <img 
                   src={boardLabsIcon} 
                   alt="Board Labs"
-                  className="w-7 h-7 object-contain"
+                  className="w-7 h-7 object-contain brightness-0 invert"
                 />
               </div>
             </motion.div>
@@ -355,7 +355,7 @@ export function BrandEmpowermentModal({
                 <img 
                   src={boardLabsIcon} 
                   alt="Board Labs"
-                  className="w-7 h-7 object-contain"
+                  className="w-7 h-7 object-contain brightness-0 invert"
                 />
               </div>
             </motion.div>
