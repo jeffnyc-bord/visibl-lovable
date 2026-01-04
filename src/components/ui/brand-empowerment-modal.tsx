@@ -1,8 +1,12 @@
-import { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
 import boardLabsIcon from "@/assets/board_labs_icon.png"
+import chatGPTLogo from "@/assets/chatGPT_logo.png"
+import geminiLogo from "@/assets/gemini_logo.png"
+import perplexityLogo from "@/assets/perplexity_logo.png"
+import grokLogo from "@/assets/grok_logo_new.png"
 
-const probeQueries = [
+const corePrompts = [
   "Best running shoes for marathon training",
   "Top protein supplements for muscle recovery",
   "Sustainable athletic wear brands 2024",
@@ -13,36 +17,13 @@ const probeQueries = [
   "Best sports bras for high impact workouts",
   "Affordable gym equipment for home",
   "Eco-friendly workout clothing options",
-  "Best tennis shoes for clay courts",
-  "Swimming gear essentials for beginners",
-  "Cross-training shoes vs running shoes",
-  "Best moisture-wicking fabrics review",
-  "Outdoor hiking boots comparison",
-  "Golf apparel trends and recommendations",
-  "Cycling shorts with best padding",
-  "Weightlifting shoes for powerlifters",
-  "Best athletic socks for long runs",
-  "Winter sports gear essentials",
-  "Recovery sandals after workout",
-  "Best sports watches for training",
-  "Breathable workout shirts ranking",
-  "Kids athletic shoes recommendations",
-  "Best headbands for sweaty workouts",
-  "Resistance bands quality comparison",
-  "Sports sunglasses for runners",
-  "Best gym bags with shoe compartment",
-  "Athletic wear for plus sizes",
-  "Performance underwear for athletes",
-  "Best arm sleeves for basketball",
-  "Fitness tracker accuracy comparison",
-  "Warm-up jacket recommendations",
-  "Best cleats for soccer players",
-  "Lightweight running shorts review",
-  "Knee sleeves for CrossFit",
-  "Best sports caps for sun protection",
-  "Athletic tape alternatives",
-  "Performance leggings with pockets",
-  "Best ankle braces for basketball",
+]
+
+const chatbots = [
+  { id: 'chatgpt', name: 'ChatGPT', logo: chatGPTLogo },
+  { id: 'gemini', name: 'Gemini', logo: geminiLogo },
+  { id: 'perplexity', name: 'Perplexity', logo: perplexityLogo },
+  { id: 'grok', name: 'Grok', logo: grokLogo },
 ]
 
 interface BrandEmpowermentModalProps {
@@ -56,48 +37,74 @@ export function BrandEmpowermentModal({
   brandName = "your brand",
   onComplete 
 }: BrandEmpowermentModalProps) {
-  const [promptsActivated, setPromptsActivated] = useState(0)
+  const [promptsGenerated, setPromptsGenerated] = useState(0)
   const [responsesGathered, setResponsesGathered] = useState(0)
   const [analysisComplete, setAnalysisComplete] = useState(0)
-  const [activeProbeIndex, setActiveProbeIndex] = useState(0)
-  const listRef = useRef<HTMLDivElement>(null)
+  const [activeIndices, setActiveIndices] = useState<Record<string, number>>({
+    chatgpt: -1,
+    gemini: -1,
+    perplexity: -1,
+    grok: -1
+  })
+  const [completedIndices, setCompletedIndices] = useState<Record<string, number[]>>({
+    chatgpt: [],
+    gemini: [],
+    perplexity: [],
+    grok: []
+  })
 
   useEffect(() => {
     if (!isOpen) {
-      setPromptsActivated(0)
+      setPromptsGenerated(0)
       setResponsesGathered(0)
       setAnalysisComplete(0)
-      setActiveProbeIndex(0)
+      setActiveIndices({ chatgpt: -1, gemini: -1, perplexity: -1, grok: -1 })
+      setCompletedIndices({ chatgpt: [], gemini: [], perplexity: [], grok: [] })
       return
     }
 
-    // Simulate prompts activation (fast)
+    // Fast prompts generation
     const promptInterval = setInterval(() => {
-      setPromptsActivated((prev) => {
-        if (prev >= 40) return 40
-        return prev + 2
-      })
-    }, 100)
+      setPromptsGenerated(prev => prev >= 10 ? 10 : prev + 1)
+    }, 150)
 
-    // Simulate responses gathering (medium speed, starts after prompts)
-    const responseTimeout = setTimeout(() => {
-      const responseInterval = setInterval(() => {
-        setResponsesGathered((prev) => {
-          if (prev >= 40) {
-            clearInterval(responseInterval)
-            return 40
+    // Staggered chatbot processing
+    const chatbotDelays = [400, 600, 800, 1000]
+    const chatbotIntervals: NodeJS.Timeout[] = []
+
+    chatbots.forEach((bot, botIndex) => {
+      const timeout = setTimeout(() => {
+        let currentIndex = 0
+        const interval = setInterval(() => {
+          if (currentIndex < 10) {
+            setActiveIndices(prev => ({ ...prev, [bot.id]: currentIndex }))
+            
+            // Complete previous after short delay
+            setTimeout(() => {
+              setCompletedIndices(prev => ({
+                ...prev,
+                [bot.id]: [...prev[bot.id], currentIndex]
+              }))
+              setResponsesGathered(prev => Math.min(prev + 1, 40))
+            }, 300)
+            
+            currentIndex++
+          } else {
+            setActiveIndices(prev => ({ ...prev, [bot.id]: -1 }))
+            clearInterval(interval)
           }
-          return prev + 1
-        })
-      }, 200)
+        }, 450 + (botIndex * 50))
 
-      return () => clearInterval(responseInterval)
-    }, 500)
+        chatbotIntervals.push(interval)
+      }, chatbotDelays[botIndex])
 
-    // Simulate analysis (slower, starts after responses begin)
+      chatbotIntervals.push(timeout as unknown as NodeJS.Timeout)
+    })
+
+    // Analysis phase
     const analysisTimeout = setTimeout(() => {
       const analysisInterval = setInterval(() => {
-        setAnalysisComplete((prev) => {
+        setAnalysisComplete(prev => {
           if (prev >= 40) {
             clearInterval(analysisInterval)
             onComplete?.()
@@ -105,40 +112,22 @@ export function BrandEmpowermentModal({
           }
           return prev + 1
         })
-      }, 350)
+      }, 200)
 
       return () => clearInterval(analysisInterval)
-    }, 2000)
-
-    // Active probe cycling
-    const probeInterval = setInterval(() => {
-      setActiveProbeIndex((prev) => (prev + 1) % 40)
-    }, 400)
+    }, 6000)
 
     return () => {
       clearInterval(promptInterval)
-      clearTimeout(responseTimeout)
       clearTimeout(analysisTimeout)
-      clearInterval(probeInterval)
+      chatbotIntervals.forEach(interval => {
+        clearInterval(interval)
+        clearTimeout(interval as unknown as NodeJS.Timeout)
+      })
     }
   }, [isOpen, onComplete])
 
-  // Auto-scroll to keep active probe visible
-  useEffect(() => {
-    if (listRef.current && activeProbeIndex > 5) {
-      const itemHeight = 28
-      listRef.current.scrollTop = (activeProbeIndex - 3) * itemHeight
-    }
-  }, [activeProbeIndex])
-
   if (!isOpen) return null
-
-  const getProbeStatus = (index: number) => {
-    if (index < analysisComplete) return 'complete'
-    if (index === activeProbeIndex) return 'active'
-    if (index < responsesGathered) return 'gathered'
-    return 'waiting'
-  }
 
   return (
     <motion.div
@@ -148,41 +137,18 @@ export function BrandEmpowermentModal({
       className="fixed inset-0 z-50 flex items-center justify-center"
     >
       {/* Pure White Background */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: `
-            linear-gradient(180deg, 
-              rgba(255, 255, 255, 1) 0%, 
-              rgba(250, 250, 252, 1) 100%
-            )
-          `
-        }}
-      />
-
-      {/* Subtle Warm Silver Mesh */}
-      <div 
-        className="absolute inset-0 opacity-30"
-        style={{
-          background: `
-            radial-gradient(ellipse at 30% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 50%),
-            radial-gradient(ellipse at 70% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 50%)
-          `
-        }}
-      />
+      <div className="absolute inset-0 bg-white" />
 
       {/* Main Container */}
       <motion.div
         initial={{ scale: 0.98, opacity: 0, y: 10 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-        className="relative w-full max-w-2xl mx-4 flex flex-col"
+        className="relative w-full max-w-4xl mx-4 flex flex-col"
         style={{
-          maxHeight: '85vh',
-          background: 'rgba(255, 255, 255, 0.85)',
-          backdropFilter: 'blur(30px)',
-          WebkitBackdropFilter: 'blur(30px)',
-          border: '1px solid rgba(209, 213, 219, 0.5)',
+          maxHeight: '90vh',
+          background: '#FFFFFF',
+          border: '1px solid rgba(209, 213, 219, 0.6)',
           borderRadius: '20px',
           overflow: 'hidden'
         }}
@@ -214,28 +180,28 @@ export function BrandEmpowermentModal({
             style={{
               fontFamily: 'Google Sans Flex, system-ui, sans-serif',
               fontWeight: 300,
-              fontSize: '1.625rem',
+              fontSize: '2rem',
               color: '#1D1D1F',
-              letterSpacing: '-0.01em',
+              letterSpacing: '0.02em',
               lineHeight: 1.3
             }}
           >
             Building {brandName}'s AI future...
           </motion.h1>
 
-          {/* Progress Pills */}
+          {/* Sequence Pills */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
             className="flex items-center justify-center gap-3 flex-wrap"
           >
-            {/* Prompts Activated */}
+            {/* Input: Prompts Generated */}
             <div 
               className="flex items-center gap-2 px-4 py-2 rounded-full"
               style={{
-                background: promptsActivated >= 40 ? 'rgba(0, 122, 255, 0.1)' : 'rgba(0, 122, 255, 0.06)',
-                border: '1px solid rgba(0, 122, 255, 0.2)'
+                background: 'rgba(0, 122, 255, 0.08)',
+                border: '1px solid rgba(0, 122, 255, 0.25)'
               }}
             >
               <span 
@@ -246,7 +212,7 @@ export function BrandEmpowermentModal({
                   color: '#007AFF'
                 }}
               >
-                Prompts Activated
+                Input
               </span>
               <span 
                 style={{
@@ -256,55 +222,24 @@ export function BrandEmpowermentModal({
                   color: '#007AFF'
                 }}
               >
-                {promptsActivated}/40
+                {promptsGenerated} Prompts Generated
               </span>
             </div>
 
-            {/* Gathering Responses */}
-            <div 
-              className="flex items-center gap-2 px-4 py-2 rounded-full"
-              style={{
-                background: responsesGathered >= 40 ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.06)',
-                border: '1px solid rgba(99, 102, 241, 0.2)',
-                animation: responsesGathered < 40 && responsesGathered > 0 ? 'pulse 2s infinite' : 'none'
-              }}
-            >
-              <span 
-                style={{
-                  fontFamily: 'Google Sans Flex, system-ui, sans-serif',
-                  fontWeight: 400,
-                  fontSize: '0.8125rem',
-                  color: '#6366F1'
-                }}
-              >
-                Gathering Responses
-              </span>
-              <span 
-                style={{
-                  fontFamily: 'Google Sans Flex, system-ui, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '0.8125rem',
-                  color: '#6366F1'
-                }}
-              >
-                {responsesGathered}/40
-              </span>
-            </div>
-
-            {/* Final Analysis */}
+            {/* Execution: Responses */}
             <div 
               className="flex items-center gap-2 px-4 py-2 rounded-full relative overflow-hidden"
               style={{
-                background: analysisComplete >= 40 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(142, 142, 147, 0.08)',
-                border: `1px solid ${analysisComplete >= 40 ? 'rgba(34, 197, 94, 0.3)' : 'rgba(142, 142, 147, 0.2)'}`
+                background: 'rgba(99, 102, 241, 0.06)',
+                border: '1px solid rgba(99, 102, 241, 0.25)'
               }}
             >
-              {/* Fill animation */}
+              {/* Progressive gradient fill */}
               <div 
                 className="absolute inset-0 transition-all duration-300"
                 style={{
-                  background: 'rgba(34, 197, 94, 0.1)',
-                  width: `${(analysisComplete / 40) * 100}%`
+                  background: 'linear-gradient(90deg, rgba(0, 122, 255, 0.12) 0%, rgba(99, 102, 241, 0.12) 100%)',
+                  width: `${(responsesGathered / 40) * 100}%`
                 }}
               />
               <span 
@@ -313,10 +248,10 @@ export function BrandEmpowermentModal({
                   fontFamily: 'Google Sans Flex, system-ui, sans-serif',
                   fontWeight: 400,
                   fontSize: '0.8125rem',
-                  color: analysisComplete >= 40 ? '#22C55E' : '#8E8E93'
+                  color: '#6366F1'
                 }}
               >
-                Final Analysis
+                Execution
               </span>
               <span 
                 className="relative z-10"
@@ -324,16 +259,47 @@ export function BrandEmpowermentModal({
                   fontFamily: 'Google Sans Flex, system-ui, sans-serif',
                   fontWeight: 600,
                   fontSize: '0.8125rem',
-                  color: analysisComplete >= 40 ? '#22C55E' : '#8E8E93'
+                  color: '#6366F1'
                 }}
               >
-                {analysisComplete}/40
+                {responsesGathered}/40 Responses
+              </span>
+            </div>
+
+            {/* Insight: Analyzed */}
+            <div 
+              className="flex items-center gap-2 px-4 py-2 rounded-full"
+              style={{
+                background: analysisComplete > 0 ? 'rgba(34, 197, 94, 0.08)' : 'rgba(142, 142, 147, 0.08)',
+                border: `1px solid ${analysisComplete > 0 ? 'rgba(34, 197, 94, 0.25)' : 'rgba(142, 142, 147, 0.25)'}`,
+                animation: analysisComplete > 0 && analysisComplete < 40 ? 'subtlePulse 2s infinite' : 'none'
+              }}
+            >
+              <span 
+                style={{
+                  fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '0.8125rem',
+                  color: analysisComplete > 0 ? '#22C55E' : '#8E8E93'
+                }}
+              >
+                Insight
+              </span>
+              <span 
+                style={{
+                  fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                  fontWeight: 600,
+                  fontSize: '0.8125rem',
+                  color: analysisComplete > 0 ? '#22C55E' : '#8E8E93'
+                }}
+              >
+                {analysisComplete}/40 Analyzed
               </span>
             </div>
           </motion.div>
         </div>
 
-        {/* Real-Time Probes Section */}
+        {/* Chatbot Matrix Section */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -341,7 +307,7 @@ export function BrandEmpowermentModal({
           className="px-6 flex-1 min-h-0"
         >
           {/* Section Title */}
-          <div className="mb-3">
+          <div className="mb-4">
             <span 
               style={{
                 fontFamily: 'Google Sans Flex, system-ui, sans-serif',
@@ -352,66 +318,140 @@ export function BrandEmpowermentModal({
                 textTransform: 'uppercase'
               }}
             >
-              Real-Time Probes
+              Multi-Model Discovery
             </span>
           </div>
 
-          {/* Probes List */}
+          {/* 4-Column Chatbot Grid */}
           <div 
-            ref={listRef}
-            className="overflow-y-auto pr-2"
-            style={{ 
-              maxHeight: '220px',
-              scrollBehavior: 'smooth'
-            }}
+            className="grid grid-cols-4 gap-4"
+            style={{ maxHeight: '320px' }}
           >
-            {probeQueries.map((query, index) => {
-              const status = getProbeStatus(index)
+            {chatbots.map((bot, botIndex) => {
+              const isReceiving = activeIndices[bot.id] >= 0
+              
               return (
-                <div 
-                  key={index}
-                  className="flex items-center gap-2 py-1.5"
+                <motion.div
+                  key={bot.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 + (botIndex * 0.1), duration: 0.4 }}
+                  className="flex flex-col rounded-2xl overflow-hidden"
+                  style={{
+                    background: 'rgba(250, 250, 252, 0.6)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(209, 213, 219, 0.4)',
+                    animation: isReceiving ? 'columnPulse 1.5s ease-in-out infinite' : 'none'
+                  }}
                 >
-                  {/* Live indicator */}
-                  {status === 'active' && (
-                    <span 
-                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{
-                        backgroundColor: '#22C55E',
-                        animation: 'pulse 1s infinite',
-                        boxShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
-                      }}
-                    />
-                  )}
-                  {status === 'complete' && (
-                    <svg 
-                      className="w-3 h-3 flex-shrink-0" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="#22C55E" 
-                      strokeWidth={3}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                  {(status === 'waiting' || status === 'gathered') && (
-                    <span className="w-3 flex-shrink-0" />
-                  )}
-                  
-                  <span 
+                  {/* Chatbot Header */}
+                  <div 
+                    className="flex items-center gap-2 px-3 py-2.5"
                     style={{
-                      fontFamily: 'Google Sans Flex, system-ui, sans-serif',
-                      fontWeight: status === 'active' ? 500 : 300,
-                      fontSize: '0.8125rem',
-                      color: status === 'active' ? '#1D1D1F' : 
-                             status === 'complete' ? '#22C55E' :
-                             status === 'gathered' ? '#6366F1' : '#C7C7CC',
-                      transition: 'all 0.2s ease'
+                      borderBottom: '1px solid rgba(209, 213, 219, 0.3)'
                     }}
                   >
-                    {query}
-                  </span>
-                </div>
+                    <img 
+                      src={bot.logo} 
+                      alt={bot.name}
+                      className="w-5 h-5 object-contain rounded"
+                    />
+                    <span
+                      style={{
+                        fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                        fontWeight: 500,
+                        fontSize: '0.75rem',
+                        color: '#1D1D1F'
+                      }}
+                    >
+                      {bot.name}
+                    </span>
+                    {isReceiving && (
+                      <span 
+                        className="ml-auto w-1.5 h-1.5 rounded-full"
+                        style={{
+                          backgroundColor: '#22C55E',
+                          animation: 'livePulse 1s infinite',
+                          boxShadow: '0 0 6px rgba(34, 197, 94, 0.6)'
+                        }}
+                      />
+                    )}
+                  </div>
+
+                  {/* Prompts List */}
+                  <div className="flex-1 overflow-y-auto px-3 py-2" style={{ maxHeight: '260px' }}>
+                    {corePrompts.map((prompt, promptIndex) => {
+                      const isActive = activeIndices[bot.id] === promptIndex
+                      const isComplete = completedIndices[bot.id].includes(promptIndex)
+                      
+                      return (
+                        <div 
+                          key={promptIndex}
+                          className="flex items-start gap-2 py-1.5"
+                        >
+                          {/* Status Icon */}
+                          <div className="w-4 h-4 flex-shrink-0 flex items-center justify-center mt-0.5">
+                            {isComplete ? (
+                              <svg 
+                                className="w-3.5 h-3.5" 
+                                viewBox="0 0 24 24" 
+                                fill="none"
+                              >
+                                <circle cx="12" cy="12" r="10" fill="#22C55E" fillOpacity="0.15" />
+                                <path 
+                                  d="M8 12l2.5 2.5L16 9" 
+                                  stroke="#22C55E" 
+                                  strokeWidth="2" 
+                                  strokeLinecap="round" 
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            ) : isActive ? (
+                              <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                                className="w-3.5 h-3.5"
+                              >
+                                <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+                                  <circle 
+                                    cx="12" cy="12" r="9" 
+                                    stroke="#F59E0B" 
+                                    strokeWidth="2" 
+                                    strokeOpacity="0.3"
+                                  />
+                                  <path 
+                                    d="M12 3a9 9 0 0 1 9 9" 
+                                    stroke="#F59E0B" 
+                                    strokeWidth="2" 
+                                    strokeLinecap="round"
+                                  />
+                                </svg>
+                              </motion.div>
+                            ) : (
+                              <div 
+                                className="w-1.5 h-1.5 rounded-full"
+                                style={{ backgroundColor: '#D1D5DB' }}
+                              />
+                            )}
+                          </div>
+                          
+                          <span 
+                            style={{
+                              fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                              fontWeight: 400,
+                              fontSize: '0.6875rem',
+                              lineHeight: 1.4,
+                              color: isComplete ? '#22C55E' : isActive ? '#F59E0B' : '#9CA3AF'
+                            }}
+                          >
+                            {prompt}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </motion.div>
               )
             })}
           </div>
@@ -421,7 +461,7 @@ export function BrandEmpowermentModal({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.4 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
           className="mt-4 px-6 py-4"
           style={{
             borderTop: '0.5px solid rgba(209, 213, 219, 0.5)',
@@ -440,16 +480,30 @@ export function BrandEmpowermentModal({
             }}
           >
             <span style={{ color: '#1D1D1F', fontWeight: 500 }}>Insight:</span>{' '}
-            These 40 probes are optimizing your Intelligence Depth pillar. Expect a score update in ~2 minutes.
+            These 40 unique data points are optimizing your Intelligence Depth pillar. High-fidelity results expected in ~2 minutes.
           </p>
         </motion.div>
       </motion.div>
 
-      {/* CSS for pulse animation */}
+      {/* CSS Animations */}
       <style>{`
-        @keyframes pulse {
+        @keyframes livePulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(0.9); }
+        }
+        @keyframes columnPulse {
+          0%, 100% { 
+            box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            border-color: rgba(209, 213, 219, 0.4);
+          }
+          50% { 
+            box-shadow: 0 0 20px 0 rgba(99, 102, 241, 0.08);
+            border-color: rgba(99, 102, 241, 0.3);
+          }
+        }
+        @keyframes subtlePulse {
           0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+          50% { opacity: 0.7; }
         }
       `}</style>
     </motion.div>
