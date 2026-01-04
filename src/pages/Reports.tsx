@@ -35,7 +35,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import ReportEditor, { ReportBlock } from '@/components/reports/ReportEditor';
-import ReportPreview from '@/components/reports/ReportPreview';
 import { downloadReportPDF } from '@/utils/reportPdfExport';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
