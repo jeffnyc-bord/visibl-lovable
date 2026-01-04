@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   ArrowLeft,
   Download,
@@ -14,26 +14,24 @@ import {
   Edit3,
   Loader2,
   Minus,
-  ALargeSmall,
-  ArrowDownWideNarrow,
-  Space
+  ChevronDown as ChevronDownIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Slider } from '@/components/ui/slider';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { format } from 'date-fns';
 
 // Block styling options
@@ -103,53 +101,7 @@ const ReportEditor = ({
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [selectedBlockIds, setSelectedBlockIds] = useState<Set<string>>(new Set());
-  const [isSelecting, setIsSelecting] = useState(false);
-  const [selectionStart, setSelectionStart] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-
-  // Handle mouse down on block - start selection
-  const handleBlockMouseDown = useCallback((blockId: string, e: React.MouseEvent) => {
-    if (e.button !== 0) return; // Only left click
-    e.preventDefault();
-    setIsSelecting(true);
-    setSelectionStart(blockId);
-    setSelectedBlockIds(new Set([blockId]));
-  }, []);
-
-  // Handle mouse enter on block during selection
-  const handleBlockMouseEnter = useCallback((blockId: string) => {
-    if (!isSelecting || !selectionStart) return;
-    
-    const startIndex = blocks.findIndex(b => b.id === selectionStart);
-    const currentIndex = blocks.findIndex(b => b.id === blockId);
-    
-    if (startIndex === -1 || currentIndex === -1) return;
-    
-    const minIndex = Math.min(startIndex, currentIndex);
-    const maxIndex = Math.max(startIndex, currentIndex);
-    
-    const newSelection = new Set<string>();
-    for (let i = minIndex; i <= maxIndex; i++) {
-      newSelection.add(blocks[i].id);
-    }
-    setSelectedBlockIds(newSelection);
-  }, [isSelecting, selectionStart, blocks]);
-
-  // Handle mouse up - end selection
-  useEffect(() => {
-    const handleMouseUp = () => {
-      setIsSelecting(false);
-    };
-    
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => document.removeEventListener('mouseup', handleMouseUp);
-  }, []);
-
-  const clearSelection = () => {
-    setSelectedBlockIds(new Set());
-    setSelectionStart(null);
-  };
 
   const moveBlock = (index: number, direction: 'up' | 'down') => {
     const newBlocks = [...blocks];
@@ -161,16 +113,6 @@ const ReportEditor = ({
 
   const deleteBlock = (id: string) => {
     onBlocksChange(blocks.filter(b => b.id !== id));
-    setSelectedBlockIds(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(id);
-      return newSet;
-    });
-  };
-
-  const deleteSelectedBlocks = () => {
-    onBlocksChange(blocks.filter(b => !selectedBlockIds.has(b.id)));
-    setSelectedBlockIds(new Set());
   };
 
   const updateBlock = (id: string, content: Partial<ReportBlock['content']>) => {
@@ -185,13 +127,12 @@ const ReportEditor = ({
     ));
   };
 
-  // Update styles for all selected blocks
-  const updateSelectedBlocksStyles = (styles: Partial<BlockStyles>) => {
-    onBlocksChange(blocks.map(b => 
-      selectedBlockIds.has(b.id) 
-        ? { ...b, styles: { ...getBlockStyles(b), ...styles } } 
-        : b
-    ));
+  // Apply style to all blocks
+  const applyStyleToAll = (styles: Partial<BlockStyles>) => {
+    onBlocksChange(blocks.map(b => ({
+      ...b,
+      styles: { ...getBlockStyles(b), ...styles }
+    })));
   };
 
   const getBlockStyles = (block: ReportBlock): BlockStyles => {
@@ -318,136 +259,17 @@ const ReportEditor = ({
 
   return (
     <div className="min-h-screen bg-muted/30 flex flex-col">
-      {/* Header with Toolbar */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border">
-        <div className="max-w-[1600px] mx-auto px-6 h-14 flex items-center justify-between">
+      {/* Apple-style Header with Toolbar */}
+      <header className="sticky top-0 z-50 bg-background border-b border-border">
+        {/* Top bar */}
+        <div className="px-4 h-11 flex items-center justify-between border-b border-border/50">
           <button 
             onClick={onBack}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Back</span>
+            <span>Back</span>
           </button>
-
-          {/* Center Toolbar - always visible when blocks selected */}
-          <div className="flex items-center gap-1">
-            {selectedBlockIds.size > 0 && (
-              <div className="flex items-center gap-1 bg-muted rounded-lg p-1 mr-4">
-                <span className="text-xs text-muted-foreground px-2">
-                  {selectedBlockIds.size} block{selectedBlockIds.size !== 1 ? 's' : ''}
-                </span>
-                <div className="w-px h-4 bg-border" />
-                
-                {/* Font Size Controls */}
-                <div className="flex items-center gap-0.5 px-1">
-                  <button
-                    onClick={() => updateSelectedBlocksStyles({ fontSize: 9 })}
-                    className="h-7 px-2 text-xs rounded hover:bg-background flex items-center gap-1"
-                    title="Small text"
-                  >
-                    <ALargeSmall className="w-3.5 h-3.5" />
-                    <span className="text-[10px]">S</span>
-                  </button>
-                  <button
-                    onClick={() => updateSelectedBlocksStyles({ fontSize: 11 })}
-                    className="h-7 px-2 text-xs rounded hover:bg-background flex items-center gap-1"
-                    title="Medium text"
-                  >
-                    <ALargeSmall className="w-4 h-4" />
-                    <span className="text-[10px]">M</span>
-                  </button>
-                  <button
-                    onClick={() => updateSelectedBlocksStyles({ fontSize: 14 })}
-                    className="h-7 px-2 text-xs rounded hover:bg-background flex items-center gap-1"
-                    title="Large text"
-                  >
-                    <ALargeSmall className="w-5 h-5" />
-                    <span className="text-[10px]">L</span>
-                  </button>
-                </div>
-
-                <div className="w-px h-4 bg-border" />
-
-                {/* Line Height Controls */}
-                <div className="flex items-center gap-0.5 px-1">
-                  <button
-                    onClick={() => updateSelectedBlocksStyles({ lineHeight: 1.2 })}
-                    className="h-7 px-2 text-xs rounded hover:bg-background flex items-center gap-1"
-                    title="Tight line height"
-                  >
-                    <ArrowDownWideNarrow className="w-3.5 h-3.5" />
-                    <span className="text-[10px]">1.2</span>
-                  </button>
-                  <button
-                    onClick={() => updateSelectedBlocksStyles({ lineHeight: 1.5 })}
-                    className="h-7 px-2 text-xs rounded hover:bg-background flex items-center gap-1"
-                    title="Normal line height"
-                  >
-                    <ArrowDownWideNarrow className="w-3.5 h-3.5" />
-                    <span className="text-[10px]">1.5</span>
-                  </button>
-                  <button
-                    onClick={() => updateSelectedBlocksStyles({ lineHeight: 1.8 })}
-                    className="h-7 px-2 text-xs rounded hover:bg-background flex items-center gap-1"
-                    title="Relaxed line height"
-                  >
-                    <ArrowDownWideNarrow className="w-3.5 h-3.5" />
-                    <span className="text-[10px]">1.8</span>
-                  </button>
-                </div>
-
-                <div className="w-px h-4 bg-border" />
-
-                {/* Spacing Controls */}
-                <div className="flex items-center gap-0.5 px-1">
-                  <button
-                    onClick={() => updateSelectedBlocksStyles({ marginBottom: 6 })}
-                    className="h-7 px-2 text-xs rounded hover:bg-background flex items-center gap-1"
-                    title="Compact spacing"
-                  >
-                    <Space className="w-3.5 h-3.5" />
-                    <span className="text-[10px]">6</span>
-                  </button>
-                  <button
-                    onClick={() => updateSelectedBlocksStyles({ marginBottom: 12 })}
-                    className="h-7 px-2 text-xs rounded hover:bg-background flex items-center gap-1"
-                    title="Normal spacing"
-                  >
-                    <Space className="w-3.5 h-3.5" />
-                    <span className="text-[10px]">12</span>
-                  </button>
-                  <button
-                    onClick={() => updateSelectedBlocksStyles({ marginBottom: 20 })}
-                    className="h-7 px-2 text-xs rounded hover:bg-background flex items-center gap-1"
-                    title="Spacious"
-                  >
-                    <Space className="w-3.5 h-3.5" />
-                    <span className="text-[10px]">20</span>
-                  </button>
-                </div>
-
-                <div className="w-px h-4 bg-border" />
-
-                {/* Delete */}
-                <button
-                  onClick={deleteSelectedBlocks}
-                  className="h-7 px-2 text-destructive rounded hover:bg-destructive/10 flex items-center"
-                  title="Delete selected"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-
-                {/* Clear Selection */}
-                <button
-                  onClick={clearSelection}
-                  className="h-7 px-2 text-muted-foreground rounded hover:bg-background text-xs"
-                  title="Clear selection"
-                >
-                  Clear
-                </button>
-              </div>
-            )}
-          </div>
 
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted-foreground">
@@ -455,37 +277,117 @@ const ReportEditor = ({
             </span>
             <Button 
               onClick={onExport}
-              className="h-9 px-5 rounded-full"
+              size="sm"
+              className="h-8 px-4 rounded-md text-xs font-medium"
               disabled={isExporting}
             >
               {isExporting ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
                   Exporting...
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4 mr-2" />
+                  <Download className="w-3.5 h-3.5 mr-1.5" />
                   Export PDF
                 </>
               )}
             </Button>
           </div>
         </div>
-      </header>
 
-      {/* Selection hint */}
-      {selectedBlockIds.size === 0 && blocks.length > 0 && (
-        <div className="bg-muted/50 border-b border-border py-1.5 text-center">
-          <span className="text-xs text-muted-foreground">
-            Click and drag across blocks to select multiple. Use the toolbar above to format.
-          </span>
+        {/* Formatting Toolbar - always visible */}
+        <div className="px-4 h-10 flex items-center gap-1 bg-muted/30">
+          {/* Font Size */}
+          <div className="flex items-center">
+            <Select onValueChange={(v) => applyStyleToAll({ fontSize: parseInt(v) })}>
+              <SelectTrigger className="w-[72px] h-7 text-xs bg-background border-border/50 rounded-md">
+                <SelectValue placeholder="Size" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border-border z-50">
+                <SelectItem value="9" className="text-xs">9 pt</SelectItem>
+                <SelectItem value="10" className="text-xs">10 pt</SelectItem>
+                <SelectItem value="11" className="text-xs">11 pt</SelectItem>
+                <SelectItem value="12" className="text-xs">12 pt</SelectItem>
+                <SelectItem value="14" className="text-xs">14 pt</SelectItem>
+                <SelectItem value="16" className="text-xs">16 pt</SelectItem>
+                <SelectItem value="18" className="text-xs">18 pt</SelectItem>
+                <SelectItem value="24" className="text-xs">24 pt</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="w-px h-5 bg-border mx-1" />
+
+          {/* Line Spacing */}
+          <div className="flex items-center">
+            <Select onValueChange={(v) => applyStyleToAll({ lineHeight: parseFloat(v) })}>
+              <SelectTrigger className="w-[88px] h-7 text-xs bg-background border-border/50 rounded-md">
+                <SelectValue placeholder="Spacing" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border-border z-50">
+                <SelectItem value="1.0" className="text-xs">Single</SelectItem>
+                <SelectItem value="1.15" className="text-xs">1.15</SelectItem>
+                <SelectItem value="1.5" className="text-xs">1.5</SelectItem>
+                <SelectItem value="2.0" className="text-xs">Double</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="w-px h-5 bg-border mx-1" />
+
+          {/* Paragraph Spacing */}
+          <div className="flex items-center">
+            <Select onValueChange={(v) => applyStyleToAll({ marginBottom: parseInt(v) })}>
+              <SelectTrigger className="w-[96px] h-7 text-xs bg-background border-border/50 rounded-md">
+                <SelectValue placeholder="After ¶" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border-border z-50">
+                <SelectItem value="4" className="text-xs">Compact</SelectItem>
+                <SelectItem value="8" className="text-xs">Tight</SelectItem>
+                <SelectItem value="12" className="text-xs">Normal</SelectItem>
+                <SelectItem value="16" className="text-xs">Relaxed</SelectItem>
+                <SelectItem value="24" className="text-xs">Spacious</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="w-px h-5 bg-border mx-1" />
+
+          {/* Add Block */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="h-7 px-2.5 text-xs rounded-md bg-background border border-border/50 hover:bg-muted flex items-center gap-1.5 transition-colors">
+                <Plus className="w-3.5 h-3.5" />
+                <span>Insert</span>
+                <ChevronDownIcon className="w-3 h-3 opacity-50" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-40 bg-background border-border z-50">
+              <DropdownMenuItem onClick={() => addBlock('text')} className="text-xs">
+                <Type className="w-3.5 h-3.5 mr-2" />
+                Text Block
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => addBlock('image')} className="text-xs">
+                <Image className="w-3.5 h-3.5 mr-2" />
+                Image
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => addBlock('stat')} className="text-xs">
+                <Hash className="w-3.5 h-3.5 mr-2" />
+                Statistic
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => addBlock('quote')} className="text-xs">
+                <Quote className="w-3.5 h-3.5 mr-2" />
+                Quote
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      )}
+      </header>
 
       {/* Page Canvas */}
       <div className="flex-1 overflow-auto py-8 px-4" ref={canvasRef}>
-        <div className="flex flex-col items-center gap-6 select-none">
+        <div className="flex flex-col items-center gap-6">
           {pages.map((page, pageIndex) => (
             <div key={pageIndex} className="relative">
               {/* Page number indicator */}
@@ -542,19 +444,17 @@ const ReportEditor = ({
 
                 {/* Content blocks */}
                 <div className="space-y-0">
-                  {page.blocks.map((block, blockIndex) => {
+                  {page.blocks.map((block) => {
                     const globalIndex = blocks.findIndex(b => b.id === block.id);
                     const styles = getBlockStyles(block);
                     
                     return (
                       <div
                         key={block.id}
-                        draggable={!isSelecting && !selectedBlockIds.has(block.id)}
+                        draggable
                         onDragStart={() => handleDragStart(globalIndex)}
                         onDragOver={(e) => handleDragOver(e, globalIndex)}
                         onDragEnd={handleDragEnd}
-                        onMouseDown={(e) => handleBlockMouseDown(block.id, e)}
-                        onMouseEnter={() => handleBlockMouseEnter(block.id)}
                         className={cn(
                           "group relative",
                           draggedIndex === globalIndex && "opacity-50"
@@ -565,7 +465,6 @@ const ReportEditor = ({
                           block={block}
                           styles={styles}
                           isEditing={editingBlockId === block.id}
-                          isSelected={selectedBlockIds.has(block.id)}
                           onEdit={() => setEditingBlockId(block.id)}
                           onSave={() => setEditingBlockId(null)}
                           onUpdate={(content) => updateBlock(block.id, content)}
@@ -699,7 +598,6 @@ interface PageBlockProps {
   block: ReportBlock;
   styles: BlockStyles;
   isEditing: boolean;
-  isSelected: boolean;
   onEdit: () => void;
   onSave: () => void;
   onUpdate: (content: Partial<ReportBlock['content']>) => void;
@@ -716,7 +614,6 @@ const PageBlock = ({
   block,
   styles,
   isEditing,
-  isSelected,
   onEdit,
   onSave,
   onUpdate,
@@ -746,12 +643,11 @@ const PageBlock = ({
       className={cn(
         "relative rounded transition-all",
         isEditing && "ring-1 ring-primary bg-blue-50/30 p-2 -mx-2",
-        isSelected && !isEditing && "ring-2 ring-primary bg-primary/5",
-        !isEditing && !isSelected && "hover:bg-gray-50/50"
+        !isEditing && "hover:bg-gray-50/50"
       )}
     >
       {/* Controls - left side */}
-      {!isEditing && !isSelected && (
+      {!isEditing && (
         <div className="absolute -left-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center gap-0.5">
           <button className="p-0.5 text-gray-400 hover:text-gray-600 cursor-grab">
             <GripVertical className="w-3 h-3" />
@@ -770,7 +666,7 @@ const PageBlock = ({
       )}
 
       {/* Controls - right side */}
-      {!isEditing && !isSelected && (
+      {!isEditing && (
         <div className="absolute -right-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center gap-1">
           <InlineFormattingControls 
             styles={styles} 
