@@ -168,91 +168,84 @@ export function BrandEmpowermentModal({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="space-y-4"
+              className="space-y-5"
             >
               {/* Brand Name Input */}
-              <div>
-                <label
-                  style={{
-                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
-                    fontWeight: 500,
-                    fontSize: '0.8125rem',
-                    color: '#1D1D1F',
-                    letterSpacing: '-0.01em',
-                    display: 'block',
-                    marginBottom: '0.5rem'
-                  }}
-                >
-                  Brand name
-                </label>
+              <div className="relative">
                 <input
                   type="text"
                   value={brandName}
                   onChange={(e) => setBrandName(e.target.value)}
                   onFocus={() => setInputFocused('brand')}
                   onBlur={() => setInputFocused(null)}
-                  placeholder="Nike, Allbirds, Glossier..."
-                  className="w-full outline-none transition-all duration-200"
+                  placeholder=" "
+                  className="peer w-full outline-none transition-all duration-300"
                   style={{
                     fontFamily: 'Google Sans Flex, system-ui, sans-serif',
                     fontWeight: 400,
-                    fontSize: '1rem',
+                    fontSize: '1.0625rem',
                     color: '#1D1D1F',
                     letterSpacing: '-0.01em',
-                    padding: '0.875rem 1rem',
-                    borderRadius: '0.75rem',
-                    border: `1.5px solid ${inputFocused === 'brand' ? '#007AFF' : '#E5E5EA'}`,
-                    backgroundColor: '#FAFAFA',
-                    boxShadow: inputFocused === 'brand' ? '0 0 0 3px rgba(0, 122, 255, 0.1)' : 'none'
+                    padding: '1.5rem 0 0.5rem 0',
+                    borderRadius: 0,
+                    border: 'none',
+                    borderBottom: `1.5px solid ${inputFocused === 'brand' ? '#1D1D1F' : '#D1D1D6'}`,
+                    backgroundColor: 'transparent'
                   }}
                 />
+                <label
+                  className="absolute left-0 transition-all duration-200 pointer-events-none"
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 400,
+                    fontSize: brandName || inputFocused === 'brand' ? '0.75rem' : '1.0625rem',
+                    color: inputFocused === 'brand' ? '#1D1D1F' : '#86868B',
+                    letterSpacing: '-0.01em',
+                    top: brandName || inputFocused === 'brand' ? '0' : '1rem',
+                    transform: 'translateY(0)'
+                  }}
+                >
+                  Brand name
+                </label>
               </div>
 
               {/* Website URL Input */}
-              <div>
-                <label
-                  style={{
-                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
-                    fontWeight: 500,
-                    fontSize: '0.8125rem',
-                    color: '#1D1D1F',
-                    letterSpacing: '-0.01em',
-                    display: 'block',
-                    marginBottom: '0.5rem'
-                  }}
-                >
-                  Website
-                  <span 
-                    style={{ 
-                      color: '#86868B', 
-                      fontWeight: 400,
-                      marginLeft: '0.375rem'
-                    }}
-                  >
-                    (optional)
-                  </span>
-                </label>
+              <div className="relative">
                 <input
                   type="url"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   onFocus={() => setInputFocused('website')}
                   onBlur={() => setInputFocused(null)}
-                  placeholder="https://yourbrand.com"
-                  className="w-full outline-none transition-all duration-200"
+                  placeholder=" "
+                  className="peer w-full outline-none transition-all duration-300"
                   style={{
                     fontFamily: 'Google Sans Flex, system-ui, sans-serif',
                     fontWeight: 400,
-                    fontSize: '1rem',
+                    fontSize: '1.0625rem',
                     color: '#1D1D1F',
                     letterSpacing: '-0.01em',
-                    padding: '0.875rem 1rem',
-                    borderRadius: '0.75rem',
-                    border: `1.5px solid ${inputFocused === 'website' ? '#007AFF' : '#E5E5EA'}`,
-                    backgroundColor: '#FAFAFA',
-                    boxShadow: inputFocused === 'website' ? '0 0 0 3px rgba(0, 122, 255, 0.1)' : 'none'
+                    padding: '1.5rem 0 0.5rem 0',
+                    borderRadius: 0,
+                    border: 'none',
+                    borderBottom: `1.5px solid ${inputFocused === 'website' ? '#1D1D1F' : '#D1D1D6'}`,
+                    backgroundColor: 'transparent'
                   }}
                 />
+                <label
+                  className="absolute left-0 transition-all duration-200 pointer-events-none"
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 400,
+                    fontSize: websiteUrl || inputFocused === 'website' ? '0.75rem' : '1.0625rem',
+                    color: inputFocused === 'website' ? '#1D1D1F' : '#86868B',
+                    letterSpacing: '-0.01em',
+                    top: websiteUrl || inputFocused === 'website' ? '0' : '1rem',
+                    transform: 'translateY(0)'
+                  }}
+                >
+                  Website <span style={{ color: '#AEAEB2', fontWeight: 400 }}>(optional)</span>
+                </label>
               </div>
             </motion.div>
 
@@ -261,42 +254,33 @@ export function BrandEmpowermentModal({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-10"
+              className="mt-12"
             >
               <button
                 onClick={handleStartAnalysis}
                 disabled={!canContinue}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full transition-all duration-200"
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl transition-all duration-200"
                 style={{
                   fontFamily: 'Google Sans Flex, system-ui, sans-serif',
                   fontWeight: 500,
-                  fontSize: '1rem',
+                  fontSize: '1.0625rem',
+                  letterSpacing: '-0.01em',
                   color: canContinue ? '#FFFFFF' : '#86868B',
-                  background: canContinue ? '#1D1D1F' : '#E5E5EA',
-                  cursor: canContinue ? 'pointer' : 'not-allowed',
-                  boxShadow: canContinue ? '0 2px 8px rgba(0, 0, 0, 0.12)' : 'none',
-                  transform: 'scale(1)'
+                  background: canContinue ? '#1D1D1F' : '#F5F5F7',
+                  cursor: canContinue ? 'pointer' : 'not-allowed'
                 }}
                 onMouseEnter={(e) => {
                   if (canContinue) {
-                    e.currentTarget.style.transform = 'scale(1.02)'
+                    e.currentTarget.style.background = '#000000'
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)'
-                }}
-                onMouseDown={(e) => {
                   if (canContinue) {
-                    e.currentTarget.style.transform = 'scale(0.98)'
-                  }
-                }}
-                onMouseUp={(e) => {
-                  if (canContinue) {
-                    e.currentTarget.style.transform = 'scale(1.02)'
+                    e.currentTarget.style.background = '#1D1D1F'
                   }
                 }}
               >
-                Analyze my brand
+                Continue
                 <ArrowRight className="w-4 h-4" />
               </button>
             </motion.div>
@@ -306,7 +290,7 @@ export function BrandEmpowermentModal({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-center mt-8"
+              className="text-center mt-6"
               style={{
                 fontFamily: 'Google Sans Flex, system-ui, sans-serif',
                 fontWeight: 400,
@@ -315,7 +299,7 @@ export function BrandEmpowermentModal({
                 letterSpacing: '-0.01em'
               }}
             >
-              We'll scan 40+ AI platforms to see how your brand appears
+              We'll confirm your brand before scanning 40+ AI platforms
             </motion.p>
           </motion.div>
         ) : phase === 'prompts' ? (
