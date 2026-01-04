@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Shield } from "lucide-react"
+import { Shield, ArrowRight } from "lucide-react"
 import boardLabsIcon from "@/assets/board_labs_icon.png"
 
 const corePrompts = [
@@ -24,20 +24,39 @@ interface BrandEmpowermentModalProps {
 
 export function BrandEmpowermentModal({ 
   isOpen, 
-  brandName = "your brand",
+  brandName: initialBrandName = "",
   onComplete 
 }: BrandEmpowermentModalProps) {
   const [activeIndex, setActiveIndex] = useState(-1)
   const [completedCount, setCompletedCount] = useState(0)
-  const [phase, setPhase] = useState<'prompts' | 'analyzing' | 'preview'>('prompts')
+  const [phase, setPhase] = useState<'input' | 'prompts' | 'analyzing' | 'preview'>('input')
+  
+  // Brand input state
+  const [brandName, setBrandName] = useState(initialBrandName)
+  const [websiteUrl, setWebsiteUrl] = useState("")
+  const [inputFocused, setInputFocused] = useState<'brand' | 'website' | null>(null)
+
+  const canContinue = brandName.trim().length > 0
+
+  const handleStartAnalysis = () => {
+    if (canContinue) {
+      setPhase('prompts')
+    }
+  }
 
   useEffect(() => {
     if (!isOpen) {
       setActiveIndex(-1)
       setCompletedCount(0)
-      setPhase('prompts')
+      setPhase('input')
+      setBrandName(initialBrandName)
+      setWebsiteUrl("")
       return
     }
+  }, [isOpen, initialBrandName])
+
+  useEffect(() => {
+    if (phase !== 'prompts') return
 
     let currentIndex = 0
     
@@ -59,7 +78,7 @@ export function BrandEmpowermentModal({
     }, 800)
 
     return () => clearInterval(interval)
-  }, [isOpen])
+  }, [phase])
 
   // Analyzing phase timer
   useEffect(() => {
@@ -74,6 +93,8 @@ export function BrandEmpowermentModal({
 
   if (!isOpen) return null
 
+  const displayBrandName = brandName.trim() || "your brand"
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -82,7 +103,222 @@ export function BrandEmpowermentModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-white"
     >
       <AnimatePresence mode="wait">
-        {phase === 'prompts' ? (
+        {phase === 'input' ? (
+          <motion.div
+            key="input"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-md mx-auto px-8"
+          >
+            {/* Logo */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center mb-12"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+                <img 
+                  src={boardLabsIcon} 
+                  alt="Board Labs"
+                  className="w-7 h-7 object-contain brightness-0 invert"
+                />
+              </div>
+            </motion.div>
+
+            {/* Title */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-center mb-3"
+              style={{
+                fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                fontWeight: 300,
+                fontSize: '2.25rem',
+                color: '#1D1D1F',
+                letterSpacing: '-0.02em',
+                lineHeight: 1.2
+              }}
+            >
+              Let's get started
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="text-center mb-10"
+              style={{
+                fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                fontWeight: 400,
+                fontSize: '1.0625rem',
+                color: '#86868B',
+                letterSpacing: '-0.01em'
+              }}
+            >
+              Tell us about your brand
+            </motion.p>
+
+            {/* Input Fields */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="space-y-4"
+            >
+              {/* Brand Name Input */}
+              <div>
+                <label
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 500,
+                    fontSize: '0.8125rem',
+                    color: '#1D1D1F',
+                    letterSpacing: '-0.01em',
+                    display: 'block',
+                    marginBottom: '0.5rem'
+                  }}
+                >
+                  Brand name
+                </label>
+                <input
+                  type="text"
+                  value={brandName}
+                  onChange={(e) => setBrandName(e.target.value)}
+                  onFocus={() => setInputFocused('brand')}
+                  onBlur={() => setInputFocused(null)}
+                  placeholder="Nike, Allbirds, Glossier..."
+                  className="w-full outline-none transition-all duration-200"
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '1rem',
+                    color: '#1D1D1F',
+                    letterSpacing: '-0.01em',
+                    padding: '0.875rem 1rem',
+                    borderRadius: '0.75rem',
+                    border: `1.5px solid ${inputFocused === 'brand' ? '#007AFF' : '#E5E5EA'}`,
+                    backgroundColor: '#FAFAFA',
+                    boxShadow: inputFocused === 'brand' ? '0 0 0 3px rgba(0, 122, 255, 0.1)' : 'none'
+                  }}
+                />
+              </div>
+
+              {/* Website URL Input */}
+              <div>
+                <label
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 500,
+                    fontSize: '0.8125rem',
+                    color: '#1D1D1F',
+                    letterSpacing: '-0.01em',
+                    display: 'block',
+                    marginBottom: '0.5rem'
+                  }}
+                >
+                  Website
+                  <span 
+                    style={{ 
+                      color: '#86868B', 
+                      fontWeight: 400,
+                      marginLeft: '0.375rem'
+                    }}
+                  >
+                    (optional)
+                  </span>
+                </label>
+                <input
+                  type="url"
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                  onFocus={() => setInputFocused('website')}
+                  onBlur={() => setInputFocused(null)}
+                  placeholder="https://yourbrand.com"
+                  className="w-full outline-none transition-all duration-200"
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '1rem',
+                    color: '#1D1D1F',
+                    letterSpacing: '-0.01em',
+                    padding: '0.875rem 1rem',
+                    borderRadius: '0.75rem',
+                    border: `1.5px solid ${inputFocused === 'website' ? '#007AFF' : '#E5E5EA'}`,
+                    backgroundColor: '#FAFAFA',
+                    boxShadow: inputFocused === 'website' ? '0 0 0 3px rgba(0, 122, 255, 0.1)' : 'none'
+                  }}
+                />
+              </div>
+            </motion.div>
+
+            {/* CTA Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-10"
+            >
+              <button
+                onClick={handleStartAnalysis}
+                disabled={!canContinue}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full transition-all duration-200"
+                style={{
+                  fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '1rem',
+                  color: canContinue ? '#FFFFFF' : '#86868B',
+                  background: canContinue ? '#1D1D1F' : '#E5E5EA',
+                  cursor: canContinue ? 'pointer' : 'not-allowed',
+                  boxShadow: canContinue ? '0 2px 8px rgba(0, 0, 0, 0.12)' : 'none',
+                  transform: 'scale(1)'
+                }}
+                onMouseEnter={(e) => {
+                  if (canContinue) {
+                    e.currentTarget.style.transform = 'scale(1.02)'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)'
+                }}
+                onMouseDown={(e) => {
+                  if (canContinue) {
+                    e.currentTarget.style.transform = 'scale(0.98)'
+                  }
+                }}
+                onMouseUp={(e) => {
+                  if (canContinue) {
+                    e.currentTarget.style.transform = 'scale(1.02)'
+                  }
+                }}
+              >
+                Analyze my brand
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </motion.div>
+
+            {/* Footer Text */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="text-center mt-8"
+              style={{
+                fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                fontWeight: 400,
+                fontSize: '0.8125rem',
+                color: '#AEAEB2',
+                letterSpacing: '-0.01em'
+              }}
+            >
+              We'll scan 40+ AI platforms to see how your brand appears
+            </motion.p>
+          </motion.div>
+        ) : phase === 'prompts' ? (
           <motion.div
             key="prompts"
             initial={{ opacity: 0 }}
@@ -122,7 +358,7 @@ export function BrandEmpowermentModal({
                 lineHeight: 1.2
               }}
             >
-              Building {brandName}'s AI future
+              Building {displayBrandName}'s AI future
             </motion.h1>
 
             {/* Subtitle */}
@@ -430,7 +666,7 @@ export function BrandEmpowermentModal({
                 letterSpacing: '-0.01em'
               }}
             >
-              Here's a preview of what we found for {brandName}
+              Here's a preview of what we found for {displayBrandName}
             </motion.p>
 
             {/* Clean Stats Display */}
