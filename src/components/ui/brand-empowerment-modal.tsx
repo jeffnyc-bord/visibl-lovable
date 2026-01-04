@@ -57,7 +57,7 @@ export function BrandEmpowermentModal({
   // Brand input state
   const [brandName, setBrandName] = useState(initialBrandName)
   const [websiteUrl, setWebsiteUrl] = useState("")
-  const [inputFocused, setInputFocused] = useState<'brand' | 'website' | 'name' | 'role' | 'email' | null>(null)
+  const [inputFocused, setInputFocused] = useState<'brand' | 'website' | 'name' | 'role' | 'email' | 'code' | null>(null)
 
   // Profile state
   const [userName, setUserName] = useState("")
@@ -66,6 +66,10 @@ export function BrandEmpowermentModal({
   // Invite state
   const [inviteEmails, setInviteEmails] = useState<string[]>([])
   const [currentEmail, setCurrentEmail] = useState("")
+
+  // Bypass code state
+  const [showBypassCode, setShowBypassCode] = useState(false)
+  const [bypassCode, setBypassCode] = useState("")
 
   const canContinue = brandName.trim().length > 0
   const canContinueProfile = userName.trim().length > 0
@@ -1289,6 +1293,84 @@ export function BrandEmpowermentModal({
               >
                 Secure checkout · Cancel anytime
               </span>
+            </motion.div>
+
+            {/* Bypass Code Section */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+              className="mt-8 flex flex-col items-center"
+            >
+              {!showBypassCode ? (
+                <button
+                  onClick={() => setShowBypassCode(true)}
+                  className="transition-opacity duration-200 hover:opacity-80"
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '0.75rem',
+                    color: '#C7C7CC',
+                    letterSpacing: '-0.01em',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Have an access code?
+                </button>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  transition={{ duration: 0.2 }}
+                  className="flex flex-col items-center gap-3"
+                >
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={bypassCode}
+                      onChange={(e) => setBypassCode(e.target.value.toUpperCase())}
+                      onFocus={() => setInputFocused('code')}
+                      onBlur={() => setInputFocused(null)}
+                      placeholder="Enter code"
+                      maxLength={12}
+                      className="text-center outline-none transition-all duration-300"
+                      style={{
+                        fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                        fontWeight: 500,
+                        fontSize: '0.875rem',
+                        color: '#1D1D1F',
+                        letterSpacing: '0.1em',
+                        padding: '0.5rem 1rem',
+                        width: '140px',
+                        borderRadius: 0,
+                        border: 'none',
+                        borderBottom: `1.5px solid ${inputFocused === 'code' ? '#1D1D1F' : '#D1D1D6'}`,
+                        backgroundColor: 'transparent'
+                      }}
+                    />
+                  </div>
+                  {bypassCode.length > 0 && (
+                    <button
+                      onClick={onComplete}
+                      className="transition-opacity duration-200 hover:opacity-80"
+                      style={{
+                        fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                        fontWeight: 500,
+                        fontSize: '0.75rem',
+                        color: '#007AFF',
+                        letterSpacing: '-0.01em',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Apply code
+                    </button>
+                  )}
+                </motion.div>
+              )}
             </motion.div>
           </motion.div>
         )}
