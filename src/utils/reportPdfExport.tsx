@@ -10,13 +10,13 @@ interface ReportPDFConfig {
   brandName?: string;
 }
 
-// Clean, minimal PDF styles matching the editor preview exactly
+// Clean, compact PDF styles matching the editor preview
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
-    paddingTop: 48,
-    paddingBottom: 60,
+    paddingTop: 40,
+    paddingBottom: 50,
     paddingHorizontal: 48,
     fontFamily: 'Helvetica',
   },
@@ -25,150 +25,150 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 32,
-    paddingBottom: 16,
+    marginBottom: 20,
+    paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
   },
   headerLogo: {
-    width: 80,
-    height: 24,
+    width: 60,
+    height: 20,
     objectFit: 'contain',
   },
   headerBrand: {
-    fontSize: 10,
+    fontSize: 9,
     color: '#6b7280',
   },
   headerDate: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#9ca3af',
   },
   // Title section
   titleSection: {
-    marginBottom: 32,
+    marginBottom: 16,
   },
   reportTitle: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: 'light',
     color: '#1f2937',
-    marginBottom: 8,
-    letterSpacing: -0.5,
+    marginBottom: 4,
+    letterSpacing: -0.3,
   },
   reportSubtitle: {
-    fontSize: 11,
-    color: '#6b7280',
-  },
-  // Section block - matches editor SectionBlock
-  sectionBlock: {
-    marginBottom: 24,
-    paddingTop: 8,
-  },
-  sectionType: {
     fontSize: 9,
     color: '#6b7280',
+  },
+  // Section block - compact
+  sectionBlock: {
+    marginBottom: 12,
+    paddingTop: 4,
+  },
+  sectionType: {
+    fontSize: 7,
+    color: '#6b7280',
     textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    marginBottom: 8,
+    letterSpacing: 1,
+    marginBottom: 4,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: 'light',
     color: '#1f2937',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   sectionBody: {
-    fontSize: 11,
-    lineHeight: 1.6,
+    fontSize: 9,
+    lineHeight: 1.5,
     color: '#6b7280',
   },
-  // Text block - matches editor TextBlock
+  // Text block - compact
   textBlock: {
-    marginBottom: 20,
-    paddingTop: 8,
+    marginBottom: 10,
+    paddingTop: 4,
   },
   textTitle: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: 'bold',
     color: '#1f2937',
-    marginBottom: 6,
+    marginBottom: 3,
   },
   textBody: {
-    fontSize: 11,
-    lineHeight: 1.6,
+    fontSize: 9,
+    lineHeight: 1.5,
     color: '#6b7280',
   },
-  // Stat block - matches editor StatBlock
+  // Stat block - compact
   statBlock: {
-    marginBottom: 24,
-    paddingVertical: 12,
+    marginBottom: 12,
+    paddingVertical: 6,
   },
   statRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: 8,
+    gap: 6,
   },
   statValue: {
-    fontSize: 36,
+    fontSize: 24,
     fontWeight: 'light',
     color: '#1f2937',
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 9,
     color: '#6b7280',
   },
-  // Quote block - matches editor QuoteBlock
+  // Quote block - compact
   quoteBlock: {
-    marginBottom: 24,
-    paddingLeft: 16,
-    paddingVertical: 12,
+    marginBottom: 10,
+    paddingLeft: 10,
+    paddingVertical: 4,
     borderLeftWidth: 2,
     borderLeftColor: '#d1d5db',
   },
   quoteText: {
-    fontSize: 14,
+    fontSize: 10,
     fontStyle: 'italic',
     color: '#1f2937',
-    lineHeight: 1.5,
-    marginBottom: 8,
+    lineHeight: 1.4,
+    marginBottom: 3,
   },
   quoteAuthor: {
-    fontSize: 10,
+    fontSize: 8,
     color: '#6b7280',
   },
-  // Image block - matches editor ImageBlock
+  // Image block - compact
   imageBlock: {
-    marginBottom: 24,
+    marginBottom: 12,
   },
   image: {
     maxWidth: '100%',
-    maxHeight: 250,
+    maxHeight: 180,
     objectFit: 'contain',
   },
   imageCaption: {
-    fontSize: 10,
+    fontSize: 8,
     color: '#6b7280',
     fontStyle: 'italic',
-    marginTop: 8,
+    marginTop: 4,
   },
   // Footer
   footer: {
     position: 'absolute',
-    bottom: 24,
+    bottom: 20,
     left: 48,
     right: 48,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 12,
+    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#f3f4f6',
   },
   footerBrand: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#9ca3af',
   },
   pageNumber: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#9ca3af',
   },
 });
@@ -246,34 +246,34 @@ const renderBlock = (block: ReportBlock) => {
   }
 };
 
-// Split blocks into pages (rough estimation - about 5-6 blocks per page)
+// Split blocks into pages - more blocks per page with compact styling
 const splitBlocksIntoPages = (blocks: ReportBlock[]): ReportBlock[][] => {
   const pages: ReportBlock[][] = [];
   let currentPage: ReportBlock[] = [];
   let currentWeight = 0;
 
   blocks.forEach(block => {
-    let weight = 1;
+    let weight = 0.8;
     switch (block.type) {
       case 'section':
-        weight = 1.5;
+        weight = 1;
         break;
       case 'stat':
-        weight = 1.2;
+        weight = 0.8;
         break;
       case 'quote':
-        weight = 1.2;
+        weight = 0.7;
         break;
       case 'image':
-        weight = 2.5;
+        weight = 2;
         break;
       case 'text':
         const textLength = (block.content.body?.length || 0) + (block.content.title?.length || 0);
-        weight = Math.max(1, Math.min(2.5, textLength / 200));
+        weight = Math.max(0.6, Math.min(2, textLength / 300));
         break;
     }
 
-    if (currentWeight + weight > 6 && currentPage.length > 0) {
+    if (currentWeight + weight > 8 && currentPage.length > 0) {
       pages.push(currentPage);
       currentPage = [block];
       currentWeight = weight;
