@@ -1,473 +1,179 @@
-import { Document, Page, Text, View, StyleSheet, pdf, Image, Svg, Rect, G } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer';
 import { ReportBlock } from '@/components/reports/ReportEditor';
-
-// AI Platform logos as base64 or URLs - using public paths since @react-pdf works better with URLs
-const platformLogoUrls: Record<string, string> = {
-  chatgpt: '/lovable-uploads/chatGPT_logo.png',
-  gemini: '/lovable-uploads/gemini_logo.png',
-  claude: '/lovable-uploads/claude_logo.png',
-  perplexity: '/lovable-uploads/perplexity_logo.png',
-  grok: '/lovable-uploads/grok_logo_new.png',
-};
-
-interface PlatformData {
-  id: string;
-  name: string;
-  mentions: number;
-}
-
-interface SectionData {
-  score: { enabled: boolean };
-  mentions: { enabled: boolean };
-  platformCoverage: { enabled: boolean; items?: string[] };
-  prompts: { enabled: boolean; items?: string[] };
-  products: { enabled: boolean; items?: string[] };
-  optimizations: { enabled: boolean; items?: string[] };
-  actions: { enabled: boolean; items?: string[] };
-}
 
 interface ReportPDFConfig {
   blocks: ReportBlock[];
   reportTitle: string;
   dateRange: { start: Date; end: Date };
-  showPageNumbers: boolean;
+  showPageNumbers?: boolean;
   customLogo?: string;
   brandName?: string;
-  sections?: SectionData;
-  platforms?: PlatformData[];
 }
 
-// Mock trend data matching preview
-const trendData = [35, 42, 38, 51, 49, 62, 58, 71, 68, 79, 85, 87];
-
-// Clean, Apple-inspired PDF styles with Google Sans feel
+// Clean, minimal PDF styles matching the editor preview exactly
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
-    paddingTop: 60,
-    paddingBottom: 80,
-    paddingHorizontal: 60,
+    paddingTop: 48,
+    paddingBottom: 60,
+    paddingHorizontal: 48,
     fontFamily: 'Helvetica',
   },
-  // Cover page styles
-  coverPage: {
-    flexDirection: 'column',
-    backgroundColor: '#ffffff',
-    padding: 48,
-    fontFamily: 'Helvetica',
-    height: '100%',
-  },
-  coverHeader: {
+  // Header
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e5e5',
   },
-  coverContent: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    paddingTop: 20,
-  },
-  coverTitle: {
-    fontSize: 36,
-    fontWeight: 'light',
-    color: '#1d1d1f',
-    marginBottom: 12,
-    letterSpacing: -1,
-  },
-  coverSubtitle: {
-    fontSize: 12,
-    color: '#86868b',
-    marginBottom: 8,
-  },
-  coverDate: {
-    fontSize: 10,
-    color: '#86868b',
-  },
-  coverLogo: {
-    width: 100,
-    height: 32,
+  headerLogo: {
+    width: 80,
+    height: 24,
     objectFit: 'contain',
   },
-  pageNumber: {
+  headerBrand: {
     fontSize: 10,
-    color: '#86868b',
+    color: '#6b7280',
   },
-  // Score Section
-  scoreSection: {
+  headerDate: {
+    fontSize: 9,
+    color: '#9ca3af',
+  },
+  // Title section
+  titleSection: {
     marginBottom: 32,
   },
-  scoreRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    marginBottom: 12,
-  },
-  scoreValue: {
-    fontSize: 56,
+  reportTitle: {
+    fontSize: 28,
     fontWeight: 'light',
-    color: '#1d1d1f',
-    letterSpacing: -2,
-  },
-  scoreTrend: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 16,
-    marginBottom: 10,
-  },
-  scoreTrendText: {
-    fontSize: 12,
-    color: '#22c55e',
-  },
-  // Trend Chart
-  trendChartContainer: {
-    height: 60,
-    marginTop: 16,
+    color: '#1f2937',
     marginBottom: 8,
+    letterSpacing: -0.5,
   },
-  chartLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 4,
-  },
-  chartLabel: {
-    fontSize: 8,
-    color: '#86868b',
-  },
-  // Mentions Section
-  mentionsSection: {
-    marginBottom: 32,
-  },
-  mentionsValue: {
-    fontSize: 42,
-    fontWeight: 'light',
-    color: '#1d1d1f',
-    letterSpacing: -1,
-  },
-  mentionsLabel: {
+  reportSubtitle: {
     fontSize: 11,
-    color: '#86868b',
-    marginTop: 4,
+    color: '#6b7280',
   },
-  // Platform Coverage
-  platformSection: {
-    marginBottom: 32,
-  },
-  sectionLabel: {
-    fontSize: 9,
-    color: '#86868b',
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    marginBottom: 12,
-  },
-  platformRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  platformPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f7',
-    borderRadius: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  platformLogo: {
-    width: 16,
-    height: 16,
-    marginRight: 6,
-    borderRadius: 2,
-  },
-  platformName: {
-    fontSize: 10,
-    color: '#1d1d1f',
-    marginRight: 4,
-  },
-  platformMentions: {
-    fontSize: 9,
-    color: '#86868b',
-  },
-  // Summary footer
-  summarySection: {
-    marginTop: 'auto',
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#f5f5f7',
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-  summaryItem: {
-    fontSize: 9,
-    color: '#86868b',
-  },
-  // Content styles
+  // Section block - matches editor SectionBlock
   sectionBlock: {
-    marginBottom: 32,
+    marginBottom: 24,
+    paddingTop: 8,
   },
   sectionType: {
-    fontSize: 10,
-    color: '#86868b',
+    fontSize: 9,
+    color: '#6b7280',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'light',
-    color: '#1d1d1f',
-    marginBottom: 12,
-    letterSpacing: -0.5,
-  },
-  sectionBody: {
-    fontSize: 12,
-    lineHeight: 1.6,
-    color: '#515154',
-  },
-  // Text block
-  textBlock: {
-    marginBottom: 24,
-  },
-  textTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1d1d1f',
+    color: '#1f2937',
     marginBottom: 8,
   },
-  textBody: {
-    fontSize: 12,
+  sectionBody: {
+    fontSize: 11,
     lineHeight: 1.6,
-    color: '#515154',
+    color: '#6b7280',
   },
-  // Stat block
+  // Text block - matches editor TextBlock
+  textBlock: {
+    marginBottom: 20,
+    paddingTop: 8,
+  },
+  textTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#1f2937',
+    marginBottom: 6,
+  },
+  textBody: {
+    fontSize: 11,
+    lineHeight: 1.6,
+    color: '#6b7280',
+  },
+  // Stat block - matches editor StatBlock
   statBlock: {
-    marginBottom: 32,
-    paddingVertical: 20,
+    marginBottom: 24,
+    paddingVertical: 12,
+  },
+  statRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
   },
   statValue: {
-    fontSize: 48,
+    fontSize: 36,
     fontWeight: 'light',
-    color: '#1d1d1f',
-    letterSpacing: -2,
+    color: '#1f2937',
   },
   statLabel: {
-    fontSize: 14,
-    color: '#86868b',
-    marginTop: 8,
+    fontSize: 12,
+    color: '#6b7280',
   },
-  // Quote block
+  // Quote block - matches editor QuoteBlock
   quoteBlock: {
-    marginBottom: 32,
-    paddingLeft: 20,
-    borderLeftWidth: 3,
-    borderLeftColor: '#d2d2d7',
+    marginBottom: 24,
+    paddingLeft: 16,
+    paddingVertical: 12,
+    borderLeftWidth: 2,
+    borderLeftColor: '#d1d5db',
   },
   quoteText: {
-    fontSize: 18,
+    fontSize: 14,
     fontStyle: 'italic',
-    color: '#1d1d1f',
+    color: '#1f2937',
     lineHeight: 1.5,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   quoteAuthor: {
-    fontSize: 12,
-    color: '#86868b',
+    fontSize: 10,
+    color: '#6b7280',
   },
-  // Image block
+  // Image block - matches editor ImageBlock
   imageBlock: {
-    marginBottom: 32,
+    marginBottom: 24,
   },
   image: {
     maxWidth: '100%',
-    maxHeight: 300,
+    maxHeight: 250,
     objectFit: 'contain',
   },
   imageCaption: {
-    fontSize: 11,
-    color: '#86868b',
+    fontSize: 10,
+    color: '#6b7280',
     fontStyle: 'italic',
     marginTop: 8,
-    textAlign: 'center',
   },
   // Footer
   footer: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 24,
     left: 48,
     right: 48,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  footerLogo: {
-    width: 80,
-    height: 24,
-    objectFit: 'contain',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f3f4f6',
   },
   footerBrand: {
-    fontSize: 10,
-    color: '#86868b',
+    fontSize: 9,
+    color: '#9ca3af',
+  },
+  pageNumber: {
+    fontSize: 9,
+    color: '#9ca3af',
   },
 });
 
-// Trend Chart Component using SVG
-const TrendChart = () => (
-  <View style={styles.trendChartContainer}>
-    <Svg width="100%" height="60" viewBox="0 0 400 60">
-      <G>
-        {trendData.map((value, i) => {
-          const barWidth = 400 / trendData.length - 4;
-          const barHeight = (value / 100) * 55;
-          const x = i * (400 / trendData.length) + 2;
-          const y = 55 - barHeight;
-          return (
-            <Rect
-              key={i}
-              x={x}
-              y={y}
-              width={barWidth}
-              height={barHeight}
-              fill="#6366f1"
-              opacity={0.7 + (value / 100) * 0.3}
-              rx={2}
-            />
-          );
-        })}
-      </G>
-    </Svg>
-    <View style={styles.chartLabels}>
-      <Text style={styles.chartLabel}>Jan</Text>
-      <Text style={styles.chartLabel}>Dec</Text>
-    </View>
-  </View>
-);
-
-// Cover Page Component with visual data matching preview
-const CoverPage = ({ 
-  reportTitle, 
-  dateRange, 
-  customLogo, 
-  brandName,
-  showPageNumbers,
-  sections,
-  platforms
-}: { 
-  reportTitle: string;
-  dateRange: { start: Date; end: Date };
-  customLogo?: string;
-  brandName?: string;
-  showPageNumbers: boolean;
-  sections?: SectionData;
-  platforms?: PlatformData[];
-}) => {
-  const formatDate = (date: Date) => 
-    date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-  return (
-    <Page size="A4" style={styles.coverPage}>
-      {/* Header */}
-      <View style={styles.coverHeader}>
-        {customLogo ? (
-          <Image style={styles.coverLogo} src={customLogo} />
-        ) : (
-          <Text style={styles.coverDate}>{brandName}</Text>
-        )}
-        <Text style={styles.coverDate}>
-          {formatDate(dateRange.start)} — {formatDate(dateRange.end)}
-        </Text>
-      </View>
-
-      {/* Title */}
-      <View style={styles.coverContent}>
-        <Text style={styles.coverTitle}>{reportTitle}</Text>
-        <Text style={styles.coverSubtitle}>
-          AI Visibility Report • {brandName || 'Brand Report'}
-        </Text>
-
-        {/* Score Section with Trend Chart */}
-        {sections?.score.enabled && (
-          <View style={styles.scoreSection}>
-            <View style={styles.scoreRow}>
-              <Text style={styles.scoreValue}>87</Text>
-              <View style={styles.scoreTrend}>
-                <Text style={styles.scoreTrendText}>▲ +5 pts</Text>
-              </View>
-            </View>
-            <TrendChart />
-          </View>
-        )}
-
-        {/* Mentions */}
-        {sections?.mentions.enabled && (
-          <View style={styles.mentionsSection}>
-            <Text style={styles.mentionsValue}>12,847</Text>
-            <Text style={styles.mentionsLabel}>total brand mentions across AI platforms</Text>
-          </View>
-        )}
-
-        {/* Platform Coverage with Logos */}
-        {(sections?.platformCoverage.items?.length || 0) > 0 && platforms && (
-          <View style={styles.platformSection}>
-            <Text style={styles.sectionLabel}>Platform Coverage</Text>
-            <View style={styles.platformRow}>
-              {sections?.platformCoverage.items?.slice(0, 5).map((platformId) => {
-                const platform = platforms.find(p => p.id === platformId);
-                if (!platform) return null;
-                const logoUrl = platformLogoUrls[platformId];
-                return (
-                  <View key={platformId} style={styles.platformPill}>
-                    {logoUrl && (
-                      <Image style={styles.platformLogo} src={logoUrl} />
-                    )}
-                    <Text style={styles.platformName}>{platform.name}</Text>
-                    <Text style={styles.platformMentions}>{(platform.mentions / 1000).toFixed(1)}k</Text>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
-        )}
-      </View>
-
-      {/* Summary Footer */}
-      <View style={styles.summarySection}>
-        <View style={styles.summaryRow}>
-          {(sections?.prompts.items?.length || 0) > 0 && (
-            <Text style={styles.summaryItem}>{sections?.prompts.items?.length} prompts</Text>
-          )}
-          {(sections?.products.items?.length || 0) > 0 && (
-            <Text style={styles.summaryItem}>{sections?.products.items?.length} products</Text>
-          )}
-          {(sections?.optimizations.items?.length || 0) > 0 && (
-            <Text style={styles.summaryItem}>{sections?.optimizations.items?.length} optimizations</Text>
-          )}
-          {(sections?.actions.items?.length || 0) > 0 && (
-            <Text style={styles.summaryItem}>{sections?.actions.items?.length} actions</Text>
-          )}
-        </View>
-      </View>
-
-      {/* Page Number */}
-      {showPageNumbers && (
-        <View style={styles.footer}>
-          {customLogo ? (
-            <Image style={styles.footerLogo} src={customLogo} />
-          ) : (
-            <Text style={styles.footerBrand}>{brandName || ''}</Text>
-          )}
-          <Text style={styles.pageNumber}>01</Text>
-        </View>
-      )}
-    </Page>
-  );
-};
-
-// Block Renderers
+// Block Renderers - matching editor exactly
 const SectionBlockPDF = ({ block }: { block: ReportBlock }) => (
   <View style={styles.sectionBlock}>
     {block.content.sectionType && (
@@ -495,8 +201,10 @@ const TextBlockPDF = ({ block }: { block: ReportBlock }) => (
 
 const StatBlockPDF = ({ block }: { block: ReportBlock }) => (
   <View style={styles.statBlock}>
-    <Text style={styles.statValue}>{block.content.statValue}</Text>
-    <Text style={styles.statLabel}>{block.content.statLabel}</Text>
+    <View style={styles.statRow}>
+      <Text style={styles.statValue}>{block.content.statValue}</Text>
+      <Text style={styles.statLabel}>{block.content.statLabel}</Text>
+    </View>
   </View>
 );
 
@@ -538,69 +246,34 @@ const renderBlock = (block: ReportBlock) => {
   }
 };
 
-// Content Page Component
-const ContentPage = ({ 
-  blocks, 
-  pageNumber, 
-  showPageNumbers,
-  customLogo,
-  brandName
-}: { 
-  blocks: ReportBlock[];
-  pageNumber: number;
-  showPageNumbers: boolean;
-  customLogo?: string;
-  brandName?: string;
-}) => (
-  <Page size="A4" style={styles.page}>
-    <View>
-      {blocks.map(block => renderBlock(block))}
-    </View>
-    {showPageNumbers && (
-      <View style={styles.footer} fixed>
-        {customLogo ? (
-          <Image style={styles.footerLogo} src={customLogo} />
-        ) : (
-          <Text style={styles.footerBrand}>{brandName || ''}</Text>
-        )}
-        <Text style={styles.pageNumber}>
-          {String(pageNumber).padStart(2, '0')}
-        </Text>
-      </View>
-    )}
-  </Page>
-);
-
-// Split blocks into pages (rough estimation - about 4-5 blocks per page)
+// Split blocks into pages (rough estimation - about 5-6 blocks per page)
 const splitBlocksIntoPages = (blocks: ReportBlock[]): ReportBlock[][] => {
   const pages: ReportBlock[][] = [];
   let currentPage: ReportBlock[] = [];
   let currentWeight = 0;
 
   blocks.forEach(block => {
-    // Estimate weight based on block type
     let weight = 1;
     switch (block.type) {
       case 'section':
-        weight = 2;
+        weight = 1.5;
         break;
       case 'stat':
-        weight = 1.5;
+        weight = 1.2;
         break;
       case 'quote':
-        weight = 1.5;
+        weight = 1.2;
         break;
       case 'image':
-        weight = 3;
+        weight = 2.5;
         break;
       case 'text':
-        // Estimate based on content length
         const textLength = (block.content.body?.length || 0) + (block.content.title?.length || 0);
-        weight = Math.max(1, Math.min(3, textLength / 200));
+        weight = Math.max(1, Math.min(2.5, textLength / 200));
         break;
     }
 
-    if (currentWeight + weight > 5 && currentPage.length > 0) {
+    if (currentWeight + weight > 6 && currentPage.length > 0) {
       pages.push(currentPage);
       currentPage = [block];
       currentWeight = weight;
@@ -617,30 +290,57 @@ const splitBlocksIntoPages = (blocks: ReportBlock[]): ReportBlock[][] => {
   return pages;
 };
 
-// Main PDF Document
+// Main PDF Document - standardized format matching editor
 const ReportPDFDocument = ({ config }: { config: ReportPDFConfig }) => {
+  const formatDate = (date: Date) => 
+    date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
   const blockPages = splitBlocksIntoPages(config.blocks);
+  const showPageNumbers = config.showPageNumbers !== false;
 
   return (
     <Document>
-      <CoverPage
-        reportTitle={config.reportTitle}
-        dateRange={config.dateRange}
-        customLogo={config.customLogo}
-        brandName={config.brandName}
-        showPageNumbers={config.showPageNumbers}
-        sections={config.sections}
-        platforms={config.platforms}
-      />
-      {blockPages.map((pageBlocks, index) => (
-        <ContentPage
-          key={index}
-          blocks={pageBlocks}
-          pageNumber={index + 2}
-          showPageNumbers={config.showPageNumbers}
-          customLogo={config.customLogo}
-          brandName={config.brandName}
-        />
+      {blockPages.map((pageBlocks, pageIndex) => (
+        <Page key={pageIndex} size="A4" style={styles.page}>
+          {/* Header - only on first page */}
+          {pageIndex === 0 && (
+            <>
+              <View style={styles.header}>
+                {config.customLogo ? (
+                  <Image style={styles.headerLogo} src={config.customLogo} />
+                ) : (
+                  <Text style={styles.headerBrand}>{config.brandName || 'Report'}</Text>
+                )}
+                <Text style={styles.headerDate}>
+                  {formatDate(config.dateRange.start)} — {formatDate(config.dateRange.end)}
+                </Text>
+              </View>
+
+              {/* Title */}
+              <View style={styles.titleSection}>
+                <Text style={styles.reportTitle}>{config.reportTitle}</Text>
+                <Text style={styles.reportSubtitle}>
+                  AI Visibility Report • {config.brandName || 'Brand'}
+                </Text>
+              </View>
+            </>
+          )}
+
+          {/* Content blocks */}
+          <View>
+            {pageBlocks.map(block => renderBlock(block))}
+          </View>
+
+          {/* Footer with page number */}
+          {showPageNumbers && (
+            <View style={styles.footer} fixed>
+              <Text style={styles.footerBrand}>{config.brandName || ''}</Text>
+              <Text style={styles.pageNumber}>
+                Page {pageIndex + 1} of {blockPages.length}
+              </Text>
+            </View>
+          )}
+        </Page>
       ))}
     </Document>
   );
@@ -666,4 +366,4 @@ export const downloadReportPDF = async (config: ReportPDFConfig, filename?: stri
   URL.revokeObjectURL(url);
 };
 
-export type { ReportPDFConfig, SectionData, PlatformData };
+export type { ReportPDFConfig };
