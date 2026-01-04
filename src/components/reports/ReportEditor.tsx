@@ -571,24 +571,44 @@ interface InlineFormattingControlsProps {
   styles: BlockStyles;
   onUpdate: (styles: Partial<BlockStyles>) => void;
   blockType: string;
+  onEdit: () => void;
+  onDelete: () => void;
+  showEdit?: boolean;
 }
 
-const InlineFormattingControls = ({ styles, onUpdate, blockType }: InlineFormattingControlsProps) => (
-  <div className="flex items-center gap-1 p-1 bg-white rounded border border-gray-200 shadow-sm">
+const InlineFormattingControls = ({ styles, onUpdate, blockType, onEdit, onDelete, showEdit = true }: InlineFormattingControlsProps) => (
+  <div className="flex items-center gap-0.5 p-0.5 bg-white/95 backdrop-blur-sm rounded-md border border-gray-200/80 shadow-sm">
     <button 
       onClick={() => onUpdate({ fontSize: Math.max(8, styles.fontSize - 1) })}
-      className="p-1 rounded hover:bg-gray-100"
+      className="p-1 rounded hover:bg-gray-100 transition-colors"
       title="Decrease font size"
     >
-      <Minus className="w-3 h-3" />
+      <Minus className="w-3 h-3 text-gray-600" />
     </button>
-    <span className="text-[9px] text-gray-500 w-6 text-center">{styles.fontSize}</span>
+    <span className="text-[10px] font-medium text-gray-600 w-5 text-center tabular-nums">{styles.fontSize}</span>
     <button 
       onClick={() => onUpdate({ fontSize: Math.min(blockType === 'stat' ? 48 : 24, styles.fontSize + 1) })}
-      className="p-1 rounded hover:bg-gray-100"
+      className="p-1 rounded hover:bg-gray-100 transition-colors"
       title="Increase font size"
     >
-      <Plus className="w-3 h-3" />
+      <Plus className="w-3 h-3 text-gray-600" />
+    </button>
+    <div className="w-px h-4 bg-gray-200 mx-0.5" />
+    {showEdit && (
+      <button
+        onClick={(e) => { e.stopPropagation(); onEdit(); }}
+        className="p-1 rounded hover:bg-gray-100 transition-colors"
+        title="Edit"
+      >
+        <Edit3 className="w-3 h-3 text-gray-600" />
+      </button>
+    )}
+    <button
+      onClick={(e) => { e.stopPropagation(); onDelete(); }}
+      className="p-1 rounded hover:bg-red-50 transition-colors"
+      title="Delete"
+    >
+      <Trash2 className="w-3 h-3 text-gray-600 hover:text-red-500" />
     </button>
   </div>
 );
@@ -667,26 +687,15 @@ const PageBlock = ({
 
       {/* Controls - right side */}
       {!isEditing && (
-        <div className="absolute -right-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center gap-1">
+        <div className="absolute -right-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity">
           <InlineFormattingControls 
             styles={styles} 
             onUpdate={onUpdateStyles} 
             blockType={block.type}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            showEdit={block.type !== 'section'}
           />
-          {block.type !== 'section' && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onEdit(); }}
-              className="p-1 rounded bg-white border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors"
-            >
-              <Edit3 className="w-3 h-3" />
-            </button>
-          )}
-          <button
-            onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            className="p-1 rounded bg-white border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-300 transition-colors"
-          >
-            <Trash2 className="w-3 h-3" />
-          </button>
         </div>
       )}
 
