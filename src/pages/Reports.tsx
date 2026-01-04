@@ -645,11 +645,7 @@ const Reports = () => {
         reportTitle={reportTitle}
         onTitleChange={setReportTitle}
         isExporting={isExporting}
-        sections={pdfSections}
-        platforms={platforms}
         dateRange={{ start: startDate, end: endDate }}
-        brandName="Nike"
-        customLogo={customLogo}
       />
     );
   }
