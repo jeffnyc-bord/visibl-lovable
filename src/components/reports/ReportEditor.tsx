@@ -15,7 +15,8 @@ import {
   Check,
   Loader2,
   Settings2,
-  Minus
+  Minus,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -102,6 +103,28 @@ const ReportEditor = ({
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [selectedBlockIds, setSelectedBlockIds] = useState<Set<string>>(new Set());
+
+  // Toggle block selection (shift-click for multi-select)
+  const toggleBlockSelection = (blockId: string, shiftKey: boolean) => {
+    setSelectedBlockIds(prev => {
+      const newSet = new Set(shiftKey ? prev : []);
+      if (newSet.has(blockId)) {
+        newSet.delete(blockId);
+      } else {
+        newSet.add(blockId);
+      }
+      return newSet;
+    });
+  };
+
+  const clearSelection = () => {
+    setSelectedBlockIds(new Set());
+  };
+
+  const selectAll = () => {
+    setSelectedBlockIds(new Set(blocks.map(b => b.id)));
+  };
 
   const moveBlock = (index: number, direction: 'up' | 'down') => {
     const newBlocks = [...blocks];
@@ -113,6 +136,16 @@ const ReportEditor = ({
 
   const deleteBlock = (id: string) => {
     onBlocksChange(blocks.filter(b => b.id !== id));
+    setSelectedBlockIds(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(id);
+      return newSet;
+    });
+  };
+
+  const deleteSelectedBlocks = () => {
+    onBlocksChange(blocks.filter(b => !selectedBlockIds.has(b.id)));
+    setSelectedBlockIds(new Set());
   };
 
   const updateBlock = (id: string, content: Partial<ReportBlock['content']>) => {
@@ -124,6 +157,15 @@ const ReportEditor = ({
   const updateBlockStyles = (id: string, styles: Partial<BlockStyles>) => {
     onBlocksChange(blocks.map(b => 
       b.id === id ? { ...b, styles: { ...getBlockStyles(b), ...styles } } : b
+    ));
+  };
+
+  // Update styles for all selected blocks
+  const updateSelectedBlocksStyles = (styles: Partial<BlockStyles>) => {
+    onBlocksChange(blocks.map(b => 
+      selectedBlockIds.has(b.id) 
+        ? { ...b, styles: { ...getBlockStyles(b), ...styles } } 
+        : b
     ));
   };
 
@@ -263,6 +305,42 @@ const ReportEditor = ({
           </button>
 
           <div className="flex items-center gap-3">
+            {/* Selection toolbar */}
+            {selectedBlockIds.size > 0 ? (
+              <div className="flex items-center gap-2 bg-primary/10 rounded-full px-3 py-1.5">
+                <span className="text-xs text-primary font-medium">
+                  {selectedBlockIds.size} selected
+                </span>
+                <div className="flex items-center gap-1 border-l border-primary/20 pl-2 ml-1">
+                  <BatchFormattingControls 
+                    onUpdateStyles={updateSelectedBlocksStyles}
+                    selectedCount={selectedBlockIds.size}
+                  />
+                  <button
+                    onClick={deleteSelectedBlocks}
+                    className="p-1 text-destructive hover:bg-destructive/10 rounded"
+                    title="Delete selected"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={clearSelection}
+                    className="p-1 text-muted-foreground hover:text-foreground rounded"
+                    title="Clear selection"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={selectAll}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                Select all
+              </button>
+            )}
+
             <span className="text-xs text-muted-foreground">
               {pages.length} page{pages.length !== 1 ? 's' : ''}
             </span>
@@ -286,6 +364,15 @@ const ReportEditor = ({
           </div>
         </div>
       </header>
+
+      {/* Selection hint */}
+      {selectedBlockIds.size === 0 && blocks.length > 0 && (
+        <div className="bg-muted/50 border-b border-border py-1.5 text-center">
+          <span className="text-xs text-muted-foreground">
+            Click blocks to select. Hold <kbd className="bg-background px-1 py-0.5 rounded text-[10px] border border-border">Shift</kbd> to multi-select.
+          </span>
+        </div>
+      )}
 
       {/* Page Canvas */}
       <div className="flex-1 overflow-auto py-8 px-4">
@@ -353,7 +440,7 @@ const ReportEditor = ({
                     return (
                       <div
                         key={block.id}
-                        draggable
+                        draggable={!selectedBlockIds.has(block.id)}
                         onDragStart={() => handleDragStart(globalIndex)}
                         onDragOver={(e) => handleDragOver(e, globalIndex)}
                         onDragEnd={handleDragEnd}
@@ -367,6 +454,8 @@ const ReportEditor = ({
                           block={block}
                           styles={styles}
                           isEditing={editingBlockId === block.id}
+                          isSelected={selectedBlockIds.has(block.id)}
+                          onSelect={(shiftKey) => toggleBlockSelection(block.id, shiftKey)}
                           onEdit={() => setEditingBlockId(block.id)}
                           onSave={() => setEditingBlockId(null)}
                           onUpdate={(content) => updateBlock(block.id, content)}
@@ -547,11 +636,108 @@ const FormattingControls = ({ styles, onUpdate, blockType }: FormattingControlsP
   </Popover>
 );
 
+// Batch Formatting Controls for multi-select
+interface BatchFormattingControlsProps {
+  onUpdateStyles: (styles: Partial<BlockStyles>) => void;
+  selectedCount: number;
+}
+
+const BatchFormattingControls = ({ onUpdateStyles, selectedCount }: BatchFormattingControlsProps) => (
+  <Popover>
+    <PopoverTrigger asChild>
+      <button className="p-1 text-primary hover:bg-primary/10 rounded" title="Format selected">
+        <Settings2 className="w-3.5 h-3.5" />
+      </button>
+    </PopoverTrigger>
+    <PopoverContent className="w-64 p-3" align="center">
+      <div className="space-y-4">
+        <p className="text-xs text-muted-foreground text-center border-b border-border pb-2">
+          Format {selectedCount} selected block{selectedCount !== 1 ? 's' : ''}
+        </p>
+        
+        <div>
+          <label className="text-[10px] text-muted-foreground uppercase tracking-wider block mb-2">Font Size</label>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => onUpdateStyles({ fontSize: 9 })}
+              className="flex-1 py-1.5 text-[10px] rounded border border-border hover:bg-muted"
+            >
+              Small
+            </button>
+            <button 
+              onClick={() => onUpdateStyles({ fontSize: 11 })}
+              className="flex-1 py-1.5 text-[10px] rounded border border-border hover:bg-muted"
+            >
+              Medium
+            </button>
+            <button 
+              onClick={() => onUpdateStyles({ fontSize: 14 })}
+              className="flex-1 py-1.5 text-[10px] rounded border border-border hover:bg-muted"
+            >
+              Large
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-[10px] text-muted-foreground uppercase tracking-wider block mb-2">Line Height</label>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => onUpdateStyles({ lineHeight: 1.2 })}
+              className="flex-1 py-1.5 text-[10px] rounded border border-border hover:bg-muted"
+            >
+              Tight
+            </button>
+            <button 
+              onClick={() => onUpdateStyles({ lineHeight: 1.5 })}
+              className="flex-1 py-1.5 text-[10px] rounded border border-border hover:bg-muted"
+            >
+              Normal
+            </button>
+            <button 
+              onClick={() => onUpdateStyles({ lineHeight: 1.8 })}
+              className="flex-1 py-1.5 text-[10px] rounded border border-border hover:bg-muted"
+            >
+              Relaxed
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-[10px] text-muted-foreground uppercase tracking-wider block mb-2">Spacing After</label>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => onUpdateStyles({ marginBottom: 6 })}
+              className="flex-1 py-1.5 text-[10px] rounded border border-border hover:bg-muted"
+            >
+              Compact
+            </button>
+            <button 
+              onClick={() => onUpdateStyles({ marginBottom: 12 })}
+              className="flex-1 py-1.5 text-[10px] rounded border border-border hover:bg-muted"
+            >
+              Normal
+            </button>
+            <button 
+              onClick={() => onUpdateStyles({ marginBottom: 20 })}
+              className="flex-1 py-1.5 text-[10px] rounded border border-border hover:bg-muted"
+            >
+              Spacious
+            </button>
+          </div>
+        </div>
+      </div>
+    </PopoverContent>
+  </Popover>
+);
+
 // Page Block Renderer
 interface PageBlockProps {
   block: ReportBlock;
   styles: BlockStyles;
   isEditing: boolean;
+  isSelected: boolean;
+  onSelect: (shiftKey: boolean) => void;
   onEdit: () => void;
   onSave: () => void;
   onUpdate: (content: Partial<ReportBlock['content']>) => void;
@@ -568,6 +754,8 @@ const PageBlock = ({
   block,
   styles,
   isEditing,
+  isSelected,
+  onSelect,
   onEdit,
   onSave,
   onUpdate,
@@ -592,11 +780,23 @@ const PageBlock = ({
     }
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    // Don't select if clicking on controls or editing
+    if (isEditing) return;
+    e.stopPropagation();
+    onSelect(e.shiftKey);
+  };
+
   return (
-    <div className={cn(
-      "relative rounded transition-all",
-      isEditing ? "ring-1 ring-primary bg-blue-50/30 p-2 -mx-2" : "hover:bg-gray-50/50"
-    )}>
+    <div 
+      onClick={handleClick}
+      className={cn(
+        "relative rounded transition-all cursor-pointer",
+        isEditing && "ring-1 ring-primary bg-blue-50/30 p-2 -mx-2",
+        isSelected && !isEditing && "ring-2 ring-primary/50 bg-primary/5",
+        !isEditing && !isSelected && "hover:bg-gray-50/50"
+      )}
+    >
       {/* Controls - left side */}
       {!isEditing && (
         <div className="absolute -left-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center gap-0.5">
