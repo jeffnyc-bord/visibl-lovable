@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
-import { TrendingUp, FileText, ChevronDown, ChevronUp, ArrowUpRight, Sparkles, Check } from "lucide-react";
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, PieChart, Pie, Cell } from "recharts";
+import { TrendingUp, FileText, ChevronDown, ChevronUp, ArrowUpRight, Sparkles, Check, BarChart3, PieChartIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
@@ -87,6 +87,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
   const { toast } = useToast();
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
+  const [platformChartType, setPlatformChartType] = useState<'bar' | 'pie'>('bar');
   
   // Upgrade sheet state
   const [upgradeSheetOpen, setUpgradeSheetOpen] = useState(false);
@@ -657,64 +658,167 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
         >
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-light text-foreground">Platform Distribution</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowAllPlatforms(!showAllPlatforms)}
-              className="text-muted-foreground text-xs"
-            >
-              {showAllPlatforms ? "Show Less" : "Show All"}
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* Chart Type Toggle */}
+              <div className="flex items-center bg-muted/30 rounded-lg p-0.5">
+                <button
+                  onClick={() => setPlatformChartType('bar')}
+                  className={cn(
+                    "p-1.5 rounded-md transition-all duration-200",
+                    platformChartType === 'bar' 
+                      ? "bg-background shadow-sm text-foreground" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <BarChart3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setPlatformChartType('pie')}
+                  className={cn(
+                    "p-1.5 rounded-md transition-all duration-200",
+                    platformChartType === 'pie' 
+                      ? "bg-background shadow-sm text-foreground" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <PieChartIcon className="w-4 h-4" />
+                </button>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAllPlatforms(!showAllPlatforms)}
+                className="text-muted-foreground text-xs"
+              >
+                {showAllPlatforms ? "Show Less" : "Show All"}
+              </Button>
+            </div>
           </div>
 
-          {/* Horizontal Apple Health-style bars */}
-          <div className="space-y-5">
-            {displayedPlatforms.slice(0, 4).map((platform, index) => {
-              const maxMentions = Math.max(...displayedPlatforms.map(p => p.mentions));
-              const percentage = (platform.mentions / maxMentions) * 100;
-              
-              return (
-                <div 
-                  key={platform.platform}
-                  className="group cursor-pointer"
-                  onMouseEnter={() => setHoveredSegment(index)}
-                  onMouseLeave={() => setHoveredSegment(null)}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      <img src={platform.logo} alt={platform.platform} className="w-5 h-5 object-contain" />
-                      <span className="text-sm text-foreground">{platform.platform}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <span className="text-sm font-medium text-foreground tabular-nums">{platform.mentions}</span>
-                        <span className="text-xs text-muted-foreground ml-1">mentions</span>
+          {platformChartType === 'bar' ? (
+            /* Horizontal Apple Health-style bars */
+            <div className="space-y-5">
+              {displayedPlatforms.slice(0, 4).map((platform, index) => {
+                const maxMentions = Math.max(...displayedPlatforms.map(p => p.mentions));
+                const percentage = (platform.mentions / maxMentions) * 100;
+                
+                return (
+                  <div 
+                    key={platform.platform}
+                    className="group cursor-pointer"
+                    onMouseEnter={() => setHoveredSegment(index)}
+                    onMouseLeave={() => setHoveredSegment(null)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <img src={platform.logo} alt={platform.platform} className="w-5 h-5 object-contain" />
+                        <span className="text-sm text-foreground">{platform.platform}</span>
                       </div>
-                      <span 
-                        className="text-xs px-1.5 py-0.5 rounded-full"
-                        style={{
-                          background: 'rgba(34, 197, 94, 0.1)',
-                          color: 'rgb(22, 163, 74)'
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <span className="text-sm font-medium text-foreground tabular-nums">{platform.mentions}</span>
+                          <span className="text-xs text-muted-foreground ml-1">mentions</span>
+                        </div>
+                        <span 
+                          className="text-xs px-1.5 py-0.5 rounded-full"
+                          style={{
+                            background: 'rgba(34, 197, 94, 0.1)',
+                            color: 'rgb(22, 163, 74)'
+                          }}
+                        >
+                          {platform.trend}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full transition-all duration-500 ease-out"
+                        style={{ 
+                          width: `${percentage}%`,
+                          background: PLATFORM_COLORS[index % PLATFORM_COLORS.length],
+                          opacity: hoveredSegment === null || hoveredSegment === index ? 1 : 0.4
                         }}
-                      >
-                        {platform.trend}
-                      </span>
+                      />
                     </div>
                   </div>
-                  <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full rounded-full transition-all duration-500 ease-out"
-                      style={{ 
-                        width: `${percentage}%`,
-                        background: PLATFORM_COLORS[index % PLATFORM_COLORS.length],
-                        opacity: hoveredSegment === null || hoveredSegment === index ? 1 : 0.4
+                );
+              })}
+            </div>
+          ) : (
+            /* Pie Chart View */
+            <div className="flex items-center gap-8">
+              <div className="flex-shrink-0">
+                <ResponsiveContainer width={180} height={180}>
+                  <PieChart>
+                    <Pie
+                      data={displayedPlatforms.slice(0, 4).map((p, i) => ({
+                        name: p.platform,
+                        value: p.mentions,
+                        color: PLATFORM_COLORS[i % PLATFORM_COLORS.length]
+                      }))}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={3}
+                      dataKey="value"
+                      onMouseEnter={(_, index) => setHoveredSegment(index)}
+                      onMouseLeave={() => setHoveredSegment(null)}
+                    >
+                      {displayedPlatforms.slice(0, 4).map((_, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={PLATFORM_COLORS[index % PLATFORM_COLORS.length]}
+                          opacity={hoveredSegment === null || hoveredSegment === index ? 1 : 0.4}
+                          style={{ transition: 'opacity 0.2s ease' }}
+                        />
+                      ))}
+                    </Pie>
+                    <RechartsTooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--background) / 0.95)',
+                        backdropFilter: 'blur(8px)',
+                        border: '1px solid hsl(var(--border) / 0.3)',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                        padding: '10px 14px'
                       }}
+                      formatter={(value: number) => [`${value} mentions`, '']}
                     />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex-1 space-y-3">
+                {displayedPlatforms.slice(0, 4).map((platform, index) => {
+                  const totalMentions = displayedPlatforms.slice(0, 4).reduce((sum, p) => sum + p.mentions, 0);
+                  const percentage = ((platform.mentions / totalMentions) * 100).toFixed(1);
+                  
+                  return (
+                    <div 
+                      key={platform.platform}
+                      className="flex items-center justify-between cursor-pointer transition-opacity duration-200"
+                      style={{ opacity: hoveredSegment === null || hoveredSegment === index ? 1 : 0.4 }}
+                      onMouseEnter={() => setHoveredSegment(index)}
+                      onMouseLeave={() => setHoveredSegment(null)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-3 h-3 rounded-full"
+                          style={{ background: PLATFORM_COLORS[index % PLATFORM_COLORS.length] }}
+                        />
+                        <img src={platform.logo} alt={platform.platform} className="w-4 h-4 object-contain" />
+                        <span className="text-sm text-foreground">{platform.platform}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-foreground tabular-nums">{percentage}%</span>
+                        <span className="text-xs text-muted-foreground">({platform.mentions})</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Visibility Trend */}
