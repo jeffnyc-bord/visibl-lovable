@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, FileText, ChevronDown, ChevronUp, ArrowUpRight, Sparkles, Check, BarChart3, PieChartIcon } from "lucide-react";
+import { TrendingUp, FileText, ChevronDown, ChevronUp, ArrowUpRight, Sparkles, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ReportExportDialog } from "@/components/ui/report-export-dialog";
 import { AIInsightsModal } from "@/components/ui/ai-insights-modal";
@@ -658,51 +658,64 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
           style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}
         >
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-light text-foreground">Platform Distribution</h2>
-            <div className="flex items-center gap-3">
-              {/* Chart Type Toggle - Sleek Pill */}
-              <div className="relative flex items-center h-7 bg-muted/20 rounded-full p-0.5">
-                <motion.div
-                  className="absolute h-6 rounded-full bg-foreground"
-                  initial={false}
-                  animate={{
-                    x: platformChartType === 'bar' ? 2 : 30,
-                    width: 26
-                  }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
+            <div className="flex items-center gap-6">
+              <h2 className="text-xl font-light text-foreground">Platform Distribution</h2>
+              {/* Segmented Text Tabs */}
+              <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPlatformChartType('bar')}
-                  className="relative z-10 w-7 h-6 flex items-center justify-center"
+                  className="relative px-3 py-1"
                 >
-                  <BarChart3 
+                  <span 
                     className={cn(
-                      "w-3.5 h-3.5 transition-colors duration-200",
-                      platformChartType === 'bar' ? "text-background" : "text-muted-foreground"
-                    )} 
-                  />
+                      "text-sm transition-colors duration-200",
+                      platformChartType === 'bar' 
+                        ? "text-foreground" 
+                        : "text-muted-foreground hover:text-foreground/70"
+                    )}
+                  >
+                    Bars
+                  </span>
+                  {platformChartType === 'bar' && (
+                    <motion.div
+                      layoutId="chartTabIndicator"
+                      className="absolute bottom-0 left-3 right-3 h-[1.5px] bg-foreground"
+                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    />
+                  )}
                 </button>
                 <button
                   onClick={() => setPlatformChartType('pie')}
-                  className="relative z-10 w-7 h-6 flex items-center justify-center"
+                  className="relative px-3 py-1"
                 >
-                  <PieChartIcon 
+                  <span 
                     className={cn(
-                      "w-3.5 h-3.5 transition-colors duration-200",
-                      platformChartType === 'pie' ? "text-background" : "text-muted-foreground"
-                    )} 
-                  />
+                      "text-sm transition-colors duration-200",
+                      platformChartType === 'pie' 
+                        ? "text-foreground" 
+                        : "text-muted-foreground hover:text-foreground/70"
+                    )}
+                  >
+                    Distribution
+                  </span>
+                  {platformChartType === 'pie' && (
+                    <motion.div
+                      layoutId="chartTabIndicator"
+                      className="absolute bottom-0 left-3 right-3 h-[1.5px] bg-foreground"
+                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    />
+                  )}
                 </button>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAllPlatforms(!showAllPlatforms)}
-                className="text-muted-foreground text-xs"
-              >
-                {showAllPlatforms ? "Show Less" : "Show All"}
-              </Button>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowAllPlatforms(!showAllPlatforms)}
+              className="text-muted-foreground text-xs"
+            >
+              {showAllPlatforms ? "Show Less" : "Show All"}
+            </Button>
           </div>
 
           <AnimatePresence mode="wait">
