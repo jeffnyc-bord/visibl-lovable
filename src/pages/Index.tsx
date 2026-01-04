@@ -33,6 +33,7 @@ import { Settings as SettingsPage } from "@/pages/Settings";
 import { DashboardSkeleton, ChartWidgetSkeleton, ScorecardSkeleton, TableSkeleton, WidgetSkeleton } from "@/components/ui/dashboard-skeleton";
 import { FullDashboardError, WidgetError, EmptyState, NoAIVisibilityEmpty } from "@/components/ui/error-states";
 import { BrandLoadingCard } from "@/components/ui/brand-loading-card";
+import { BrandEmpowermentModal } from "@/components/ui/brand-empowerment-modal";
 import { DeveloperControls } from "@/components/ui/developer-controls";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { StatusIndicators } from "@/components/ui/status-indicators";
@@ -258,6 +259,7 @@ const Index = () => {
   const [returnToProductId, setReturnToProductId] = useState<string | null>(null);
   const [returnToProductName, setReturnToProductName] = useState<string | null>(null);
   const [previousScrollPosition, setPreviousScrollPosition] = useState<number>(0);
+  const [showDevEmpowermentModal, setShowDevEmpowermentModal] = useState(false);
 
   // Check for tab parameter in URL on component mount
   useEffect(() => {
@@ -482,6 +484,14 @@ const Index = () => {
         subscriptionLimits={limits}
         showAdminDashboard={showAdminDashboard}
         onShowAdminDashboard={setShowAdminDashboard}
+        onTriggerEmpowermentModal={() => setShowDevEmpowermentModal(true)}
+      />
+      
+      {/* Brand Empowerment Modal (Dev Trigger) */}
+      <BrandEmpowermentModal
+        isOpen={showDevEmpowermentModal}
+        brandName="Sample Brand"
+        onComplete={() => setShowDevEmpowermentModal(false)}
       />
       
       {/* Admin Dashboard Overlay */}
