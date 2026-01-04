@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Shield, ArrowRight } from "lucide-react"
+import { Shield, ArrowRight, Plus, X } from "lucide-react"
 import boardLabsIcon from "@/assets/board_labs_icon.png"
 
 const corePrompts = [
@@ -16,6 +16,29 @@ const corePrompts = [
   "Eco-friendly workout clothing options",
 ]
 
+// Shimmer text component for loading effect
+const ShimmerText = ({ children }: { children: React.ReactNode }) => (
+  <span className="relative inline-block">
+    <span className="relative z-10">{children}</span>
+    <span 
+      className="absolute inset-0 z-20 overflow-hidden"
+      style={{
+        background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%)',
+        backgroundSize: '200% 100%',
+        animation: 'shimmer 2s infinite linear',
+        WebkitBackgroundClip: 'text',
+        backgroundClip: 'text',
+      }}
+    />
+    <style>{`
+      @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    `}</style>
+  </span>
+)
+
 interface BrandEmpowermentModalProps {
   isOpen: boolean
   brandName?: string
@@ -29,19 +52,49 @@ export function BrandEmpowermentModal({
 }: BrandEmpowermentModalProps) {
   const [activeIndex, setActiveIndex] = useState(-1)
   const [completedCount, setCompletedCount] = useState(0)
-  const [phase, setPhase] = useState<'input' | 'prompts' | 'analyzing' | 'preview'>('input')
+  const [phase, setPhase] = useState<'input' | 'profile' | 'invite' | 'prompts' | 'analyzing' | 'preview'>('input')
   
   // Brand input state
   const [brandName, setBrandName] = useState(initialBrandName)
   const [websiteUrl, setWebsiteUrl] = useState("")
-  const [inputFocused, setInputFocused] = useState<'brand' | 'website' | null>(null)
+  const [inputFocused, setInputFocused] = useState<'brand' | 'website' | 'name' | 'role' | 'email' | null>(null)
+
+  // Profile state
+  const [userName, setUserName] = useState("")
+  const [userRole, setUserRole] = useState("")
+
+  // Invite state
+  const [inviteEmails, setInviteEmails] = useState<string[]>([])
+  const [currentEmail, setCurrentEmail] = useState("")
 
   const canContinue = brandName.trim().length > 0
+  const canContinueProfile = userName.trim().length > 0
 
   const handleStartAnalysis = () => {
     if (canContinue) {
-      setPhase('prompts')
+      setPhase('profile')
     }
+  }
+
+  const handleContinueToInvite = () => {
+    if (canContinueProfile) {
+      setPhase('invite')
+    }
+  }
+
+  const handleStartPrompts = () => {
+    setPhase('prompts')
+  }
+
+  const handleAddEmail = () => {
+    if (currentEmail.trim() && currentEmail.includes('@')) {
+      setInviteEmails([...inviteEmails, currentEmail.trim()])
+      setCurrentEmail("")
+    }
+  }
+
+  const handleRemoveEmail = (index: number) => {
+    setInviteEmails(inviteEmails.filter((_, i) => i !== index))
   }
 
   useEffect(() => {
@@ -51,6 +104,10 @@ export function BrandEmpowermentModal({
       setPhase('input')
       setBrandName(initialBrandName)
       setWebsiteUrl("")
+      setUserName("")
+      setUserRole("")
+      setInviteEmails([])
+      setCurrentEmail("")
       return
     }
   }, [isOpen, initialBrandName])
@@ -302,6 +359,414 @@ export function BrandEmpowermentModal({
               We'll confirm your brand before scanning 40+ AI platforms
             </motion.p>
           </motion.div>
+        ) : phase === 'profile' ? (
+          <motion.div
+            key="profile"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-md mx-auto px-8"
+          >
+            {/* Logo */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center mb-12"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+                <img 
+                  src={boardLabsIcon} 
+                  alt="Board Labs"
+                  className="w-7 h-7 object-contain brightness-0 invert"
+                />
+              </div>
+            </motion.div>
+
+            {/* Title */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-center mb-3"
+              style={{
+                fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                fontWeight: 300,
+                fontSize: '2.25rem',
+                color: '#1D1D1F',
+                letterSpacing: '-0.02em',
+                lineHeight: 1.2
+              }}
+            >
+              A little about you
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="text-center mb-10"
+              style={{
+                fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                fontWeight: 400,
+                fontSize: '1.0625rem',
+                color: '#86868B',
+                letterSpacing: '-0.01em'
+              }}
+            >
+              Help us personalize your experience
+            </motion.p>
+
+            {/* Input Fields */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="space-y-5"
+            >
+              {/* Name Input */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  onFocus={() => setInputFocused('name')}
+                  onBlur={() => setInputFocused(null)}
+                  placeholder=" "
+                  className="peer w-full outline-none transition-all duration-300"
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '1.0625rem',
+                    color: '#1D1D1F',
+                    letterSpacing: '-0.01em',
+                    padding: '1.5rem 0 0.5rem 0',
+                    borderRadius: 0,
+                    border: 'none',
+                    borderBottom: `1.5px solid ${inputFocused === 'name' ? '#1D1D1F' : '#D1D1D6'}`,
+                    backgroundColor: 'transparent'
+                  }}
+                />
+                <label
+                  className="absolute left-0 transition-all duration-200 pointer-events-none"
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 400,
+                    fontSize: userName || inputFocused === 'name' ? '0.75rem' : '1.0625rem',
+                    color: inputFocused === 'name' ? '#1D1D1F' : '#86868B',
+                    letterSpacing: '-0.01em',
+                    top: userName || inputFocused === 'name' ? '0' : '1rem',
+                    transform: 'translateY(0)'
+                  }}
+                >
+                  Your name
+                </label>
+              </div>
+
+              {/* Role Input */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={userRole}
+                  onChange={(e) => setUserRole(e.target.value)}
+                  onFocus={() => setInputFocused('role')}
+                  onBlur={() => setInputFocused(null)}
+                  placeholder=" "
+                  className="peer w-full outline-none transition-all duration-300"
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '1.0625rem',
+                    color: '#1D1D1F',
+                    letterSpacing: '-0.01em',
+                    padding: '1.5rem 0 0.5rem 0',
+                    borderRadius: 0,
+                    border: 'none',
+                    borderBottom: `1.5px solid ${inputFocused === 'role' ? '#1D1D1F' : '#D1D1D6'}`,
+                    backgroundColor: 'transparent'
+                  }}
+                />
+                <label
+                  className="absolute left-0 transition-all duration-200 pointer-events-none"
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 400,
+                    fontSize: userRole || inputFocused === 'role' ? '0.75rem' : '1.0625rem',
+                    color: inputFocused === 'role' ? '#1D1D1F' : '#86868B',
+                    letterSpacing: '-0.01em',
+                    top: userRole || inputFocused === 'role' ? '0' : '1rem',
+                    transform: 'translateY(0)'
+                  }}
+                >
+                  Role <span style={{ color: '#AEAEB2', fontWeight: 400 }}>(optional)</span>
+                </label>
+              </div>
+            </motion.div>
+
+            {/* CTA Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-12"
+            >
+              <button
+                onClick={handleContinueToInvite}
+                disabled={!canContinueProfile}
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl transition-all duration-200"
+                style={{
+                  fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '1.0625rem',
+                  letterSpacing: '-0.01em',
+                  color: canContinueProfile ? '#FFFFFF' : '#86868B',
+                  background: canContinueProfile ? '#1D1D1F' : '#F5F5F7',
+                  cursor: canContinueProfile ? 'pointer' : 'not-allowed'
+                }}
+                onMouseEnter={(e) => {
+                  if (canContinueProfile) {
+                    e.currentTarget.style.background = '#000000'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (canContinueProfile) {
+                    e.currentTarget.style.background = '#1D1D1F'
+                  }
+                }}
+              >
+                Continue
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </motion.div>
+          </motion.div>
+        ) : phase === 'invite' ? (
+          <motion.div
+            key="invite"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-md mx-auto px-8"
+          >
+            {/* Logo */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center mb-12"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+                <img 
+                  src={boardLabsIcon} 
+                  alt="Board Labs"
+                  className="w-7 h-7 object-contain brightness-0 invert"
+                />
+              </div>
+            </motion.div>
+
+            {/* Title */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-center mb-3"
+              style={{
+                fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                fontWeight: 300,
+                fontSize: '2.25rem',
+                color: '#1D1D1F',
+                letterSpacing: '-0.02em',
+                lineHeight: 1.2
+              }}
+            >
+              Invite your team
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="text-center mb-10"
+              style={{
+                fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                fontWeight: 400,
+                fontSize: '1.0625rem',
+                color: '#86868B',
+                letterSpacing: '-0.01em'
+              }}
+            >
+              Collaborate with teammates on {displayBrandName}
+            </motion.p>
+
+            {/* Email Input */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="space-y-4"
+            >
+              {/* Added Emails */}
+              {inviteEmails.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {inviteEmails.map((email, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+                      style={{
+                        backgroundColor: '#F5F5F7',
+                        fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                        fontSize: '0.875rem',
+                        color: '#1D1D1F'
+                      }}
+                    >
+                      <span>{email}</span>
+                      <button
+                        onClick={() => handleRemoveEmail(index)}
+                        className="w-4 h-4 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors"
+                      >
+                        <X className="w-3 h-3" style={{ color: '#86868B' }} />
+                      </button>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {/* Email Input Field */}
+              <div className="relative flex items-center gap-3">
+                <div className="flex-1 relative">
+                  <input
+                    type="email"
+                    value={currentEmail}
+                    onChange={(e) => setCurrentEmail(e.target.value)}
+                    onFocus={() => setInputFocused('email')}
+                    onBlur={() => setInputFocused(null)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        handleAddEmail()
+                      }
+                    }}
+                    placeholder=" "
+                    className="peer w-full outline-none transition-all duration-300"
+                    style={{
+                      fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '1.0625rem',
+                      color: '#1D1D1F',
+                      letterSpacing: '-0.01em',
+                      padding: '1.5rem 0 0.5rem 0',
+                      borderRadius: 0,
+                      border: 'none',
+                      borderBottom: `1.5px solid ${inputFocused === 'email' ? '#1D1D1F' : '#D1D1D6'}`,
+                      backgroundColor: 'transparent'
+                    }}
+                  />
+                  <label
+                    className="absolute left-0 transition-all duration-200 pointer-events-none"
+                    style={{
+                      fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                      fontWeight: 400,
+                      fontSize: currentEmail || inputFocused === 'email' ? '0.75rem' : '1.0625rem',
+                      color: inputFocused === 'email' ? '#1D1D1F' : '#86868B',
+                      letterSpacing: '-0.01em',
+                      top: currentEmail || inputFocused === 'email' ? '0' : '1rem',
+                      transform: 'translateY(0)'
+                    }}
+                  >
+                    Email address
+                  </label>
+                </div>
+                <button
+                  onClick={handleAddEmail}
+                  disabled={!currentEmail.includes('@')}
+                  className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200"
+                  style={{
+                    backgroundColor: currentEmail.includes('@') ? '#1D1D1F' : '#F5F5F7',
+                    cursor: currentEmail.includes('@') ? 'pointer' : 'not-allowed'
+                  }}
+                >
+                  <Plus className="w-5 h-5" style={{ color: currentEmail.includes('@') ? '#FFFFFF' : '#86868B' }} />
+                </button>
+              </div>
+            </motion.div>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-12 space-y-3"
+            >
+              <button
+                onClick={handleStartPrompts}
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl transition-all duration-200"
+                style={{
+                  fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '1.0625rem',
+                  letterSpacing: '-0.01em',
+                  color: '#FFFFFF',
+                  background: '#1D1D1F',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#000000'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = '#1D1D1F'
+                }}
+              >
+                {inviteEmails.length > 0 ? 'Send Invites & Continue' : 'Continue'}
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              {inviteEmails.length === 0 && (
+                <button
+                  onClick={handleStartPrompts}
+                  className="w-full py-3 transition-all duration-200"
+                  style={{
+                    fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '0.9375rem',
+                    letterSpacing: '-0.01em',
+                    color: '#86868B',
+                    background: 'transparent',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#1D1D1F'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = '#86868B'
+                  }}
+                >
+                  Skip for now
+                </button>
+              )}
+            </motion.div>
+
+            {/* Footer Text */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="text-center mt-6"
+              style={{
+                fontFamily: 'Google Sans Flex, system-ui, sans-serif',
+                fontWeight: 400,
+                fontSize: '0.8125rem',
+                color: '#AEAEB2',
+                letterSpacing: '-0.01em'
+              }}
+            >
+              You can always invite more teammates later
+            </motion.p>
+          </motion.div>
         ) : phase === 'prompts' ? (
           <motion.div
             key="prompts"
@@ -327,7 +792,7 @@ export function BrandEmpowermentModal({
               </div>
             </motion.div>
 
-            {/* Title */}
+            {/* Title with Shimmer */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -342,7 +807,7 @@ export function BrandEmpowermentModal({
                 lineHeight: 1.2
               }}
             >
-              Building {displayBrandName}'s AI Visibility Dashboard
+              <ShimmerText>Building {displayBrandName}'s AI Visibility Dashboard</ShimmerText>
             </motion.h1>
 
             {/* Subtitle */}
