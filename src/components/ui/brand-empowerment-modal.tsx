@@ -342,7 +342,7 @@ export function BrandEmpowermentModal({
                 lineHeight: 1.2
               }}
             >
-              Building {displayBrandName}'s AI future
+              Building {displayBrandName}'s AI Visibility Dashboard
             </motion.h1>
 
             {/* Subtitle */}
