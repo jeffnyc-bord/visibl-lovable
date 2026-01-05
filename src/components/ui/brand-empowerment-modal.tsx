@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Shield, ArrowRight, Plus, X } from "lucide-react"
-import boardLabsIcon from "@/assets/board_labs_icon.png"
+import boardLabsIcon from "@/assets/board-labs-icon-black.png"
 
 const corePrompts = [
   "Best running shoes for marathon training",
@@ -1211,7 +1211,7 @@ export function BrandEmpowermentModal({
                       letterSpacing: '-0.02em'
                     }}
                   >
-                    nike.com
+                    www.nike.com
                   </div>
                   <div
                     style={{
