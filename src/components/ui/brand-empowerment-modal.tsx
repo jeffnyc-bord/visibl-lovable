@@ -180,11 +180,11 @@ export function BrandEmpowermentModal({
               transition={{ duration: 0.5 }}
               className="flex justify-center mb-12"
             >
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+              <div className="w-12 h-12 flex items-center justify-center">
                 <img 
                   src={boardLabsIcon} 
                   alt="Board Labs"
-                  className="w-7 h-7 object-contain brightness-0 invert"
+                  className="w-10 h-10 object-contain"
                 />
               </div>
             </motion.div>
@@ -379,11 +379,11 @@ export function BrandEmpowermentModal({
               transition={{ duration: 0.5 }}
               className="flex justify-center mb-12"
             >
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+              <div className="w-12 h-12 flex items-center justify-center">
                 <img 
                   src={boardLabsIcon} 
                   alt="Board Labs"
-                  className="w-7 h-7 object-contain brightness-0 invert"
+                  className="w-10 h-10 object-contain"
                 />
               </div>
             </motion.div>
@@ -561,11 +561,11 @@ export function BrandEmpowermentModal({
               transition={{ duration: 0.5 }}
               className="flex justify-center mb-12"
             >
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+              <div className="w-12 h-12 flex items-center justify-center">
                 <img 
                   src={boardLabsIcon} 
                   alt="Board Labs"
-                  className="w-7 h-7 object-contain brightness-0 invert"
+                  className="w-10 h-10 object-contain"
                 />
               </div>
             </motion.div>
@@ -787,11 +787,11 @@ export function BrandEmpowermentModal({
               transition={{ duration: 0.5 }}
               className="flex justify-center mb-12"
             >
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+              <div className="w-12 h-12 flex items-center justify-center">
                 <img 
                   src={boardLabsIcon} 
                   alt="Board Labs"
-                  className="w-7 h-7 object-contain brightness-0 invert"
+                  className="w-10 h-10 object-contain"
                 />
               </div>
             </motion.div>
@@ -938,11 +938,11 @@ export function BrandEmpowermentModal({
               transition={{ duration: 0.5 }}
               className="flex justify-center mb-12"
             >
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+              <div className="w-12 h-12 flex items-center justify-center">
                 <img 
                   src={boardLabsIcon} 
                   alt="Board Labs"
-                  className="w-7 h-7 object-contain brightness-0 invert"
+                  className="w-10 h-10 object-contain"
                 />
               </div>
             </motion.div>
@@ -1078,11 +1078,11 @@ export function BrandEmpowermentModal({
               transition={{ duration: 0.5 }}
               className="flex justify-center mb-8"
             >
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+              <div className="w-12 h-12 flex items-center justify-center">
                 <img 
                   src={boardLabsIcon} 
                   alt="Board Labs"
-                  className="w-7 h-7 object-contain brightness-0 invert"
+                  className="w-10 h-10 object-contain"
                 />
               </div>
             </motion.div>
