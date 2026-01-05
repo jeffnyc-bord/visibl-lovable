@@ -788,85 +788,115 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                className="flex items-center gap-8"
+                className="flex flex-col gap-6"
               >
-                <motion.div 
-                  className="flex-shrink-0"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                >
-                  <ResponsiveContainer width={180} height={180}>
-                    <PieChart>
-                      <Pie
-                        data={displayedPlatforms.slice(0, 4).map((p, i) => ({
-                          name: p.platform,
-                          value: p.mentions,
-                          color: PLATFORM_COLORS[i % PLATFORM_COLORS.length]
-                        }))}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={80}
-                        paddingAngle={3}
-                        dataKey="value"
-                        onMouseEnter={(_, index) => setHoveredSegment(index)}
-                        onMouseLeave={() => setHoveredSegment(null)}
-                      >
-                        {displayedPlatforms.slice(0, 4).map((_, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={PLATFORM_COLORS[index % PLATFORM_COLORS.length]}
-                            opacity={hoveredSegment === null || hoveredSegment === index ? 1 : 0.4}
-                            style={{ transition: 'opacity 0.2s ease' }}
-                          />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip
-                        contentStyle={{
-                          backgroundColor: 'hsl(var(--background) / 0.95)',
-                          backdropFilter: 'blur(8px)',
-                          border: '1px solid hsl(var(--border) / 0.3)',
-                          borderRadius: '12px',
-                          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                          padding: '10px 14px'
-                        }}
-                        formatter={(value: number) => [`${value} mentions`, '']}
+                {/* Pie chart with integrated legend */}
+                <div className="relative flex items-center justify-center">
+                  <motion.div 
+                    className="relative"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                  >
+                    <ResponsiveContainer width={220} height={220}>
+                      <PieChart>
+                        <Pie
+                          data={displayedPlatforms.slice(0, 4).map((p, i) => ({
+                            name: p.platform,
+                            value: p.mentions,
+                            color: PLATFORM_COLORS[i % PLATFORM_COLORS.length]
+                          }))}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={55}
+                          outerRadius={90}
+                          paddingAngle={3}
+                          dataKey="value"
+                          onMouseEnter={(_, index) => setHoveredSegment(index)}
+                          onMouseLeave={() => setHoveredSegment(null)}
+                          label={({ cx, cy, midAngle, outerRadius, index }) => {
+                            const RADIAN = Math.PI / 180;
+                            const radius = outerRadius + 25;
+                            const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                            const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                            const totalMentions = displayedPlatforms.slice(0, 4).reduce((sum, p) => sum + p.mentions, 0);
+                            const percentage = ((displayedPlatforms[index].mentions / totalMentions) * 100).toFixed(0);
+                            
+                            return (
+                              <text
+                                x={x}
+                                y={y}
+                                fill={PLATFORM_COLORS[index % PLATFORM_COLORS.length]}
+                                textAnchor="middle"
+                                dominantBaseline="central"
+                                className="text-xs font-semibold"
+                                style={{ 
+                                  opacity: hoveredSegment === null || hoveredSegment === index ? 1 : 0.4,
+                                  transition: 'opacity 0.2s ease'
+                                }}
+                              >
+                                {percentage}%
+                              </text>
+                            );
+                          }}
+                          labelLine={false}
+                        >
+                          {displayedPlatforms.slice(0, 4).map((_, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={PLATFORM_COLORS[index % PLATFORM_COLORS.length]}
+                              opacity={hoveredSegment === null || hoveredSegment === index ? 1 : 0.4}
+                              style={{ transition: 'opacity 0.2s ease' }}
+                            />
+                          ))}
+                        </Pie>
+                        <RechartsTooltip
+                          contentStyle={{
+                            backgroundColor: 'hsl(var(--background) / 0.95)',
+                            backdropFilter: 'blur(8px)',
+                            border: '1px solid hsl(var(--border) / 0.3)',
+                            borderRadius: '12px',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                            padding: '10px 14px'
+                          }}
+                          formatter={(value: number) => [`${value} mentions`, '']}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    {/* Center total */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="text-center">
+                        <span className="text-2xl font-light text-foreground tabular-nums">
+                          {displayedPlatforms.slice(0, 4).reduce((sum, p) => sum + p.mentions, 0)}
+                        </span>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Total</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Horizontal legend below chart */}
+                <div className="flex items-center justify-center gap-6 flex-wrap">
+                  {displayedPlatforms.slice(0, 4).map((platform, index) => (
+                    <motion.div 
+                      key={platform.platform}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: index * 0.05 }}
+                      className="flex items-center gap-2 cursor-pointer transition-opacity duration-200"
+                      style={{ opacity: hoveredSegment === null || hoveredSegment === index ? 1 : 0.4 }}
+                      onMouseEnter={() => setHoveredSegment(index)}
+                      onMouseLeave={() => setHoveredSegment(null)}
+                    >
+                      <div 
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ background: PLATFORM_COLORS[index % PLATFORM_COLORS.length] }}
                       />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </motion.div>
-                <div className="flex-1 space-y-3">
-                  {displayedPlatforms.slice(0, 4).map((platform, index) => {
-                    const totalMentions = displayedPlatforms.slice(0, 4).reduce((sum, p) => sum + p.mentions, 0);
-                    const percentage = ((platform.mentions / totalMentions) * 100).toFixed(1);
-                    
-                    return (
-                      <motion.div 
-                        key={platform.platform}
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.2, delay: index * 0.05 }}
-                        className="flex items-center justify-between cursor-pointer transition-opacity duration-200"
-                        style={{ opacity: hoveredSegment === null || hoveredSegment === index ? 1 : 0.4 }}
-                        onMouseEnter={() => setHoveredSegment(index)}
-                        onMouseLeave={() => setHoveredSegment(null)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div 
-                            className="w-3 h-3 rounded-full"
-                            style={{ background: PLATFORM_COLORS[index % PLATFORM_COLORS.length] }}
-                          />
-                          <img src={platform.logo} alt={platform.platform} className="w-4 h-4 object-contain" />
-                          <span className="text-sm text-foreground">{platform.platform}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-foreground tabular-nums">{percentage}%</span>
-                          <span className="text-xs text-muted-foreground">({platform.mentions})</span>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
+                      <img src={platform.logo} alt={platform.platform} className="w-4 h-4 object-contain" />
+                      <span className="text-sm text-foreground">{platform.platform}</span>
+                      <span className="text-xs text-muted-foreground">({platform.mentions})</span>
+                    </motion.div>
+                  ))}
                 </div>
               </motion.div>
             )}
