@@ -567,7 +567,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                                     style={{ zIndex: activePlatformMentions.length - i }}
                                   />
                                   {isActive && (
-                                    <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-success border border-background flex items-center justify-center" style={{ zIndex: 100 }}>
+                                    <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-success border border-background flex items-center justify-center z-10">
                                       <Check className="w-2 h-2 text-success-foreground" />
                                     </div>
                                   )}
