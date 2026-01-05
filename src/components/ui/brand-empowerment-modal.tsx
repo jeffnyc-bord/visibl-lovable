@@ -5,15 +5,15 @@ import boardLabsIcon from "@/assets/board_labs_icon.png"
 
 const corePrompts = [
   "Best running shoes for marathon training",
-  "Top protein supplements for muscle recovery",
-  "Sustainable athletic wear brands 2024",
-  "High-performance basketball shoes comparison",
-  "Best yoga pants for hot yoga sessions",
-  "Trail running gear recommendations",
-  "Compression wear benefits for athletes",
-  "Best sports bras for high impact workouts",
-  "Affordable gym equipment for home",
-  "Eco-friendly workout clothing options",
+  "Nike Air Max vs Adidas Ultraboost comparison",
+  "Top basketball shoes for court performance",
+  "Nike sustainable athletic wear 2024",
+  "Best Nike shoes for daily workouts",
+  "Nike vs competitors running shoes",
+  "Most comfortable Nike sneakers review",
+  "Nike Pegasus long distance running",
+  "Best Nike training shoes for gym",
+  "Nike Air Force 1 style guide",
 ]
 
 // Shimmer text component for loading effect
@@ -1144,7 +1144,7 @@ export function BrandEmpowermentModal({
                     lineHeight: 1
                   }}
                 >
-                  73
+                  87
                 </motion.div>
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -1180,7 +1180,7 @@ export function BrandEmpowermentModal({
                       letterSpacing: '-0.02em'
                     }}
                   >
-                    2,847
+                    12,847
                   </div>
                   <div
                     style={{
@@ -1211,7 +1211,7 @@ export function BrandEmpowermentModal({
                       letterSpacing: '-0.02em'
                     }}
                   >
-                    ChatGPT
+                    nike.com
                   </div>
                   <div
                     style={{
