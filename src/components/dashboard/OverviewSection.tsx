@@ -13,6 +13,7 @@ import { LockedPlatformIndicator } from "@/components/ui/locked-platform-indicat
 import { UpgradeSheet, UpgradeType } from "@/components/ui/upgrade-sheet";
 import { PromptInsightsSheet, PromptInsight } from "@/components/ui/prompt-insights-sheet";
 import { SourceInsightsSheet, SourceInsight } from "@/components/ui/source-insights-sheet";
+import { AnimatedCounter, SlotCounter } from "@/components/ui/animated-counter";
 import { cn } from "@/lib/utils";
 import grokLogo from "@/assets/grok_logo_new.png";
 import chatGPTLogo from "@/assets/chatGPT_logo.png";
@@ -479,20 +480,23 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   <span className="text-sm text-muted-foreground">AI Visibility Score</span>
                 </div>
                 
-                {/* Large Score */}
+                {/* Large Score with Animation */}
                 <div className="relative mb-4">
-                  <span 
+                  <AnimatedCounter
+                    value={brandData.visibilityScore}
+                    duration={2}
+                    delay={0.3}
                     className="text-7xl font-extralight tracking-tighter text-foreground"
-                    style={{
-                      textShadow: '0 0 60px rgba(34, 197, 94, 0.1)'
-                    }}
-                  >
-                    {brandData.visibilityScore}
-                  </span>
+                    showGlow={true}
+                    glowColor="rgb(34, 197, 94)"
+                  />
                   <span className="text-2xl font-extralight text-muted-foreground ml-1">/ 100</span>
                   
-                  {/* Trend Badge */}
-                  <div 
+                  {/* Trend Badge - animated in after counter */}
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8, x: 10 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    transition={{ delay: 2.5, duration: 0.4, type: "spring" }}
                     className="absolute -right-2 top-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
                     style={{
                       background: 'rgba(34, 197, 94, 0.1)',
@@ -502,7 +506,7 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
                   >
                     <TrendingUp className="w-3 h-3" />
                     +5%
-                  </div>
+                  </motion.div>
                 </div>
 
                 <ConfidenceBadge 
@@ -517,7 +521,12 @@ export const OverviewSection = ({ brandData, selectedModels, selectedDateRange, 
             <div className="lg:col-span-4 flex items-center">
               <div className="grid grid-cols-2 gap-x-12 gap-y-6 w-full">
                 <div>
-                  <p className="text-4xl font-extralight text-foreground">{brandData.totalMentions.toLocaleString()}</p>
+                  <SlotCounter
+                    value={brandData.totalMentions}
+                    duration={1.8}
+                    delay={0.5}
+                    digitClassName="text-4xl font-extralight text-foreground tabular-nums"
+                  />
                   <p className="text-xs text-muted-foreground mt-1">Total Mentions</p>
                 </div>
                 <div 
