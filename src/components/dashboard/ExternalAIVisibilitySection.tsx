@@ -408,7 +408,7 @@ export const ExternalAIVisibilitySection = ({ demoMode = false }: { demoMode?: b
               {platformMentionsData.map((platform, index) => (
                 <div 
                   key={index} 
-                  className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
+                  className={`flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
                     hoveredSegment === index 
                       ? 'border-white/30 bg-white/10' 
                       : 'border-white/10 bg-white/5'
@@ -416,17 +416,13 @@ export const ExternalAIVisibilitySection = ({ demoMode = false }: { demoMode?: b
                   onMouseEnter={() => setHoveredSegment(index)}
                   onMouseLeave={() => setHoveredSegment(null)}
                 >
-                  <div className="flex items-center space-x-3">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: DONUT_COLORS[index] }}
-                    ></div>
-                    <span className="text-sm font-medium text-white">{platform.platform}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium text-white">{platform.mentions}</span>
-                    <span className="text-xs text-white/60">({platform.percentage}%)</span>
-                  </div>
+                  <div 
+                    className="w-3 h-3 rounded-full flex-shrink-0" 
+                    style={{ backgroundColor: DONUT_COLORS[index] }}
+                  ></div>
+                  <span className="text-sm font-medium text-white">{platform.platform}</span>
+                  <span className="text-sm font-medium text-white/80">{platform.mentions}</span>
+                  <span className="text-xs text-white/60">({platform.percentage}%)</span>
                 </div>
               ))}
             </div>
