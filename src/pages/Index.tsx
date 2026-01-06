@@ -1090,7 +1090,7 @@ const Index = () => {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 p-6 overflow-auto bg-muted/20">
+        <main className="flex-1 p-6 overflow-auto bg-background">
           {activeView === "dashboard" && (
             <>
               {/* Show skeleton if full dashboard loading */}
